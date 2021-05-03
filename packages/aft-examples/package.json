@@ -1,0 +1,47 @@
+{
+  "name": "aft-examples",
+  "version": "4.0.1",
+  "description": "Automated Functional Testing (AFT) package containing examples of how it can be used",
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "build": "yarn clean && tsc --build",
+    "pretest": "yarn build",
+    "test": "jasmine **/*-spec.js",
+    "coverage": "nyc yarn test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bicarbon8/automated-functional-testing.git"
+  },
+  "keywords": [
+    "aft",
+    "automation",
+    "e2e",
+    "integration",
+    "functional",
+    "ui",
+    "logging",
+    "test",
+    "examples"
+  ],
+  "author": "Jason Holt Smith <bicarbon8@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bicarbon8/automated-functional-testing/issues"
+  },
+  "homepage": "https://github.com/bicarbon8/automated-functional-testing/packages/aft-examples#readme",
+  "dependencies": {
+    "aft-logging-awskinesis": "^4.0.1",
+    "aft-testrail": "^4.0.1",
+    "aft-ui-selenium": "^4.0.1"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^3.6.10",
+    "@types/node": "^15.0.1",
+    "@types/selenium-webdriver": "^4.0.12",
+    "jasmine": "^3.7.0",
+    "nyc": "^15.1.0",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.2.4"
+  }
+}

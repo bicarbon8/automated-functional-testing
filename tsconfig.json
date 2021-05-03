@@ -1,0 +1,12 @@
+{
+    "references": [
+        { "path": "./packages/aft-core" },
+        { "path": "./packages/aft-examples" },
+        { "path": "./packages/aft-logging-awskinesis" },
+        { "path": "./packages/aft-testrail" },
+        { "path": "./packages/aft-ui" },
+        { "path": "./packages/aft-ui-selenium" },
+        { "path": "./packages/aft-web-services" }
+    ],
+    "files": []
+}

@@ -1,0 +1,43 @@
+{
+  "name": "aft-testrail",
+  "version": "4.0.1",
+  "description": "Automated Functional Testing (AFT) package supporting TestRail integration for test execution control and logging",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bicarbon8/automated-functional-testing.git"
+  },
+  "main": "./dist/src/index/js",
+  "types": "./dist/src/index.d.ts",
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "build": "yarn clean && tsc --build",
+    "pretest": "yarn build",
+    "test": "jasmine **/*-spec.js",
+    "coverage": "nyc yarn test"
+  },
+  "keywords": [
+    "aft",
+    "automation",
+    "e2e",
+    "integration",
+    "functional",
+    "testrail"
+  ],
+  "author": "Jason Holt Smith <bicarbon8@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bicarbon8/automated-functional-testing/issues"
+  },
+  "homepage": "https://github.com/bicarbon8/automated-functional-testing/packages/aft-testrail#readme",
+  "dependencies": {
+    "aft-web-services": "^4.0.1"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^3.6.10",
+    "@types/node": "^15.0.1",
+    "jasmine": "^3.7.0",
+    "nyc": "^15.1.0",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.2.4"
+  }
+}

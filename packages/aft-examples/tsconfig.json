@@ -1,0 +1,12 @@
+{
+    "extends": "../../tsconfig-settings.json",
+    "compilerOptions": {
+        "outDir": "dist"
+    },
+    "include": ["test"],
+    "references": [
+        { "path": "../aft-ui-selenium" },
+        { "path": "../aft-logging-awskinesis" },
+        { "path": "../aft-testrail" }
+    ]
+}

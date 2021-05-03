@@ -1,0 +1,52 @@
+{
+    "loggingpluginmanager": {
+        "level": "info",
+        "pluginNames": [
+            "console-logging-plugin",
+            "testrail-logging-plugin",
+            "kinesis-logging-plugin"
+        ],
+        "searchDir": "../"
+    },
+    "testcasepluginmanager": {
+        "pluginNames": ["testrail-test-case-plugin"],
+        "searchDir": "../"
+    },
+    "testrailconfig": {
+        "url": "%testrail_url%",
+        "user": "%testrail_user%",
+        "access_key": "%testrail_pass%",
+        "project_id": 3,
+        "suite_ids": [744]
+    },
+    "testrailloggingplugin": {
+        "enabled": false,
+        "level": "warn"
+    },
+    "testrailtestcaseplugin": {
+        "enabled": false
+    },
+    "kinesisconfig": {
+        "accessKeyId": "%AWS_ACCESS_KEY_ID%",
+        "secretAccessKey": "%AWS_SECRET_ACCESS_KEY%",
+        "sessionToken": "%AWS_SESSION_TOKEN%",
+        "authenticationType": "config"
+    },
+    "kinesisloggingplugin": {
+        "enabled": false,
+        "level": "trace"
+    },
+    "sessiongeneratorpluginmanager": {
+        "pluginNames": ["browserstack-session-generator-plugin"],
+        "searchDir": "../"
+    },
+    "browserstacksessiongeneratorplugin": {
+        "user": "%browserstack_user%",
+        "key": "%browserstack_key%",
+        "platform": {
+            "os": "windows",
+            "osVersion": "10",
+            "browser": "chrome"
+        }
+    }
+}

@@ -1,0 +1,19 @@
+{
+    "loggingpluginmanager": {
+        "pluginNames": ["testrail-logging-plugin"],
+        "level": "info"
+    },
+    "testcasepluginmanager": {
+        "pluginNames": ["testrail-test-case-plugin"]
+    },
+    "testrailconfig": {
+        "url": "%testrail_url%",
+        "user": "%testrail_user%",
+        "accesskey": "%testrail_accesskey%",
+        "projectid": 3,
+        "suiteids": [1219]
+    },
+    "testrailloggingplugin": {
+        "maxLogCharacters": 100
+    }
+}
