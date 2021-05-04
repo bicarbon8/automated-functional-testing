@@ -7,5 +7,5 @@ deploy:
   provider: script
   skip_cleanup: true
   before_deploy:
-  - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" >> $HOME/.npmrc 2> /dev/null
+  - cp .npmrc-publish ~/.npmrc
   script: yarn lerna publish from-package --yes
