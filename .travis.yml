@@ -2,6 +2,8 @@ language: node_js
 node_js:
 - 14
 deploy:
+  on:
+    branch: main
   provider: npm
   skip_cleanup: true
   email:
