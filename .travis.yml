@@ -1,11 +1,11 @@
 language: node_js
 node_js:
 - 14
+before_deploy:
+  - cp .npmrc-publish ~/.npmrc
 deploy:
   on:
     branch: main
   provider: script
   skip_cleanup: true
-  before_deploy:
-  - cp .npmrc-publish ~/.npmrc
   script: yarn lerna publish from-package --yes
