@@ -2,6 +2,7 @@
   "name": "aft-examples",
   "version": "4.0.1",
   "description": "Automated Functional Testing (AFT) package containing examples of how it can be used",
+  "private": true,
   "scripts": {
     "clean": "rimraf ./dist",
     "build": "yarn clean && tsc --build",
