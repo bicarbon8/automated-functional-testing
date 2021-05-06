@@ -37,9 +37,9 @@ export class SeleniumFacet extends AbstractFacet {
         return element;
     }
     
-    async getFacet<T extends AbstractFacet>(facetType: Clazz<T>, options?: IFacetOptions): Promise<T> {
-        options = options || {} as IFacetOptions;
-        options.parent = options?.parent || this as AbstractFacet;
+    async getFacet<T extends AbstractFacet>(facetType: Clazz<T>, options?: SeleniumFacetOptions): Promise<T> {
+        options = options || {} as SeleniumFacetOptions;
+        options.parent = options?.parent || this;
         options.session = options?.session || this.session;
         options.logMgr = options?.logMgr || this.logMgr;
         options.maxWaitMs = options?.maxWaitMs || this.maxWaitMs;

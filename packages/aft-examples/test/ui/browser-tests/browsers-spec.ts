@@ -1,12 +1,9 @@
 import { wait } from "aft-core";
 import { BrowserTestWrapper, browserShould } from "aft-ui-selenium";
+import { expect } from "chai";
 import { HerokuLoginPage } from "./page-objects/heroku-login-page";
 
 describe('Functional Browser Tests using AFT-UI', () => {
-    beforeAll(() => {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 180000;
-    });
-  
     it('can access websites using AFT and Page Widgets and Facets', async () => {
         await browserShould({description: 'can access websites using AFT and Page Widgets and Facets',
             testCases: ['C3456', 'C2345', 'C1234'],
@@ -25,7 +22,7 @@ describe('Functional Browser Tests using AFT-UI', () => {
                 await tw.logMgr.step('get message...');
                 let message: string = await loginPage.getMessage();
                 
-                return expect(message).toContain("You logged into a secure area!");
+                return expect(message).to.contain("You logged into a secure area!");
             }
         });
     });

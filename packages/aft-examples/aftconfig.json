@@ -43,10 +43,6 @@
     "browserstacksessiongeneratorplugin": {
         "user": "%browserstack_user%",
         "key": "%browserstack_key%",
-        "platform": {
-            "os": "windows",
-            "osVersion": "10",
-            "browser": "chrome"
-        }
+        "platform": "windows_10_chrome"
     }
 }
