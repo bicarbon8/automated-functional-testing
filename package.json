@@ -10,7 +10,7 @@
     ],
     "scripts": {
         "build": "yarn tsc -b",
-        "test": "yarn build && yarn workspace aft-core test && yarn workspace aft-logging-awskinesis test && yarn workspace aft-testrail test && yarn workspace aft-ui test && yarn workspace aft-ui-selenium test && yarn workspace aft-web-services test"
+        "test": "yarn build && yarn workspace aft-core test && yarn workspace aft-logging-awskinesis test && yarn workspace aft-testrail test && yarn workspace aft-ui test && yarn workspace aft-ui-selenium test && yarn workspace aft-web-services test && yarn workspace aft-logging-html test"
     },
     "dependencies": {
         "lerna": "^4.0.0"
