@@ -2,8 +2,8 @@ import { rand } from "aft-core";
 import { TestPlatform } from "aft-ui";
 import { SeleniumGridSessionGeneratorPlugin } from "../../../src/sessions/selenium-grid/selenium-grid-session-generator-plugin";
 import { By, Capabilities } from "selenium-webdriver";
-import { SeleniumFacet } from "../../../src/facets/selenium-facet";
-import { SeleniumSession } from "../../../src/sessions/selenium-session";
+import { BrowserFacet } from "../../../src/facets/browser-facet";
+import { BrowserSession } from "../../../src/sessions/browser-session";
 
 describe('SeleniumGridSessionGeneratorPlugin', () => {
     it('can generate capabilities from the passed in options', async () => {
@@ -32,7 +32,7 @@ describe('SeleniumGridSessionGeneratorPlugin', () => {
     xit('can create a session on Selenium Grid', async () => {
         let platform: string = 'windows_10_chrome';
         let plugin: SeleniumGridSessionGeneratorPlugin = new SeleniumGridSessionGeneratorPlugin({platform: platform});
-        let session: SeleniumSession = await plugin.newSession();
+        let session: BrowserSession = await plugin.newSession();
         
         let expectedUrl: string = 'https://the-internet.herokuapp.com/login';
         await session.goTo(expectedUrl);
@@ -41,7 +41,7 @@ describe('SeleniumGridSessionGeneratorPlugin', () => {
 
         expect(actualUrl).toEqual(expectedUrl);
 
-        let facet: SeleniumFacet = await session.getFacet(SeleniumFacet, {locator: By.css('button.radius')});
+        let facet: BrowserFacet = await session.getFacet(BrowserFacet, {locator: By.css('button.radius')});
 
         expect(facet).toBeDefined();
         expect(await facet.getRoot().then((r) => r.getText())).toEqual('Login');

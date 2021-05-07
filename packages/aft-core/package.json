@@ -28,7 +28,7 @@
   "bugs": {
     "url": "https://github.com/bicarbon8/automated-functional-testing/issues"
   },
-  "homepage": "https://github.com/bicarbon8/automated-functional-testing/packages/aft-core#readme",
+  "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
     "colors": "^1.4.0",
     "lodash": "^4.17.21",

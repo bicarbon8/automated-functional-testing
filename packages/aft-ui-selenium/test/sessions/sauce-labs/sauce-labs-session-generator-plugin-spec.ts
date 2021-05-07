@@ -2,7 +2,7 @@ import { By, Capabilities } from 'selenium-webdriver';
 import { using, LoggingPluginManager, rand } from "aft-core";
 import { TestPlatform } from "aft-ui";
 import { BuildName } from "../../../src/helpers/build-name";
-import { SeleniumFacet } from '../../../src/facets/selenium-facet';
+import { BrowserFacet } from '../../../src/facets/browser-facet';
 import { SauceLabsSessionGeneratorPlugin, SauceLabsSessionGeneratorPluginOptions } from '../../../src';
 
 describe('SauceLabsSessionGeneratorPlugin', () => {
@@ -62,7 +62,7 @@ describe('SauceLabsSessionGeneratorPlugin', () => {
 
             expect(actualUrl).toEqual(expectedUrl);
 
-            let facet: SeleniumFacet = await session.getFacet(SeleniumFacet, {locator: By.css('button.radius')});
+            let facet: BrowserFacet = await session.getFacet(BrowserFacet, {locator: By.css('button.radius')});
 
             expect(facet).toBeDefined();
             expect(await facet.getRoot().then((r) => r.getText())).toEqual('Login');

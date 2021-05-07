@@ -1,7 +1,7 @@
 import { WebDriver, Builder, Capabilities } from "selenium-webdriver";
 import { nameof } from "ts-simple-nameof";
 import { AbstractSessionGeneratorPlugin, ISessionGeneratorPluginOptions } from "aft-ui";
-import { SeleniumSession, SeleniumSessionOptions } from "../selenium-session";
+import { BrowserSession, BrowserSessionOptions } from "../browser-session";
 
 export interface SeleniumGridSessionPluginOptions extends ISessionGeneratorPluginOptions {
     url?: string;
@@ -23,7 +23,7 @@ export abstract class AbstractGridSessionGeneratorPlugin extends AbstractSession
         return this._url;
     }
 
-    async getCapabilities(options?: SeleniumSessionOptions): Promise<Capabilities> {
+    async getCapabilities(options?: BrowserSessionOptions): Promise<Capabilities> {
         if (!this._caps) {
             let c: {} = await this.optionsMgr.getOption<{}>(nameof<SeleniumGridSessionPluginOptions>(o => o.capabilities), {});
             this._caps = new Capabilities(c);
@@ -31,7 +31,7 @@ export abstract class AbstractGridSessionGeneratorPlugin extends AbstractSession
         return this._caps;
     }
 
-    async newSession(options?: SeleniumSessionOptions): Promise<SeleniumSession> {
+    async newSession(options?: BrowserSessionOptions): Promise<BrowserSession> {
         if (await this.enabled()) {
             if (!options?.driver) {
                 try {
@@ -43,7 +43,7 @@ export abstract class AbstractGridSessionGeneratorPlugin extends AbstractSession
                         .build();
                     await driver.manage().setTimeouts({implicit: 1000});
                     await driver.manage().window().maximize();
-                    return new SeleniumSession({
+                    return new BrowserSession({
                         driver: driver,
                         logMgr: options?.logMgr || this.logMgr
                     });
@@ -51,7 +51,7 @@ export abstract class AbstractGridSessionGeneratorPlugin extends AbstractSession
                     return Promise.reject(e);
                 }
             }
-            return new SeleniumSession({driver: options.driver, logMgr: options.logMgr || this.logMgr});
+            return new BrowserSession({driver: options.driver, logMgr: options.logMgr || this.logMgr});
         }
         return null;
     }

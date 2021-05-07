@@ -30,7 +30,7 @@
   "bugs": {
     "url": "https://github.com/bicarbon8/automated-functional-testing/issues"
   },
-  "homepage": "https://github.com/bicarbon8/automated-functional-testing/packages/aft-examples#readme",
+  "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
     "aft-logging-awskinesis": "^4.0.1",
     "aft-testrail": "^4.0.1",

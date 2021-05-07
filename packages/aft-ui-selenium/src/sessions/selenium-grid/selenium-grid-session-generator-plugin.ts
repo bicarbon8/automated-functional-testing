@@ -2,7 +2,7 @@ import { AbstractGridSessionGeneratorPlugin, SeleniumGridSessionPluginOptions } 
 import { TestPlatform } from "aft-ui";
 import { Capabilities } from "selenium-webdriver";
 import { nameof } from "ts-simple-nameof";
-import { SeleniumSessionOptions } from "../selenium-session";
+import { BrowserSessionOptions } from "../browser-session";
 
 export class SeleniumGridSessionGeneratorPlugin extends AbstractGridSessionGeneratorPlugin {
     constructor(options?: SeleniumGridSessionPluginOptions) {
@@ -11,7 +11,7 @@ export class SeleniumGridSessionGeneratorPlugin extends AbstractGridSessionGener
     async onLoad(): Promise<void> {
         /* do nothing */
     }
-    async getCapabilities(options?: SeleniumSessionOptions): Promise<Capabilities> {
+    async getCapabilities(options?: BrowserSessionOptions): Promise<Capabilities> {
         let capabilities: Capabilities = new Capabilities();
         let platform: TestPlatform = await this.getPlatform();
         let osVersion = '';

@@ -1,22 +1,23 @@
+import { nameof } from "ts-simple-nameof";
 import { WebDriver } from "selenium-webdriver";
 import { Clazz, LoggingPluginManager } from "aft-core";
 import { AbstractFacet, ISession, ISessionOptions } from "aft-ui";
-import { SeleniumFacetOptions } from "../facets/selenium-facet";
+import { BrowserFacetOptions } from "../facets/browser-facet";
 
-export interface SeleniumSessionOptions extends ISessionOptions {
+export interface BrowserSessionOptions extends ISessionOptions {
     driver?: WebDriver;
 }
 
-export class SeleniumSession implements ISession {
+export class BrowserSession implements ISession {
     readonly driver: WebDriver;
     readonly logMgr: LoggingPluginManager;
     
-    constructor(options: SeleniumSessionOptions) {
+    constructor(options: BrowserSessionOptions) {
         this.driver = options.driver;
-        this.logMgr = options.logMgr || new LoggingPluginManager({logName: `SeleniumSession_${this.driver?.getSession().then(s => s.getId())}`});
+        this.logMgr = options.logMgr || new LoggingPluginManager({logName: `${nameof(BrowserSession)}_${this.driver?.getSession().then(s => s.getId())}`});
     }
     
-    async getFacet<T extends AbstractFacet>(facetType: Clazz<T>, options?: SeleniumFacetOptions): Promise<T> {
+    async getFacet<T extends AbstractFacet>(facetType: Clazz<T>, options?: BrowserFacetOptions): Promise<T> {
         options = options || {};
         options.session = options.session || this;
         options.logMgr = options.logMgr || this.logMgr;
@@ -24,7 +25,7 @@ export class SeleniumSession implements ISession {
         return facet;
     }
 
-    async goTo(url: string): Promise<SeleniumSession> {
+    async goTo(url: string): Promise<BrowserSession> {
         try {
             await this.driver?.get(url);
         } catch (e) {
@@ -33,7 +34,7 @@ export class SeleniumSession implements ISession {
         return this;
     }
 
-    async refresh(): Promise<SeleniumSession> {
+    async refresh(): Promise<BrowserSession> {
         try {
             await this.driver?.navigate().refresh();
         } catch (e) {
@@ -42,7 +43,7 @@ export class SeleniumSession implements ISession {
         return this;
     }
 
-    async resize(width: number, height: number): Promise<SeleniumSession> {
+    async resize(width: number, height: number): Promise<BrowserSession> {
         try {
             await this.driver?.manage().window().setSize(width, height);
         } catch (e) {
@@ -53,9 +54,9 @@ export class SeleniumSession implements ISession {
 
     async dispose(error?: Error): Promise<void> {
         if (error) {
-            this.logMgr.warn(`Error: SeleniumSession - ${error.message}`);
+            this.logMgr.warn(`Error: ${nameof(BrowserSession)} - ${error.message}`);
         }
-        this.logMgr.trace(`shutting down SeleniumSession: ${await this.driver?.getSession().then(s => s.getId())}`);
+        this.logMgr.trace(`shutting down ${nameof(BrowserSession)}: ${await this.driver?.getSession().then(s => s.getId())}`);
         await this.driver?.quit();
     }
 }

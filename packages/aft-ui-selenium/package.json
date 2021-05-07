@@ -32,7 +32,7 @@
   "bugs": {
     "url": "https://github.com/bicarbon8/automated-functional-testing/issues"
   },
-  "homepage": "https://github.com/bicarbon8/automated-functional-testing/packages/aft-ui-selenium#readme",
+  "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
     "aft-ui": "^4.0.1",
     "selenium-webdriver": "^4.0.0-beta.3"

@@ -3,7 +3,7 @@ import { AbstractGridSessionGeneratorPlugin, SeleniumGridSessionPluginOptions } 
 import { BuildName } from "../../helpers/build-name";
 import { Capabilities } from "selenium-webdriver";
 import { nameof } from "ts-simple-nameof";
-import { SeleniumSessionOptions } from "../selenium-session";
+import { BrowserSessionOptions } from "../browser-session";
 
 export interface BrowserStackSessionGeneratorPluginOptions extends SeleniumGridSessionPluginOptions {
     user: string;
@@ -25,7 +25,7 @@ export class BrowserStackSessionGeneratorPlugin extends AbstractGridSessionGener
         /* do nothing */
     }
 
-    async getCapabilities(options?: SeleniumSessionOptions): Promise<Capabilities> {
+    async getCapabilities(options?: BrowserSessionOptions): Promise<Capabilities> {
         let capabilities: Capabilities = new Capabilities();
         let platform: TestPlatform = await this.getPlatform()
         if (platform.browser) {

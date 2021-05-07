@@ -1,22 +1,22 @@
 import { Clazz, wait } from "aft-core";
 import { AbstractFacet, IElementOptions, IFacetOptions } from "aft-ui";
 import { Locator, WebElement } from "selenium-webdriver";
-import { SeleniumSession } from "../sessions/selenium-session";
+import { BrowserSession } from "../sessions/browser-session";
 
 export interface WebElementOptions extends IElementOptions {
     locator: Locator;
 }
 
-export interface SeleniumFacetOptions extends IFacetOptions {
+export interface BrowserFacetOptions extends IFacetOptions {
     locator?: Locator;
-    session?: SeleniumSession;
-    parent?: SeleniumFacet;
+    session?: BrowserSession;
+    parent?: BrowserFacet;
 }
 
-export class SeleniumFacet extends AbstractFacet {
+export class BrowserFacet extends AbstractFacet {
     readonly locator: Locator;
-    readonly session: SeleniumSession;
-    readonly parent: SeleniumFacet;
+    readonly session: BrowserSession;
+    readonly parent: BrowserFacet;
 
     async getElements(options: WebElementOptions): Promise<WebElement[]> {
         let elements: WebElement[]
@@ -37,8 +37,8 @@ export class SeleniumFacet extends AbstractFacet {
         return element;
     }
     
-    async getFacet<T extends AbstractFacet>(facetType: Clazz<T>, options?: SeleniumFacetOptions): Promise<T> {
-        options = options || {} as SeleniumFacetOptions;
+    async getFacet<T extends AbstractFacet>(facetType: Clazz<T>, options?: BrowserFacetOptions): Promise<T> {
+        options = options || {} as BrowserFacetOptions;
         options.parent = options?.parent || this;
         options.session = options?.session || this.session;
         options.logMgr = options?.logMgr || this.logMgr;

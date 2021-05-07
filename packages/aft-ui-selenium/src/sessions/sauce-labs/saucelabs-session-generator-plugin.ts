@@ -3,7 +3,7 @@ import { BuildName } from "../../helpers/build-name";
 import { AbstractGridSessionGeneratorPlugin, SeleniumGridSessionPluginOptions } from "../selenium-grid/abstract-grid-session-generator-plugin";
 import { Capabilities } from "selenium-webdriver";
 import { nameof } from "ts-simple-nameof";
-import { SeleniumSessionOptions } from "../selenium-session";
+import { BrowserSessionOptions } from "../browser-session";
 
 export interface SauceLabsSessionGeneratorPluginOptions extends SeleniumGridSessionPluginOptions {
     username: string;
@@ -24,7 +24,7 @@ export class SauceLabsSessionGeneratorPlugin extends AbstractGridSessionGenerato
         /* do nothing */
     }
 
-    async getCapabilities(options?: SeleniumSessionOptions): Promise<Capabilities> {
+    async getCapabilities(options?: BrowserSessionOptions): Promise<Capabilities> {
         let capabilities: Capabilities = new Capabilities();
         let platform: TestPlatform = await this.getPlatform();
         if (platform.deviceName) {

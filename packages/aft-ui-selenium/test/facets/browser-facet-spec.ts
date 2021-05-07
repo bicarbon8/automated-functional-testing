@@ -1,9 +1,9 @@
 import { By, WebDriver, WebElement, Session } from "selenium-webdriver";
 import { LoggingPluginManager, rand } from "aft-core";
-import { SeleniumFacet } from "../../src";
-import { SeleniumSession } from "../../src/sessions/selenium-session";
+import { BrowserFacet } from "../../src";
+import { BrowserSession } from "../../src/sessions/browser-session";
 
-describe('SeleniumFacet', () => {
+describe('BrowserFacet', () => {
     beforeEach(() => {
         jasmine.getEnv().allowRespy(true);
     });
@@ -27,11 +27,11 @@ describe('SeleniumFacet', () => {
             'getSession': Promise.resolve(sesh)
         });
         spyOn(driver, 'findElements').and.returnValues(Promise.reject('no element'), Promise.resolve([element]));
-        let session: SeleniumSession = new SeleniumSession({
+        let session: BrowserSession = new BrowserSession({
             driver: driver, 
             logMgr: new LoggingPluginManager({logName: 'can auto-refresh from WebDriver on Error in getRoot'})
         });
-        let facet: SeleniumFacet = await session.getFacet(SeleniumFacet, {
+        let facet: BrowserFacet = await session.getFacet(BrowserFacet, {
             locator: By.css('div.fake'),
             maxWaitMs: 4000
         });

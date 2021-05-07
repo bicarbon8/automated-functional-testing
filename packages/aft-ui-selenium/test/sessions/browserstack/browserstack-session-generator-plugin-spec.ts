@@ -3,7 +3,7 @@ import { using, LoggingPluginManager, rand } from "aft-core";
 import { BrowserStackSessionGeneratorPlugin, BrowserStackSessionGeneratorPluginOptions } from "../../../src/sessions/browserstack/browserstack-session-generator-plugin";
 import { TestPlatform } from "aft-ui";
 import { BuildName } from "../../../src/helpers/build-name";
-import { SeleniumFacet, SeleniumSession } from "../../../src";
+import { BrowserFacet, BrowserSession } from "../../../src";
 
 describe('BrowserStackSessionGeneratorPlugin', () => {
     it('can generate capabilities from the passed in SessionOptions', async () => {
@@ -53,7 +53,7 @@ describe('BrowserStackSessionGeneratorPlugin', () => {
             key: 'your-key',
             platform: 'windows_10_chrome'
         });
-        await using (await plugin.newSession(), async (session: SeleniumSession) => {
+        await using (await plugin.newSession(), async (session: BrowserSession) => {
             let expectedUrl: string = 'https://the-internet.herokuapp.com/login';
             await session.goTo(expectedUrl);
 
@@ -61,7 +61,7 @@ describe('BrowserStackSessionGeneratorPlugin', () => {
 
             expect(actualUrl).toEqual(expectedUrl);
 
-            let facet: SeleniumFacet = await session.getFacet(SeleniumFacet, {locator: By.css('button.radius')});
+            let facet: BrowserFacet = await session.getFacet(BrowserFacet, {locator: By.css('button.radius')});
 
             expect(facet).toBeDefined();
             expect(await facet.getRoot().then((r) => r.getText())).toEqual('Login');
