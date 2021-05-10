@@ -7,7 +7,7 @@
     "clean": "rimraf ./dist",
     "build": "yarn clean && tsc --build",
     "pretest": "yarn build",
-    "test": "mocha --parallel --jobs 4 --timeout 60s **/*-spec.js",
+    "test": "mocha --parallel --jobs 4 --timeout 60s ./dist/test/**/*-spec.js",
     "coverage": "nyc yarn test"
   },
   "repository": {

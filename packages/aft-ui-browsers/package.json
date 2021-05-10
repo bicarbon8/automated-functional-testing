@@ -8,7 +8,7 @@
     "clean": "rimraf ./dist",
     "build": "yarn clean && tsc --build",
     "pretest": "yarn build",
-    "test": "jasmine **/*-spec.js",
+    "test": "jasmine ./dist/test/**/*-spec.js",
     "coverage": "nyc yarn test"
   },
   "repository": {

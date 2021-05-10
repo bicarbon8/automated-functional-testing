@@ -152,7 +152,7 @@ export class TestRailApi {
         let apiUrl: string = await this._getApiUrl();
         let request: HttpRequest = {
             url: `${apiUrl}${path}`,
-            method: HttpMethod.GET,
+            method: 'GET',
             headers: {}
         };
         let data: T = await TestRailCache.instance.get<T>(request.url);
@@ -171,7 +171,7 @@ export class TestRailApi {
         let apiUrl: string = await this._getApiUrl();
         let request: HttpRequest = {
             url: `${apiUrl}${path}`,
-            method: HttpMethod.POST,
+            method: 'POST',
             postData: data,
             headers: {}
         };

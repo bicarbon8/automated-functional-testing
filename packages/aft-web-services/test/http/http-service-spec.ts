@@ -1,16 +1,15 @@
 import { HttpService, HttpServiceOptions } from "../../src/http/http-service";
 import { HttpRequest } from "../../src/http/http-request";
 import { HttpResponse } from "../../src/http/http-response";
-import { HttpMethod } from "../../src/http/http-method";
 
 describe('HttpService', () => {
     it('will set default request values if not passed in to performRequest', async () => {
         let svc: HttpService = new HttpService();
         let actual: HttpRequest;
-        spyOn<any>(svc, 'request').and.callFake((req: HttpRequest) => {
+        spyOn<any>(svc, '_request').and.callFake((req: HttpRequest) => {
             actual = req;
         });
-        spyOn<any>(svc, 'response').and.returnValue({});
+        spyOn<any>(svc, '_response').and.returnValue({});
 
         await svc.performRequest();
 
@@ -32,10 +31,10 @@ describe('HttpService', () => {
         };
         let svc: HttpService = new HttpService(options);
         let actual: HttpRequest;
-        spyOn<any>(svc, 'request').and.callFake((req: HttpRequest) => {
+        spyOn<any>(svc, '_request').and.callFake((req: HttpRequest) => {
             actual = req;
         });
-        spyOn<any>(svc, 'response').and.returnValue({});
+        spyOn<any>(svc, '_response').and.returnValue({});
 
         await svc.performRequest();
 
@@ -54,12 +53,12 @@ describe('HttpService', () => {
             method: 'GET'
         };
 
-        spyOn<any>(svc, 'request').and.returnValue({});
+        spyOn<any>(svc, '_request').and.returnValue({});
         let mockResponse: HttpResponse = new HttpResponse({
             statusCode: 200,
             data: '{"foo": "bar"}'
         });
-        spyOn<any>(svc, 'response').and.returnValue(mockResponse);
+        spyOn<any>(svc, '_response').and.returnValue(mockResponse);
 
         let response: HttpResponse = await svc.performRequest(request);
 
@@ -75,12 +74,12 @@ describe('HttpService', () => {
             postData: '{"hello":"world"}'
         };
 
-        spyOn<any>(svc, 'request').and.returnValue({});
+        spyOn<any>(svc, '_request').and.returnValue({});
         let mockResponse: HttpResponse = new HttpResponse({
             statusCode: 200,
             data: '{"foo": "bar"}'
         });
-        spyOn<any>(svc, 'response').and.returnValue(mockResponse);
+        spyOn<any>(svc, '_response').and.returnValue(mockResponse);
 
         let response: HttpResponse = await svc.performRequest(request);
 
