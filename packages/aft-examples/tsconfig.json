@@ -6,7 +6,7 @@
     },
     "include": ["test"],
     "references": [
-        { "path": "../aft-ui-selenium" },
+        { "path": "../aft-ui-browsers" },
         { "path": "../aft-logging-awskinesis" },
         { "path": "../aft-testrail" }
     ]

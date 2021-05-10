@@ -1,5 +1,5 @@
 import { wait } from "aft-core";
-import { BrowserTestWrapper, browserShould } from "aft-ui-selenium";
+import { BrowserTestWrapper, browserShould } from "aft-ui-browsers";
 import { expect } from "chai";
 import { HerokuLoginPage } from "./page-objects/heroku-login-page";
 

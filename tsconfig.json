@@ -6,7 +6,8 @@
         { "path": "./packages/aft-logging-html" },
         { "path": "./packages/aft-testrail" },
         { "path": "./packages/aft-ui" },
-        { "path": "./packages/aft-ui-selenium" },
+        { "path": "./packages/aft-ui-browsers" },
+        { "path": "./packages/aft-ui-mobile-apps" },
         { "path": "./packages/aft-web-services" }
     ],
     "files": []

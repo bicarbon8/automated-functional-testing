@@ -6,4 +6,4 @@ export * from './facets/ielement-options';
 /* sessions */
 export * from './sessions/abstract-session-generator-plugin';
 export * from './sessions/isession';
-export * from './sessions/session-generator-plugin-manager';
+export * from './sessions/abstract-session-generator-plugin-manager';

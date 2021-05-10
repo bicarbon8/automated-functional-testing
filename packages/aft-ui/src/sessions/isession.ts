@@ -17,7 +17,4 @@ export interface ISession extends IDisposable {
     readonly driver: unknown;
     readonly logMgr: LoggingPluginManager;
     getFacet<T extends AbstractFacet>(facetType: Clazz<T>, options?: IFacetOptions): Promise<T>;
-    goTo(url: string): Promise<ISession>;
-    refresh(): Promise<ISession>;
-    resize(width: number, height: number): Promise<ISession>;
 }
