@@ -1,7 +1,8 @@
 import { nameof } from "ts-simple-nameof";
 import { rand } from "aft-core";
-import { AbstractMobileAppGridSessionGeneratorPlugin, MobileAppGridSessionGeneratorPluginOptions } from "../../../src";
+import { AbstractMobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginOptions } from "../../../src";
 import { RemoteOptions } from "webdriverio";
+import { MobileAppCommand, MobileAppCommandResponse } from "../../../src/sessions/mobile-app-command";
 
 describe('AbstractMobileAppGridSessionGeneratorPlugin', () => {
     beforeEach(() => {
@@ -15,7 +16,7 @@ describe('AbstractMobileAppGridSessionGeneratorPlugin', () => {
             'custom3': `custom3-${rand.getString(10)}`,
             'custom4': `custom4-${rand.getString(10)}`
         };
-        let session: FakeGridSession = new FakeGridSession({remoteOptions: {capabilities: caps}});
+        let session: FakeMobileAppSessionGeneratorPlugin = new FakeMobileAppSessionGeneratorPlugin({remoteOptions: {capabilities: caps}});
         let actual: RemoteOptions = await session.getRemoteOptions();
 
         for (var prop in caps) {
@@ -24,14 +25,18 @@ describe('AbstractMobileAppGridSessionGeneratorPlugin', () => {
     });
 });
 
-class FakeGridSession extends AbstractMobileAppGridSessionGeneratorPlugin {
-    constructor(options?: MobileAppGridSessionGeneratorPluginOptions) {
-        super(nameof(FakeGridSession).toLowerCase(), options);
+class FakeMobileAppSessionGeneratorPlugin extends AbstractMobileAppSessionGeneratorPlugin {
+    constructor(options?: MobileAppSessionGeneratorPluginOptions) {
+        super(nameof(FakeMobileAppSessionGeneratorPlugin).toLowerCase(), options);
     }
     async onLoad(): Promise<void> {
         /* do nothing */
     }
     async dispose(error?: Error): Promise<void> {
         /* do nothing */
+    }
+    async sendCommand(command: MobileAppCommand): Promise<MobileAppCommandResponse> {
+        /* do nothing */
+        return null;
     }
 }

@@ -1,4 +1,5 @@
 import { OutgoingHttpHeaders } from "http";
+import { HttpMethod } from "./http-method";
 
 /**
  * to be used with the `HttpService.instance.performRequest` function
@@ -21,6 +22,6 @@ export interface HttpRequest {
     url?: string;
     allowAutoRedirect?: boolean;
     headers?: OutgoingHttpHeaders;
-    method?: string;
+    method?: HttpMethod;
     postData?: string;
 }

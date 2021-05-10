@@ -35,6 +35,7 @@
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
     "aft-ui": "^4.0.1",
+    "aft-web-services": "^4.0.1",
     "webdriverio": "^7.5.7"
   },
   "devDependencies": {

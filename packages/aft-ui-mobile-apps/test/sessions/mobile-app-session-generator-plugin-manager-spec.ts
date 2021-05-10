@@ -1,4 +1,4 @@
-import { AbstractMobileAppGridSessionGeneratorPlugin, AppiumGridSessionGeneratorPlugin, BrowserStackMobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginManager, SauceLabsMobileAppSessionGeneratorPlugin } from "../../src";
+import { AbstractMobileAppSessionGeneratorPlugin, AppiumGridSessionGeneratorPlugin, BrowserStackMobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginManager, SauceLabsMobileAppSessionGeneratorPlugin } from "../../src";
 
 describe('MobileAppSessionGeneratorPluginManager', () => {
     it('can load BrowserStackMobileAppSessionGeneratorPlugin', async () => {
@@ -7,7 +7,7 @@ describe('MobileAppSessionGeneratorPluginManager', () => {
             searchDir: './dist/'
         });
 
-        let plugin: AbstractMobileAppGridSessionGeneratorPlugin = await mgr.getFirstEnabledPlugin();
+        let plugin: AbstractMobileAppSessionGeneratorPlugin = await mgr.getFirstEnabledPlugin();
 
         expect(plugin).toBeDefined();
         expect(plugin instanceof BrowserStackMobileAppSessionGeneratorPlugin).toBeTrue();
@@ -19,7 +19,7 @@ describe('MobileAppSessionGeneratorPluginManager', () => {
             searchDir: './dist/'
         });
 
-        let plugin: AbstractMobileAppGridSessionGeneratorPlugin = await mgr.getFirstEnabledPlugin();
+        let plugin: AbstractMobileAppSessionGeneratorPlugin = await mgr.getFirstEnabledPlugin();
 
         expect(plugin).toBeDefined();
         expect(plugin instanceof SauceLabsMobileAppSessionGeneratorPlugin).toBeTrue();
@@ -31,7 +31,7 @@ describe('MobileAppSessionGeneratorPluginManager', () => {
             searchDir: './dist/'
         });
 
-        let plugin: AbstractMobileAppGridSessionGeneratorPlugin = await mgr.getFirstEnabledPlugin();
+        let plugin: AbstractMobileAppSessionGeneratorPlugin = await mgr.getFirstEnabledPlugin();
 
         expect(plugin).toBeDefined();
         expect(plugin instanceof AppiumGridSessionGeneratorPlugin).toBeTrue();

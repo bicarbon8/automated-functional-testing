@@ -1,13 +1,14 @@
 import { nameof } from "ts-simple-nameof";
 import { AbstractSessionGeneratorPluginManager, ISessionGeneratorPluginManagerOptions } from "aft-ui";
-import { AbstractMobileAppGridSessionGeneratorPlugin } from "./appium-grid/abstract-mobile-app-grid-session-generator-plugin";
+import { AbstractMobileAppSessionGeneratorPlugin } from "./appium-grid/abstract-mobile-app-session-generator-plugin";
 import { MobileAppSession, MobileAppSessionOptions } from "./mobile-app-session";
+import { MobileAppCommand, MobileAppCommandResponse } from "./mobile-app-command";
 
 export interface MobileAppSessionGeneratorPluginManagerOptions extends ISessionGeneratorPluginManagerOptions {
 
 }
 
-export class MobileAppSessionGeneratorPluginManager extends AbstractSessionGeneratorPluginManager<AbstractMobileAppGridSessionGeneratorPlugin, MobileAppSessionGeneratorPluginManagerOptions> {
+export class MobileAppSessionGeneratorPluginManager extends AbstractSessionGeneratorPluginManager<AbstractMobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginManagerOptions> {
     constructor(options?: MobileAppSessionGeneratorPluginManagerOptions) {
         super(nameof(MobileAppSessionGeneratorPluginManager).toLowerCase(), options);
     }
@@ -16,6 +17,13 @@ export class MobileAppSessionGeneratorPluginManager extends AbstractSessionGener
         return await this.getFirstEnabledPlugin()
         .then((plugin) => {
             return plugin.newSession(options);
+        });
+    }
+
+    async sendCommand(command: MobileAppCommand): Promise<MobileAppCommandResponse> {
+        return await this.getFirstEnabledPlugin()
+        .then((plugin) => {
+            return plugin.sendCommand(command);
         });
     }
 }

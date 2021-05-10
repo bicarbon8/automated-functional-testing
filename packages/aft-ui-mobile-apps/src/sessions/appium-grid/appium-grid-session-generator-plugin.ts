@@ -1,11 +1,12 @@
-import { AbstractMobileAppGridSessionGeneratorPlugin, MobileAppGridSessionGeneratorPluginOptions } from "./abstract-mobile-app-grid-session-generator-plugin";
+import { AbstractMobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginOptions } from "./abstract-mobile-app-session-generator-plugin";
 import { TestPlatform } from "aft-ui";
 import { nameof } from "ts-simple-nameof";
 import { MobileAppSessionOptions } from "../mobile-app-session";
 import { RemoteOptions } from "webdriverio";
+import { MobileAppCommand, MobileAppCommandResponse } from "../mobile-app-command";
 
-export class AppiumGridSessionGeneratorPlugin extends AbstractMobileAppGridSessionGeneratorPlugin {
-    constructor(options?: MobileAppGridSessionGeneratorPluginOptions) {
+export class AppiumGridSessionGeneratorPlugin extends AbstractMobileAppSessionGeneratorPlugin {
+    constructor(options?: MobileAppSessionGeneratorPluginOptions) {
         super(nameof(AppiumGridSessionGeneratorPlugin).toLowerCase(), options);
     }
     async onLoad(): Promise<void> {
@@ -26,6 +27,9 @@ export class AppiumGridSessionGeneratorPlugin extends AbstractMobileAppGridSessi
         remOpts.capabilities['platform'] = `${platform.os}${osVersion}`;
         remOpts.capabilities['browserName'] = `${platform.browser}${browserVersion}`;
         return remOpts;
+    }
+    async sendCommand(command: MobileAppCommand): Promise<MobileAppCommandResponse> {
+        return Promise.reject(`command '${command.name}' not supported`);
     }
     async dispose(error?: Error): Promise<void> {
         /* do nothing */

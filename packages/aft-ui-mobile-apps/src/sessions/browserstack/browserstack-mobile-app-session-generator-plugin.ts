@@ -1,21 +1,30 @@
 import { TestPlatform } from "aft-ui";
-import { AbstractMobileAppGridSessionGeneratorPlugin, MobileAppGridSessionGeneratorPluginOptions } from "../appium-grid/abstract-mobile-app-grid-session-generator-plugin";
+import { AbstractMobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginOptions } from "../appium-grid/abstract-mobile-app-session-generator-plugin";
 import { BuildName } from "../../helpers/build-name";
 import { nameof } from "ts-simple-nameof";
 import { MobileAppSessionOptions } from "../mobile-app-session";
 import { RemoteOptions } from "webdriverio";
+import { MobileAppCommandResponse } from "../mobile-app-command";
+import { BrowserStackMobileAppCommand } from "./browserstack-mobile-app-command";
+import { BrowserStackAppAutomateApi, UploadAppResponse } from "./app-automate/browserstack-app-automate-api";
 
-export interface BrowserStackMobileAppSessionGeneratorPluginOptions extends MobileAppGridSessionGeneratorPluginOptions {
+export interface BrowserStackMobileAppSessionGeneratorPluginOptions extends MobileAppSessionGeneratorPluginOptions {
     user: string;
     key: string;
     debug?: boolean;
     local?: boolean;
     localIdentifier?: string;
+    apiUrl?: string;
+
+    _api?: BrowserStackAppAutomateApi;
 }
 
-export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileAppGridSessionGeneratorPlugin {
+export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileAppSessionGeneratorPlugin {
+    private _api: BrowserStackAppAutomateApi;
+
     constructor(options?: BrowserStackMobileAppSessionGeneratorPluginOptions) {
         super(nameof(BrowserStackMobileAppSessionGeneratorPlugin).toLowerCase(), options);
+        this._api = options?._api || BrowserStackAppAutomateApi.instance();
     }
 
     async onLoad(): Promise<void> {
@@ -25,7 +34,7 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileA
     async getRemoteOptions(options?: MobileAppSessionOptions): Promise<RemoteOptions> {
         let remOpts: RemoteOptions = await super.getRemoteOptions(options);
         remOpts.protocol = 'https';
-        remOpts.hostname = 'hub.browserstack.com';
+        remOpts.hostname = 'hub-cloud.browserstack.com';
         remOpts.path = '/wd/hub';
         remOpts.capabilities = {};
         let platform: TestPlatform = await this.getPlatform()
@@ -45,10 +54,6 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileA
             remOpts.capabilities['device'] = platform.deviceName;
             remOpts.capabilities['realMobile'] = true;
         }
-        let resolution: string = await this.optionsMgr.getOption('resolution');
-        if (resolution) {
-            remOpts.capabilities['resolution'] = resolution;
-        }
         remOpts.capabilities['browserstack.user'] = await this.optionsMgr.getOption(nameof<BrowserStackMobileAppSessionGeneratorPluginOptions>(o => o.user));
         remOpts.capabilities['browserstack.key'] = await this.optionsMgr.getOption(nameof<BrowserStackMobileAppSessionGeneratorPluginOptions>(o => o.key));
         remOpts.capabilities['browserstack.debug'] = await this.optionsMgr.getOption<boolean>(nameof<BrowserStackMobileAppSessionGeneratorPluginOptions>(o => o.debug));
@@ -63,6 +68,20 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileA
             }
         }
         return remOpts;
+    }
+
+    async sendCommand(command: BrowserStackMobileAppCommand): Promise<MobileAppCommandResponse> {
+        let resp: MobileAppCommandResponse = command;
+        switch(command.name) {
+            case 'upload':
+                let bsResponse: UploadAppResponse = await this._api.uploadApp(command.data, command.customId);
+                resp.data = bsResponse;
+                break;
+            default:
+                resp.error = `unknown command of '${command.name}' send to ${nameof(BrowserStackMobileAppSessionGeneratorPlugin)}`;
+                break;
+        }
+        return resp;
     }
 
     async dispose(error?: Error): Promise<void> {

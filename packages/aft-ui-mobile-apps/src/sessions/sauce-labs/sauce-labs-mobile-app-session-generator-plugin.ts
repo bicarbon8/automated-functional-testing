@@ -1,18 +1,19 @@
 import { TestPlatform } from "aft-ui";
 import { BuildName } from "../../helpers/build-name";
-import { AbstractMobileAppGridSessionGeneratorPlugin, MobileAppGridSessionGeneratorPluginOptions } from "../appium-grid/abstract-mobile-app-grid-session-generator-plugin";
+import { AbstractMobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginOptions } from "../appium-grid/abstract-mobile-app-session-generator-plugin";
 import { nameof } from "ts-simple-nameof";
 import { MobileAppSessionOptions } from "../mobile-app-session";
 import { RemoteOptions } from "webdriverio";
+import { MobileAppCommand, MobileAppCommandResponse } from "../mobile-app-command";
 
-export interface SauceLabsMobileAppSessionGeneratorPluginOptions extends MobileAppGridSessionGeneratorPluginOptions {
+export interface SauceLabsMobileAppSessionGeneratorPluginOptions extends MobileAppSessionGeneratorPluginOptions {
     username: string;
     accesskey: string;
     tunnel?: boolean;
     tunnelId?: string;
 }
 
-export class SauceLabsMobileAppSessionGeneratorPlugin extends AbstractMobileAppGridSessionGeneratorPlugin {
+export class SauceLabsMobileAppSessionGeneratorPlugin extends AbstractMobileAppSessionGeneratorPlugin {
     constructor(options?: SauceLabsMobileAppSessionGeneratorPluginOptions) {
         super(nameof(SauceLabsMobileAppSessionGeneratorPlugin).toLowerCase(), options);
     }
@@ -56,6 +57,10 @@ export class SauceLabsMobileAppSessionGeneratorPlugin extends AbstractMobileAppG
             remOpts.capabilities['tunnelIdentifier'] = await this.optionsMgr.getOption('tunnelId');
         }
         return remOpts;
+    }
+
+    async sendCommand(command: MobileAppCommand): Promise<MobileAppCommandResponse> {
+        return Promise.reject(`command '${command.name}' not supported`);
     }
 
     async dispose(error?: Error): Promise<void> {

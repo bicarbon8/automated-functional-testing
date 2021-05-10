@@ -66,7 +66,7 @@ export class HttpService {
         }
         req.url = req.url || await this.optionsMgr.getOption('defaultUrl', 'http://127.0.0.1');
         req.headers = req.headers || await this.optionsMgr.getOption('defaultHeaders', {});
-        req.method = req.method || await this.optionsMgr.getOption('defaultMethod', HttpMethod.GET);
+        req.method = req.method || await this.optionsMgr.getOption('defaultMethod', 'GET');
         if (req.allowAutoRedirect === undefined) {
             req.allowAutoRedirect = await this.optionsMgr.getOption('defaultAllowRedirect', true);
         }
@@ -82,7 +82,7 @@ export class HttpService {
                     headers: r.headers,
                     method: r.method
                 }, resolve);
-                if (r.method == HttpMethod.POST || r.method == HttpMethod.UPDATE) {
+                if (r.method == 'POST' || r.method == 'UPDATE') {
                     if (r.postData) {
                         req.write(r.postData);
                     }
