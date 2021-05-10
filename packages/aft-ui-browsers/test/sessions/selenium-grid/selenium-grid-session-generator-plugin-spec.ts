@@ -1,11 +1,9 @@
 import { rand } from "aft-core";
 import { TestPlatform } from "aft-ui";
-import { SeleniumBrowserGridSessionGeneratorPlugin } from "../../../src";
+import { BrowserFacet, BrowserSession, SeleniumGridSessionGeneratorPlugin } from "../../../src";
 import { By, Capabilities } from "selenium-webdriver";
-import { BrowserFacet } from "../../../src/facets/browser-facet";
-import { BrowserSession } from "../../../src/sessions/browser-session";
 
-describe('SeleniumBrowserGridSessionGeneratorPlugin', () => {
+describe('SeleniumGridSessionGeneratorPlugin', () => {
     it('can generate capabilities from the passed in options', async () => {
         let platform: TestPlatform = new TestPlatform({
             os: 'os-' + rand.getString(10),
@@ -13,7 +11,7 @@ describe('SeleniumBrowserGridSessionGeneratorPlugin', () => {
             browser: 'browser-' + rand.getString(15),
             browserVersion: 'browserVersion-' + rand.getString(2, false, true)
         });
-        let plugin: SeleniumBrowserGridSessionGeneratorPlugin = new SeleniumBrowserGridSessionGeneratorPlugin({
+        let plugin: SeleniumGridSessionGeneratorPlugin = new SeleniumGridSessionGeneratorPlugin({
             platform: platform.toString()
         });
         let capabilities: Capabilities = await plugin.getCapabilities();
@@ -31,7 +29,7 @@ describe('SeleniumBrowserGridSessionGeneratorPlugin', () => {
      */
     xit('can create a session on Selenium Grid', async () => {
         let platform: string = 'windows_10_chrome';
-        let plugin: SeleniumBrowserGridSessionGeneratorPlugin = new SeleniumBrowserGridSessionGeneratorPlugin({platform: platform});
+        let plugin: SeleniumGridSessionGeneratorPlugin = new SeleniumGridSessionGeneratorPlugin({platform: platform});
         let session: BrowserSession = await plugin.newSession();
         
         let expectedUrl: string = 'https://the-internet.herokuapp.com/login';

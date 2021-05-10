@@ -3,29 +3,29 @@ import { nameof } from "ts-simple-nameof";
 import { AbstractSessionGeneratorPlugin, ISessionGeneratorPluginOptions } from "aft-ui";
 import { BrowserSession, BrowserSessionOptions } from "../browser-session";
 
-export interface IBrowserGridSessionPluginOptions extends ISessionGeneratorPluginOptions {
+export interface IBrowserSessionGeneratorPluginOptions extends ISessionGeneratorPluginOptions {
     url?: string;
     capabilities?: {};
 }
 
-export abstract class AbstractBrowserGridSessionGeneratorPlugin extends AbstractSessionGeneratorPlugin {
+export abstract class AbstractBrowserSessionGeneratorPlugin extends AbstractSessionGeneratorPlugin {
     private _url: string;
     private _caps: Capabilities;
 
-    constructor(key: string, options?: IBrowserGridSessionPluginOptions) {
+    constructor(key: string, options?: IBrowserSessionGeneratorPluginOptions) {
         super(key, options);
     }
 
     async getUrl(): Promise<string> {
         if (!this._url) {
-            this._url = await this.optionsMgr.getOption(nameof<IBrowserGridSessionPluginOptions>(o => o.url));
+            this._url = await this.optionsMgr.getOption(nameof<IBrowserSessionGeneratorPluginOptions>(o => o.url));
         }
         return this._url;
     }
 
     async getCapabilities(options?: BrowserSessionOptions): Promise<Capabilities> {
         if (!this._caps) {
-            let c: {} = await this.optionsMgr.getOption<{}>(nameof<IBrowserGridSessionPluginOptions>(o => o.capabilities), {});
+            let c: {} = await this.optionsMgr.getOption<{}>(nameof<IBrowserSessionGeneratorPluginOptions>(o => o.capabilities), {});
             this._caps = new Capabilities(c);
         }
         return this._caps;

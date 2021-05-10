@@ -1,5 +1,4 @@
 import { ProcessingResult, rand } from "aft-core";
-import { AbstractSessionGeneratorPluginManager } from "aft-ui";
 import { Session, WebDriver } from "selenium-webdriver";
 import { BrowserSessionGeneratorPluginManager, browserShould, BrowserTestWrapperOptions } from "../../src";
 

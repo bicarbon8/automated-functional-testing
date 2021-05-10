@@ -1,5 +1,5 @@
 import { ProcessingResult } from "aft-core";
-import { MobileAppTestWrapper, MobileAppWrapperOptions } from "./mobile-app-test-wrapper";
+import { MobileAppTestWrapper, MobileAppTestWrapperOptions } from "./mobile-app-test-wrapper";
 
 /**
  * function creates a new {BrowserTestWrapper} that can be used like:
@@ -14,7 +14,7 @@ import { MobileAppTestWrapper, MobileAppWrapperOptions } from "./mobile-app-test
  * ```
  * @param options a {BrowserTestWrapperOptions} object containing the expectation and other options
  */
- export const mobileAppShould = async function(options: MobileAppWrapperOptions): Promise<ProcessingResult> {
+ export const mobileAppShould = async function(options: MobileAppTestWrapperOptions): Promise<ProcessingResult> {
     let t: MobileAppTestWrapper = new MobileAppTestWrapper(options);
     return await t.run();
 }

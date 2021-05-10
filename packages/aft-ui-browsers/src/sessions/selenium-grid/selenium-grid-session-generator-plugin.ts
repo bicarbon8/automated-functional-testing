@@ -1,12 +1,12 @@
-import { AbstractBrowserGridSessionGeneratorPlugin, IBrowserGridSessionPluginOptions } from "./abstract-browser-grid-session-generator-plugin";
+import { AbstractBrowserSessionGeneratorPlugin, IBrowserSessionGeneratorPluginOptions } from "./abstract-browser-session-generator-plugin";
 import { TestPlatform } from "aft-ui";
 import { Capabilities } from "selenium-webdriver";
 import { nameof } from "ts-simple-nameof";
 import { BrowserSessionOptions } from "../browser-session";
 
-export class SeleniumBrowserGridSessionGeneratorPlugin extends AbstractBrowserGridSessionGeneratorPlugin {
-    constructor(options?: IBrowserGridSessionPluginOptions) {
-        super(nameof(SeleniumBrowserGridSessionGeneratorPlugin).toLowerCase(), options);
+export class SeleniumGridSessionGeneratorPlugin extends AbstractBrowserSessionGeneratorPlugin {
+    constructor(options?: IBrowserSessionGeneratorPluginOptions) {
+        super(nameof(SeleniumGridSessionGeneratorPlugin).toLowerCase(), options);
     }
     async onLoad(): Promise<void> {
         /* do nothing */

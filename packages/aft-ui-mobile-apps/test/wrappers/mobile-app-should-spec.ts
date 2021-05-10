@@ -1,7 +1,7 @@
 import { ProcessingResult, rand } from "aft-core";
 import { Session, WebDriver } from "selenium-webdriver";
 import { Browser } from "webdriverio";
-import { MobileAppSessionGeneratorPluginManager, mobileAppShould, MobileAppWrapperOptions } from "../../src";
+import { MobileAppSessionGeneratorPluginManager, mobileAppShould, MobileAppTestWrapperOptions } from "../../src";
 
 let consoleLog = console.log;
 describe('mobileAppShould', () => {
@@ -37,7 +37,7 @@ describe('mobileAppShould', () => {
             "closeApp": Promise.resolve(),
             "deleteSession": Promise.resolve()
         });
-        let options: MobileAppWrapperOptions = {
+        let options: MobileAppTestWrapperOptions = {
             expect: () => expect(false).toBeFalsy(),
             testCases: ['C1234'],
             defects: ['AUTO-123'],

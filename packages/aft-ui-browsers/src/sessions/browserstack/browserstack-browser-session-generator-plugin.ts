@@ -1,11 +1,11 @@
 import { TestPlatform } from "aft-ui";
-import { AbstractBrowserGridSessionGeneratorPlugin, IBrowserGridSessionPluginOptions } from "../selenium-grid/abstract-browser-grid-session-generator-plugin";
+import { AbstractBrowserSessionGeneratorPlugin, IBrowserSessionGeneratorPluginOptions } from "../selenium-grid/abstract-browser-session-generator-plugin";
 import { BuildName } from "../../helpers/build-name";
 import { Capabilities } from "selenium-webdriver";
 import { nameof } from "ts-simple-nameof";
 import { BrowserSessionOptions } from "../browser-session";
 
-export interface BrowserStackBrowserSessionGeneratorPluginOptions extends IBrowserGridSessionPluginOptions {
+export interface BrowserStackBrowserSessionGeneratorPluginOptions extends IBrowserSessionGeneratorPluginOptions {
     user: string;
     key: string;
     resolution?: string;
@@ -14,7 +14,7 @@ export interface BrowserStackBrowserSessionGeneratorPluginOptions extends IBrows
     localIdentifier?: string;
 }
 
-export class BrowserStackBrowserSessionGeneratorPlugin extends AbstractBrowserGridSessionGeneratorPlugin {
+export class BrowserStackBrowserSessionGeneratorPlugin extends AbstractBrowserSessionGeneratorPlugin {
     constructor(options?: BrowserStackBrowserSessionGeneratorPluginOptions) {
         options = options || {} as BrowserStackBrowserSessionGeneratorPluginOptions;
         options.url = options.url || 'https://hub-cloud.browserstack.com/wd/hub/';

@@ -1,13 +1,13 @@
 import { nameof } from "ts-simple-nameof";
 import { AbstractSessionGeneratorPluginManager, ISessionGeneratorPluginManagerOptions } from "aft-ui";
 import { BrowserSession, BrowserSessionOptions } from "./browser-session";
-import { AbstractBrowserGridSessionGeneratorPlugin } from "./selenium-grid/abstract-browser-grid-session-generator-plugin";
+import { AbstractBrowserSessionGeneratorPlugin } from "./selenium-grid/abstract-browser-session-generator-plugin";
 
 export interface BrowserSessionGeneratorPluginManagerOptions extends ISessionGeneratorPluginManagerOptions {
 
 }
 
-export class BrowserSessionGeneratorPluginManager extends AbstractSessionGeneratorPluginManager<AbstractBrowserGridSessionGeneratorPlugin, BrowserSessionGeneratorPluginManagerOptions> {
+export class BrowserSessionGeneratorPluginManager extends AbstractSessionGeneratorPluginManager<AbstractBrowserSessionGeneratorPlugin, BrowserSessionGeneratorPluginManagerOptions> {
     constructor(options?: BrowserSessionGeneratorPluginManagerOptions) {
         super(nameof(BrowserSessionGeneratorPluginManager).toLowerCase(), options);
     }

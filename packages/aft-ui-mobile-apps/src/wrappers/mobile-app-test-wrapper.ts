@@ -3,7 +3,7 @@ import { ISession } from "aft-ui";
 import { MobileAppSessionOptions } from "../sessions/mobile-app-session";
 import { MobileAppSessionGeneratorPluginManager } from "../sessions/mobile-app-session-generator-plugin-manager";
 
-export interface MobileAppWrapperOptions extends TestWrapperOptions, MobileAppSessionOptions {
+export interface MobileAppTestWrapperOptions extends TestWrapperOptions, MobileAppSessionOptions {
     expect: Func<MobileAppTestWrapper, any>;
 
     /**
@@ -30,12 +30,12 @@ export interface MobileAppWrapperOptions extends TestWrapperOptions, MobileAppSe
  * ```
  */
 export class MobileAppTestWrapper extends TestWrapper {
-    private readonly _options: MobileAppWrapperOptions;
+    private readonly _options: MobileAppTestWrapperOptions;
     private readonly _sessionGenPluginMgr: MobileAppSessionGeneratorPluginManager;
 
     private _session: ISession;
 
-    constructor(options: MobileAppWrapperOptions) {
+    constructor(options: MobileAppTestWrapperOptions) {
         super(options);
         this._options = options;
         this._sessionGenPluginMgr = this._initialiseSessionPluginManager(options);
@@ -77,7 +77,7 @@ export class MobileAppTestWrapper extends TestWrapper {
         return result;
     }
 
-    private _initialiseSessionPluginManager(options: MobileAppWrapperOptions): MobileAppSessionGeneratorPluginManager {
+    private _initialiseSessionPluginManager(options: MobileAppTestWrapperOptions): MobileAppSessionGeneratorPluginManager {
         return options._sessionGenPluginMgr || MobileAppSessionGeneratorPluginManager.instance();
     }
 }
