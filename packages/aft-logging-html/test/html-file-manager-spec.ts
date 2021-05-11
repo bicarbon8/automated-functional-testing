@@ -1,12 +1,18 @@
+import * as fs from "fs";
 import * as path from "path";
 import { LoggingLevel, rand, TestStatus } from "aft-core";
 import { HtmlFileManager, HtmlLoggingPlugin, HtmlResult, HtmlTestResult } from "../src";
 
 describe('HtmlFileManager', () => {
+    afterEach(() => {
+        let c: string = path.join(process.cwd(), '.htmlCache');
+        if (fs.existsSync(c)) {fs.unlinkSync(c);}
+    });
+    
     it('only generates the html file when the logger is disposed of', async () => {
         let outFileName: string = `${rand.getString(15)}.html`;
         let htmlFileMgr: HtmlFileManager = new HtmlFileManager();
-        let writeSpy = spyOn<any>(htmlFileMgr, '_writeResults').and.callFake(async (result: HtmlResult, path: string) => {
+        let writeSpy = spyOn<any>(htmlFileMgr, '_writeResults').and.callFake(async (path: string, results: HtmlResult[]) => {
             /* do nothing */
         });
 
@@ -50,7 +56,7 @@ describe('HtmlFileManager', () => {
                 }
                 res.tests.push(t);
             }
-            htmlFileMgr.addResult(res, outPath);
+            await htmlFileMgr.addResult(res, outPath);
         }
         expect(writeSpy).toHaveBeenCalledTimes(100);
     });

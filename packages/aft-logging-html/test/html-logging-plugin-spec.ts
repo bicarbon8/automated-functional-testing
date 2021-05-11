@@ -1,7 +1,14 @@
+import * as fs from "fs";
+import * as path from "path";
 import { AbstractLoggingPlugin, LoggingLevel, LoggingPluginManager, rand } from "aft-core";
 import { HtmlLoggingPlugin } from "../src";
 
 describe('HtmlLoggingPlugin', () => {
+    afterEach(() => {
+        let c: string = path.join(process.cwd(), '.htmlCache');
+        if (fs.existsSync(c)) {fs.unlinkSync(c);}
+    });
+    
     it('stores the specified number of log lines', async () => {
         let plugin: HtmlLoggingPlugin = new HtmlLoggingPlugin({
             enabled: true,

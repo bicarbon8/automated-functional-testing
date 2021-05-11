@@ -1,6 +1,6 @@
 import { nameof } from "ts-simple-nameof";
 import * as path from "path";
-import { AbstractLoggingPlugin, ILoggingPluginOptions, ITestResult, LoggingLevel, LoggingPluginManager, TestStatus } from "aft-core";
+import { AbstractLoggingPlugin, ILoggingPluginOptions, ITestResult, LoggingLevel, TestStatus } from "aft-core";
 import { HtmlResult, HtmlTestResult, HtmlFileManager, htmlFileMgr } from "./html-file-manager";
 
 export interface HtmlLoggingPluginOptions extends ILoggingPluginOptions {
@@ -109,7 +109,7 @@ export class HtmlLoggingPlugin extends AbstractLoggingPlugin {
         if (await this.enabled()) {
             let result: HtmlResult = await this.getResult();
             let outputPath: string = await this.fullPathAndFile();
-            this._htmlFileMgr.addResult(result, outputPath);
+            await this._htmlFileMgr.addResult(result, outputPath);
         }
     }
 }
