@@ -240,7 +240,7 @@ export class TestWrapper {
         let status: TestStatus = TestStatus.Untested;
         let message: string;
         if (this.expectation) {
-            let shouldRun: ProcessingResult = await this._shouldRun();
+            let shouldRun: ProcessingResult = await this.shouldRun();
             if (shouldRun.success) {
                 try {
                     let result = await Promise.resolve(this.expectation(this));
@@ -266,7 +266,14 @@ export class TestWrapper {
         return {obj: status, message: message, success: status == TestStatus.Passed};
     }
 
-    private async _shouldRun(): Promise<ProcessingResult> {
+    /**
+     * used by the {TestWrapper.run} method before executing the expectation to 
+     * determine if the expectation should be run
+     * @returns a {ProcessingResult} indicating if the {TestWrapperOptions.testCases}
+     * or {TestWrapperOptions.defects} referenced by this {TestWrapper} should not
+     * be executed
+     */
+    protected async shouldRun(): Promise<ProcessingResult> {
         let tcShouldRun: ProcessingResult = await this._shouldRun_tests();
         if (!tcShouldRun.success) {
             return tcShouldRun;
