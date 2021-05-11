@@ -72,14 +72,11 @@ export class HtmlLoggingPlugin extends AbstractLoggingPlugin {
         if (await this.enabled()) {
             let expectedLevel: LoggingLevel = await this.level();
             if (level.value >= expectedLevel.value && level.value != LoggingLevel.none.value) {
-                this._logs.push(LoggingPluginManager.format({
-                    level: level,
-                    message: message
-                }));
+                this._logs.push(`${level}${message}`);
                 let max: number = await this.maxLogLines();
                 while (this._logs.length > max) {
                     this._logs.shift();
-                    this._logs[0] = `...${this._logs[0]}`;
+                    this._logs[0] = `...<br />${this._logs[0]}`;
                 }
             }
         }

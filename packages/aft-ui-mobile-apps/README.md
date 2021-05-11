@@ -1,40 +1,18 @@
-# AFT-UI-Selenium
-Automated Functional Testing (AFT) package providing Selenium-based `SeleniumFacet extends AbstractFacet` Plugins and BrowserStack, Sauce Labs and Selenium Grid `ISession` Plugins extending the `aft-ui` package. This enables testing using BrowserStack's, Sauce Labs's or a Local Selenium Grid for any Browser application tests.
+# AFT-UI-Mobile-Apps
+Automated Functional Testing (AFT) package providing Appium-based `MobileAppFacet extends AbstractFacet` Plugins and BrowserStack, Sauce Labs and Appium Grid `ISession` Plugins extending the `aft-ui` package. This enables testing using BrowserStack's, Sauce Labs's or a Local Selenium Grid for any Mobile Device application tests.
 
 ## Installation
-`> npm i aft-ui-selenium`
-
-## Page Object Model (POM)
-the POM is a standard design pattern used in UI and layout testing. AFT-UI supports this model via _Sessions_ and _Facets_ where the _Session_ is an object extending from `ISession` and is responsible for managing the UI container (browser, mobile view, etc.)and the _Facet_ is an object extending from `AbstractFacet` and is responsible for managing logical collections of sub-facets and elements in the UI. For example:
-![aft-ui-pom](aft-ui-pom.png)
-The above would use a POM design like:
-
-**Session** - `SeleniumSession`
-- **Page Facet** - `SeleniumFacet`
-  - _logo element_ - `WebElement`
-  - **Breadcrumbs Facet** - `SeleniumFacet`
-    - _breadcrumb links_ - `WebElement[]`
-  - _avatar element_ - `WebElement`
-  - **Nav Facet** - `SeleniumFacet`
-    - _nav elements_ - `WebElement[]`
-  - **Tabs Facet** - `SeleniumFacet`
-    - **Tab Facet 1** - `SeleniumFacet`
-    - **Tab Facet 2** - `SeleniumFacet`
-      - **Table Facet** - `SeleniumFacet`
-        - _header elements_ - `WebElement[]`
-        - _cell elements_ - `WebElement[]`
-    - **Tab Facet 3** - `SeleniumFacet`
-  - _media element_ - `WebElement`
+`> npm i aft-ui-mobile-apps`
 
 ## Creating your own Facets for use in testing
-Take the following as an example of how one could interact with the following page https://the-internet.herokuapp.com/login
+Take the following as an example of how one could interact with the following Android App
 
-### Step 1: create the Page Facet
+### Step 1: create the View Facet
 
 ```typescript
 /**
- * represents the login page object containing widgets encapsulating
- * the functionality of the website
+ * represents the login page object containing facets encapsulating
+ * the functionality of the app
  */
 export class HerokuLoginPage extends SeleniumFacet {
     /* the locator can also be specified in options */

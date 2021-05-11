@@ -7,7 +7,8 @@
     "clean": "rimraf ./dist",
     "build": "yarn clean && tsc --build",
     "pretest": "yarn build",
-    "test": "mocha --parallel --jobs 4 --timeout 60s ./dist/test/**/*-spec.js",
+    "test": "yarn build && mocha --timeout 60s **/*-spec.js",
+    "test-parallel": "yarn build && mocha --parallel --jobs 4 --timeout 60s **/*-spec.js",
     "coverage": "nyc yarn test"
   },
   "repository": {
@@ -34,7 +35,9 @@
   "dependencies": {
     "aft-logging-awskinesis": "^4.0.1",
     "aft-testrail": "^4.0.1",
-    "aft-ui-browsers": "^1.0.0"
+    "aft-ui-browsers": "^1.0.0",
+    "aft-ui-mobile-apps": "^1.0.0",
+    "aft-logging-html": "^1.0.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.17",
