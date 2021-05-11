@@ -4,6 +4,7 @@ import { OptionsManager, LoggingPluginManager } from "aft-core";
 import * as http from 'http';
 import * as https from 'https';
 import { nameof } from "ts-simple-nameof";
+import * as FormData from "form-data";
 
 export interface HttpServiceOptions {
     defaultUrl?: string;
@@ -11,6 +12,7 @@ export interface HttpServiceOptions {
     defaultHeaders?: http.OutgoingHttpHeaders;
     defaultMethod?: string;
     defaultPostData?: string;
+    defaultMultipart?: boolean;
     
     _logMgr?: LoggingPluginManager;
     _optMgr?: OptionsManager;
@@ -41,11 +43,22 @@ export class HttpService {
      *     url: 'https://some.domain/path',
      *     allowAutoRedirect: false,
      *     headers: {"Authorization": "basic AS0978FASLKLJA/=="},
-     *     method: HttpMethod.POST,
-     *     postData: JSON.stringify(someObject) 
+     *     method: 'POST',
+     *     postData: JSON.stringify(someObject),
+     *     multipart: false
      * });
      * ```
-     * @param req a `HttpResponse` object that specifies details of the request
+     * or multipart post as:
+     * ```
+     * await HttpService.instance.performRequest({
+     *     url: 'https://some.domain/path',
+     *     allowAutoRedirect: false,
+     *     method: 'POST',
+     *     postData: JSON.stringify(someObject),
+     *     multipart: true
+     * });
+     * ```
+     * @param req a {HttpResponse} object that specifies details of the request
      */
     async performRequest(req?: HttpRequest): Promise<HttpResponse> {
         req = await this.setRequestDefaults(req);
@@ -70,6 +83,9 @@ export class HttpService {
             req.allowAutoRedirect = await this.optionsMgr.getOption(nameof<HttpServiceOptions>(o => o.defaultAllowRedirect), true);
         }
         req.postData = req.postData || await this.optionsMgr.getOption(nameof<HttpServiceOptions>(o => o.defaultPostData));
+        if (req.multipart === undefined) {
+            req.multipart = await this.optionsMgr.getOption(nameof<HttpServiceOptions>(o => o.defaultMultipart), false);
+        }
         return req;
     }
 
@@ -77,16 +93,26 @@ export class HttpService {
         let message: http.IncomingMessage = await new Promise<http.IncomingMessage>((resolve, reject) => {
             try {
                 let client = (r.url.includes('https://')) ? https : http;
-                let req: http.ClientRequest = client.request(r.url, {
-                    headers: r.headers,
-                    method: r.method
-                }, resolve);
-                if (r.method == 'POST' || r.method == 'UPDATE') {
-                    if (r.postData) {
-                        req.write(r.postData);
+                let req: http.ClientRequest;
+                let form: FormData = r.postData as FormData;
+                if (r.multipart) {
+                    req = client.request(r.url, {
+                        headers: form.getHeaders(),
+                        method: r.method
+                    }, resolve);
+                    form.pipe(req, {end: true});
+                } else {
+                    req = client.request(r.url, {
+                        headers: r.headers,
+                        method: r.method
+                    }, resolve);
+                    if (r.method == 'POST' || r.method == 'UPDATE' || r.method == 'PUT') {
+                        if (r.postData) {
+                            req.write(r.postData);
+                        }
                     }
+                    req.end(); // close the request
                 }
-                req.end(); // close the request
             } catch (e) {
                 reject(e);
             }

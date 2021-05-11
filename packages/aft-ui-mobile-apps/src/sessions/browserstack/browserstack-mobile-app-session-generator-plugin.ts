@@ -5,26 +5,23 @@ import { nameof } from "ts-simple-nameof";
 import { MobileAppSessionOptions } from "../mobile-app-session";
 import { RemoteOptions } from "webdriverio";
 import { MobileAppCommandResponse } from "../mobile-app-command";
-import { BrowserStackMobileAppCommand } from "./browserstack-mobile-app-command";
+import { BrowserStackMobileAppCommand, BrowserStackMobileAppNetworkData, BrowserStackMobileAppUploadData } from "./browserstack-mobile-app-command";
 import { BrowserStackAppAutomateApi, UploadAppResponse } from "./app-automate/browserstack-app-automate-api";
+import { browserstackconfig, BrowserStackConfig } from "./configuration/browserstack-config";
 
 export interface BrowserStackMobileAppSessionGeneratorPluginOptions extends MobileAppSessionGeneratorPluginOptions {
-    user: string;
-    key: string;
-    debug?: boolean;
-    local?: boolean;
-    localIdentifier?: string;
-    apiUrl?: string;
-
+    _config?: BrowserStackConfig;
     _api?: BrowserStackAppAutomateApi;
 }
 
 export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileAppSessionGeneratorPlugin {
+    private _cfg: BrowserStackConfig;
     private _api: BrowserStackAppAutomateApi;
 
     constructor(options?: BrowserStackMobileAppSessionGeneratorPluginOptions) {
         super(nameof(BrowserStackMobileAppSessionGeneratorPlugin).toLowerCase(), options);
-        this._api = options?._api || BrowserStackAppAutomateApi.instance();
+        this._cfg = options?._config || browserstackconfig;
+        this._api = options?._api || new BrowserStackAppAutomateApi({_config: this._cfg});
     }
 
     async onLoad(): Promise<void> {
@@ -54,15 +51,15 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileA
             remOpts.capabilities['device'] = platform.deviceName;
             remOpts.capabilities['realMobile'] = true;
         }
-        remOpts.capabilities['browserstack.user'] = await this.optionsMgr.getOption(nameof<BrowserStackMobileAppSessionGeneratorPluginOptions>(o => o.user));
-        remOpts.capabilities['browserstack.key'] = await this.optionsMgr.getOption(nameof<BrowserStackMobileAppSessionGeneratorPluginOptions>(o => o.key));
-        remOpts.capabilities['browserstack.debug'] = await this.optionsMgr.getOption<boolean>(nameof<BrowserStackMobileAppSessionGeneratorPluginOptions>(o => o.debug));
+        remOpts.capabilities['browserstack.user'] = await this._cfg.user();
+        remOpts.capabilities['browserstack.key'] = await this._cfg.key();
+        remOpts.capabilities['browserstack.debug'] = await this._cfg.debug();
         remOpts.capabilities['build'] = await BuildName.get();
         remOpts.capabilities['name'] = await options?.logMgr?.logName() || await this.logMgr.logName();
-        let local: boolean = await this.optionsMgr.getOption<boolean>(nameof<BrowserStackMobileAppSessionGeneratorPluginOptions>(o => o.local), false);
+        let local: boolean = await this._cfg.local();
         if (local) {
             remOpts.capabilities['browserstack.local'] = true;
-            let localId: string = await this.optionsMgr.getOption(nameof<BrowserStackMobileAppSessionGeneratorPluginOptions>(o => o.localIdentifier));
+            let localId: string = await this._cfg.localIdentifier();
             if (localId) {
                 remOpts.capabilities['browserstack.localIdentifier'] = localId;
             }
@@ -74,8 +71,13 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileA
         let resp: MobileAppCommandResponse = command;
         switch(command.name) {
             case 'upload':
-                let bsResponse: UploadAppResponse = await this._api.uploadApp(command.data, command.customId);
+                let upData: BrowserStackMobileAppUploadData = command.data as BrowserStackMobileAppUploadData;
+                let bsResponse: UploadAppResponse = await this._api.uploadApp(upData.file, upData.customId);
                 resp.data = bsResponse;
+                break;
+            case 'networkProfile':
+                let netData: BrowserStackMobileAppNetworkData = command.data as BrowserStackMobileAppNetworkData;
+                
                 break;
             default:
                 resp.error = `unknown command of '${command.name}' send to ${nameof(BrowserStackMobileAppSessionGeneratorPlugin)}`;

@@ -1,7 +1,9 @@
-import { OptionsManager } from "aft-core";
+import { convert, OptionsManager } from "aft-core";
 import { HttpService, HttpResponse } from "aft-web-services";
-import { nameof } from "ts-simple-nameof";
+import * as fs from "fs";
 import * as path from "path";
+import * as FormData from "form-data";
+import { browserstackconfig, BrowserStackConfig } from "../configuration/browserstack-config";
 
 export interface UploadAppResponse {
     app_url: string;
@@ -10,33 +12,30 @@ export interface UploadAppResponse {
 }
 
 export interface BrowserStackAppAutomateApiOptions {
-    apiUrl?: string;
-    
+    _config: BrowserStackConfig;
     _httpSvc?: HttpService;
-    _optMgr?: OptionsManager;
 }
 
 export class BrowserStackAppAutomateApi {
+    private _cfg: BrowserStackConfig;
     private _httpSvc: HttpService;
-    private _apiUrl: string;
-    private _optionsMgr: OptionsManager;
 
     constructor(options?: BrowserStackAppAutomateApiOptions) {
-        this._optionsMgr = options?._optMgr || new OptionsManager(nameof(BrowserStackAppAutomateApi).toLowerCase(), options);
+        this._cfg = options?._config || browserstackconfig;
         this._httpSvc = options?._httpSvc || HttpService.instance;
-    }
-
-    async apiUrl(): Promise<string> {
-        if (!this._apiUrl) {
-            this._apiUrl = await this._optionsMgr.getOption(nameof<BrowserStackAppAutomateApiOptions>(o => o.apiUrl), 'https://api.browserstack.com/app-automate/');
-        }
-        return this._apiUrl;
     }
     
     async uploadApp(file: string, customId?: string): Promise<UploadAppResponse> {
+        let formData: FormData = new FormData();
+        formData.append("file", fs.createReadStream(file));
+        if (customId) {
+            formData.append("custom_id", customId);
+        }
         let bsResp: HttpResponse = await this._httpSvc.performRequest({
-            url: await this.apiUrl(),
-            method: 'POST'
+            url: await this._cfg.appApiUrl(),
+            method: 'POST',
+            multipart: true,
+            postData: formData
         });
         if (bsResp && bsResp.statusCode == 200) {
             return bsResp.dataAs<UploadAppResponse>();
@@ -55,22 +54,19 @@ export class BrowserStackAppAutomateApi {
             reason: message
         };
         var resp: HttpResponse = await this._httpSvc.performRequest({
-            method: 'PUT', 
-            url: path.join(await this.apiUrl(), urlPath), 
+            method: 'PUT',
+            headers: {"Authorization": await this._getAuthHeader()},
+            url: path.join(await this._cfg.appApiUrl(), urlPath), 
             postData: JSON.stringify(data)
         });
         if (resp.statusCode != 200) {
             return Promise.reject(resp.data);
         }
     }
-}
 
-export module BrowserStackAppAutomateApi {
-    var _inst: BrowserStackAppAutomateApi;
-    export function instance(): BrowserStackAppAutomateApi {
-        if (!_inst) {
-            _inst = new BrowserStackAppAutomateApi();
-        }
-        return _inst;
+    private async _getAuthHeader(): Promise<string> {
+        let user: string = await this._cfg.user();
+        let key: string = await this._cfg.key();
+        return `basic ${convert.toBase64Encoded(`${user}:${key}`)}`;
     }
 }

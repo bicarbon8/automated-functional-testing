@@ -2,6 +2,7 @@ import { using, LoggingPluginManager, rand } from "aft-core";
 import { TestPlatform } from "aft-ui";
 import { BrowserStackMobileAppSessionGeneratorPlugin, BrowserStackMobileAppSessionGeneratorPluginOptions, BuildName, MobileAppFacet, MobileAppSession } from "../../../src";
 import { RemoteOptions } from 'webdriverio';
+import { BrowserStackConfig } from "../../../src/sessions/browserstack/configuration/browserstack-config";
 
 describe('BrowserStackMobileAppSessionGeneratorPlugin', () => {
     it('can generate capabilities from the passed in SessionOptions', async () => {
@@ -12,19 +13,22 @@ describe('BrowserStackMobileAppSessionGeneratorPlugin', () => {
             browserVersion: 'browserVersion-' + rand.getString(2, false, true),
             deviceName: 'deviceName-' + rand.getString(22)
         });
-        let opts: BrowserStackMobileAppSessionGeneratorPluginOptions = {
+        let cfg: BrowserStackConfig = new BrowserStackConfig({
             user: rand.getString(10, true, false, false, false),
             key: rand.getString(12, true, true, false, false),
+            local: true
+        });
+        let opts: BrowserStackMobileAppSessionGeneratorPluginOptions = {
             platform: platform.toString(),
-            local: true,
-            _logMgr: new LoggingPluginManager({logName: 'can generate capabilities from the passed in SessionOptions'})
+            _logMgr: new LoggingPluginManager({logName: 'can generate capabilities from the passed in SessionOptions'}),
+            _config: cfg
         };
         let session: BrowserStackMobileAppSessionGeneratorPlugin = new BrowserStackMobileAppSessionGeneratorPlugin(opts);
 
         let remOpts: RemoteOptions = await session.getRemoteOptions();
 
-        expect(remOpts.capabilities['browserstack.user']).toEqual(opts.user);
-        expect(remOpts.capabilities['browserstack.key']).toEqual(opts.key);
+        expect(remOpts.capabilities['browserstack.user']).toEqual(cfg.user);
+        expect(remOpts.capabilities['browserstack.key']).toEqual(cfg.key);
         expect(remOpts.capabilities['os']).toEqual(platform.os);
         expect(remOpts.capabilities['os_version']).toEqual(platform.osVersion);
         expect(remOpts.capabilities['browserName']).toEqual(platform.browser);
@@ -45,9 +49,12 @@ describe('BrowserStackMobileAppSessionGeneratorPlugin', () => {
      * - browserstack_accesskey
      */
     xit('can create a session in BrowserStack', async () => {
-        let plugin: BrowserStackMobileAppSessionGeneratorPlugin = new BrowserStackMobileAppSessionGeneratorPlugin({
+        let cfg: BrowserStackConfig = new BrowserStackConfig({
             user: 'your-user',
-            key: 'your-key',
+            key: 'your-key'
+        });
+        let plugin: BrowserStackMobileAppSessionGeneratorPlugin = new BrowserStackMobileAppSessionGeneratorPlugin({
+            _config: cfg,
             platform: 'windows_10_chrome'
         });
         await using (await plugin.newSession(), async (session: MobileAppSession) => {

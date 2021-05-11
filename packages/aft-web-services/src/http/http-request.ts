@@ -1,3 +1,4 @@
+import FormData = require("form-data");
 import { OutgoingHttpHeaders } from "http";
 import { HttpMethod } from "./http-method";
 
@@ -13,8 +14,9 @@ import { HttpMethod } from "./http-method";
  *     url: 'https://some.domain/path',
  *     allowAutoRedirect: false,
  *     headers: {"Authorization": "basic AS0978FASLKLJA/=="},
- *     method: HttpMethod.POST,
- *     postData: JSON.stringify(someObject) 
+ *     method: 'POST',
+ *     postData: JSON.stringify(someObject),
+ *     multipart: false
  * });
  * ```
  */
@@ -23,5 +25,6 @@ export interface HttpRequest {
     allowAutoRedirect?: boolean;
     headers?: OutgoingHttpHeaders;
     method?: HttpMethod;
-    postData?: string;
+    postData?: string | FormData;
+    multipart?: boolean;
 }
