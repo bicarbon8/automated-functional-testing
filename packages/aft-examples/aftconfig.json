@@ -41,22 +41,19 @@
         "enabled": true,
         "level": "info"
     },
-    "browsersessiongeneratorpluginmanager": {
-        "pluginNames": ["browserstack-browser-session-generator-plugin"],
-        "searchDir": "../"
-    },
-    "browserstackbrowsersessiongeneratorplugin": {
+    "browserstackconfig": {
         "user": "%browserstack_user%",
         "key": "%browserstack_key%",
+        "debug": true
+    },
+    "browsersessiongeneratorpluginmanager": {
+        "pluginNames": ["browserstack-browser-session-generator-plugin"],
+        "searchDir": "../",
         "platform": "windows_10_chrome"
     },
     "mobileappsessiongeneratorpluginmanager": {
         "pluginNames": ["browserstack-mobile-app-session-generator-plugin"],
-        "searchDir": "../"
-    },
-    "browserstackmobileappsessiongeneratorplugin": {
-        "user": "%browserstack_user%",
-        "key": "%browserstack_key%",
+        "searchDir": "../",
         "platform": "android_11_+_+_Google Pixel 5"
     }
 }

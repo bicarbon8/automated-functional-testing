@@ -1,8 +1,7 @@
 import { nameof } from "ts-simple-nameof";
 import { AbstractSessionGeneratorPluginManager, ISessionGeneratorPluginManagerOptions } from "aft-ui";
-import { AbstractMobileAppSessionGeneratorPlugin } from "./appium-grid/abstract-mobile-app-session-generator-plugin";
+import { AbstractMobileAppSessionGeneratorPlugin, MobileAppCommand, MobileAppCommandResponse } from "./abstract-mobile-app-session-generator-plugin";
 import { MobileAppSession, MobileAppSessionOptions } from "./mobile-app-session";
-import { MobileAppCommand, MobileAppCommandResponse } from "./mobile-app-command";
 
 export interface MobileAppSessionGeneratorPluginManagerOptions extends ISessionGeneratorPluginManagerOptions {
 

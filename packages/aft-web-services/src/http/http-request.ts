@@ -1,4 +1,4 @@
-import FormData = require("form-data");
+import * as FormData from "form-data";
 import { OutgoingHttpHeaders } from "http";
 import { HttpMethod } from "./http-method";
 

@@ -1,15 +1,12 @@
 import { TestPlatform } from "aft-ui";
-import { AbstractMobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginOptions } from "../appium-grid/abstract-mobile-app-session-generator-plugin";
-import { BuildName } from "../../helpers/build-name";
+import { AbstractMobileAppSessionGeneratorPlugin, MobileAppCommand, MobileAppCommandResponse, MobileAppSessionGeneratorPluginOptions } from "../abstract-mobile-app-session-generator-plugin";
 import { nameof } from "ts-simple-nameof";
 import { MobileAppSessionOptions } from "../mobile-app-session";
 import { RemoteOptions } from "webdriverio";
-import { MobileAppCommandResponse } from "../mobile-app-command";
-import { BrowserStackMobileAppCommand, BrowserStackMobileAppNetworkData, BrowserStackMobileAppUploadData } from "./browserstack-mobile-app-command";
-import { BrowserStackAppAutomateApi, UploadAppResponse } from "./app-automate/browserstack-app-automate-api";
-import { browserstackconfig, BrowserStackConfig } from "./configuration/browserstack-config";
+import { BrowserStackAppAutomateApi, BrowserStackMobileAppSessionStatusCommand, BrowserStackMobileAppUploadCommand } from "./app-automate/browserstack-app-automate-api";
+import { BrowserStackConfig, BrowserStackConfigOptions } from "./configuration/browserstack-config";
 
-export interface BrowserStackMobileAppSessionGeneratorPluginOptions extends MobileAppSessionGeneratorPluginOptions {
+export interface BrowserStackMobileAppSessionGeneratorPluginOptions extends MobileAppSessionGeneratorPluginOptions, BrowserStackConfigOptions {
     _config?: BrowserStackConfig;
     _api?: BrowserStackAppAutomateApi;
 }
@@ -20,7 +17,7 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileA
 
     constructor(options?: BrowserStackMobileAppSessionGeneratorPluginOptions) {
         super(nameof(BrowserStackMobileAppSessionGeneratorPlugin).toLowerCase(), options);
-        this._cfg = options?._config || browserstackconfig;
+        this._cfg = options?._config || new BrowserStackConfig(options as BrowserStackConfigOptions);
         this._api = options?._api || new BrowserStackAppAutomateApi({_config: this._cfg});
     }
 
@@ -54,7 +51,8 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileA
         remOpts.capabilities['browserstack.user'] = await this._cfg.user();
         remOpts.capabilities['browserstack.key'] = await this._cfg.key();
         remOpts.capabilities['browserstack.debug'] = await this._cfg.debug();
-        remOpts.capabilities['build'] = await BuildName.get();
+        remOpts.capabilities['app'] = await this._cfg.app();
+        remOpts.capabilities['build'] = await this._cfg.buildName();
         remOpts.capabilities['name'] = await options?.logMgr?.logName() || await this.logMgr.logName();
         let local: boolean = await this._cfg.local();
         if (local) {
@@ -67,21 +65,25 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileA
         return remOpts;
     }
 
-    async sendCommand(command: BrowserStackMobileAppCommand): Promise<MobileAppCommandResponse> {
-        let resp: MobileAppCommandResponse = command;
-        switch(command.name) {
-            case 'upload':
-                let upData: BrowserStackMobileAppUploadData = command.data as BrowserStackMobileAppUploadData;
-                let bsResponse: UploadAppResponse = await this._api.uploadApp(upData.file, upData.customId);
-                resp.data = bsResponse;
-                break;
-            case 'networkProfile':
-                let netData: BrowserStackMobileAppNetworkData = command.data as BrowserStackMobileAppNetworkData;
-                
-                break;
-            default:
-                resp.error = `unknown command of '${command.name}' send to ${nameof(BrowserStackMobileAppSessionGeneratorPlugin)}`;
-                break;
+    async sendCommand(command: MobileAppCommand): Promise<MobileAppCommandResponse> {
+        let resp: MobileAppCommandResponse;
+        try {
+            switch (command.commandType) {
+                case 'upload':
+                    resp = await this._api.uploadApp(command as BrowserStackMobileAppUploadCommand);
+                    break;
+                case 'networkProfile':
+                    
+                    break;
+                case 'setStatus': 
+                    resp = await this._api.setSessionStatus(command as BrowserStackMobileAppSessionStatusCommand);
+                    break;
+                default:
+                    resp = { error: `unknown command of '${command.commandType}' send to ${nameof(BrowserStackMobileAppSessionGeneratorPlugin)}` };
+                    break;
+            }
+        } catch (e) {
+            return Promise.reject(e);
         }
         return resp;
     }

@@ -3,7 +3,7 @@ import { BrowserTestWrapper, browserShould } from "aft-ui-browsers";
 import { expect } from "chai";
 import { HerokuLoginPage } from "./page-objects/heroku-login-page";
 
-describe('Functional Browser Tests using AFT-UI', () => {
+describe('Functional Browser Tests using AFT-UI-BROWSERS', () => {
     it('can access websites using AFT and Page Widgets and Facets', async () => {
         await browserShould({description: 'can access websites using AFT and Page Widgets and Facets',
             testCases: ['C3456', 'C2345', 'C1234'],

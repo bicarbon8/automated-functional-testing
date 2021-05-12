@@ -1,19 +1,24 @@
 import { nameof } from "ts-simple-nameof";
 import { Clazz, LoggingPluginManager } from "aft-core";
-import { AbstractFacet, ISession, ISessionOptions } from "aft-ui";
+import { AbstractFacet, ISession, ISessionOptions, TestPlatform } from "aft-ui";
 import { MobileAppFacetOptions } from "../facets/mobile-app-facet";
 import { Browser } from "webdriverio";
 
 export interface MobileAppSessionOptions extends ISessionOptions {
     driver?: Browser<'async'>;
+    app?: string;
 }
 
 export class MobileAppSession implements ISession {
     readonly driver: Browser<'async'>;
+    readonly platform: TestPlatform;
+    readonly app: string;
     readonly logMgr: LoggingPluginManager;
     
     constructor(options: MobileAppSessionOptions) {
         this.driver = options.driver;
+        this.platform = TestPlatform.parse(options.platform);
+        this.app = options.app;
         this.logMgr = options.logMgr || new LoggingPluginManager({logName: `${nameof(MobileAppSession)}_${this.driver?.sessionId}`});
     }
     

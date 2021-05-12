@@ -1,14 +1,53 @@
-import { convert, OptionsManager } from "aft-core";
+import { nameof } from "ts-simple-nameof";
+import { convert } from "aft-core";
 import { HttpService, HttpResponse } from "aft-web-services";
 import * as fs from "fs";
 import * as path from "path";
 import * as FormData from "form-data";
 import { browserstackconfig, BrowserStackConfig } from "../configuration/browserstack-config";
+import { MobileAppCommand, MobileAppCommandResponse } from "../../abstract-mobile-app-session-generator-plugin";
 
-export interface UploadAppResponse {
+export interface BrowserStackMobileAppUploadCommand extends MobileAppCommand {
+    commandType: 'upload';
+    file: string;
+    custom_id?: string;
+}
+
+export interface BrowserStackMobileAppUploadResponse extends MobileAppCommandResponse {
     app_url: string;
     custom_id: string;
     shareable_id: string;
+}
+
+export interface BrowserStackMobileAppNetworkCommand extends MobileAppCommand {
+    commandType: 'networkProfile';
+    profile: string;
+    sessionId: string;
+}
+
+export interface BrowserStackMobileAppSessionStatusCommand extends MobileAppCommand {
+    commandType: 'sessionStatus';
+    sessionId: string;
+    status: 'passed' | 'failed';
+    message?: string;
+}
+
+export interface BrowserStackMobileAppGetAppsCommand extends MobileAppCommand {
+    commandType: 'getApps';
+}
+
+export interface BrowserStackMobileAppGetAppsResponse extends MobileAppCommandResponse {
+    apps: BrowserStackMobileApp[];
+}
+
+export interface BrowserStackMobileApp {
+    app_name?: string;
+    app_version?: string;
+    app_url?: string;
+    app_id?: string;
+    uploaded_at?: string;
+    custom_id?: string;
+    shareable_id?: string;
 }
 
 export interface BrowserStackAppAutomateApiOptions {
@@ -25,43 +64,55 @@ export class BrowserStackAppAutomateApi {
         this._httpSvc = options?._httpSvc || HttpService.instance;
     }
     
-    async uploadApp(file: string, customId?: string): Promise<UploadAppResponse> {
-        let formData: FormData = new FormData();
-        formData.append("file", fs.createReadStream(file));
-        if (customId) {
-            formData.append("custom_id", customId);
+    async uploadApp(data: BrowserStackMobileAppUploadCommand): Promise<BrowserStackMobileAppUploadResponse> {
+        if(!fs.existsSync(data.file)) {
+            return Promise.reject(`file could not be found at: ${data.file}`);
         }
+        let formData: FormData = new FormData();
+        formData.append("file", fs.createReadStream(data.file));
+        if (data.custom_id) {
+            formData.append(nameof<BrowserStackMobileAppUploadCommand>(o => o.custom_id), data.custom_id);
+        }
+        formData.append("Authorization", await this._getAuthHeader());
         let bsResp: HttpResponse = await this._httpSvc.performRequest({
-            url: await this._cfg.appApiUrl(),
+            url: path.join(await this._cfg.appApiUrl(), 'upload'),
             method: 'POST',
             multipart: true,
             postData: formData
         });
         if (bsResp && bsResp.statusCode == 200) {
-            return bsResp.dataAs<UploadAppResponse>();
+            return bsResp.dataAs<BrowserStackMobileAppUploadResponse>();
         }
-        throw `unable to upload file '${file} to BrowserStack`;
+        return Promise.reject(`unable to upload file '${data.file} to BrowserStack due to: ${bsResp?.data}`);
     }
 
-    async setSessionStatus(sessionId: string, status?: 'passed' | 'failed', message?: string): Promise<void> {
-        let stat: 'passed' | 'failed' = status ?? 'passed';
-        if (!sessionId) {
-            return Promise.reject('sessionId must be set to a valid session');
+    async getApps(): Promise<BrowserStackMobileAppGetAppsResponse> {
+        let bsResp: HttpResponse = await this._httpSvc.performRequest({
+            url: path.join(await this._cfg.appApiUrl(), 'recent_group_apps'),
+            method: 'GET'
+        });
+        if (bsResp && bsResp.statusCode == 200) {
+            return bsResp.dataAs<BrowserStackMobileAppGetAppsResponse>();
         }
-        let urlPath: string = `sessions/${sessionId}.json`;
-        let data: {} = {
-            status: stat,
-            reason: message
+        return Promise.reject(`unable to get list of mobile apps from BrowserStack due to: ${bsResp?.data}`);
+    }
+
+    async setSessionStatus(data: BrowserStackMobileAppSessionStatusCommand): Promise<any> {
+        let urlPath: string = `sessions/${data.sessionId}.json`;
+        let pdata: {} = {
+            status: data.status,
+            reason: data.message
         };
         var resp: HttpResponse = await this._httpSvc.performRequest({
             method: 'PUT',
             headers: {"Authorization": await this._getAuthHeader()},
             url: path.join(await this._cfg.appApiUrl(), urlPath), 
-            postData: JSON.stringify(data)
+            postData: JSON.stringify(pdata)
         });
         if (resp.statusCode != 200) {
             return Promise.reject(resp.data);
         }
+        return resp.data;
     }
 
     private async _getAuthHeader(): Promise<string> {

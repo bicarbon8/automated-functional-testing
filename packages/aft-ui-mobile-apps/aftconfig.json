@@ -1,13 +1,13 @@
 {
-    "sessiongeneratorpluginmanager": {
+    "mobileappsessiongeneratorpluginmanager": {
         "pluginNames": [
-            "browserstack-session-generator-plugin",
-            "saucelabs-session-generator-plugin"
+            "browserstack-mobile-app-session-generator-plugin",
+            "saucelabs-mobile-app-session-generator-plugin"
         ],
-        "platform": {"os": "windows", "osVersion": "10", "browser": "chrome"},
+        "platform": "android_11_+_+_Google Pixel 5",
         "searchDir": "../"
     },
-    "browserstacksessiongeneratorplugin": {
+    "browserstackconfig": {
         "user": "%browserstack_user%",
         "key": "%browserstack_key%",
         "resolution": "640x480",

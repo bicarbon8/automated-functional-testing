@@ -7,7 +7,9 @@
     "include": ["test"],
     "references": [
         { "path": "../aft-ui-browsers" },
+        { "path": "../aft-ui-mobile-apps" },
         { "path": "../aft-logging-awskinesis" },
+        { "path": "../aft-logging-html" },
         { "path": "../aft-testrail" }
     ]
 }

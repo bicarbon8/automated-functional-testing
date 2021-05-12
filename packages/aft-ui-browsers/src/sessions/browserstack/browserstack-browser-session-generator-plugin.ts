@@ -4,21 +4,20 @@ import { BuildName } from "../../helpers/build-name";
 import { Capabilities } from "selenium-webdriver";
 import { nameof } from "ts-simple-nameof";
 import { BrowserSessionOptions } from "../browser-session";
+import { BrowserStackConfig, BrowserStackConfigOptions } from "./configuration/browserstack-config";
 
-export interface BrowserStackBrowserSessionGeneratorPluginOptions extends IBrowserSessionGeneratorPluginOptions {
-    user: string;
-    key: string;
-    resolution?: string;
-    debug?: boolean;
-    local?: boolean;
-    localIdentifier?: string;
+export interface BrowserStackBrowserSessionGeneratorPluginOptions extends IBrowserSessionGeneratorPluginOptions, Partial<BrowserStackConfigOptions> {
+    _config?: BrowserStackConfig;
 }
 
 export class BrowserStackBrowserSessionGeneratorPlugin extends AbstractBrowserSessionGeneratorPlugin {
+    private _cfg: BrowserStackConfig;
+    
     constructor(options?: BrowserStackBrowserSessionGeneratorPluginOptions) {
         options = options || {} as BrowserStackBrowserSessionGeneratorPluginOptions;
         options.url = options.url || 'https://hub-cloud.browserstack.com/wd/hub/';
         super(nameof(BrowserStackBrowserSessionGeneratorPlugin).toLowerCase(), options);
+        this._cfg = options?._config || new BrowserStackConfig(options as BrowserStackConfigOptions);
     }
 
     async onLoad(): Promise<void> {
@@ -44,19 +43,19 @@ export class BrowserStackBrowserSessionGeneratorPlugin extends AbstractBrowserSe
             capabilities.set('device', platform.deviceName);
             capabilities.set('realMobile', 'true');
         }
-        let resolution: string = await this.optionsMgr.getOption('resolution');
+        let resolution: string = await this._cfg.resolution();
         if (resolution) {
             capabilities.set('resolution', resolution);
         }
-        capabilities.set('browserstack.user', await this.optionsMgr.getOption('user'));
-        capabilities.set('browserstack.key', await this.optionsMgr.getOption('key'));
-        capabilities.set('browserstack.debug', await this.optionsMgr.getOption<boolean>('debug'));
+        capabilities.set('browserstack.user', await this._cfg.user());
+        capabilities.set('browserstack.key', await this._cfg.key());
+        capabilities.set('browserstack.debug', await this._cfg.debug());
         capabilities.set('build', await BuildName.get());
         capabilities.set('name', await options?.logMgr?.logName() || await this.logMgr.logName());
-        let local: boolean = await this.optionsMgr.getOption<boolean>('local', false);
+        let local: boolean = await this._cfg.local();
         if (local) {
             capabilities.set('browserstack.local', true);
-            let localId: string = await this.optionsMgr.getOption('localIdentifier');
+            let localId: string = await this._cfg.localIdentifier();
             if (localId) {
                 capabilities.set('browserstack.localIdentifier', localId);
             }

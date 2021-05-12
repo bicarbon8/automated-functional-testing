@@ -1,7 +1,7 @@
 import { nameof } from "ts-simple-nameof";
 import { WebDriver } from "selenium-webdriver";
 import { Clazz, LoggingPluginManager } from "aft-core";
-import { AbstractFacet, ISession, ISessionOptions } from "aft-ui";
+import { AbstractFacet, ISession, ISessionOptions, TestPlatform } from "aft-ui";
 import { BrowserFacetOptions } from "../facets/browser-facet";
 
 export interface BrowserSessionOptions extends ISessionOptions {
@@ -10,10 +10,12 @@ export interface BrowserSessionOptions extends ISessionOptions {
 
 export class BrowserSession implements ISession {
     readonly driver: WebDriver;
+    readonly platform: TestPlatform;
     readonly logMgr: LoggingPluginManager;
     
     constructor(options: BrowserSessionOptions) {
         this.driver = options.driver;
+        this.platform = TestPlatform.parse(options.platform);
         this.logMgr = options.logMgr || new LoggingPluginManager({logName: `${nameof(BrowserSession)}_${this.driver?.getSession().then(s => s.getId())}`});
     }
     

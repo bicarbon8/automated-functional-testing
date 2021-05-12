@@ -13,7 +13,7 @@ export class FakeSessionGeneratorPluginThrows extends AbstractSessionGeneratorPl
     async onLoad(): Promise<void> {
         testdata.set('onload', true);
     }
-    newSession(options?: ISessionOptions): Promise<FakeSession> {
+    async newSession(options?: ISessionOptions): Promise<FakeSession> {
         testdata.set('newsession', options);
         throw new Error("Method not implemented.");
     }

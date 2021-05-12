@@ -1,13 +1,16 @@
 import { OptionsManager } from 'aft-core';
 import { nameof } from "ts-simple-nameof";
+import { BuildName } from '../../../helpers/build-name';
 
 export class BrowserStackConfigOptions {
-    user: string;
-    key: string;
+    user?: string;
+    key?: string;
     debug?: boolean;
     local?: boolean;
     localIdentifier?: string;
+    app?: string;
     appApiUrl?: string;
+    buildName?: string;
 
     _optMgr?: OptionsManager;
 }
@@ -20,6 +23,7 @@ export class BrowserStackConfigOptions {
  *   "browserstackconfig": {
  *     "user": "your-username@your-company.com",
  *     "key": "your-access-key-for-browserstack",
+ *     "app": "bs://f7c874f21852ba57957a3fdc33f47514288c4ba4",
  *     "debug": true,
  *     "local": false,
  *     "localIdentifier": "123456"
@@ -34,6 +38,8 @@ export class BrowserStackConfig {
     private _debug: boolean;
     private _local: boolean;
     private _localIdentifier: string;
+    private _app: string;
+    private _buildName: string;
     
     private _optMgr: OptionsManager;
 
@@ -81,6 +87,20 @@ export class BrowserStackConfig {
             this._localIdentifier = await this._optMgr.getOption(nameof<BrowserStackConfigOptions>(o => o.localIdentifier));
         }
         return this._localIdentifier;
+    }
+
+    async app(): Promise<string> {
+        if (!this._app) {
+            this._app = await this._optMgr.getOption(nameof<BrowserStackConfigOptions>(o => o.app));
+        }
+        return this._app;
+    }
+
+    async buildName(): Promise<string> {
+        if (!this._buildName) {
+            this._buildName = await this._optMgr.getOption(nameof<BrowserStackConfigOptions>(o => o.buildName), await BuildName.get());
+        }
+        return this._buildName;
     }
 }
 
