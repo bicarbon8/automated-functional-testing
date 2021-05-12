@@ -1,7 +1,7 @@
 import { nameof } from "ts-simple-nameof";
 import { AbstractSessionGeneratorPluginManager, ISessionGeneratorPluginManagerOptions } from "aft-ui";
 import { BrowserSession, BrowserSessionOptions } from "./browser-session";
-import { AbstractBrowserSessionGeneratorPlugin } from "./selenium-grid/abstract-browser-session-generator-plugin";
+import { AbstractBrowserSessionGeneratorPlugin } from "./abstract-browser-session-generator-plugin";
 
 export interface BrowserSessionGeneratorPluginManagerOptions extends ISessionGeneratorPluginManagerOptions {
 

@@ -1,4 +1,5 @@
-import { should } from "aft-core";
+import * as FormData from "form-data";
+import { should, TestWrapper } from "aft-core";
 import { HttpResponse, HttpService } from 'aft-web-services';
 import { expect } from "chai";
 import { ListUsersResponse } from "./response-objects/list-users-response";
@@ -35,5 +36,26 @@ describe('REST Request', () => {
             await tw.logMgr.info('confirmed object data property contains more than one result.');
             return true;
         }, testCases: ['C2217764']});
+    });
+
+    it('can make a multipart post', async () => {
+        await should({description: 'can make a multipart post',
+            expect: async (tw: TestWrapper) => {
+                let formData = new FormData();
+                formData.append('name', 'morpheus');
+                formData.append('job', 'leader');
+                await tw.logMgr.step('about to send multipart post to create new user');
+                let resp: HttpResponse = await HttpService.instance.performRequest({
+                    multipart: true,
+                    url: 'https://reqres.in/api/users',
+                    postData: formData,
+                    method: 'POST'
+                });
+                await tw.logMgr.info(`received response of ${resp.data}`);
+                expect(resp).to.not.be.undefined;
+                expect(resp.data).to.not.be.undefined;
+                return true;
+            }
+        });
     });
 });

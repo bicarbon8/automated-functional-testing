@@ -21,7 +21,7 @@ describe('Functional Mobile App Tests using AFT-UI-MOBILE-APPS', () => {
         await mobileAppShould({ description: 'can search in Wikipedia App',
             app: customId,
             expect: async (tw: MobileAppTestWrapper) => {
-                let view: WikipediaView = await tw.session.getFacet(WikipediaView, {locator: '//*'});
+                let view: WikipediaView = await tw.session.getFacet(WikipediaView);
                 await view.searchFor('pizza');
                 let results: string[] = await view.getResults();
                 return expect(results).to.contain('pizza');

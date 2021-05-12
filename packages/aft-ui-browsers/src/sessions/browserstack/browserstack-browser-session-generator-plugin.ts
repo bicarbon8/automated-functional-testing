@@ -1,5 +1,5 @@
 import { TestPlatform } from "aft-ui";
-import { AbstractBrowserSessionGeneratorPlugin, IBrowserSessionGeneratorPluginOptions } from "../selenium-grid/abstract-browser-session-generator-plugin";
+import { AbstractBrowserSessionGeneratorPlugin, IBrowserSessionGeneratorPluginOptions } from "../abstract-browser-session-generator-plugin";
 import { BuildName } from "../../helpers/build-name";
 import { Capabilities } from "selenium-webdriver";
 import { nameof } from "ts-simple-nameof";

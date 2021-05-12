@@ -44,17 +44,19 @@ export class HttpService {
      *     allowAutoRedirect: false,
      *     headers: {"Authorization": "basic AS0978FASLKLJA/=="},
      *     method: 'POST',
-     *     postData: JSON.stringify(someObject),
+     *     postData: someObject,
      *     multipart: false
      * });
      * ```
      * or multipart post as:
      * ```
+     * let formData = new FormData();
+     * formData.append("Authorization": "basic AS0978FASLKLJA/==");
      * await HttpService.instance.performRequest({
      *     url: 'https://some.domain/path',
      *     allowAutoRedirect: false,
      *     method: 'POST',
-     *     postData: JSON.stringify(someObject),
+     *     postData: formData,
      *     multipart: true
      * });
      * ```
@@ -94,10 +96,10 @@ export class HttpService {
             try {
                 let client = (r.url.includes('https://')) ? https : http;
                 let req: http.ClientRequest;
-                let form: FormData = r.postData as FormData;
                 if (r.multipart) {
+                    let form: FormData = r.postData as FormData;
                     req = client.request(r.url, {
-                        headers: form.getHeaders(),
+                        headers: form.getHeaders(r.headers),
                         method: r.method
                     }, resolve);
                     form.pipe(req, {end: true});
@@ -108,7 +110,7 @@ export class HttpService {
                     }, resolve);
                     if (r.method == 'POST' || r.method == 'UPDATE' || r.method == 'PUT') {
                         if (r.postData) {
-                            req.write(r.postData);
+                            req.write(JSON.stringify(r.postData));
                         }
                     }
                     req.end(); // close the request

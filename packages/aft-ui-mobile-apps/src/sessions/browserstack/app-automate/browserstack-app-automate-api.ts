@@ -69,14 +69,14 @@ export class BrowserStackAppAutomateApi {
             return Promise.reject(`file could not be found at: ${data.file}`);
         }
         let formData: FormData = new FormData();
-        formData.append("file", fs.createReadStream(data.file));
+        formData.append(nameof<BrowserStackMobileAppUploadCommand>(o => o.file), fs.createReadStream(data.file));
         if (data.custom_id) {
             formData.append(nameof<BrowserStackMobileAppUploadCommand>(o => o.custom_id), data.custom_id);
         }
-        formData.append("Authorization", await this._getAuthHeader());
         let bsResp: HttpResponse = await this._httpSvc.performRequest({
-            url: path.join(await this._cfg.appApiUrl(), 'upload'),
+            url: `${await this._cfg.appApiUrl()}upload`,
             method: 'POST',
+            headers: {"Authorization": await this._getAuthHeader()},
             multipart: true,
             postData: formData
         });
@@ -88,7 +88,7 @@ export class BrowserStackAppAutomateApi {
 
     async getApps(): Promise<BrowserStackMobileAppGetAppsResponse> {
         let bsResp: HttpResponse = await this._httpSvc.performRequest({
-            url: path.join(await this._cfg.appApiUrl(), 'recent_group_apps'),
+            url: `${await this._cfg.appApiUrl()}recent_group_apps`,
             method: 'GET'
         });
         if (bsResp && bsResp.statusCode == 200) {
@@ -106,7 +106,7 @@ export class BrowserStackAppAutomateApi {
         var resp: HttpResponse = await this._httpSvc.performRequest({
             method: 'PUT',
             headers: {"Authorization": await this._getAuthHeader()},
-            url: path.join(await this._cfg.appApiUrl(), urlPath), 
+            url: `${await this._cfg.appApiUrl()}${urlPath}`, 
             postData: JSON.stringify(pdata)
         });
         if (resp.statusCode != 200) {
@@ -118,6 +118,6 @@ export class BrowserStackAppAutomateApi {
     private async _getAuthHeader(): Promise<string> {
         let user: string = await this._cfg.user();
         let key: string = await this._cfg.key();
-        return `basic ${convert.toBase64Encoded(`${user}:${key}`)}`;
+        return `Basic ${convert.toBase64Encoded(`${user}:${key}`)}`;
     }
 }

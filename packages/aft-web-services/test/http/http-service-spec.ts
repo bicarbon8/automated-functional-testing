@@ -1,3 +1,4 @@
+import * as FormData from "form-data";
 import { HttpService, HttpServiceOptions } from "../../src/http/http-service";
 import { HttpRequest } from "../../src/http/http-request";
 import { HttpResponse } from "../../src/http/http-response";
@@ -72,6 +73,30 @@ describe('HttpService', () => {
             url: 'http://127.0.0.1',
             method: 'POST',
             postData: '{"hello":"world"}'
+        };
+
+        spyOn<any>(svc, '_request').and.returnValue({});
+        let mockResponse: HttpResponse = new HttpResponse({
+            statusCode: 200,
+            data: '{"foo": "bar"}'
+        });
+        spyOn<any>(svc, '_response').and.returnValue(mockResponse);
+
+        let response: HttpResponse = await svc.performRequest(request);
+
+        expect(response.statusCode).toEqual(200);
+        expect(response.data).toEqual(mockResponse.data);
+    });
+
+    it('can send Multipart POST request', async () => {
+        let svc: HttpService = new HttpService();
+        let formData: FormData = new FormData();
+        formData.append('foo', 'bar');
+        let request: HttpRequest = {
+            url: 'http://127.0.0.1',
+            method: 'POST',
+            postData: formData,
+            multipart: true
         };
 
         spyOn<any>(svc, '_request').and.returnValue({});

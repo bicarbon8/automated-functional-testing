@@ -1,7 +1,7 @@
 import { WebDriver, Builder, Capabilities } from "selenium-webdriver";
 import { nameof } from "ts-simple-nameof";
 import { AbstractSessionGeneratorPlugin, ISessionGeneratorPluginOptions } from "aft-ui";
-import { BrowserSession, BrowserSessionOptions } from "../browser-session";
+import { BrowserSession, BrowserSessionOptions } from "./browser-session";
 
 export interface IBrowserSessionGeneratorPluginOptions extends ISessionGeneratorPluginOptions {
     url?: string;

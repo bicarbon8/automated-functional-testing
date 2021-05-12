@@ -29,7 +29,7 @@ export class BrowserStackConfigOptions {
  * ```
  */
 export class BrowserStackConfig {
-    private _url: string;
+    private _apiUrl: string;
     private _user: string;
     private _key: string;
     private _resolution: string;
@@ -44,10 +44,10 @@ export class BrowserStackConfig {
     }
     
     async apiUrl(): Promise<string> {
-        if (!this._url) {
-            this._url = await this._optMgr.getOption(nameof<BrowserStackConfigOptions>(o => o.apiUrl), 'https://api.browserstack.com/automate/');
+        if (!this._apiUrl) {
+            this._apiUrl = await this._optMgr.getOption(nameof<BrowserStackConfigOptions>(o => o.apiUrl), 'https://api.browserstack.com/automate/');
         }
-        return this._url;
+        return this._apiUrl;
     }
 
     async user(): Promise<string> {

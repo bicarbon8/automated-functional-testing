@@ -27,17 +27,10 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileA
 
     async getRemoteOptions(options?: MobileAppSessionOptions): Promise<RemoteOptions> {
         let remOpts: RemoteOptions = await super.getRemoteOptions(options);
-        remOpts.protocol = 'https';
-        remOpts.hostname = 'hub-cloud.browserstack.com';
-        remOpts.path = '/wd/hub';
+        remOpts.user = await this._cfg.user();
+        remOpts.key = await this._cfg.key();
         remOpts.capabilities = {};
         let platform: TestPlatform = await this.getPlatform()
-        if (platform.browser) {
-            remOpts.capabilities['browserName'] = platform.browser;
-        }
-        if (platform.browserVersion) {
-            remOpts.capabilities['browser_version'] = platform.browserVersion;
-        }
         if (platform.os) {
             remOpts.capabilities['os'] = platform.os;
         }
@@ -48,8 +41,6 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileA
             remOpts.capabilities['device'] = platform.deviceName;
             remOpts.capabilities['realMobile'] = true;
         }
-        remOpts.capabilities['browserstack.user'] = await this._cfg.user();
-        remOpts.capabilities['browserstack.key'] = await this._cfg.key();
         remOpts.capabilities['browserstack.debug'] = await this._cfg.debug();
         remOpts.capabilities['app'] = await this._cfg.app();
         remOpts.capabilities['build'] = await this._cfg.buildName();

@@ -6,8 +6,8 @@ export * from './helpers/build-name';
 export * from './sessions/browserstack/browserstack-browser-session-generator-plugin';
 export * from './sessions/browserstack/configuration/browserstack-config';
 export * from './sessions/sauce-labs/sauce-labs-browser-session-generator-plugin';
-export * from './sessions/selenium-grid/abstract-browser-session-generator-plugin';
 export * from './sessions/selenium-grid/selenium-grid-session-generator-plugin';
+export * from './sessions/abstract-browser-session-generator-plugin';
 export * from './sessions/browser-session';
 export * from './sessions/browser-session-generator-plugin-manager';
 /* wrappers */

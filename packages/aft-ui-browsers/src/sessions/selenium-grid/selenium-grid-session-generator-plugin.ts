@@ -1,4 +1,4 @@
-import { AbstractBrowserSessionGeneratorPlugin, IBrowserSessionGeneratorPluginOptions } from "./abstract-browser-session-generator-plugin";
+import { AbstractBrowserSessionGeneratorPlugin, IBrowserSessionGeneratorPluginOptions } from "../abstract-browser-session-generator-plugin";
 import { TestPlatform } from "aft-ui";
 import { Capabilities } from "selenium-webdriver";
 import { nameof } from "ts-simple-nameof";

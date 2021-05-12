@@ -1,4 +1,3 @@
-import * as FormData from "form-data";
 import { OutgoingHttpHeaders } from "http";
 import { HttpMethod } from "./http-method";
 
@@ -15,7 +14,7 @@ import { HttpMethod } from "./http-method";
  *     allowAutoRedirect: false,
  *     headers: {"Authorization": "basic AS0978FASLKLJA/=="},
  *     method: 'POST',
- *     postData: JSON.stringify(someObject),
+ *     postData: someObject,
  *     multipart: false
  * });
  * ```
@@ -25,6 +24,6 @@ export interface HttpRequest {
     allowAutoRedirect?: boolean;
     headers?: OutgoingHttpHeaders;
     method?: HttpMethod;
-    postData?: string | FormData;
+    postData?: any;
     multipart?: boolean;
 }

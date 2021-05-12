@@ -35,7 +35,6 @@ export class MobileAppSession implements ISession {
             this.logMgr.warn(`Error: ${nameof(MobileAppSession)} - ${error.message}`);
         }
         this.logMgr.trace(`shutting down ${nameof(MobileAppSession)}: ${this.driver?.sessionId}`);
-        await this.driver?.closeApp();
         await this.driver?.deleteSession();
     }
 }
