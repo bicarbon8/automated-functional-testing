@@ -18,6 +18,9 @@ describe('SauceLabsMobileAppSessionGeneratorPlugin', () => {
             platform: plt.toString(),
             tunnel: true,
             tunnelId: rand.getString(11, true),
+            remoteOptions: {
+                capabilities: {"app": `app-${rand.getString(15)}`}
+            },
             logMgr: new LoggingPluginManager({logName:'can generate capabilities from the passed in SessionOptions'})
         }
         let session: SauceLabsMobileAppSessionGeneratorPlugin = new SauceLabsMobileAppSessionGeneratorPlugin(opts);
@@ -26,9 +29,10 @@ describe('SauceLabsMobileAppSessionGeneratorPlugin', () => {
 
         expect(remOpts.capabilities['platformName']).toEqual(plt.os);
         expect(remOpts.capabilities['platformVersion']).toEqual(plt.osVersion);
-        expect(remOpts.capabilities['browserName']).toEqual(plt.browser);
-        expect(remOpts.capabilities['browserVersion']).toEqual(plt.browserVersion);
+        expect(remOpts.capabilities['browserName']).not.toBeDefined();
+        expect(remOpts.capabilities['browserVersion']).not.toBeDefined();
         expect(remOpts.capabilities['deviceName']).toEqual(plt.deviceName);
+        expect(remOpts.capabilities['app']).toEqual(opts.remoteOptions.capabilities['app']);
         expect(remOpts.user).toEqual(opts.username);
         expect(remOpts.key).toEqual(opts.accesskey);
         expect(remOpts.capabilities['buildName']).toEqual(await BuildName.get());

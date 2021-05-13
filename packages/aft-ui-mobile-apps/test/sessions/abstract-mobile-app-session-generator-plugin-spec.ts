@@ -1,6 +1,6 @@
 import { nameof } from "ts-simple-nameof";
 import { rand } from "aft-core";
-import { AbstractMobileAppSessionGeneratorPlugin, MobileAppCommand, MobileAppCommandResponse, MobileAppSessionGeneratorPluginOptions } from "../../../src";
+import { AbstractMobileAppSessionGeneratorPlugin, MobileAppCommand, MobileAppCommandResponse, MobileAppSessionGeneratorPluginOptions } from "../../src";
 import { RemoteOptions } from "webdriverio";
 
 describe('AbstractMobileAppGridSessionGeneratorPlugin', () => {
