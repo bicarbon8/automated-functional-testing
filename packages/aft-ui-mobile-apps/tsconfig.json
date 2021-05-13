@@ -2,8 +2,7 @@
     "extends": "../../tsconfig-settings.json",
     "compilerOptions": {
         "outDir": "dist",
-        "composite": true,
-        "types": ["jasmine", "node"]
+        "composite": true
     },
     "include": ["src", "test"],
     "references": [
