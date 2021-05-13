@@ -36,6 +36,12 @@ export interface TestWrapperOptions {
      * IDs will be checked to ensure the test should proceed
      */
     testCases?: string[];
+    /**
+     * [OPTIONAL] if not passed in a new {LoggingPluginManager} instance
+     * will be created with a name matching the {description} or a GUID
+     * in the case of no {description}
+     */
+    logMgr?: LoggingPluginManager;
     
     /**
      * [OPTIONAL] if not passed in the {BuildInfoPluginManager.instance()}
@@ -47,12 +53,6 @@ export interface TestWrapperOptions {
      * will be used instead
      */
     _defectManager?: DefectPluginManager;
-    /**
-     * [OPTIONAL] if not passed in a new {LoggingPluginManager} instance
-     * will be created with a name matching the {description} or a GUID
-     * in the case of no {description}
-     */
-    _logMgr?: LoggingPluginManager;
     /**
      * [OPTIONAL] if not passed in the {TestCasePluginManager.instance()}
      * will be used instead
@@ -151,7 +151,7 @@ export class TestWrapper {
     }
 
     private _initialiselogMgr(options: TestWrapperOptions): LoggingPluginManager {
-        return options._logMgr || new LoggingPluginManager({logName: this.description});
+        return options.logMgr || new LoggingPluginManager({logName: this.description});
     }
 
     private _initialiseTestCases(options: TestWrapperOptions): TestCasePluginManager {

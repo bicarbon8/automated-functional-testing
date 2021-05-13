@@ -1,7 +1,7 @@
 import { using, LoggingPluginManager, rand } from "aft-core";
 import { TestPlatform } from "aft-ui";
 import { BrowserStackAppAutomateApi, BrowserStackConfig, BrowserStackMobileAppSessionGeneratorPlugin, BrowserStackMobileAppSessionGeneratorPluginOptions, BrowserStackMobileAppUploadCommand, BrowserStackMobileAppUploadResponse, MobileAppCommandResponse, MobileAppFacet, MobileAppSession } from "../../../src";
-import { RemoteOptions } from 'webdriverio';
+import { RemoteOptions } from "webdriverio";
 
 describe('BrowserStackMobileAppSessionGeneratorPlugin', () => {
     it('can generate RemoteOptions from the passed in Options', async () => {
@@ -19,7 +19,7 @@ describe('BrowserStackMobileAppSessionGeneratorPlugin', () => {
         });
         let opts: BrowserStackMobileAppSessionGeneratorPluginOptions = {
             platform: platform.toString(),
-            _logMgr: new LoggingPluginManager({logName: 'can generate RemoteOptions from the passed in Options'}),
+            logMgr: new LoggingPluginManager({logName: 'can generate RemoteOptions from the passed in Options'}),
             _config: cfg
         };
         let plugin: BrowserStackMobileAppSessionGeneratorPlugin = new BrowserStackMobileAppSessionGeneratorPlugin(opts);
@@ -36,7 +36,7 @@ describe('BrowserStackMobileAppSessionGeneratorPlugin', () => {
         expect(remOpts.capabilities['realMobile']).toEqual(true);
         expect(remOpts.capabilities['browserstack.local']).toEqual(true);
         expect(remOpts.capabilities['build']).toEqual(await cfg.buildName());
-        expect(remOpts.capabilities['name']).toEqual(await opts._logMgr.logName());
+        expect(remOpts.capabilities['name']).toEqual(await opts.logMgr.logName());
     });
 
     it('can upload a mobile application using sendCommand', async () => {
@@ -62,7 +62,7 @@ describe('BrowserStackMobileAppSessionGeneratorPlugin', () => {
         });
         let opts: BrowserStackMobileAppSessionGeneratorPluginOptions = {
             platform: platform.toString(),
-            _logMgr: new LoggingPluginManager({logName: 'can upload a mobile application using sendCommand'}),
+            logMgr: new LoggingPluginManager({logName: 'can upload a mobile application using sendCommand'}),
             _config: cfg,
             _api: mockApi
         };
@@ -101,7 +101,7 @@ describe('BrowserStackMobileAppSessionGeneratorPlugin', () => {
             let facet: MobileAppFacet = await session.getFacet(MobileAppFacet, {locator: 'button.radius'});
 
             expect(facet).toBeDefined();
-            expect(await facet.getRoot().then((r) => r.getText())).toEqual('Login');
+            expect(await facet.getRoot().then(async (r) => await r.getText())).toEqual('Login');
         });
     }, 300000);
 });

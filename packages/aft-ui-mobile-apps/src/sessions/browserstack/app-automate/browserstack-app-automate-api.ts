@@ -2,7 +2,6 @@ import { nameof } from "ts-simple-nameof";
 import { convert } from "aft-core";
 import { HttpService, HttpResponse } from "aft-web-services";
 import * as fs from "fs";
-import * as path from "path";
 import * as FormData from "form-data";
 import { browserstackconfig, BrowserStackConfig } from "../configuration/browserstack-config";
 import { MobileAppCommand, MobileAppCommandResponse } from "../../abstract-mobile-app-session-generator-plugin";
@@ -89,10 +88,11 @@ export class BrowserStackAppAutomateApi {
     async getApps(): Promise<BrowserStackMobileAppGetAppsResponse> {
         let bsResp: HttpResponse = await this._httpSvc.performRequest({
             url: `${await this._cfg.appApiUrl()}recent_group_apps`,
-            method: 'GET'
+            method: 'GET',
+            headers: {"Authorization": await this._getAuthHeader()}
         });
         if (bsResp && bsResp.statusCode == 200) {
-            return bsResp.dataAs<BrowserStackMobileAppGetAppsResponse>();
+            return {apps: bsResp.dataAs<BrowserStackMobileApp[]>()};
         }
         return Promise.reject(`unable to get list of mobile apps from BrowserStack due to: ${bsResp?.data}`);
     }

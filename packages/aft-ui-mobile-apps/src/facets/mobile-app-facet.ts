@@ -21,7 +21,7 @@ export class MobileAppFacet extends AbstractFacet {
     async getElements(options: MobileAppElementOptions): Promise<ElementArray> {
         let elements: ElementArray
         await wait.untilTrue(async () => {
-            elements = await this.getRoot().then((r) => r.$$(options.locator));
+            elements = await this.getRoot().then(async (r) => await r.$$(options.locator));
             return elements.length > 0;
         }, options.maxWaitMs || 0);
         return elements;
@@ -31,7 +31,7 @@ export class MobileAppFacet extends AbstractFacet {
         let element: Element<'async'>;
         await wait.untilTrue(async () => {
             element = await this.getRoot()
-                .then(r => r.$(options.locator));
+                .then(async r => await r.$(options.locator));
             return !!element;
         }, options.maxWaitMs || 0);
         return element;
@@ -52,7 +52,7 @@ export class MobileAppFacet extends AbstractFacet {
         await wait.untilTrue(async () => {
             if (this.parent) {
                 let els: ElementArray = await this.parent.getRoot()
-                    .then(r => r.$$(this.locator));
+                    .then(async r => await r.$$(this.locator));
                 el = els[this.index];
             } else {
                 let els: ElementArray = await this.session.driver.$$(this.locator);

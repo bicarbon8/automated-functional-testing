@@ -21,7 +21,7 @@ export class BrowserFacet extends AbstractFacet {
     async getElements(options: WebElementOptions): Promise<WebElement[]> {
         let elements: WebElement[]
         await wait.untilTrue(async () => {
-            elements = await this.getRoot().then((r) => r.findElements(options.locator));
+            elements = await this.getRoot().then(async (r) => await r.findElements(options.locator));
             return elements.length > 0;
         }, options.maxWaitMs || 0);
         return elements;
@@ -31,7 +31,7 @@ export class BrowserFacet extends AbstractFacet {
         let element: WebElement;
         await wait.untilTrue(async () => {
             element = await this.getRoot()
-                .then(r => r.findElement(options.locator));
+                .then(async r => await r.findElement(options.locator));
             return !!element;
         }, options.maxWaitMs || 0);
         return element;
@@ -52,7 +52,7 @@ export class BrowserFacet extends AbstractFacet {
         await wait.untilTrue(async () => {
             if (this.parent) {
                 let els: WebElement[] = await this.parent.getRoot()
-                    .then(r => r.findElements(this.locator));
+                    .then(async r => await r.findElements(this.locator));
                 el = els[this.index];
             } else {
                 let els: WebElement[] = await this.session.driver.findElements(this.locator);

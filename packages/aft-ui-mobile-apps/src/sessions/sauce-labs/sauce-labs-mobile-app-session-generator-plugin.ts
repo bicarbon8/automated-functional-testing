@@ -23,38 +23,16 @@ export class SauceLabsMobileAppSessionGeneratorPlugin extends AbstractMobileAppS
 
     async getRemoteOptions(options?: MobileAppSessionOptions): Promise<RemoteOptions> {
         let remOpts: RemoteOptions = await super.getRemoteOptions(options);
-        remOpts.capabilities = {};
-        remOpts.protocol = 'https';
-        remOpts.hostname = 'ondemand.us-west-1.saucelabs.com';
-        remOpts.path = '/wd/hub';
-        let platform: TestPlatform = await this.getPlatform();
-        if (platform.deviceName) {
-            remOpts.capabilities['platformName'] = platform.os;
-            remOpts.capabilities['platformVersion'] = platform.osVersion;
-        } else {
-            let osVersion: string = '';
-            if (platform.osVersion) {
-                osVersion = ' ' + platform.osVersion;
-            }
-            remOpts.capabilities['platformName'] = `${platform.os}${osVersion}`;
-        }
-        if (platform.browser) {
-            remOpts.capabilities['browserName'] = platform.browser;
-        }
-        if (platform.browserVersion) {
-            remOpts.capabilities['browserVersion'] = platform.browserVersion;
-        }
-        if (platform.deviceName) {
-            remOpts.capabilities['deviceName'] = platform.deviceName;
-        }
-        remOpts.user = await this.optionsMgr.getOption<string>(nameof<SauceLabsMobileAppSessionGeneratorPluginOptions>(o => o.username));
-        remOpts.key = await this.optionsMgr.getOption<string>(nameof<SauceLabsMobileAppSessionGeneratorPluginOptions>(o => o.accesskey));
-        remOpts.capabilities['buildName'] = await BuildName.get();
-        remOpts.capabilities['name'] = await options?.logMgr?.logName() || await this.logMgr.logName();
-        let tunnel: boolean = await this.optionsMgr.getOption<boolean>(nameof<SauceLabsMobileAppSessionGeneratorPluginOptions>(o => o.tunnel), false);
-        if (tunnel) {
-            remOpts.capabilities['tunnelIdentifier'] = await this.optionsMgr.getOption('tunnelId');
-        }
+        remOpts.capabilities = remOpts.capabilities || {};
+        let platform: TestPlatform = (options?.platform) ? TestPlatform.parse(options.platform) : await this.getPlatform();
+        remOpts.capabilities['platformName'] = remOpts.capabilities['platformName'] || platform.os;
+        remOpts.capabilities['platformVersion'] = remOpts.capabilities['platformVersion'] || platform.osVersion;
+        remOpts.capabilities['deviceName'] = remOpts.capabilities['deviceName'] || platform.deviceName;
+        remOpts.user = remOpts.user || await this.optionsMgr.getOption<string>(nameof<SauceLabsMobileAppSessionGeneratorPluginOptions>(o => o.username));
+        remOpts.key = remOpts.key || await this.optionsMgr.getOption<string>(nameof<SauceLabsMobileAppSessionGeneratorPluginOptions>(o => o.accesskey));
+        remOpts.capabilities['buildName'] = remOpts.capabilities['buildName'] || await BuildName.get();
+        remOpts.capabilities['name'] = remOpts.capabilities['name'] || await options?.logMgr?.logName() || await this.logMgr.logName();
+        remOpts.capabilities['tunnelIdentifier'] = remOpts.capabilities['tunnelIdentifier'] || await this.optionsMgr.getOption('tunnelId');
         return remOpts;
     }
 

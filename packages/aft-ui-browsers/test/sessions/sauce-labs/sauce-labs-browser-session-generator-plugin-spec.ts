@@ -19,7 +19,7 @@ describe('SauceLabsBrowserSessionGeneratorPlugin', () => {
             resolution: rand.getString(4, false, true) + 'x' + rand.getString(4, false, true),
             tunnel: true,
             tunnelId: rand.getString(11, true),
-            _logMgr: new LoggingPluginManager({logName:'can generate capabilities from the passed in SessionOptions'})
+            logMgr: new LoggingPluginManager({logName:'can generate capabilities from the passed in SessionOptions'})
         }
         let session: SauceLabsBrowserSessionGeneratorPlugin = new SauceLabsBrowserSessionGeneratorPlugin(opts);
 
@@ -33,7 +33,7 @@ describe('SauceLabsBrowserSessionGeneratorPlugin', () => {
         let sauceOpts: object = caps.get('sauce:options');
         expect(sauceOpts).toBeDefined();
         expect(sauceOpts['build']).toEqual(await BuildName.get());
-        expect(sauceOpts['name']).toEqual(await opts._logMgr.logName());
+        expect(sauceOpts['name']).toEqual(await opts.logMgr.logName());
         expect(sauceOpts['screenResolution']).toEqual(opts.resolution);
         expect(sauceOpts['tunnelIdentifier']).toEqual(opts.tunnelId);
     });
@@ -63,7 +63,7 @@ describe('SauceLabsBrowserSessionGeneratorPlugin', () => {
             let facet: BrowserFacet = await session.getFacet(BrowserFacet, {locator: By.css('button.radius')});
 
             expect(facet).toBeDefined();
-            expect(await facet.getRoot().then((r) => r.getText())).toEqual('Login');
+            expect(await facet.getRoot().then(async (r) => await r.getText())).toEqual('Login');
         });
     }, 300000);
 });

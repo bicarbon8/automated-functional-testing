@@ -59,7 +59,7 @@ export class MobileAppTestWrapper extends TestWrapper {
      * // starts a new Browser Session and runs the Expectation
      * await tw.run({ expect: async (t) => {
      *     let facet: SeleniumFacet = await t.session.getFacet(SeleniumFacet, {locator: By.css('html')});
-     *     return expect(await facet.getRoot().then((r) => r.getText())).toEqual('foo');
+     *     return expect(await facet.getRoot().then(async (r) => await r.getText())).toEqual('foo');
      * }});
      * ```
      * @returns a {ProcessingResult} specifying the result of execution of

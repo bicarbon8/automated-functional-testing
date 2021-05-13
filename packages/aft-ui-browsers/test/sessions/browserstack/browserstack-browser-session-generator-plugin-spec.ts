@@ -18,7 +18,7 @@ describe('BrowserStackBrowserSessionGeneratorPlugin', () => {
             platform: platform.toString(),
             resolution: rand.getString(4, false, true) + 'x' + rand.getString(4, false, true),
             local: true,
-            _logMgr: new LoggingPluginManager({logName: 'can generate capabilities from the passed in SessionOptions'})
+            logMgr: new LoggingPluginManager({logName: 'can generate capabilities from the passed in SessionOptions'})
         };
         let session: BrowserStackBrowserSessionGeneratorPlugin = new BrowserStackBrowserSessionGeneratorPlugin(opts);
 
@@ -34,7 +34,7 @@ describe('BrowserStackBrowserSessionGeneratorPlugin', () => {
         expect(capabilities.get('realMobile')).toEqual('true');
         expect(capabilities.get('browserstack.local')).toEqual(true);
         expect(capabilities.get('build')).toEqual(await BuildName.get());
-        expect(capabilities.get('name')).toEqual(await opts._logMgr.logName());
+        expect(capabilities.get('name')).toEqual(await opts.logMgr.logName());
     });
     
     /**
@@ -62,7 +62,7 @@ describe('BrowserStackBrowserSessionGeneratorPlugin', () => {
             let facet: BrowserFacet = await session.getFacet(BrowserFacet, {locator: By.css('button.radius')});
 
             expect(facet).toBeDefined();
-            expect(await facet.getRoot().then((r) => r.getText())).toEqual('Login');
+            expect(await facet.getRoot().then(async (r) => await r.getText())).toEqual('Login');
         });
     }, 300000);
 });

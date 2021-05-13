@@ -42,6 +42,6 @@ describe('SeleniumGridSessionGeneratorPlugin', () => {
         let facet: BrowserFacet = await session.getFacet(BrowserFacet, {locator: By.css('button.radius')});
 
         expect(facet).toBeDefined();
-        expect(await facet.getRoot().then((r) => r.getText())).toEqual('Login');
+        expect(await facet.getRoot().then(async (r) => await r.getText())).toEqual('Login');
     }, 300000);
 });

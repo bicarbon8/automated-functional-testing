@@ -1,7 +1,7 @@
 import { using, LoggingPluginManager, rand } from "aft-core";
 import { TestPlatform } from "aft-ui";
 import { BuildName, MobileAppFacet, SauceLabsMobileAppSessionGeneratorPlugin, SauceLabsMobileAppSessionGeneratorPluginOptions } from '../../../src';
-import { RemoteOptions } from 'webdriverio';
+import { RemoteOptions } from "webdriverio";
 
 describe('SauceLabsMobileAppSessionGeneratorPlugin', () => {
     it('can generate capabilities from the passed in SessionOptions', async () => {
@@ -18,7 +18,7 @@ describe('SauceLabsMobileAppSessionGeneratorPlugin', () => {
             platform: plt.toString(),
             tunnel: true,
             tunnelId: rand.getString(11, true),
-            _logMgr: new LoggingPluginManager({logName:'can generate capabilities from the passed in SessionOptions'})
+            logMgr: new LoggingPluginManager({logName:'can generate capabilities from the passed in SessionOptions'})
         }
         let session: SauceLabsMobileAppSessionGeneratorPlugin = new SauceLabsMobileAppSessionGeneratorPlugin(opts);
 
@@ -32,7 +32,7 @@ describe('SauceLabsMobileAppSessionGeneratorPlugin', () => {
         expect(remOpts.user).toEqual(opts.username);
         expect(remOpts.key).toEqual(opts.accesskey);
         expect(remOpts.capabilities['buildName']).toEqual(await BuildName.get());
-        expect(remOpts.capabilities['name']).toEqual(await opts._logMgr.logName());
+        expect(remOpts.capabilities['name']).toEqual(await opts.logMgr.logName());
         expect(remOpts.capabilities['tunnelIdentifier']).toEqual(opts.tunnelId);
     });
     
@@ -54,7 +54,7 @@ describe('SauceLabsMobileAppSessionGeneratorPlugin', () => {
             let facet: MobileAppFacet = await session.getFacet(MobileAppFacet, {locator: 'button.radius'});
 
             expect(facet).toBeDefined();
-            expect(await facet.getRoot().then((r) => r.getText())).toEqual('Login');
+            expect(await facet.getRoot().then(async (r) => await r.getText())).toEqual('Login');
         });
     }, 300000);
 });

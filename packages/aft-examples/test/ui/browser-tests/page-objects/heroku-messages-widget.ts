@@ -25,8 +25,10 @@ export class HerokuMessagesWidget extends BrowserFacet {
     async getMessage(): Promise<string> {
         if (await this.hasMessage()) {
             return await this.message()
-            .then((message) => {
-                return message.getText();
+            .then(async (message) => {
+                return await message.getText();
+            }).catch((err) => {
+                return null;
             });
         }
         return null;

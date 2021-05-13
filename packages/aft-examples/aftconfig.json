@@ -48,12 +48,16 @@
     },
     "browsersessiongeneratorpluginmanager": {
         "pluginNames": ["browserstack-browser-session-generator-plugin"],
-        "searchDir": "../",
+        "searchDir": "../"
+    },
+    "browserstackbrowsersessiongeneratorplugin": {
         "platform": "windows_10_chrome"
     },
     "mobileappsessiongeneratorpluginmanager": {
         "pluginNames": ["browserstack-mobile-app-session-generator-plugin"],
-        "searchDir": "../",
+        "searchDir": "../"
+    },
+    "browserstackmobileappsessiongeneratorplugin": {
         "platform": "android_11_+_+_Google Pixel 5"
     }
 }

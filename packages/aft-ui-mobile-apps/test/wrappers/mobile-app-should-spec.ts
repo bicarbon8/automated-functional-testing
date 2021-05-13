@@ -1,5 +1,4 @@
 import { ProcessingResult, rand } from "aft-core";
-import { Session, WebDriver } from "selenium-webdriver";
 import { Browser } from "webdriverio";
 import { MobileAppSessionGeneratorPluginManager, mobileAppShould, MobileAppTestWrapperOptions } from "../../src";
 

@@ -6,7 +6,7 @@ import { AbstractTestCasePlugin, ITestCasePluginOptions } from "./abstract-test-
 import { nameof } from "ts-simple-nameof";
 
 export interface ITestCasePluginManagerOptions extends ITestCasePluginOptions, IPluginManagerOptions {
-    _logMgr?: LoggingPluginManager;
+    logMgr?: LoggingPluginManager;
 }
 
 /**
@@ -23,11 +23,11 @@ export interface ITestCasePluginManagerOptions extends ITestCasePluginOptions, I
  * ```
  */
 export class TestCasePluginManager extends AbstractPluginManager<AbstractTestCasePlugin, ITestCasePluginOptions> {
-    private _logMgr: LoggingPluginManager;
+    readonly logMgr: LoggingPluginManager;
 
     constructor(options?: ITestCasePluginManagerOptions) {
         super(nameof(TestCasePluginManager).toLowerCase(), options);
-        this._logMgr = options?._logMgr || new LoggingPluginManager({logName: nameof(TestCasePluginManager), pluginNames: []});
+        this.logMgr = options?.logMgr || new LoggingPluginManager({logName: nameof(TestCasePluginManager)});
     }
 
     async getTestCase(testId: string): Promise<ITestCase> {
@@ -35,7 +35,7 @@ export class TestCasePluginManager extends AbstractPluginManager<AbstractTestCas
         .then(async (plugin) => {
             return await plugin?.getTestCase(testId) || null;
         }).catch(async (err) => {
-            await this._logMgr.warn(err);
+            await this.logMgr.trace(err);
             return null;
         });
     }
@@ -45,7 +45,7 @@ export class TestCasePluginManager extends AbstractPluginManager<AbstractTestCas
         .then(async (plugin) => {
             return await plugin?.findTestCases(searchTerm) || [];
         }).catch(async (err) => {
-            await this._logMgr.warn(err);
+            await this.logMgr.trace(err);
             return null;
         })
     }
@@ -55,8 +55,8 @@ export class TestCasePluginManager extends AbstractPluginManager<AbstractTestCas
         .then(async (handler) => {
             return await handler?.shouldRun(testId) || {success: true, message: `no ITestCasePlugin in use so run all tests`};
         }).catch(async (err) => {
-            await this._logMgr.warn(err);
-            return {success: false, message: err};
+            await this.logMgr.trace(err);
+            return {success: true, message: `${err} - so run all tests`};
         });
     }
 }

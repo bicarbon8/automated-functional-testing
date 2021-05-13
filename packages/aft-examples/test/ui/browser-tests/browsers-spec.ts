@@ -17,7 +17,7 @@ describe('Functional Browser Tests using AFT-UI-BROWSERS', () => {
                 await loginPage.login("tomsmith", "SuperSecretPassword!");
 
                 await tw.logMgr.step('wait for message to appear...')
-                await wait.untilTrue(() => loginPage.hasMessage(), 20000);
+                await wait.untilTrue(async () => await loginPage.hasMessage(), 20000);
                 
                 await tw.logMgr.step('get message...');
                 let message: string = await loginPage.getMessage();
@@ -36,7 +36,7 @@ describe('Functional Browser Tests using AFT-UI-BROWSERS', () => {
                 await loginPage.navigateTo();
                 
                 await tw.logMgr.step('click login button...');
-                await loginPage.content().then((c) => c.getLoginButton()).then((button) => button.click());
+                await loginPage.content().then(async (c) => await c.getLoginButton()).then(async (button) => await button.click());
                 await tw.logMgr.info('no exception thrown on click');
 
                 await tw.logMgr.step('refresh page...');
@@ -44,7 +44,7 @@ describe('Functional Browser Tests using AFT-UI-BROWSERS', () => {
                 await tw.logMgr.info('page refreshed');
 
                 await tw.logMgr.step('click login button after refresh...');
-                await loginPage.content().then((c) => c.getLoginButton()).then((button) => button.click());
+                await loginPage.content().then(async (c) => await c.getLoginButton()).then(async (button) => await button.click());
                 await tw.logMgr.info('no exception thrown on click');
                 return true;
             }, 

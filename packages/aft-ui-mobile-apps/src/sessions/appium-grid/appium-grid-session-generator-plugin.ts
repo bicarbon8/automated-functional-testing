@@ -14,17 +14,12 @@ export class AppiumGridSessionGeneratorPlugin extends AbstractMobileAppSessionGe
     async getRemoteOptions(options?: MobileAppSessionOptions): Promise<RemoteOptions> {
         let remOpts: RemoteOptions = await super.getRemoteOptions(options);
         remOpts.capabilities = {};
-        let platform: TestPlatform = await this.getPlatform();
+        let platform: TestPlatform = (options?.platform) ? TestPlatform.parse(options.platform) : await this.getPlatform();
         let osVersion = '';
         if (platform.osVersion) {
             osVersion = ' ' + platform.osVersion;
         }
-        let browserVersion = '';
-        if (platform.browserVersion) {
-            browserVersion = ' ' + platform.browserVersion;
-        }
         remOpts.capabilities['platform'] = `${platform.os}${osVersion}`;
-        remOpts.capabilities['browserName'] = `${platform.browser}${browserVersion}`;
         return remOpts;
     }
     async sendCommand(command: MobileAppCommand): Promise<MobileAppCommandResponse> {

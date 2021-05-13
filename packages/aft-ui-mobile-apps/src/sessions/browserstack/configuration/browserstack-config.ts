@@ -8,7 +8,6 @@ export class BrowserStackConfigOptions {
     debug?: boolean;
     local?: boolean;
     localIdentifier?: string;
-    app?: string;
     appApiUrl?: string;
     buildName?: string;
 
@@ -38,7 +37,6 @@ export class BrowserStackConfig {
     private _debug: boolean;
     private _local: boolean;
     private _localIdentifier: string;
-    private _app: string;
     private _buildName: string;
     
     private _optMgr: OptionsManager;
@@ -87,13 +85,6 @@ export class BrowserStackConfig {
             this._localIdentifier = await this._optMgr.getOption(nameof<BrowserStackConfigOptions>(o => o.localIdentifier));
         }
         return this._localIdentifier;
-    }
-
-    async app(): Promise<string> {
-        if (!this._app) {
-            this._app = await this._optMgr.getOption(nameof<BrowserStackConfigOptions>(o => o.app));
-        }
-        return this._app;
     }
 
     async buildName(): Promise<string> {

@@ -96,12 +96,12 @@ export class HerokuContentFacet extends SeleniumFacet {
     }
     /* action functions */
     async login(user: string, pass: string): Promise<void> {
-        await this.usernameInput().then((input) => input.sendKeys(user));
-        await this.passwordInput().then((input) => input.sendKeys(pass));
+        await this.usernameInput().then(async (input) => await input.sendKeys(user));
+        await this.passwordInput().then(async (input) => await input.sendKeys(pass));
         return await this.clickLoginButton();
     }
     async clickLoginButton(): Promise<void> {
-        await this.loginButton().then((button) => button.click());
+        await this.loginButton().then(async (button) => await button.click());
     }
 }
 ```

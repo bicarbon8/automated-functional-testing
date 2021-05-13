@@ -16,17 +16,18 @@ export interface MobileAppSessionGeneratorPluginOptions extends ISessionGenerato
 }
 
 export abstract class AbstractMobileAppSessionGeneratorPlugin extends AbstractSessionGeneratorPlugin {
-    private _remoteOpts: RemoteOptions;
-
     constructor(key: string, options?: MobileAppSessionGeneratorPluginOptions) {
         super(key, options);
     }
 
     async getRemoteOptions(options?: MobileAppSessionOptions): Promise<RemoteOptions> {
-        if (!this._remoteOpts) {
-            this._remoteOpts = await this.optionsMgr.getOption<RemoteOptions>(nameof<MobileAppSessionGeneratorPluginOptions>(o => o.remoteOptions), {} as RemoteOptions);
+        let remOpts: RemoteOptions = await this.optionsMgr.getOption<RemoteOptions>(nameof<MobileAppSessionGeneratorPluginOptions>(o => o.remoteOptions), {} as RemoteOptions);
+        if (options?.remoteOptions) {
+            for (var key in options.remoteOptions) {
+                remOpts[key] = options.remoteOptions[key];
+            }
         }
-        return this._remoteOpts;
+        return remOpts;
     }
 
     async newSession(options?: MobileAppSessionOptions): Promise<MobileAppSession> {
@@ -35,7 +36,6 @@ export abstract class AbstractMobileAppSessionGeneratorPlugin extends AbstractSe
                 try {
                     let remOpts: RemoteOptions = await this.getRemoteOptions(options);
                     let driver: Browser<'async'> = await remote(remOpts);
-                    await driver.setTimeout({implicit: 1000});
                     return new MobileAppSession({
                         driver: driver,
                         logMgr: options?.logMgr || this.logMgr

@@ -61,7 +61,7 @@ describe('TestWrapper', () => {
         let options: TestWrapperOptions = {
             expect: () => expect(false).toBeFalsy(),
             testCases: ['C1234', 'C2345'], 
-            _logMgr: logMgr
+            logMgr: logMgr
         };
         let tw: TestWrapper = new TestWrapper(options);
         
@@ -76,7 +76,7 @@ describe('TestWrapper', () => {
         let options: TestWrapperOptions = {
             expect: () => false,
             testCases: ['C1234', 'C2345'], 
-            _logMgr: logMgr
+            logMgr: logMgr
         };
         let tw: TestWrapper = new TestWrapper(options);
 
@@ -93,7 +93,7 @@ describe('TestWrapper', () => {
                 throw 'mock failure exception';
             },
             testCases: ['C1234', 'C2345'],
-            _logMgr: logMgr
+            logMgr: logMgr
         };
         let tw: TestWrapper = new TestWrapper(options);
 

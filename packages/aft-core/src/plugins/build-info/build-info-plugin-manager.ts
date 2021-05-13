@@ -33,7 +33,7 @@ export class BuildInfoPluginManager extends AbstractPluginManager<AbstractBuildI
         .then(async (plugin) => {
             return await plugin?.getBuildName();
         }).catch(async (err) => {
-            await this._logMgr.warn(err);
+            await this._logMgr.trace(err);
             return null;
         });
     }
@@ -43,7 +43,7 @@ export class BuildInfoPluginManager extends AbstractPluginManager<AbstractBuildI
         .then(async (plugin) => {
             return await plugin?.getBuildNumber();
         }).catch(async (err) => {
-            await this._logMgr.warn(err);
+            await this._logMgr.trace(err);
             return null;
         });
     }
