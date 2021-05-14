@@ -1,3 +1,5 @@
+import * as fs from "fs";
+import * as path from "path";
 import * as FormData from "form-data";
 import { should, TestWrapper } from "aft-core";
 import { HttpResponse, HttpService } from 'aft-web-services';
@@ -8,7 +10,7 @@ describe('REST Request', () => {
     it('can make GET request from JSON REST API', async () => {
         let response: HttpResponse;
 
-        await should({expect: async (tw) => {            
+        await should({expectation: async (tw) => {            
             await tw.logMgr.step('making request...');
             response = await HttpService.instance.performRequest({url: 'https://reqres.in/api/users?page=2'});
             expect(response).to.exist;
@@ -16,7 +18,7 @@ describe('REST Request', () => {
             return true;
         }, testCases: ['C2217763']});
 
-        await should({expect: async (tw) => {
+        await should({expectation: async (tw) => {
             await tw.logMgr.step('confirm response is not null...');
             expect(response).to.exist;
             await tw.logMgr.info('confirmed response is not null.');
@@ -26,7 +28,7 @@ describe('REST Request', () => {
             return true;
         }, testCases: ['C3131']});
 
-        await should({expect: async (tw) => {
+        await should({expectation: async (tw) => {
             await tw.logMgr.step('confirm can deserialise response.data into typed object...');
             let obj: ListUsersResponse = response.dataAs<ListUsersResponse>();
             expect(obj).to.exist;
@@ -40,14 +42,13 @@ describe('REST Request', () => {
 
     it('can make a multipart post', async () => {
         await should({description: 'can make a multipart post',
-            expect: async (tw: TestWrapper) => {
+            expectation: async (tw: TestWrapper) => {
                 let formData = new FormData();
-                formData.append('name', 'morpheus');
-                formData.append('job', 'leader');
-                await tw.logMgr.step('about to send multipart post to create new user');
+                formData.append('file', fs.createReadStream(path.join(process.cwd(), 'LICENSE')));
+                await tw.logMgr.step('about to send multipart post...');
                 let resp: HttpResponse = await HttpService.instance.performRequest({
                     multipart: true,
-                    url: 'https://reqres.in/api/users',
+                    url: 'https://httpbin.org/post',
                     postData: formData,
                     method: 'POST'
                 });

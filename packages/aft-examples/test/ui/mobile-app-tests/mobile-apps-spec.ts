@@ -1,18 +1,16 @@
 import * as path from "path";
 import { rand } from "aft-core";
-import { mobileAppShould, MobileAppTestWrapper, MobileAppSessionGeneratorPluginManager, BrowserStackMobileAppUploadCommand, BrowserStackMobileAppUploadResponse, BrowserStackMobileAppGetAppsResponse, BrowserStackMobileApp } from "aft-ui-mobile-apps";
+import { mobileAppShould, MobileAppTestWrapper, MobileAppSessionGeneratorPluginManager } from "aft-ui-mobile-apps";
 import { WikipediaView } from "./page-objects/wikipedia-view";
-import { expect } from "chai";
+import { assert } from "chai";
 
 var customId: string;
 
 describe('Functional Mobile App Tests using AFT-UI-MOBILE-APPS', () => {
     before(async () => {
         let mgr = MobileAppSessionGeneratorPluginManager.instance();
-        let resp = await mgr.sendCommand({
-            commandType: 'getApps'
-        }) as BrowserStackMobileAppGetAppsResponse;
-        let app: BrowserStackMobileApp;
+        let resp = await mgr.sendCommand('getApps');
+        let app: any;
         for (var i=0; i<resp?.apps?.length; i++) {
             let a = resp.apps[i];
             if (a.app_name == 'WikipediaSample.apk') {
@@ -21,25 +19,21 @@ describe('Functional Mobile App Tests using AFT-UI-MOBILE-APPS', () => {
             }
         }
         if (!app) {
-            let command: BrowserStackMobileAppUploadCommand = {
-                commandType: 'upload',
+            let data = {
                 file: path.join(process.cwd(), './test/ui/mobile-app-tests/mobile-apps/WikipediaSample.apk'),
                 custom_id: rand.getString(15)
             };
-            let result: BrowserStackMobileAppUploadResponse = await mgr.sendCommand(command) as BrowserStackMobileAppUploadResponse;
+            let result: any = await mgr.sendCommand('upload', data);
             customId = result.custom_id;
         } else {
-            customId = app.custom_id || app.app_url;
+            customId = app.shareable_id || app.custom_id || app.app_url;
         }
     });
 
     it('can search in Wikipedia App', async () => {
         await mobileAppShould({ description: 'can search in Wikipedia App',
-            remoteOptions: {
-                logLevel: 'silent',
-                capabilities: {"app": customId}
-            },
-            expect: async (tw: MobileAppTestWrapper) => {
+            app: customId,
+            expectation: async (tw: MobileAppTestWrapper) => {
                 await tw.logMgr.step('get the WikipediaView Facet from the Session...');
                 let view: WikipediaView = await tw.session.getFacet(WikipediaView);
                 await tw.logMgr.step('enter a search term...');
@@ -54,7 +48,8 @@ describe('Functional Mobile App Tests using AFT-UI-MOBILE-APPS', () => {
                         break;
                     }
                 }
-                expect(contains).to.be.true;
+                assert(contains);
+                return true;
             }
         });
     });

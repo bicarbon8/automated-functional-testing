@@ -7,7 +7,7 @@ describe('Functional Browser Tests using AFT-UI-BROWSERS', () => {
     it('can access websites using AFT and Page Widgets and Facets', async () => {
         await browserShould({description: 'can access websites using AFT and Page Widgets and Facets',
             testCases: ['C3456', 'C2345', 'C1234'],
-            expect: async (tw: BrowserTestWrapper) => {
+            expectation: async (tw: BrowserTestWrapper) => {
                 let loginPage: HerokuLoginPage = await tw.session.getFacet(HerokuLoginPage);
                 
                 await tw.logMgr.step('navigate to LoginPage...');
@@ -29,7 +29,7 @@ describe('Functional Browser Tests using AFT-UI-BROWSERS', () => {
 
     it('can recover from StaleElementExceptions automatically', async () => {
         await browserShould({
-            expect: async (tw: BrowserTestWrapper) => {
+            expectation: async (tw: BrowserTestWrapper) => {
                 let loginPage: HerokuLoginPage = await tw.session.getFacet(HerokuLoginPage, {maxWaitMs: 5000});
                 
                 await tw.logMgr.step('navigate to LoginPage');

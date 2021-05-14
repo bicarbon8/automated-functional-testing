@@ -3,19 +3,13 @@ import { AbstractSessionGeneratorPlugin, ISessionGeneratorPluginOptions } from "
 import { MobileAppSession, MobileAppSessionOptions } from "./mobile-app-session";
 import { Browser, remote, RemoteOptions } from "webdriverio";
 
-export interface MobileAppCommand {
-    commandType: unknown;
-}
-
-export interface MobileAppCommandResponse {
-    error?: any;
-}
-
-export interface MobileAppSessionGeneratorPluginOptions extends ISessionGeneratorPluginOptions {
-    remoteOptions?: RemoteOptions;
+export interface MobileAppSessionGeneratorPluginOptions extends ISessionGeneratorPluginOptions, MobileAppSessionOptions {
+    
 }
 
 export abstract class AbstractMobileAppSessionGeneratorPlugin extends AbstractSessionGeneratorPlugin {
+    private _app: string;
+    
     constructor(key: string, options?: MobileAppSessionGeneratorPluginOptions) {
         super(key, options);
     }
@@ -27,7 +21,19 @@ export abstract class AbstractMobileAppSessionGeneratorPlugin extends AbstractSe
                 remOpts[key] = options.remoteOptions[key];
             }
         }
+        let app: string = options?.app || await this.app();
+        if (app) {
+            remOpts.capabilities = remOpts.capabilities || {};
+            remOpts.capabilities['app'] = app;
+        }
         return remOpts;
+    }
+
+    async app(): Promise<string> {
+        if (!this._app) {
+            this._app = await this.optionsMgr.getOption(nameof<MobileAppSessionGeneratorPluginOptions>(o => o.app));
+        }
+        return this._app;
     }
 
     async newSession(options?: MobileAppSessionOptions): Promise<MobileAppSession> {
@@ -49,5 +55,5 @@ export abstract class AbstractMobileAppSessionGeneratorPlugin extends AbstractSe
         return null;
     }
 
-    abstract sendCommand(command: MobileAppCommand): Promise<MobileAppCommandResponse>;
+    abstract sendCommand(command: string, data?: any): Promise<any>;
 }

@@ -11,7 +11,7 @@ describe('should', () => {
     });
     
     it('returns an IProcessingResult', async () => {
-        let expected: ProcessingResult = await should({expect: () => expect(true).toBeTruthy()});
+        let expected: ProcessingResult = await should({expectation: () => expect(true).toBeTruthy()});
 
         expect(expected).toBeDefined();
         expect(expected.success).toBeTruthy();
@@ -19,7 +19,7 @@ describe('should', () => {
     
     it('supports passing in ITestWrapperOptions', async () => {
         let options: TestWrapperOptions = {
-            expect: () => expect(false).toBeFalsy(),
+            expectation: () => expect(false).toBeFalsy(),
             testCases: ['C1234'],
             defects: ['AUTO-123'],
             description: 'false should always be falsy'

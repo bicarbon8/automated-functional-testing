@@ -4,7 +4,7 @@ import { MobileAppSessionOptions } from "../sessions/mobile-app-session";
 import { MobileAppSessionGeneratorPluginManager } from "../sessions/mobile-app-session-generator-plugin-manager";
 
 export interface MobileAppTestWrapperOptions extends TestWrapperOptions, MobileAppSessionOptions {
-    expect: Func<MobileAppTestWrapper, any>;
+    expectation: Func<MobileAppTestWrapper, any>;
 
     /**
      * [OPTIONAL] if not passed in the {SessionPluginManager.instance()}

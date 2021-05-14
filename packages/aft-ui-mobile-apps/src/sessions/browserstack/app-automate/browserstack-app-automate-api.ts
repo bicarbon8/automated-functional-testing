@@ -4,50 +4,10 @@ import { HttpService, HttpResponse } from "aft-web-services";
 import * as fs from "fs";
 import * as FormData from "form-data";
 import { browserstackconfig, BrowserStackConfig } from "../configuration/browserstack-config";
-import { MobileAppCommand, MobileAppCommandResponse } from "../../abstract-mobile-app-session-generator-plugin";
-
-export interface BrowserStackMobileAppUploadCommand extends MobileAppCommand {
-    commandType: 'upload';
-    file: string;
-    custom_id?: string;
-}
-
-export interface BrowserStackMobileAppUploadResponse extends MobileAppCommandResponse {
-    app_url: string;
-    custom_id: string;
-    shareable_id: string;
-}
-
-export interface BrowserStackMobileAppNetworkCommand extends MobileAppCommand {
-    commandType: 'networkProfile';
-    profile: string;
-    sessionId: string;
-}
-
-export interface BrowserStackMobileAppSessionStatusCommand extends MobileAppCommand {
-    commandType: 'sessionStatus';
-    sessionId: string;
-    status: 'passed' | 'failed';
-    message?: string;
-}
-
-export interface BrowserStackMobileAppGetAppsCommand extends MobileAppCommand {
-    commandType: 'getApps';
-}
-
-export interface BrowserStackMobileAppGetAppsResponse extends MobileAppCommandResponse {
-    apps: BrowserStackMobileApp[];
-}
-
-export interface BrowserStackMobileApp {
-    app_name?: string;
-    app_version?: string;
-    app_url?: string;
-    app_id?: string;
-    uploaded_at?: string;
-    custom_id?: string;
-    shareable_id?: string;
-}
+import { UploadRequest } from "./upload-request";
+import { UploadResponse } from "./upload-response";
+import { BrowserStackMobileApp, RecentGroupAppsResponse } from "./recent-group-apps-response";
+import { SetSessionStatusRequest } from "./set-session-status-request";
 
 export interface BrowserStackAppAutomateApiOptions {
     _config: BrowserStackConfig;
@@ -63,14 +23,14 @@ export class BrowserStackAppAutomateApi {
         this._httpSvc = options?._httpSvc || HttpService.instance;
     }
     
-    async uploadApp(data: BrowserStackMobileAppUploadCommand): Promise<BrowserStackMobileAppUploadResponse> {
+    async uploadApp(data: UploadRequest): Promise<UploadResponse> {
         if(!fs.existsSync(data.file)) {
             return Promise.reject(`file could not be found at: ${data.file}`);
         }
         let formData: FormData = new FormData();
-        formData.append(nameof<BrowserStackMobileAppUploadCommand>(o => o.file), fs.createReadStream(data.file));
+        formData.append(nameof<UploadRequest>(o => o.file), fs.createReadStream(data.file));
         if (data.custom_id) {
-            formData.append(nameof<BrowserStackMobileAppUploadCommand>(o => o.custom_id), data.custom_id);
+            formData.append(nameof<UploadRequest>(o => o.custom_id), data.custom_id);
         }
         let bsResp: HttpResponse = await this._httpSvc.performRequest({
             url: `${await this._cfg.appApiUrl()}upload`,
@@ -80,12 +40,12 @@ export class BrowserStackAppAutomateApi {
             postData: formData
         });
         if (bsResp && bsResp.statusCode == 200) {
-            return bsResp.dataAs<BrowserStackMobileAppUploadResponse>();
+            return bsResp.dataAs<UploadResponse>();
         }
         return Promise.reject(`unable to upload file '${data.file} to BrowserStack due to: ${bsResp?.data}`);
     }
 
-    async getApps(): Promise<BrowserStackMobileAppGetAppsResponse> {
+    async getApps(): Promise<RecentGroupAppsResponse> {
         let bsResp: HttpResponse = await this._httpSvc.performRequest({
             url: `${await this._cfg.appApiUrl()}recent_group_apps`,
             method: 'GET',
@@ -97,7 +57,7 @@ export class BrowserStackAppAutomateApi {
         return Promise.reject(`unable to get list of mobile apps from BrowserStack due to: ${bsResp?.data}`);
     }
 
-    async setSessionStatus(data: BrowserStackMobileAppSessionStatusCommand): Promise<any> {
+    async setSessionStatus(data: SetSessionStatusRequest): Promise<void> {
         let urlPath: string = `sessions/${data.sessionId}.json`;
         let pdata: {} = {
             status: data.status,
@@ -112,7 +72,6 @@ export class BrowserStackAppAutomateApi {
         if (resp.statusCode != 200) {
             return Promise.reject(resp.data);
         }
-        return resp.data;
     }
 
     private async _getAuthHeader(): Promise<string> {

@@ -58,6 +58,9 @@
         "searchDir": "../"
     },
     "browserstackmobileappsessiongeneratorplugin": {
-        "platform": "android_11_+_+_Google Pixel 5"
+        "platform": "android_11_+_+_Google Pixel 5",
+        "remoteOptions": {
+            "logLevel": "silent"
+        }
     }
 }

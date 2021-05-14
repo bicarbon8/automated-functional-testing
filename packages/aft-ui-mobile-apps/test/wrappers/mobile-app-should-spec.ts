@@ -20,7 +20,7 @@ describe('mobileAppShould', () => {
             "deleteSession": Promise.resolve()
         });
         let expected: ProcessingResult = await mobileAppShould({
-            expect: () => expect(true).toBeTruthy(), 
+            expectation: () => expect(true).toBeTruthy(), 
             _sessionGenPluginMgr: new MobileAppSessionGeneratorPluginManager({pluginNames: ['appium-grid-session-generator-plugin']}),
             driver: driver
         });
@@ -37,7 +37,7 @@ describe('mobileAppShould', () => {
             "deleteSession": Promise.resolve()
         });
         let options: MobileAppTestWrapperOptions = {
-            expect: () => expect(false).toBeFalsy(),
+            expectation: () => expect(false).toBeFalsy(),
             testCases: ['C1234'],
             defects: ['AUTO-123'],
             description: 'false should always be falsy',

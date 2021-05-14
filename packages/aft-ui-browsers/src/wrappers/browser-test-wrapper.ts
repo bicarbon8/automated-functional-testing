@@ -3,7 +3,7 @@ import { BrowserSession, BrowserSessionOptions } from "../sessions/browser-sessi
 import { BrowserSessionGeneratorPluginManager } from "../sessions/browser-session-generator-plugin-manager";
 
 export interface BrowserTestWrapperOptions extends TestWrapperOptions, BrowserSessionOptions {
-    expect: Func<BrowserTestWrapper, any>;
+    expectation: Func<BrowserTestWrapper, any>;
 
     /**
      * [OPTIONAL] if not passed in the {SessionPluginManager.instance()}

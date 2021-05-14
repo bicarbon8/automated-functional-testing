@@ -18,7 +18,7 @@ export interface TestWrapperOptions {
      * a function that returns a boolean result indicating its
      * success, for example a {Jasmine.expect(..).toBe(...)}
      */
-    expect: Func<TestWrapper, boolean | PromiseLike<boolean>>;
+    expectation: Func<TestWrapper, boolean | PromiseLike<boolean>>;
     /**
      * [OPTIONAL] an array of Defect IDs associated with this test
      * if an {AbstractDefectPlugin} implementation is loaded these
@@ -70,7 +70,7 @@ export interface TestWrapperOptions {
  * ```
  */
 export class TestWrapper {
-    readonly expectation: Func<TestWrapper, any>;
+    readonly expectation: Func<TestWrapper, boolean | PromiseLike<boolean>>;
     readonly description: string;
     readonly logMgr: LoggingPluginManager;
 
@@ -84,7 +84,7 @@ export class TestWrapper {
     private readonly _buildInfoManager: BuildInfoPluginManager;
 
     constructor(options: TestWrapperOptions) {
-        this.expectation = options.expect;
+        this.expectation = options.expectation;
         this.description = this._initialiseDescription(options);
         this.logMgr = this._initialiselogMgr(options);
         this._testCaseManager = this._initialiseTestCases(options);
@@ -130,7 +130,35 @@ export class TestWrapper {
     async run(): Promise<ProcessingResult> {
         this._startTime = new Date().getTime();
         
-        let result: ProcessingResult = await this._beginProcessing();
+        let result: ProcessingResult;
+        let status: TestStatus = TestStatus.Untested;
+        let message: string;
+        if (this.expectation) {
+            let shouldRun: ProcessingResult = await this.shouldRun();
+            if (shouldRun.success) {
+                try {
+                    let result = await Promise.resolve(this.expectation(this));
+                    if (result) {
+                        status = TestStatus.Passed;
+                    } else {
+                        status = TestStatus.Failed;
+                    }
+                } catch(e) {
+                    status = TestStatus.Failed;
+                    message = (e as Error).message;
+                }
+            } else {
+                status = TestStatus.Skipped;
+                message = shouldRun.message;
+            }
+        } else {
+            message = 'no test expectation supplied so nothing could be tested';
+        }
+        if (message) {
+            this._errors.push(message);
+        }
+        result = {obj: status, message: message, success: status == TestStatus.Passed};
+        
         await this._logResult(result);
 
         return result;
@@ -229,41 +257,6 @@ export class TestWrapper {
                 await this.logMgr.pass(message);
                 break;
         }
-    }
-
-    /**
-     * checks the specified test IDs to determine if the
-     * expectation should be executed and returns a result
-     * based on execution or why it should not be run
-     */
-    private async _beginProcessing(): Promise<ProcessingResult> {
-        let status: TestStatus = TestStatus.Untested;
-        let message: string;
-        if (this.expectation) {
-            let shouldRun: ProcessingResult = await this.shouldRun();
-            if (shouldRun.success) {
-                try {
-                    let result = await Promise.resolve(this.expectation(this));
-                    if (result !== false) {
-                        status = TestStatus.Passed;
-                    } else {
-                        status = TestStatus.Failed;
-                    }
-                } catch(e) {
-                    status = TestStatus.Failed;
-                    message = (e as Error).message;
-                }
-            } else {
-                status = TestStatus.Skipped;
-                message = shouldRun.message;
-            }
-        } else {
-            message = 'no test expectation supplied so nothing could be tested';
-        }
-        if (message) {
-            this._errors.push(message);
-        }
-        return {obj: status, message: message, success: status == TestStatus.Passed};
     }
 
     /**

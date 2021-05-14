@@ -1,6 +1,6 @@
 import { nameof } from "ts-simple-nameof";
 import { AbstractSessionGeneratorPluginManager, ISessionGeneratorPluginManagerOptions } from "aft-ui";
-import { AbstractMobileAppSessionGeneratorPlugin, MobileAppCommand, MobileAppCommandResponse, MobileAppSessionGeneratorPluginOptions } from "./abstract-mobile-app-session-generator-plugin";
+import { AbstractMobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginOptions } from "./abstract-mobile-app-session-generator-plugin";
 import { MobileAppSession, MobileAppSessionOptions } from "./mobile-app-session";
 
 export interface MobileAppSessionGeneratorPluginManagerOptions extends ISessionGeneratorPluginManagerOptions, MobileAppSessionGeneratorPluginOptions {
@@ -19,10 +19,10 @@ export class MobileAppSessionGeneratorPluginManager extends AbstractSessionGener
         });
     }
 
-    async sendCommand(command: MobileAppCommand): Promise<MobileAppCommandResponse> {
+    async sendCommand(command: string, data?: any): Promise<any> {
         return await this.getFirstEnabledPlugin()
         .then(async (plugin) => {
-            return await plugin.sendCommand(command);
+            return await plugin.sendCommand(command, data);
         });
     }
 }

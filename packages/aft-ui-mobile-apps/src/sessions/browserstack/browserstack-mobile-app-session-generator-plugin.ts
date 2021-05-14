@@ -1,10 +1,11 @@
 import { TestPlatform } from "aft-ui";
-import { AbstractMobileAppSessionGeneratorPlugin, MobileAppCommand, MobileAppCommandResponse, MobileAppSessionGeneratorPluginOptions } from "../abstract-mobile-app-session-generator-plugin";
+import { AbstractMobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginOptions } from "../abstract-mobile-app-session-generator-plugin";
 import { nameof } from "ts-simple-nameof";
 import { MobileAppSessionOptions } from "../mobile-app-session";
 import { RemoteOptions } from "webdriverio";
-import { BrowserStackAppAutomateApi, BrowserStackMobileAppSessionStatusCommand, BrowserStackMobileAppUploadCommand } from "./app-automate/browserstack-app-automate-api";
+import { BrowserStackAppAutomateApi } from "./app-automate/browserstack-app-automate-api";
 import { BrowserStackConfig, BrowserStackConfigOptions } from "./configuration/browserstack-config";
+import { UploadRequest } from "./app-automate/upload-request";
 
 export interface BrowserStackMobileAppSessionGeneratorPluginOptions extends MobileAppSessionGeneratorPluginOptions, BrowserStackConfigOptions {
     _config?: BrowserStackConfig;
@@ -43,21 +44,21 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileA
         return remOpts;
     }
 
-    async sendCommand(command: MobileAppCommand): Promise<MobileAppCommandResponse> {
-        let resp: MobileAppCommandResponse;
+    async sendCommand(command: string, data?: any): Promise<any> {
+        let resp: any;
         try {
-            switch (command.commandType) {
+            switch (command) {
                 case 'upload':
-                    resp = await this._api.uploadApp(command as BrowserStackMobileAppUploadCommand);
+                    resp = await this._api.uploadApp(data as UploadRequest);
                     break;
                 case 'setStatus': 
-                    resp = await this._api.setSessionStatus(command as BrowserStackMobileAppSessionStatusCommand);
+                    // resp = await this._api.setSessionStatus(command as BrowserStackMobileAppSessionStatusCommand);
                     break;
                 case 'getApps':
                     resp = await this._api.getApps();
                     break;
                 default:
-                    resp = { error: `unknown command of '${command.commandType}' send to ${nameof(BrowserStackMobileAppSessionGeneratorPlugin)}` };
+                    resp = { error: `unknown command of '${command}' sent to ${nameof(BrowserStackMobileAppSessionGeneratorPlugin)}.sendCommand` };
                     break;
             }
         } catch (e) {

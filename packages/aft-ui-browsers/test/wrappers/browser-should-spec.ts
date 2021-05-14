@@ -22,7 +22,7 @@ describe('browserShould', () => {
             "quit": Promise.resolve()
         });
         let expected: ProcessingResult = await browserShould({
-            expect: () => expect(true).toBeTruthy(), 
+            expectation: () => expect(true).toBeTruthy(), 
             _sessionGenPluginMgr: new BrowserSessionGeneratorPluginManager({pluginNames: ['selenium-grid-session-generator-plugin']}),
             driver: driver
         });
@@ -41,7 +41,7 @@ describe('browserShould', () => {
             "quit": Promise.resolve()
         });
         let options: BrowserTestWrapperOptions = {
-            expect: () => expect(false).toBeFalsy(),
+            expectation: () => expect(false).toBeFalsy(),
             testCases: ['C1234'],
             defects: ['AUTO-123'],
             description: 'false should always be falsy',

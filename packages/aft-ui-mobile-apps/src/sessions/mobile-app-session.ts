@@ -6,16 +6,24 @@ import { Browser, RemoteOptions } from "webdriverio";
 
 export interface MobileAppSessionOptions extends ISessionOptions {
     driver?: Browser<'async'>;
+    /**
+     * a path to the mobile application (.apk or .ipa).
+     * NOTE: if left blank then you must specify the value in 
+     * your {remoteOptions.capabilities['app']}
+     */
+    app?: string;
     remoteOptions?: RemoteOptions;
 }
 
 export class MobileAppSession implements ISession {
     readonly driver: Browser<'async'>;
+    readonly app: string;
     readonly platform: TestPlatform;
     readonly logMgr: LoggingPluginManager;
     
     constructor(options: MobileAppSessionOptions) {
         this.driver = options.driver;
+        this.app = options.app;
         this.platform = TestPlatform.parse(options.platform);
         this.logMgr = options.logMgr || new LoggingPluginManager({logName: `${nameof(MobileAppSession)}_${this.driver?.sessionId}`});
     }

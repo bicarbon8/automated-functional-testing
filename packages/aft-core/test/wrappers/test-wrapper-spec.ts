@@ -12,7 +12,7 @@ describe('TestWrapper', () => {
     
     it('does not initialise properties on creating a new instance', async () => {
         let tw: TestWrapper = new TestWrapper({
-            expect: () => expect(true).toBeTruthy()
+            expectation: () => expect(true).toBeTruthy()
         });
         
         expect(tw.logMgr).toBeDefined();
@@ -21,7 +21,7 @@ describe('TestWrapper', () => {
 
     it('uses \'description\' as logMgr name if provided in options', async () => {
         let tw: TestWrapper = new TestWrapper({
-            expect: () => expect(true).toBeTruthy(),
+            expectation: () => expect(true).toBeTruthy(),
             description: 'true is always true', 
             testCases: ['C1234']
         });
@@ -32,7 +32,7 @@ describe('TestWrapper', () => {
 
     it('uses \'testCases\' as logMgr name if no description provided in options', async () => {
         let tw: TestWrapper = new TestWrapper({
-            expect: () => expect(true).toBeTruthy(),
+            expectation: () => expect(true).toBeTruthy(),
             testCases: ['C1234', 'C2345']
         });
         
@@ -42,7 +42,7 @@ describe('TestWrapper', () => {
 
     it('can supply itself to the expectation function', async () => {
         let testWrapper: TestWrapper = new TestWrapper({
-            expect: (tw) => {
+            expectation: (tw) => {
                 tw.logMgr.step('expect true to not be falsy');
                 expect(true).not.toBeFalsy();
                 tw.logMgr.step('profit!');
@@ -59,7 +59,7 @@ describe('TestWrapper', () => {
         let logMgr: LoggingPluginManager = new LoggingPluginManager({pluginNames: []});
         spyOn(logMgr, 'pass').and.callThrough();
         let options: TestWrapperOptions = {
-            expect: () => expect(false).toBeFalsy(),
+            expectation: () => expect(false).toBeFalsy(),
             testCases: ['C1234', 'C2345'], 
             logMgr: logMgr
         };
@@ -74,7 +74,7 @@ describe('TestWrapper', () => {
         let logMgr: LoggingPluginManager = new LoggingPluginManager({pluginNames: []});
         spyOn(logMgr, 'fail').and.callThrough();
         let options: TestWrapperOptions = {
-            expect: () => false,
+            expectation: () => false,
             testCases: ['C1234', 'C2345'], 
             logMgr: logMgr
         };
@@ -89,7 +89,7 @@ describe('TestWrapper', () => {
         let logMgr: LoggingPluginManager = new LoggingPluginManager({pluginNames: []});
         spyOn(logMgr, 'fail').and.callThrough();
         let options: TestWrapperOptions = {
-            expect: () => {
+            expectation: () => {
                 throw 'mock failure exception';
             },
             testCases: ['C1234', 'C2345'],
@@ -104,7 +104,7 @@ describe('TestWrapper', () => {
 
     it('will skip execution if all tests should not be run', async () => {
         let options: TestWrapperOptions = {
-            expect: () => notExpected = true,
+            expectation: () => notExpected = true,
             testCases: ['C1234', 'C2345'], 
             _testCaseManager: new TestCasePluginManager()
         };
@@ -123,7 +123,7 @@ describe('TestWrapper', () => {
 
     it('will run if only some tests should not be run', async () => {
         let options: TestWrapperOptions = {
-            expect: () => notExpected = true,
+            expectation: () => notExpected = true,
             testCases: ['C1234', 'C2345'], 
             _testCaseManager: new TestCasePluginManager()
         };
@@ -146,7 +146,7 @@ describe('TestWrapper', () => {
 
     it('will skip execution if any specified defect is open', async () => {
         let options: TestWrapperOptions = {
-            expect: () => notExpected = true,
+            expectation: () => notExpected = true,
             defects: ['AUTO-123', 'AUTO-222'], 
             _defectManager: new DefectPluginManager()
         };
@@ -173,7 +173,7 @@ describe('TestWrapper', () => {
 
     it('will run expectation if all defects are closed', async () => {
         let options: TestWrapperOptions = {
-            expect: () => notExpected = true,
+            expectation: () => notExpected = true,
             defects: ['AUTO-123', 'AUTO-222'],
             _defectManager: new DefectPluginManager()
         };
@@ -195,7 +195,7 @@ describe('TestWrapper', () => {
 
     it('will skip execution if any open defect is found referencing testIds', async () => {
         let options: TestWrapperOptions = {
-            expect: () => notExpected = true,
+            expectation: () => notExpected = true,
             testCases: ['C1234', 'C2345'],
             _defectManager: new DefectPluginManager()
         };
@@ -217,7 +217,7 @@ describe('TestWrapper', () => {
     });
 
     it('does not allow modification to the testCases array once initialised', async () => {
-        let options: TestWrapperOptions = {expect: ()=> true, testCases: ['C1234']};
+        let options: TestWrapperOptions = {expectation: ()=> true, testCases: ['C1234']};
         let tw: TestWrapper = new TestWrapper(options);
 
         tw.testCases.push('C2345');
@@ -229,7 +229,7 @@ describe('TestWrapper', () => {
     });
 
     it('does not allow modification to the defects array once initialised', async () => {
-        let options: TestWrapperOptions = {expect: ()=> true, defects: ['JIRA-1234']};
+        let options: TestWrapperOptions = {expectation: ()=> true, defects: ['JIRA-1234']};
         let tw: TestWrapper = new TestWrapper(options);
 
         tw.defects.push('JIRA-2345');
@@ -241,7 +241,7 @@ describe('TestWrapper', () => {
     });
 
     it('does not allow modification to the errors array once initialised', async () => {
-        let options: TestWrapperOptions = {expect: ()=> true};
+        let options: TestWrapperOptions = {expectation: ()=> true};
         let tw: TestWrapper = new TestWrapper(options);
 
         tw.errors.push('fake error');
