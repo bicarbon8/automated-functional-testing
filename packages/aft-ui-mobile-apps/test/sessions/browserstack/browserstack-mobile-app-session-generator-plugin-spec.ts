@@ -1,6 +1,6 @@
 import { using, LoggingPluginManager, rand } from "aft-core";
 import { TestPlatform } from "aft-ui";
-import { BrowserStackAppAutomateApi, BrowserStackConfig, BrowserStackMobileAppSessionGeneratorPlugin, BrowserStackMobileAppSessionGeneratorPluginOptions, BrowserStackMobileAppUploadCommand, BrowserStackMobileAppUploadResponse, MobileAppCommandResponse, MobileAppFacet, MobileAppSession } from "../../../src";
+import { BrowserStackAppAutomateApi, BrowserStackConfig, BrowserStackMobileAppSessionGeneratorPlugin, BrowserStackMobileAppSessionGeneratorPluginOptions, MobileAppFacet, MobileAppSession, UploadRequest, UploadResponse } from "../../../src";
 import { RemoteOptions } from "webdriverio";
 
 describe('BrowserStackMobileAppSessionGeneratorPlugin', () => {
@@ -64,7 +64,7 @@ describe('BrowserStackMobileAppSessionGeneratorPlugin', () => {
                 app_url: `app_url-${rand.guid}`,
                 custom_id: `custom_id-${rand.guid}`,
                 shareable_id: `shareable_id-${rand.guid}`
-            } as BrowserStackMobileAppUploadResponse)
+            } as UploadResponse)
         });
         let opts: BrowserStackMobileAppSessionGeneratorPluginOptions = {
             platform: platform.toString(),
@@ -73,14 +73,13 @@ describe('BrowserStackMobileAppSessionGeneratorPlugin', () => {
             _api: mockApi
         };
         let plugin: BrowserStackMobileAppSessionGeneratorPlugin = new BrowserStackMobileAppSessionGeneratorPlugin(opts);
-        let response: MobileAppCommandResponse = await plugin.sendCommand({
-            commandType: 'upload',
+        let response: any = await plugin.sendCommand('upload', {
             file: `file-${rand.guid}`,
             custom_id: `custom_id-${rand.guid}`
-        } as BrowserStackMobileAppUploadCommand);
+        });
 
         expect(response).toBeDefined();
-        let uploadResponse: BrowserStackMobileAppUploadResponse = response as BrowserStackMobileAppUploadResponse;
+        let uploadResponse: UploadResponse = response as UploadResponse;
         expect(uploadResponse.app_url).toBeDefined();
         expect(uploadResponse.custom_id).toBeDefined();
         expect(uploadResponse.shareable_id).toBeDefined();

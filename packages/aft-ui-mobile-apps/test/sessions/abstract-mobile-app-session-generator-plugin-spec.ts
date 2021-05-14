@@ -1,6 +1,6 @@
 import { nameof } from "ts-simple-nameof";
 import { rand } from "aft-core";
-import { AbstractMobileAppSessionGeneratorPlugin, MobileAppCommand, MobileAppCommandResponse, MobileAppSessionGeneratorPluginOptions } from "../../src";
+import { AbstractMobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginOptions } from "../../src";
 import { RemoteOptions } from "webdriverio";
 
 describe('AbstractMobileAppGridSessionGeneratorPlugin', () => {
@@ -34,7 +34,7 @@ class FakeMobileAppSessionGeneratorPlugin extends AbstractMobileAppSessionGenera
     async dispose(error?: Error): Promise<void> {
         /* do nothing */
     }
-    async sendCommand(command: MobileAppCommand): Promise<MobileAppCommandResponse> {
+    async sendCommand(command: string, data?: any): Promise<any> {
         /* do nothing */
         return null;
     }

@@ -1,6 +1,6 @@
 import { TestPlatform } from "aft-ui";
 import { BuildName } from "../../helpers/build-name";
-import { AbstractMobileAppSessionGeneratorPlugin, MobileAppCommand, MobileAppCommandResponse, MobileAppSessionGeneratorPluginOptions } from "../abstract-mobile-app-session-generator-plugin";
+import { AbstractMobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginOptions } from "../abstract-mobile-app-session-generator-plugin";
 import { nameof } from "ts-simple-nameof";
 import { MobileAppSessionOptions } from "../mobile-app-session";
 import { RemoteOptions } from "webdriverio";
@@ -36,8 +36,8 @@ export class SauceLabsMobileAppSessionGeneratorPlugin extends AbstractMobileAppS
         return remOpts;
     }
 
-    async sendCommand(command: MobileAppCommand): Promise<MobileAppCommandResponse> {
-        return Promise.reject(`command '${command.commandType}' not supported`);
+    async sendCommand(command: string, data?: any): Promise<any> {
+        return Promise.reject(`command '${command}' not supported`);
     }
 
     async dispose(error?: Error): Promise<void> {

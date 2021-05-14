@@ -18,7 +18,7 @@ export interface TestWrapperOptions {
      * a function that returns a boolean result indicating its
      * success, for example a {Jasmine.expect(..).toBe(...)}
      */
-    expectation: Func<TestWrapper, boolean | PromiseLike<boolean>>;
+    expectation: Func<TestWrapper, any>;
     /**
      * [OPTIONAL] an array of Defect IDs associated with this test
      * if an {AbstractDefectPlugin} implementation is loaded these
@@ -70,7 +70,7 @@ export interface TestWrapperOptions {
  * ```
  */
 export class TestWrapper {
-    readonly expectation: Func<TestWrapper, boolean | PromiseLike<boolean>>;
+    readonly expectation: Func<TestWrapper, any>;
     readonly description: string;
     readonly logMgr: LoggingPluginManager;
 
@@ -138,7 +138,7 @@ export class TestWrapper {
             if (shouldRun.success) {
                 try {
                     let result = await Promise.resolve(this.expectation(this));
-                    if (result) {
+                    if (result !== false) {
                         status = TestStatus.Passed;
                     } else {
                         status = TestStatus.Failed;
@@ -266,7 +266,7 @@ export class TestWrapper {
      * or {TestWrapperOptions.defects} referenced by this {TestWrapper} should not
      * be executed
      */
-    protected async shouldRun(): Promise<ProcessingResult> {
+    async shouldRun(): Promise<ProcessingResult> {
         let tcShouldRun: ProcessingResult = await this._shouldRun_tests();
         if (!tcShouldRun.success) {
             return tcShouldRun;

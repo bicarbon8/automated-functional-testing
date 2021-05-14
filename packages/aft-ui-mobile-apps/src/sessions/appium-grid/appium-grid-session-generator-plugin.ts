@@ -1,4 +1,4 @@
-import { AbstractMobileAppSessionGeneratorPlugin, MobileAppCommand, MobileAppCommandResponse, MobileAppSessionGeneratorPluginOptions } from "../abstract-mobile-app-session-generator-plugin";
+import { AbstractMobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginOptions } from "../abstract-mobile-app-session-generator-plugin";
 import { TestPlatform } from "aft-ui";
 import { nameof } from "ts-simple-nameof";
 import { MobileAppSessionOptions } from "../mobile-app-session";
@@ -22,8 +22,8 @@ export class AppiumGridSessionGeneratorPlugin extends AbstractMobileAppSessionGe
         remOpts.capabilities['platform'] = `${platform.os}${osVersion}`;
         return remOpts;
     }
-    async sendCommand(command: MobileAppCommand): Promise<MobileAppCommandResponse> {
-        return Promise.reject(`command '${command.commandType}' not supported`);
+    async sendCommand(command: string, data?: any): Promise<any> {
+        return Promise.reject(`command '${command}' not supported`);
     }
     async dispose(error?: Error): Promise<void> {
         /* do nothing */
