@@ -9,7 +9,7 @@ import { TestWrapper, TestWrapperOptions } from "./test-wrapper";
  * await should({expect: () => expect('foo').toBe('foo')});
  * await should({expect: (tw) => {
  *     await tw.logMgr().warn('foo');
- *     return expect('foo').not.toBe('bar')
+ *     expect('foo').not.toBe('bar');
  * }});
  * ```
  * @param options a {TestWrapperOptions} object containing the expectation and other options
