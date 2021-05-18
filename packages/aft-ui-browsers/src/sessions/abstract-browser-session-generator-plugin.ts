@@ -45,7 +45,8 @@ export abstract class AbstractBrowserSessionGeneratorPlugin extends AbstractSess
                     await driver.manage().window().maximize();
                     return new BrowserSession({
                         driver: driver,
-                        logMgr: options?.logMgr || this.logMgr
+                        logMgr: options?.logMgr || this.logMgr,
+                        platform: options?.platform || await this.getPlatform().then(p => p.toString())
                     });
                 } catch (e) {
                     return Promise.reject(e);

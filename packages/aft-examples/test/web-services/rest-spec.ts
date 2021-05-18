@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as FormData from "form-data";
-import { should, TestWrapper, Verifier, verify } from "aft-core";
+import { Verifier, verify } from "aft-core";
 import { HttpResponse, HttpService } from 'aft-web-services';
 import { expect } from "chai";
 import { ListUsersResponse } from "./response-objects/list-users-response";

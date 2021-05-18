@@ -38,11 +38,11 @@ export class BrowserFacet extends AbstractFacet {
     }
     
     async getFacet<T extends AbstractFacet>(facetType: Clazz<T>, options?: BrowserFacetOptions): Promise<T> {
-        options = options || {} as BrowserFacetOptions;
-        options.parent = options?.parent || this;
-        options.session = options?.session || this.session;
-        options.logMgr = options?.logMgr || this.logMgr;
-        options.maxWaitMs = options?.maxWaitMs || this.maxWaitMs;
+        options = options || {};
+        options.parent = options.parent || this;
+        options.session = options.session || this.session;
+        options.logMgr = options.logMgr || this.logMgr;
+        options.maxWaitMs = (options.maxWaitMs === undefined) ? this.maxWaitMs : options.maxWaitMs;
         let facet: T = new facetType(options);
         return facet;
     }

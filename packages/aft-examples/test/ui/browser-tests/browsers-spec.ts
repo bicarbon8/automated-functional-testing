@@ -1,5 +1,5 @@
 import { Verifier, verify, wait } from "aft-core";
-import { BrowserTestWrapper, browserShould, verifyWithBrowser, BrowserVerifier } from "aft-ui-browsers";
+import { verifyWithBrowser, BrowserVerifier } from "aft-ui-browsers";
 import { expect } from "chai";
 import { HerokuLoginPage } from "./page-objects/heroku-login-page";
 
@@ -52,7 +52,6 @@ describe('Functional Browser Tests using AFT-UI-BROWSERS', () => {
                 await tw.logMgr.step('click login button after refresh...');
                 await loginPage.content().then(async (c) => await c.getLoginButton()).then(async (button) => await button.click());
                 await tw.logMgr.info('no exception thrown on click');
-                return true;
             }).withLoggingPluginManager(tw.logMgr).and.withTests('C7890');
         }).withDescription('can recover from StaleElementExceptions automatically');
     });

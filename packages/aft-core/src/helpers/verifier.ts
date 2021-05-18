@@ -79,8 +79,10 @@ export class Verifier implements PromiseLike<void> {
 
     protected async _resolveAssertion(): Promise<void> {
         let result: any = await Promise.resolve(this._assertion(this));
-        if (result != this._expectedResult) {
-            return Promise.reject(`expected result of '${this._expectedResult}' to equal actual result of '${result}'`);
+        if (this._expectedResult !== undefined) {
+            if (result != this._expectedResult) {
+                return Promise.reject(`expected result of '${this._expectedResult}' to equal actual result of '${result}'`);
+            }
         }
     }
 

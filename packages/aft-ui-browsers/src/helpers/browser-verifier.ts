@@ -8,18 +8,26 @@ export class BrowserVerifier extends Verifier {
     protected _session: BrowserSession;
     protected _sessionOptions: BrowserSessionOptions;
 
-    constructor() {
-        super();
-        this._sessionMgr = BrowserSessionGeneratorPluginManager.instance();
-        this._sessionOptions = {logMgr: this.logMgr};
-    }
-
     get and(): BrowserVerifier {
         return this;
     }
 
+    get sessionGeneratorPluginManager(): BrowserSessionGeneratorPluginManager {
+        if (!this._sessionMgr) {
+            this._sessionMgr = BrowserSessionGeneratorPluginManager.instance();
+        }
+        return this._sessionMgr;
+    }
+
     get session(): BrowserSession {
         return this._session;
+    }
+
+    get sessionOptions(): BrowserSessionOptions {
+        if (!this._sessionOptions) {
+            this._sessionOptions = {logMgr: this.logMgr};
+        }
+        return this._sessionOptions;
     }
 
     verify(assertion: Func<BrowserVerifier, any>): BrowserVerifier {
@@ -40,7 +48,7 @@ export class BrowserVerifier extends Verifier {
     }
 
     protected async _resolveAssertion(): Promise<void> {
-        await using(await this._sessionMgr.newSession(this._sessionOptions), async (session) => {
+        await using(await this.sessionGeneratorPluginManager.newSession(this.sessionOptions), async (session) => {
             this._session = session;
             await super._resolveAssertion();
         });

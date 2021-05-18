@@ -317,6 +317,12 @@ describe('Verifier', () => {
         expect(logMgr.logResult).toHaveBeenCalledTimes(1);
         expect(logMgr.pass).toHaveBeenCalledTimes(1);
     });
+
+    it('assertion return value not checked if \'returns\' not used', async () => {
+        await verify(() => {
+            return 'foo';
+        });
+    });
 });
 
 const testStore: Map<string, any> = new Map<string, any>();

@@ -1,6 +1,6 @@
 import * as path from "path";
 import { rand } from "aft-core";
-import { mobileAppShould, MobileAppTestWrapper, MobileAppSessionGeneratorPluginManager } from "aft-ui-mobile-apps";
+import { MobileAppSessionGeneratorPluginManager, MobileAppVerifier, verifyWithMobileApp } from "aft-ui-mobile-apps";
 import { WikipediaView } from "./page-objects/wikipedia-view";
 import { assert } from "chai";
 
@@ -31,26 +31,23 @@ describe('Functional Mobile App Tests using AFT-UI-MOBILE-APPS', () => {
     });
 
     it('can search in Wikipedia App', async () => {
-        await mobileAppShould({ description: 'can search in Wikipedia App',
-            app: customId,
-            expectation: async (tw: MobileAppTestWrapper) => {
-                await tw.logMgr.step('get the WikipediaView Facet from the Session...');
-                let view: WikipediaView = await tw.session.getFacet(WikipediaView);
-                await tw.logMgr.step('enter a search term...');
-                await view.searchFor('pizza');
-                await tw.logMgr.step('get the results and ensure they contain the search term...');
-                let results: string[] = await view.getResults();
-                let contains: boolean = false;
-                for (var i=0; i<results.length; i++) {
-                    let res: string = results[i];
-                    if (res.toLowerCase().includes('pizza')) {
-                        contains = true;
-                        break;
-                    }
+        await verifyWithMobileApp(async (tw: MobileAppVerifier) => {
+            await tw.logMgr.step('get the WikipediaView Facet from the Session...');
+            let view: WikipediaView = await tw.session.getFacet(WikipediaView);
+            await tw.logMgr.step('enter a search term...');
+            await view.searchFor('pizza');
+            await tw.logMgr.step('get the results and ensure they contain the search term...');
+            let results: string[] = await view.getResults();
+            let contains: boolean = false;
+            for (var i=0; i<results.length; i++) {
+                let res: string = results[i];
+                if (res.toLowerCase().includes('pizza')) {
+                    contains = true;
+                    break;
                 }
-                assert(contains);
-                return true;
             }
-        });
+            assert(contains);
+        }).withMobileAppSessionOptions({app: customId})
+        .and.withDescription('can search in Wikipedia App');
     });
 });

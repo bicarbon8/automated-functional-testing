@@ -16,6 +16,3 @@ export * from './sessions/abstract-mobile-app-session-generator-plugin';
 export * from './sessions/appium-grid/appium-grid-session-generator-plugin';
 export * from './sessions/mobile-app-session';
 export * from './sessions/mobile-app-session-generator-plugin-manager';
-/* wrappers */
-export * from './wrappers/mobile-app-should';
-export * from './wrappers/mobile-app-test-wrapper';

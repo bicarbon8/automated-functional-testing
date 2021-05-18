@@ -1,4 +1,4 @@
-import { rand, should } from "../src";
+import { rand, verify } from "../src";
 
 var consoleLog = console.log;
 describe('AFT', () => {
@@ -12,23 +12,21 @@ describe('AFT', () => {
     });
 
     it('is simple to integrate into existing expectations', async () => {
-        await should({expectation: () => expect(1 + 1).toBe(2), description: '1 plus 1 is 2'});
+        await verify(() => (1 + 1)).returns(2).withDescription('1 plus 1 is 2');
     });
 
     it('can be used to wrap large blocks of code', async () => {
-        await should({
-            expectation: async (tw) => {
-                let count: number = 10;
-                let result: boolean = true;
-                for (var i=0; i<count; i++) {
-                    await tw.logMgr.info(`running count: ${i}`);
-                    await tw.logMgr.warn(`random string: ${rand.getString()}`);
-                    result = result && expect(i).not.toBeNaN();
-                }
-                return result;
-            }, 
-            testCases: ['C1234', 'C2345'], 
-            description: 'some tests require lots of actions'
-        });
+        await verify(async (v) => {
+            let count: number = 10;
+            let result: boolean = true;
+            for (var i=0; i<count; i++) {
+                await v.logMgr.info(`running count: ${i}`);
+                await v.logMgr.warn(`random string: ${rand.getString()}`);
+                result = result && expect(i).not.toBeNaN();
+            }
+            return count;
+        }).withTests('C1234', 'C2345') 
+        .and.withDescription('some tests require lots of actions')
+        .returns(10);
     });
 });

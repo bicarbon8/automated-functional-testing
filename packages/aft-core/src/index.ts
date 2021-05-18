@@ -37,6 +37,3 @@ export * from './plugins/test-cases/itest-case';
 export * from './plugins/test-cases/itest-result';
 export * from './plugins/test-cases/test-exception';
 export * from './plugins/test-cases/test-status';
-/** wrappers */
-export * from './wrappers/should';
-export * from './wrappers/test-wrapper';

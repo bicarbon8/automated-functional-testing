@@ -8,14 +8,15 @@ export class MobileAppVerifier extends Verifier {
     protected _session: MobileAppSession;
     protected _sessionOptions: MobileAppSessionOptions;
 
-    constructor() {
-        super();
-        this._sessionMgr = MobileAppSessionGeneratorPluginManager.instance();
-        this._sessionOptions = {logMgr: this.logMgr};
-    }
-
     get and(): MobileAppVerifier {
         return this;
+    }
+
+    get sessionGeneratorPluginManager(): MobileAppSessionGeneratorPluginManager {
+        if (!this._sessionMgr) {
+            this._sessionMgr = MobileAppSessionGeneratorPluginManager.instance();
+        }
+        return this._sessionMgr;
     }
 
     get session(): MobileAppSession {
@@ -39,8 +40,15 @@ export class MobileAppVerifier extends Verifier {
         return this;
     }
 
+    get sessionOptions(): MobileAppSessionOptions {
+        if (!this._sessionOptions) {
+            this._sessionOptions = {logMgr: this.logMgr};
+        }
+        return this._sessionOptions;
+    }
+
     protected async _resolveAssertion(): Promise<void> {
-        await using(await this._sessionMgr.newSession(this._sessionOptions), async (session) => {
+        await using(await this.sessionGeneratorPluginManager.newSession(this.sessionOptions), async (session) => {
             this._session = session;
             await super._resolveAssertion();
         });
