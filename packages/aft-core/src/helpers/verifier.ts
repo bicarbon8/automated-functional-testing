@@ -18,8 +18,9 @@ export interface VerifierOptions {
     _buildInfoPluginManager?: BuildInfoPluginManager;
 }
 
-export class Verifier {
-    private _expectation: Func<Verifier, void>;
+export class Verifier implements PromiseLike<void> {
+    private _assertion: Func<LoggingPluginManager, any>;
+    private _expectedResult: any;
     private _description: string;
     private _startTime: number;
     private _innerPromise: Promise<void>;
@@ -28,16 +29,19 @@ export class Verifier {
     private _testMgr: TestCasePluginManager;
     private _defectMgr: DefectPluginManager;
     private _buildMgr: BuildInfoPluginManager;
-    private _withTestsPromise: Promise<void>;
-    private _withDefectsPromise: Promise<void>;
+    private _withTestsPromise: Promise<ProcessingResult>;
+    private _withDefectsPromise: Promise<ProcessingResult>;
 
     constructor() {
         this._startTime = new Date().getTime();
         this._tests = new Set<string>();
-        this._withTestsPromise = Promise.resolve();
-        this._withDefectsPromise = Promise.resolve();
+        this._withTestsPromise = Promise.resolve({success: true});
+        this._withDefectsPromise = Promise.resolve({success: true});
+        this._testMgr = TestCasePluginManager.instance();
+        this._defectMgr = DefectPluginManager.instance();
+        this._buildMgr = BuildInfoPluginManager.instance();
     }
-
+    
     get logMgr(): LoggingPluginManager {
         if (!this._logMgr) {
             if (this._description) {
@@ -50,21 +54,51 @@ export class Verifier {
         }
         return this._logMgr;
     }
-    
-    init(options?: VerifierOptions): Verifier {
-        this._logMgr = options?._loggingPluginManager;
-        this._testMgr = options?._testCasePluginManager || TestCasePluginManager.instance();
-        this._defectMgr = options?._defectPluginManager || DefectPluginManager.instance();
-        this._buildMgr = options?._buildInfoPluginManager || BuildInfoPluginManager.instance();
-        return this;
+
+    async then<TResult1 = Verifier, TResult2 = never>(onfulfilled?: (value: void) => TResult1 | PromiseLike<TResult1>, onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2> {
+        return this._getInnerPromise()
+        .then(onfulfilled, onrejected);
+    }
+
+    private async _getInnerPromise(): Promise<void> {
+        if (!this._innerPromise) {
+            this._innerPromise = new Promise(async (resolve, reject) => {
+                try {
+                    let tcShould: ProcessingResult = await Promise.resolve(this._withTestsPromise);
+                    if (tcShould.success) {
+                        let dShould: ProcessingResult = await Promise.resolve(this._withDefectsPromise);
+                        if (dShould.success) {
+                            await this._resolveAssertion();
+                            await this._logResult(TestStatus.Passed);
+                        } else {
+                            await this._logResult(TestStatus.Skipped, dShould.message);
+                        }
+                    } else {
+                        await this._logResult(TestStatus.Skipped, tcShould.message);
+                    }
+                    resolve();
+                } catch(e) {
+                    await this._logResult(TestStatus.Failed, e);
+                    reject(e);
+                }
+            });
+        }
+        return this._innerPromise;
+    }
+
+    private async _resolveAssertion(): Promise<void> {
+        let result: any = await Promise.resolve(this._assertion(this.logMgr));
+        if (result != this._expectedResult) {
+            return Promise.reject(`expected result of '${this._expectedResult}' to equal actual result of '${result}'`);
+        }
     }
 
     get and(): Verifier {
         return this;
     }
 
-    expect(expectation: Func<Verifier, void>): Verifier {
-        this._expectation = expectation;
+    verify(assertion: Func<LoggingPluginManager, void>): Verifier {
+        this._assertion = assertion;
         return this;
     }
 
@@ -74,42 +108,55 @@ export class Verifier {
     }
 
     withTests(...tests: string[]): Verifier {
-        this._withTestsPromise = new Promise(async (resolve, reject) => {
+        this._withTestsPromise = new Promise<ProcessingResult>(async (resolve, reject) => {
             if (tests?.length) {
                 for (var i=0; i<tests.length; i++) {
                     let test: string = tests[i];
                     this._tests.add(test);
                 }
-                await this._shouldRun_tests(...tests);
+                resolve(await this._shouldRun_tests(...tests));
             }
-            resolve();
+            resolve({success: true});
         });
         return this;
     }
 
     withDefects(...defects: string[]): Verifier {
-        this._withDefectsPromise = new Promise(async (resolve, reject) => {
+        this._withDefectsPromise = new Promise<ProcessingResult>(async (resolve, reject) => {
             if (defects?.length) {
-                await this._shouldRun_defects(...defects);
+                resolve(await this._shouldRun_defects(...defects));
             }
-            resolve();
+            resolve({success: true});
         });
         return this;
     }
 
-    async verify(): Promise<void> {
-        try {
-            await this._withTestsPromise
-            .then(v => this._withDefectsPromise)
-            .then(v => Promise.resolve(this._expectation(this)));
-        } catch(e) {
-            await this._logResult(TestStatus.Failed, e);
-            throw e;
-        }
-        await this._logResult(TestStatus.Passed);
+    returns(result: any): Verifier {
+        this._expectedResult = result;
+        return this;
     }
 
-    private async _shouldRun_tests(...tests: string[]): Promise<boolean> {
+    withLoggingPluginManager(logMgr: LoggingPluginManager): Verifier {
+        this._logMgr = logMgr;
+        return this;
+    }
+
+    withTestCasePluginManager(testMgr: TestCasePluginManager): Verifier {
+        this._testMgr = testMgr;
+        return this;
+    }
+
+    withDefectPluginManager(defectMgr: DefectPluginManager): Verifier {
+        this._defectMgr = defectMgr;
+        return this;
+    }
+
+    withBuildInfoPluginManager(buildMgr: BuildInfoPluginManager): Verifier {
+        this._buildMgr = buildMgr;
+        return this;
+    }
+
+    private async _shouldRun_tests(...tests: string[]): Promise<ProcessingResult> {
         let tcResults: ProcessingResult[] = [];
         if (tests?.length) {
             for (var i=0; i<tests.length; i++) {
@@ -121,37 +168,35 @@ export class Verifier {
                     for (var j=0; j<defects.length; j++) {
                         let d: IDefect = defects[j];
                         if (d?.status == DefectStatus.open) {
-                            return Promise.reject(`TestId: '${testId}' has open defect '${d.id}' so test should not be run.`);
+                            return {success: false, message: `TestId: '${testId}' has open defect '${d.id}' so test should not be run.`};
                         }
                     }
                 }
             }
         }
         let shouldRun: boolean = false;
-        let reasons: string = '';
         for (var i=0; i<tcResults.length; i++) {
             let tcRes: ProcessingResult = tcResults[i];
             shouldRun = shouldRun || tcRes.success;
-            reasons += tcRes.message || '';
         }
         if (!shouldRun) {
-            return Promise.reject(reasons);
+            return {success: false, message: tcResults.map((r) => r.message || '').join('; ')};
         }
-        return true;
+        return {success: true};
     }
 
-    private async _shouldRun_defects(...defects: string[]): Promise<boolean> {
+    private async _shouldRun_defects(...defects: string[]): Promise<ProcessingResult> {
         // first search for any specified Defects by ID
         if (defects?.length) {
             for (var i=0; i<defects.length; i++) {
                 let defectId: string = defects[i];
                 let defect: IDefect = await this._defectMgr.getDefect(defectId);
                 if (defect?.status == DefectStatus.open) {
-                    return Promise.reject(`Defect: '${defectId}' is open so test should not be run.`);
+                    return {success: false, message: `Defect: '${defectId}' is open so test should not be run.`};
                 }
             }
         }
-        return true;
+        return {success: true};
     }
 
     /**
@@ -238,3 +283,9 @@ export class Verifier {
         return result;
     }
 }
+
+export const verify = (assertion: Func<LoggingPluginManager, any>): Verifier => {
+    let v: Verifier = new Verifier();
+    v.verify(assertion);
+    return v;
+};
