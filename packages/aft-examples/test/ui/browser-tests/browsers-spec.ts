@@ -22,7 +22,7 @@ describe('Functional Browser Tests using AFT-UI-BROWSERS', () => {
             
             expect(message).to.contain("You logged into a secure area!");
         }).withDescription('can access websites using AFT and Page Widgets and Facets')
-        .and.withTests('C3456', 'C2345', 'C1234');
+        .and.withTestId('C3456').and.withTestId('C2345').and.withTestId('C1234');
     });
 
     it('can recover from StaleElementExceptions automatically', async () => {
@@ -33,26 +33,26 @@ describe('Functional Browser Tests using AFT-UI-BROWSERS', () => {
                 await v.logMgr.step('navigate to LoginPage');
                 await loginPage.navigateTo();
                 return await loginPage.session.driver.getCurrentUrl();
-            }).withLoggingPluginManager(tw.logMgr).and.withTests('C4567')
+            }).withLoggingPluginManager(tw.logMgr).and.withTestId('C4567')
             .returns('https://the-internet.herokuapp.com/login');
             
             await verify(async (v: Verifier) => {
                 await v.logMgr.step('click login button...');
                 await loginPage.content().then(async (c) => await c.getLoginButton()).then(async (button) => await button.click());
                 await v.logMgr.info('no exception thrown on click');
-            }).withLoggingPluginManager(tw.logMgr).and.withTests('C5678');
+            }).withLoggingPluginManager(tw.logMgr).and.withTestId('C5678');
 
             await verify(async (v: Verifier) => {
                 await v.logMgr.step('refresh page...');
                 await tw.session.refresh();
                 await v.logMgr.info('page refreshed');
-            }).withLoggingPluginManager(tw.logMgr).and.withTests('C6789');
+            }).withLoggingPluginManager(tw.logMgr).and.withTestId('C6789');
 
             await verify(async (v: Verifier) => {
                 await tw.logMgr.step('click login button after refresh...');
                 await loginPage.content().then(async (c) => await c.getLoginButton()).then(async (button) => await button.click());
                 await tw.logMgr.info('no exception thrown on click');
-            }).withLoggingPluginManager(tw.logMgr).and.withTests('C7890');
+            }).withLoggingPluginManager(tw.logMgr).and.withTestId('C7890');
         }).withDescription('can recover from StaleElementExceptions automatically');
     });
 });

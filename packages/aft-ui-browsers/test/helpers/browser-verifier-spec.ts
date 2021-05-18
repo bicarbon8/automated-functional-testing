@@ -68,7 +68,7 @@ describe('BrowserVerifier', () => {
         await verifyWithBrowser((bv: BrowserVerifier) => {
             expect(true).toBeFalse();
         }).and.withBrowserSessionGeneratorPluginManager(sessionMgr)
-        .and.withTests('C1234')
+        .and.withTestId('C1234')
         .and.withTestCasePluginManager(tcMgr);
 
         expect(sessionMgr.newSession).not.toHaveBeenCalled();

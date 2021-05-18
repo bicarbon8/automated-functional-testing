@@ -100,22 +100,16 @@ export class Verifier implements PromiseLike<void> {
         return this;
     }
 
-    withTests(...tests: string[]): Verifier {
-        if (tests?.length) {
-            for (var i=0; i<tests.length; i++) {
-                let test: string = tests[i];
-                this._tests.add(test);
-            }
+    withTestId(test: string): Verifier {
+        if (test) {
+            this._tests.add(test);
         }
         return this;
     }
 
-    withDefects(...defects: string[]): Verifier {
-        if (defects?.length) {
-            for (var i=0; i<defects.length; i++) {
-                let defect: string = defects[i];
-                this._defects.add(defect);
-            }
+    withKnownDefectId(defect: string): Verifier {
+        if (defect) {
+            this._defects.add(defect);
         }
         return this;
     }

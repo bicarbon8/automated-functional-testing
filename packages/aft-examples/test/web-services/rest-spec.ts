@@ -16,7 +16,7 @@ describe('REST Request', () => {
             expect(response).to.exist;
             await tw.logMgr.info('request completed and received status code: ' + response.statusCode);
             return response.statusCode;
-        }).withTests('C2217763').returns(200);
+        }).withTestId('C2217763').returns(200);
 
         await verify(async (tw) => {
             await tw.logMgr.step('confirm response is not null...');
@@ -25,7 +25,7 @@ describe('REST Request', () => {
             await tw.logMgr.step('confirm response.data is not null...');
             expect(response.data).to.exist;
             await tw.logMgr.info('confirmed response.data is not null.');
-        }).withTests('C3131');
+        }).withTestId('C3131');
 
         await verify(async (tw) => {
             await tw.logMgr.step('confirm can deserialise response.data into typed object...');
@@ -35,7 +35,7 @@ describe('REST Request', () => {
             await tw.logMgr.step('confirm object data property contains more than one result...');
             expect(obj.data.length).to.be.greaterThan(0);
             await tw.logMgr.info('confirmed object data property contains more than one result.');
-        }).withTests('C2217764');
+        }).withTestId('C2217764');
     });
 
     it('can make a multipart post', async () => {

@@ -10,126 +10,58 @@ Take the following as an example of how one could interact with the following An
 ### Step 1: create the View Facet
 
 ```typescript
-/**
- * represents the login page object containing facets encapsulating
- * the functionality of the app
- */
-export class HerokuLoginPage extends SeleniumFacet {
-    /* the locator can also be specified in options */
-    readonly locator: Locator = By.css('html');
-    /* facets contained in this page */
-    private content(): Promise<HerokuContentFacet> {
-        return this.getFacet(HerokuContentWidget);
+export class WikipediaView extends MobileAppFacet {
+    readonly locator: string = '//*';
+    private _searchButton = async (): Promise<Element<'async'>> => await this.getElement({locator: "~Search Wikipedia", maxWaitMs: 10000});
+    private _searchInput = async (): Promise<Element<'async'>> => await this.session.driver.$('android=new UiSelector().resourceId("org.wikipedia.alpha:id/search_src_text")');
+    private _searchResults = async (): Promise<ElementArray> => await this.getElements({locator: "android.widget.TextView", maxWaitMs: 10000});
+    async searchFor(term: string): Promise<string[]> {
+        await this.logMgr.info("tapping on 'SearchButton'");
+        await this._searchButton().then(async b => await b.click());
+        await this.sendTextToSearch(term);
+        return await this.getResults();
     }
-    private messages(): Promise<HerokuMessagesFacet> {
-        return this.getFacet(HerokuMessagesWidget, {maxWaitMs: 20000});
+    async sendTextToSearch(text: string): Promise<void> {
+        await this.logMgr.info(`setting 'SearchInput' to '${text}'...`);
+        await this._searchInput().then(async i => await i.addValue(text));
     }
-    async navigateTo(): Promise<void> {
-        await this.session.goTo('https://the-internet.herokuapp.com/login');
-    }
-    /* action functions */
-    async login(user: string, pass: string): Promise<void> {
-        await this.content().then((c) => c.login(user, pass));
-    }
-    async hasMessage(): Promise<boolean> {
-        return await this.messages().then((m) => m.hasMessage());
-    }
-    async getMessage(): Promise<string> {
-        return await this.messages().then((m) => m.getMessage());
-    }
-}
-```
+    async getResults(): Promise<string[]> {
+        await this.logMgr.info("getting text from 'SearchResults' to return as 'string[]'");
+        let resultsText: string[] = [];
 
-### Step 2: create the content and messages Facets
-
-```typescript
-/**
- * represents the content of the login page including the 
- * username and password fields and the login button
- */
-export class HerokuContentFacet extends SeleniumFacet {
-    readonly locator: Locator = By.id("content");
-    /**
-     * function will get the Facet's root element using
-     * the Facet.locator (By.id("content")) and then will
-     * call {findElement(By.id("username"))} from that
-     * ```
-     * <html>
-     *   ...
-     *   <div id="content">
-     *     <input id="username" />
-     *   </div>
-     *   ...
-     * </html>
-     * ```
-     */
-    private async usernameInput(): Promise<WebElement> {
-        return await this.getElement({locator: By.id("username")});
-    }
-    private async passwordInput(): Promise<WebElement> {
-        return await this.getElement({locator: By.id("password")});
-    }
-    private async loginButton(): Promise<IFacet> {
-        return await this.getElement({locator: By.css("button.radius")});
-    }
-    /* action functions */
-    async login(user: string, pass: string): Promise<void> {
-        await this.usernameInput().then((input) => input.sendKeys(user));
-        await this.passwordInput().then((input) => input.sendKeys(pass));
-        return await this.clickLoginButton();
-    }
-    async clickLoginButton(): Promise<void> {
-        await this.loginButton().then((button) => button.click());
-    }
-}
-```
-```typescript
-/**
- * represents the results message content shown on successful 
- * or failed login.
- */
-export class HerokuMessagesFacet extends SeleniumFacet {
-    readonly locator: Locator = By.id("flash-messages");
-    private async message(): Promise<WebElement> {
-        return this.getElement({locator: By.id("flash")});
-    }
-    /* action functions */
-    async hasMessage(): Promise<boolean> {
-        return await this.message()
-        .then((message) => {
-            return message !== undefined;
-        }).catch((err: Error) => {
-            return false;
-        });
-    }
-    async getMessage(): Promise<string> {
-        if (await this.hasMessage()) {
-            return await this.message().then(m => m.getText());
+        var searchResults: ElementArray = await this._searchResults();
+        for (var i=0; i<searchResults.length; i++) {
+            let res: Element<'async'> = searchResults[i];
+            let txt: string = await res.getText().catch(err => err);
+            resultsText.push(txt);
         }
-        return null;
+        await this.logMgr.info(`found results of: [${resultsText.join(', ')}]`);
+        return resultsText;
     }
 }
 ```
-### Step 3: use them to interact with the web application
+### Step 2: use them to interact with the mobile application
 
 ```typescript
-await browserShould({description: 'can access websites using AFT and Page Widgets and Facets',
-    testCases: ['C3456', 'C2345', 'C1234'],
-    expect: async (tw: BrowserTestWrapper) => {
-        let loginPage: HerokuLoginPage = await tw.session.getFacet(HerokuLoginPage);
-        await tw.logMgr.step('navigate to LoginPage...');
-        await loginPage.navigateTo();
-        await tw.logMgr.step('login');
-        await loginPage.login("tomsmith", "SuperSecretPassword!");
-        await tw.logMgr.step('wait for message to appear...')
-        await wait.untilTrue(() => loginPage.hasMessage(), 20000);
-        await tw.logMgr.step('get message...');
-        let message: string = await loginPage.getMessage();
-        return expect(message).toContain("You logged into a secure area!");
+await verifyWithMobileApp(async (mav: MobileAppVerifier) => {
+    await mav.logMgr.step('get the WikipediaView Facet from the Session...');
+    let view: WikipediaView = await mav.session.getFacet(WikipediaView);
+    await mav.logMgr.step('enter a search term...');
+    await view.searchFor('pizza');
+    await mav.logMgr.step('get the results and ensure they contain the search term...');
+    let results: string[] = await view.getResults();
+    let contains: boolean = false;
+    for (var i=0; i<results.length; i++) {
+        let res: string = results[i];
+        if (res.toLowerCase().includes('pizza')) {
+            contains = true;
+            break;
+        }
     }
+    assert(contains); // throws on error
 });
 ```
-## aftconfig.json keys and values supported by aft-ui-selenium package
+## aftconfig.json keys and values supported by aft-ui-mobile-apps package
 - **browserstacksessiongeneratorplugin** - only required if referencing `browserstack-session-generator-plugin` in the `pluginNames` array of the `sessiongeneratorpluginmanager` section of your `aftconfig.json` file
   - **user** - [REQUIRED] the BrowserStack username for the account to be used
   - **key** - [REQUIRED] the BrowserStack accesskey for the account to be used

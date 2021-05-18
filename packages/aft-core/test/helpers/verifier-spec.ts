@@ -29,7 +29,7 @@ describe('Verifier', () => {
         await verify(async (v: Verifier) => {
             expect(await v.logMgr.logName()).toEqual('C1234_C2345');
         })
-        .withTests('C1234', 'C2345')
+        .withTestId('C1234').and.withTestId('C2345')
         .and.withTestCasePluginManager(tcMgr)
         .and.withDefectPluginManager(dMgr);
     });
@@ -56,7 +56,7 @@ describe('Verifier', () => {
         .and.withTestCasePluginManager(tcMgr)
         .and.withDefectPluginManager(dMgr)
         .and.withDescription('true should be true')
-        .and.withTests('C1234', 'C2345');
+        .and.withTestId('C1234').and.withTestId('C2345');
 
         expect(tcMgr.shouldRun).toHaveBeenCalledTimes(2);
         expect(dMgr.findDefects).toHaveBeenCalledTimes(2);
@@ -88,7 +88,7 @@ describe('Verifier', () => {
             .withTestCasePluginManager(tcMgr)
             .withDefectPluginManager(dMgr)
             .withDescription('true should be true')
-            .and.withTests('C1234', 'C2345');
+            .and.withTestId('C1234').and.withTestId('C2345');
 
             expect(true).toBe(false); // force failure
         } catch (e) {
@@ -124,7 +124,7 @@ describe('Verifier', () => {
             .and.withTestCasePluginManager(tcMgr)
             .and.withDefectPluginManager(dMgr)
             .and.withDescription('failure expected due to true not being false')
-            .and.withTests('C1234', 'C2345');
+            .and.withTestId('C1234').and.withTestId('C2345');
 
             expect('foo').toBe('bar'); // force failure
         } catch (e) {
@@ -159,7 +159,7 @@ describe('Verifier', () => {
         .withLoggingPluginManager(logMgr)
         .and.withTestCasePluginManager(tcMgr)
         .and.withDefectPluginManager(dMgr)
-        .and.withTests('C1234', 'C2345');
+        .and.withTestId('C1234').and.withTestId('C2345');
 
         expect(tcMgr.shouldRun).toHaveBeenCalledTimes(2);
         expect(dMgr.findDefects).not.toHaveBeenCalled();
@@ -194,7 +194,7 @@ describe('Verifier', () => {
         .withLoggingPluginManager(logMgr)
         .and.withTestCasePluginManager(tcMgr)
         .and.withDefectPluginManager(dMgr)
-        .and.withTests('C1234', 'C2345');
+        .and.withTestId('C1234').and.withTestId('C2345');
 
         expect(tcMgr.shouldRun).toHaveBeenCalledWith('C1234');
         expect(tcMgr.shouldRun).toHaveBeenCalledWith('C2345');
@@ -230,7 +230,7 @@ describe('Verifier', () => {
         .withLoggingPluginManager(logMgr)
         .and.withTestCasePluginManager(tcMgr)
         .and.withDefectPluginManager(dMgr)
-        .and.withTests('C1234');
+        .and.withTestId('C1234');
 
         expect(tcMgr.shouldRun).toHaveBeenCalledTimes(1);
         expect(dMgr.findDefects).toHaveBeenCalledTimes(1);
@@ -271,8 +271,8 @@ describe('Verifier', () => {
         .withLoggingPluginManager(logMgr)
         .and.withTestCasePluginManager(tcMgr)
         .and.withDefectPluginManager(dMgr)
-        .and.withTests('C1234')
-        .and.withDefects('DEFECT-123', 'DEFECT-234');
+        .and.withTestId('C1234')
+        .and.withKnownDefectId('DEFECT-123').and.withKnownDefectId('DEFECT-234');
 
         expect(tcMgr.shouldRun).toHaveBeenCalledTimes(1);
         expect(dMgr.findDefects).toHaveBeenCalledTimes(1);
@@ -307,7 +307,8 @@ describe('Verifier', () => {
         .withLoggingPluginManager(logMgr)
         .and.withTestCasePluginManager(tcMgr)
         .and.withDefectPluginManager(dMgr)
-        .and.withDefects('DEFECT-123', 'DEFECT-234');
+        .and.withKnownDefectId('DEFECT-123')
+        .and.withKnownDefectId('DEFECT-234');
 
         expect(tcMgr.shouldRun).not.toHaveBeenCalled();
         expect(dMgr.findDefects).not.toHaveBeenCalled();
