@@ -64,6 +64,8 @@ which would output the following logs:
 verify(() => expect('foo').toBe('bar')); // AFT will report as 'passed'
 
 verify(() => 'foo').returns('bar'); // AFT will report as 'failed'
+
+verify(() => {throw new Error('failure');}) // AFT will report as 'failed'
 ```
 
 ## Packages (click on name for more info)

@@ -9,21 +9,21 @@ the POM is a standard design pattern used in UI and layout testing. AFT-UI suppo
 ![aft-ui-pom](aft-ui-pom.png)
 The above would use a POM design like:
 
-**Session** - `SeleniumSession`
-- **Page Facet** - `SeleniumFacet`
+**Session** - `BrowserSession`
+- **Page Facet** - `BrowserFacet`
   - _logo element_ - `WebElement`
-  - **Breadcrumbs Facet** - `SeleniumFacet`
+  - **Breadcrumbs Facet** - `BrowserFacet`
     - _breadcrumb links_ - `WebElement[]`
   - _avatar element_ - `WebElement`
-  - **Nav Facet** - `SeleniumFacet`
+  - **Nav Facet** - `BrowserFacet`
     - _nav elements_ - `WebElement[]`
-  - **Tabs Facet** - `SeleniumFacet`
-    - **Tab Facet 1** - `SeleniumFacet`
-    - **Tab Facet 2** - `SeleniumFacet`
-      - **Table Facet** - `SeleniumFacet`
+  - **Tabs Facet** - `BrowserFacet`
+    - **Tab Facet 1** - `BrowserFacet`
+    - **Tab Facet 2** - `BrowserFacet`
+      - **Table Facet** - `BrowserFacet`
         - _header elements_ - `WebElement[]`
         - _cell elements_ - `WebElement[]`
-    - **Tab Facet 3** - `SeleniumFacet`
+    - **Tab Facet 3** - `BrowserFacet`
   - _media element_ - `WebElement`
 
 ## Creating your own Facets for use in testing
@@ -135,42 +135,40 @@ export class HerokuMessagesFacet extends SeleniumFacet {
 ### Step 3: use them to interact with the web application
 
 ```typescript
-await browserShould({description: 'can access websites using AFT and Page Widgets and Facets',
-    testCases: ['C3456', 'C2345', 'C1234'],
-    expect: async (tw: BrowserTestWrapper) => {
-        let loginPage: HerokuLoginPage = await tw.session.getFacet(HerokuLoginPage);
-        await tw.logMgr.step('navigate to LoginPage...');
-        await loginPage.navigateTo();
-        await tw.logMgr.step('login');
-        await loginPage.login("tomsmith", "SuperSecretPassword!");
-        await tw.logMgr.step('wait for message to appear...')
-        await wait.untilTrue(() => loginPage.hasMessage(), 20000);
-        await tw.logMgr.step('get message...');
-        let message: string = await loginPage.getMessage();
-        return expect(message).toContain("You logged into a secure area!");
-    }
-});
+await verifyWithBrowser(async (bv: BrowserVerifier) => {
+    let loginPage: HerokuLoginPage = await bv.session.getFacet(HerokuLoginPage);
+    await bv.logMgr.step('navigate to LoginPage...');
+    await loginPage.navigateTo();
+    await bv.logMgr.step('login');
+    await loginPage.login("tomsmith", "SuperSecretPassword!");
+    await bv.logMgr.step('wait for message to appear...')
+    await wait.untilTrue(() => loginPage.hasMessage(), 20000);
+    await bv.logMgr.step('get message...');
+    return await loginPage.getMessage();
+}).withDescription('can access websites using AFT and Page Widgets and Facets')
+.and.withTestId('C3456').and.withTestId('C2345').and.withTestId('C1234')
+.returns("You logged into a secure area!");
 ```
 ## aftconfig.json keys and values supported by aft-ui-selenium package
-- **browserstacksessiongeneratorplugin** - only required if referencing `browserstack-session-generator-plugin` in the `pluginNames` array of the `sessiongeneratorpluginmanager` section of your `aftconfig.json` file
+- **browserstackbrowsersessiongeneratorplugin** - only required if referencing `browserstack-browser-session-generator-plugin` in the `pluginNames` array of the `browsersessiongeneratorpluginmanager` section of your `aftconfig.json` file
   - **user** - [REQUIRED] the BrowserStack username for the account to be used
   - **key** - [REQUIRED] the BrowserStack accesskey for the account to be used
-  - **platform** - required if not set in the `sessiongeneratorpluginmanager` section of your `aftconfig.json` file
+  - **platform** - required if not set in the `browsersessiongeneratorpluginmanager` section of your `aftconfig.json` file
   - **resolution** - a `string` containing a valid resolution for your BrowserStack session like: `1024x768` _(defaults to no value so BrowserStack will choose)_
   - **local** - a `boolean` value indicating if sessions should connect via an already running BrowserStack _Local_ VPN _(defaults to false)_
   - **localIdentifier** - a `string` containing the BrowserStack _Local_ `localIdentifier` to use when connecting to a _Local_ VPN instance. only required if **local** is set to `true` and your _Local_ VPN instance is using a `localIdentifier`
   - **url** - an alternative url for BrowserStack's grid hub _(defaults to `https://hub-cloud.browserstack.com/wd/hub/` if not specified)_
   - **capabilities** - an `object` containing keys and values to be used when creating your BrowserStack Session. this can be used to override default capabilities or to add additional ones _(defaults to none)_
-- **saucelabssessiongeneratorplugin** - only required if referencing `saucelabs-session-generator-plugin` in the `pluginNames` array of the `sessiongeneratorpluginmanager` section of your `aftconfig.json` file
+- **saucelabsbrowsersessiongeneratorplugin** - only required if referencing `sauce-labs-browser-session-generator-plugin` in the `pluginNames` array of the `browsersessiongeneratorpluginmanager` section of your `aftconfig.json` file
   - **username** - [REQUIRED] the Sauce Labs username for the account to be used
   - **accesskey** - [REQUIRED] the Sauce Labs accesskey for the account to be used
-  - **platform** - required if not set in the `sessiongeneratorpluginmanager` section of your `aftconfig.json` file
+  - **platform** - required if not set in the `browsersessiongeneratorpluginmanager` section of your `aftconfig.json` file
   - **resolution** - a `string` containing a valid resolution for your Sauce Labs session like: `1024x768` _(defaults to no value so Sauce Labs will choose)_
   - **tunnel** - a `boolean` value indicating if sessions should connect via an already running Sauce Labs tunnel VPN _(defaults to false)_
   - **tunnelId** - a `string` containing the Sauce Labs `tunnelIdentifier` to use when connecting to a tunnel VPN instance. only required if **tunnel** is set to `true` and your tunnel VPN instance is using a `tunnelIdentifier`
   - **url** - an alternative url for Sauce Labs' grid hub _(defaults to `https://ondemand.us-east-1.saucelabs.com/wd/hub/` if not specified)_
   - **capabilities** - an `object` containing keys and values to be used when creating your Sauce Labs Session. this can be used to override default capabilities or to add additional ones _(defaults to none)_
-- **seleniumgridsessiongeneratorplugin** - only required if referencing `selenium-grid-session-generator-plugin` in the `pluginNames` array of the `sessiongeneratorpluginmanager` section of your `aftconfig.json` file
-  - **platform** - required if not set in the `sessiongeneratorpluginmanager` section of your `aftconfig.json` file
+- **seleniumgridsessiongeneratorplugin** - only required if referencing `selenium-grid-session-generator-plugin` in the `pluginNames` array of the `browsersessiongeneratorpluginmanager` section of your `aftconfig.json` file
+  - **platform** - required if not set in the `browsersessiongeneratorpluginmanager` section of your `aftconfig.json` file
   - **url** - [REQUIRED] the url of your running Selenium Grid instance
   - **capabilities** - an `object` containing keys and values to be used when creating your Browser Session
