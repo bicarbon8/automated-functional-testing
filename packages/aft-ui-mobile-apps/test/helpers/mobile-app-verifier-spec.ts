@@ -1,6 +1,6 @@
 import { TestCasePluginManager } from "aft-core";
 import { Browser } from "webdriverio";
-import { MobileAppSession, MobileAppSessionGeneratorPluginManager, MobileAppSessionOptions, MobileAppVerifier, mobileAppVerifier } from "../../src";
+import { MobileAppSession, MobileAppSessionGeneratorPluginManager, MobileAppSessionOptions, MobileAppVerifier, verifyWithMobileApp } from "../../src";
 
 describe('MobileAppVerifier', () => {
     it('can create a MobileAppSession', async () => {
@@ -9,11 +9,10 @@ describe('MobileAppVerifier', () => {
             return Promise.resolve(new MobileAppSession(options));
         });
 
-        await mobileAppVerifier(async (mav: MobileAppVerifier) => {
+        await verifyWithMobileApp(async (mav: MobileAppVerifier) => {
             expect(mav.session).toBeDefined();
             expect(await mav.session.logMgr.logName()).toBe(await mav.logMgr.logName());
-        })
-        .withMobileAppSessionGeneratorPluginManager(sessionMgr);
+        }).and.withMobileAppSessionGeneratorPluginManager(sessionMgr);
 
         expect(sessionMgr.newSession).toHaveBeenCalledTimes(1);
     });
@@ -25,14 +24,12 @@ describe('MobileAppVerifier', () => {
             return Promise.resolve(new MobileAppSession(options));
         });
 
-        await mobileAppVerifier((mav: MobileAppVerifier) => {
+        await verifyWithMobileApp((mav: MobileAppVerifier) => {
             expect(mav.session).toBeDefined();
             expect(mav.session.platform.toString()).toEqual('android_11_+_+_Google Pixel 5');
-        })
-        .withMobileAppFrom({
+        }).and.withMobileAppSessionOptions({
             platform: 'android_11_+_+_Google Pixel 5'
-        })
-        .and.withMobileAppSessionGeneratorPluginManager(sessionMgr);
+        }).and.withMobileAppSessionGeneratorPluginManager(sessionMgr);
 
         expect(sessionMgr.newSession).toHaveBeenCalledTimes(1);
     });
@@ -46,10 +43,9 @@ describe('MobileAppVerifier', () => {
             'deleteSession': Promise.resolve()
         });
 
-        await mobileAppVerifier((mav: MobileAppVerifier) => {
+        await verifyWithMobileApp((mav: MobileAppVerifier) => {
             expect(mav.session).toBeDefined();
-        })
-        .withMobileAppFrom({driver: driver})
+        }).and.withMobileAppSessionOptions({driver: driver})
         .and.withMobileAppSessionGeneratorPluginManager(sessionMgr);
 
         expect(sessionMgr.newSession).toHaveBeenCalledTimes(1);
@@ -64,10 +60,9 @@ describe('MobileAppVerifier', () => {
         let tcMgr: TestCasePluginManager = new TestCasePluginManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string) => Promise.resolve({success: false, message: 'no'}));
         
-        await mobileAppVerifier((mav: MobileAppVerifier) => {
+        await verifyWithMobileApp((mav: MobileAppVerifier) => {
             expect(true).toBeFalse();
-        })
-        .withMobileAppSessionGeneratorPluginManager(sessionMgr)
+        }).and.withMobileAppSessionGeneratorPluginManager(sessionMgr)
         .and.withTests('C1234')
         .and.withTestCasePluginManager(tcMgr);
 

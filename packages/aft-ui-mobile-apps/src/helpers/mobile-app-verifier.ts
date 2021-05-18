@@ -27,7 +27,7 @@ export class MobileAppVerifier extends Verifier {
         return this;
     }
 
-    withMobileAppFrom(options: MobileAppSessionOptions): MobileAppVerifier {
+    withMobileAppSessionOptions(options: MobileAppSessionOptions): MobileAppVerifier {
         options = options || {};
         options.logMgr = options.logMgr || this.logMgr;
         this._sessionOptions = options;
@@ -47,7 +47,7 @@ export class MobileAppVerifier extends Verifier {
     }
 }
 
-export const mobileAppVerifier = (assertion: Func<MobileAppVerifier, any>) => {
+export const verifyWithMobileApp = (assertion: Func<MobileAppVerifier, any>) => {
     let v: MobileAppVerifier = new MobileAppVerifier();
     v.verify(assertion);
     return v;

@@ -6,15 +6,12 @@ export class BrowserVerifier extends Verifier {
     protected _assertion: Func<BrowserVerifier, any>;
     protected _sessionMgr: BrowserSessionGeneratorPluginManager;
     protected _session: BrowserSession;
-    protected _withBrowserPromise: Promise<BrowserSession>;
+    protected _sessionOptions: BrowserSessionOptions;
 
     constructor() {
         super();
         this._sessionMgr = BrowserSessionGeneratorPluginManager.instance();
-        this._withBrowserPromise = new Promise<BrowserSession>(async (resolve, reject) => {
-            let session: BrowserSession = await this._sessionMgr.newSession({logMgr: this.logMgr});
-            resolve(session);
-        });
+        this._sessionOptions = {logMgr: this.logMgr};
     }
 
     get and(): BrowserVerifier {
@@ -30,13 +27,10 @@ export class BrowserVerifier extends Verifier {
         return this;
     }
 
-    withBrowserFrom(options: BrowserSessionOptions): BrowserVerifier {
+    withBrowserSessionOptions(options: BrowserSessionOptions): BrowserVerifier {
         options = options || {};
         options.logMgr = options.logMgr || this.logMgr;
-        this._withBrowserPromise = new Promise<BrowserSession>(async (resolve, reject) => {
-            let session: BrowserSession = await this._sessionMgr.newSession(options);
-            resolve(session);
-        });
+        this._sessionOptions = options;
         return this;
     }
 
@@ -46,14 +40,14 @@ export class BrowserVerifier extends Verifier {
     }
 
     protected async _resolveAssertion(): Promise<void> {
-        await using(await Promise.resolve(this._withBrowserPromise), async (session) => {
+        await using(await this._sessionMgr.newSession(this._sessionOptions), async (session) => {
             this._session = session;
             await super._resolveAssertion();
         });
     }
 }
 
-export const browserVerifier = (assertion: Func<BrowserVerifier, any>) => {
+export const verifyWithBrowser = (assertion: Func<BrowserVerifier, any>) => {
     let v: BrowserVerifier = new BrowserVerifier();
     v.verify(assertion);
     return v;

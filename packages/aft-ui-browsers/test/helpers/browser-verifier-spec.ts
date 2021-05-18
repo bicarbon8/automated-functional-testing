@@ -1,6 +1,6 @@
-import { TestCasePluginManager } from "aft-core";
-import { WebDriver } from "selenium-webdriver";
-import { BrowserSession, BrowserSessionGeneratorPluginManager, BrowserSessionOptions, browserVerifier, BrowserVerifier } from "../../src";
+import { rand, TestCasePluginManager } from "aft-core";
+import { Session, WebDriver } from "selenium-webdriver";
+import { BrowserSession, BrowserSessionGeneratorPluginManager, BrowserSessionOptions, verifyWithBrowser, BrowserVerifier } from "../../src";
 
 describe('BrowserVerifier', () => {
     it('can create a BrowserSession', async () => {
@@ -9,11 +9,10 @@ describe('BrowserVerifier', () => {
             return Promise.resolve(new BrowserSession(options));
         });
 
-        await browserVerifier((bv: BrowserVerifier) => {
+        await verifyWithBrowser(async (bv: BrowserVerifier) => {
             expect(bv.session).toBeDefined();
-            expect(bv.session.logMgr).toBe(bv.logMgr);
-        })
-        .withBrowserSessionGeneratorPluginManager(sessionMgr);
+            expect(await bv.session.logMgr.logName()).toBe(await bv.logMgr.logName());
+        }).and.withBrowserSessionGeneratorPluginManager(sessionMgr);
 
         expect(sessionMgr.newSession).toHaveBeenCalledTimes(1);
     });
@@ -25,13 +24,11 @@ describe('BrowserVerifier', () => {
             return Promise.resolve(new BrowserSession(options));
         });
 
-        await browserVerifier((bv: BrowserVerifier) => {
+        await verifyWithBrowser((bv: BrowserVerifier) => {
             expect(bv.session).toBeDefined();
             expect(bv.session.platform.toString()).toEqual('windows_8.1_firefox_+_+');
-            expect(bv.session.logMgr).toBe(bv.logMgr);
-        })
-        .withBrowserSessionGeneratorPluginManager(sessionMgr)
-        .and.withBrowserFrom({
+        }).and.withBrowserSessionGeneratorPluginManager(sessionMgr)
+        .and.withBrowserSessionOptions({
             platform: 'windows_8.1_firefox'
         });
 
@@ -43,15 +40,17 @@ describe('BrowserVerifier', () => {
         spyOn(sessionMgr, 'newSession').and.callFake((options?: BrowserSessionOptions): Promise<BrowserSession> => {
             return Promise.resolve(new BrowserSession(options));
         });
+        let sesh: Session = jasmine.createSpyObj('Session', {
+            'getId': rand.guid
+        });
         let driver: WebDriver = jasmine.createSpyObj('WebDriver', {
-            'quit': Promise.resolve()
+            'quit': Promise.resolve(),
+            'getSession': Promise.resolve(sesh)
         });
 
-        await browserVerifier((bv: BrowserVerifier) => {
+        await verifyWithBrowser((bv: BrowserVerifier) => {
             expect(bv.session).toBeDefined();
-            expect(bv.session.logMgr).toBe(bv.logMgr);
-        })
-        .withBrowserFrom({driver: driver})
+        }).and.withBrowserSessionOptions({driver: driver})
         .and.withBrowserSessionGeneratorPluginManager(sessionMgr);
 
         expect(sessionMgr.newSession).toHaveBeenCalledTimes(1);
@@ -66,10 +65,9 @@ describe('BrowserVerifier', () => {
         let tcMgr: TestCasePluginManager = new TestCasePluginManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string) => Promise.resolve({success: false, message: 'no'}));
         
-        await browserVerifier((bv: BrowserVerifier) => {
+        await verifyWithBrowser((bv: BrowserVerifier) => {
             expect(true).toBeFalse();
-        })
-        .withBrowserSessionGeneratorPluginManager(sessionMgr)
+        }).and.withBrowserSessionGeneratorPluginManager(sessionMgr)
         .and.withTests('C1234')
         .and.withTestCasePluginManager(tcMgr);
 
