@@ -11,32 +11,23 @@ import { Func } from "./custom-types";
 import { ProcessingResult } from "./processing-result";
 import { rand } from "./random-generator";
 
-export interface VerifierOptions {
-    _loggingPluginManager?: LoggingPluginManager;
-    _testCasePluginManager?: TestCasePluginManager;
-    _defectPluginManager?: DefectPluginManager;
-    _buildInfoPluginManager?: BuildInfoPluginManager;
-}
-
 export class Verifier implements PromiseLike<void> {
-    private _assertion: Func<LoggingPluginManager, any>;
-    private _expectedResult: any;
-    private _description: string;
-    private _startTime: number;
-    private _innerPromise: Promise<void>;
-    private _tests: Set<string>;
-    private _logMgr: LoggingPluginManager;
-    private _testMgr: TestCasePluginManager;
-    private _defectMgr: DefectPluginManager;
-    private _buildMgr: BuildInfoPluginManager;
-    private _withTestsPromise: Promise<ProcessingResult>;
-    private _withDefectsPromise: Promise<ProcessingResult>;
+    protected _assertion: Func<Verifier, any>;
+    protected _expectedResult: any;
+    protected _description: string;
+    protected _startTime: number;
+    protected _innerPromise: Promise<void>;
+    protected _tests: Set<string>;
+    protected _defects: Set<string>;
+    protected _logMgr: LoggingPluginManager;
+    protected _testMgr: TestCasePluginManager;
+    protected _defectMgr: DefectPluginManager;
+    protected _buildMgr: BuildInfoPluginManager;
 
     constructor() {
         this._startTime = new Date().getTime();
         this._tests = new Set<string>();
-        this._withTestsPromise = Promise.resolve({success: true});
-        this._withDefectsPromise = Promise.resolve({success: true});
+        this._defects = new Set<string>();
         this._testMgr = TestCasePluginManager.instance();
         this._defectMgr = DefectPluginManager.instance();
         this._buildMgr = BuildInfoPluginManager.instance();
@@ -60,13 +51,13 @@ export class Verifier implements PromiseLike<void> {
         .then(onfulfilled, onrejected);
     }
 
-    private async _getInnerPromise(): Promise<void> {
+    protected async _getInnerPromise(): Promise<void> {
         if (!this._innerPromise) {
             this._innerPromise = new Promise(async (resolve, reject) => {
                 try {
-                    let tcShould: ProcessingResult = await Promise.resolve(this._withTestsPromise);
+                    let tcShould: ProcessingResult = await this._shouldRun_tests(...Array.from(this._tests));
                     if (tcShould.success) {
-                        let dShould: ProcessingResult = await Promise.resolve(this._withDefectsPromise);
+                        let dShould: ProcessingResult = await this._shouldRun_defects(...Array.from(this._defects));
                         if (dShould.success) {
                             await this._resolveAssertion();
                             await this._logResult(TestStatus.Passed);
@@ -86,8 +77,8 @@ export class Verifier implements PromiseLike<void> {
         return this._innerPromise;
     }
 
-    private async _resolveAssertion(): Promise<void> {
-        let result: any = await Promise.resolve(this._assertion(this.logMgr));
+    protected async _resolveAssertion(): Promise<void> {
+        let result: any = await Promise.resolve(this._assertion(this));
         if (result != this._expectedResult) {
             return Promise.reject(`expected result of '${this._expectedResult}' to equal actual result of '${result}'`);
         }
@@ -97,7 +88,7 @@ export class Verifier implements PromiseLike<void> {
         return this;
     }
 
-    verify(assertion: Func<LoggingPluginManager, void>): Verifier {
+    verify(assertion: Func<Verifier, any>): Verifier {
         this._assertion = assertion;
         return this;
     }
@@ -108,26 +99,22 @@ export class Verifier implements PromiseLike<void> {
     }
 
     withTests(...tests: string[]): Verifier {
-        this._withTestsPromise = new Promise<ProcessingResult>(async (resolve, reject) => {
-            if (tests?.length) {
-                for (var i=0; i<tests.length; i++) {
-                    let test: string = tests[i];
-                    this._tests.add(test);
-                }
-                resolve(await this._shouldRun_tests(...tests));
+        if (tests?.length) {
+            for (var i=0; i<tests.length; i++) {
+                let test: string = tests[i];
+                this._tests.add(test);
             }
-            resolve({success: true});
-        });
+        }
         return this;
     }
 
     withDefects(...defects: string[]): Verifier {
-        this._withDefectsPromise = new Promise<ProcessingResult>(async (resolve, reject) => {
-            if (defects?.length) {
-                resolve(await this._shouldRun_defects(...defects));
+        if (defects?.length) {
+            for (var i=0; i<defects.length; i++) {
+                let defect: string = defects[i];
+                this._defects.add(defect);
             }
-            resolve({success: true});
-        });
+        }
         return this;
     }
 
@@ -156,7 +143,7 @@ export class Verifier implements PromiseLike<void> {
         return this;
     }
 
-    private async _shouldRun_tests(...tests: string[]): Promise<ProcessingResult> {
+    protected async _shouldRun_tests(...tests: string[]): Promise<ProcessingResult> {
         let tcResults: ProcessingResult[] = [];
         if (tests?.length) {
             for (var i=0; i<tests.length; i++) {
@@ -173,19 +160,19 @@ export class Verifier implements PromiseLike<void> {
                     }
                 }
             }
-        }
-        let shouldRun: boolean = false;
-        for (var i=0; i<tcResults.length; i++) {
-            let tcRes: ProcessingResult = tcResults[i];
-            shouldRun = shouldRun || tcRes.success;
-        }
-        if (!shouldRun) {
-            return {success: false, message: tcResults.map((r) => r.message || '').join('; ')};
+            let shouldRun: boolean = false;
+            for (var i=0; i<tcResults.length; i++) {
+                let tcRes: ProcessingResult = tcResults[i];
+                shouldRun = shouldRun || tcRes.success;
+            }
+            if (!shouldRun) {
+                return {success: false, message: tcResults.map((r) => r.message || '').join('; ')};
+            }
         }
         return {success: true};
     }
 
-    private async _shouldRun_defects(...defects: string[]): Promise<ProcessingResult> {
+    protected async _shouldRun_defects(...defects: string[]): Promise<ProcessingResult> {
         // first search for any specified Defects by ID
         if (defects?.length) {
             for (var i=0; i<defects.length; i++) {
@@ -205,7 +192,7 @@ export class Verifier implements PromiseLike<void> {
      * @param result an `IProcessingResult` returned from executing the 
      * expectation
      */
-    private async _logResult(status: TestStatus, message?: string): Promise<void> {
+    protected async _logResult(status: TestStatus, message?: string): Promise<void> {
         status = status || TestStatus.Untested;
         if (this._tests.size) {
             this._tests.forEach(async (testId: string) => {
@@ -232,7 +219,7 @@ export class Verifier implements PromiseLike<void> {
         await this.logMgr.dispose();
     }
 
-    private async _logMessage(status: TestStatus, message?: string): Promise<void> {
+    protected async _logMessage(status: TestStatus, message?: string): Promise<void> {
         message = message || '';
         switch (status) {
             case TestStatus.Blocked:
@@ -251,7 +238,7 @@ export class Verifier implements PromiseLike<void> {
         }
     }
 
-    private async _generateTestResults(status: TestStatus, logMessage: string, ...testIds: string[]): Promise<ITestResult[]> {
+    protected async _generateTestResults(status: TestStatus, logMessage: string, ...testIds: string[]): Promise<ITestResult[]> {
         let results: ITestResult[] = [];
         if (testIds.length > 0) {
             for (var i=0; i<testIds.length; i++) {
@@ -266,7 +253,7 @@ export class Verifier implements PromiseLike<void> {
         return results;
     }
 
-    private async _generateTestResult(status: TestStatus, logMessage: string, testId?: string): Promise<ITestResult> {
+    protected async _generateTestResult(status: TestStatus, logMessage: string, testId?: string): Promise<ITestResult> {
         let result: ITestResult = {
             testId: testId,
             created: new Date(),
@@ -284,7 +271,7 @@ export class Verifier implements PromiseLike<void> {
     }
 }
 
-export const verify = (assertion: Func<LoggingPluginManager, any>): Verifier => {
+export const verify = (assertion: Func<Verifier, any>): Verifier => {
     let v: Verifier = new Verifier();
     v.verify(assertion);
     return v;

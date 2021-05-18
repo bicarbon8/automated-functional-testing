@@ -38,9 +38,9 @@ export class MobileAppSession implements ISession {
 
     async dispose(error?: Error): Promise<void> {
         if (error) {
-            this.logMgr.warn(`Error: ${nameof(MobileAppSession)} - ${error.message}`);
+            await this.logMgr.warn(`Error: ${nameof(MobileAppSession)} - ${error.message}`);
         }
-        this.logMgr.trace(`shutting down ${nameof(MobileAppSession)}: ${this.driver?.sessionId}`);
+        await this.logMgr.trace(`shutting down ${nameof(MobileAppSession)}: ${this.driver?.sessionId}`);
         await this.driver?.deleteSession();
     }
 }

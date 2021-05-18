@@ -2,6 +2,7 @@
 export * from './facets/browser-facet';
 /* helpers */
 export * from './helpers/build-name';
+export * from './helpers/browser-verifier';
 /* sessions */
 export * from './sessions/browserstack/browserstack-browser-session-generator-plugin';
 export * from './sessions/browserstack/configuration/browserstack-config';

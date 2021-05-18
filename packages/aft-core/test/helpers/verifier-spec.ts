@@ -7,8 +7,8 @@ describe('Verifier', () => {
 
     it('uses \'description\' as logMgr name if provided', async () => {
         let description: string = rand.getString(22);
-        await verify(async (logMgr: LoggingPluginManager) => {
-            expect(await logMgr.logName()).toEqual(description);
+        await verify(async (v: Verifier) => {
+            expect(await v.logMgr.logName()).toEqual(description);
         })
         .withDescription(description);
     });
@@ -26,8 +26,8 @@ describe('Verifier', () => {
             return Promise.resolve(null);
         });
 
-        await verify(async (logMgr: LoggingPluginManager) => {
-            expect(await logMgr.logName()).toEqual('C1234_C2345');
+        await verify(async (v: Verifier) => {
+            expect(await v.logMgr.logName()).toEqual('C1234_C2345');
         })
         .withTests('C1234', 'C2345')
         .and.withTestCasePluginManager(tcMgr)
@@ -50,9 +50,8 @@ describe('Verifier', () => {
             return Promise.resolve(null);
         });
 
-        await verify((logMgr: LoggingPluginManager) => {
-            logMgr.debug(rand.getString(15));
-        })
+        await verify(async (v: Verifier) => true)
+        .returns(true)
         .withLoggingPluginManager(logMgr)
         .and.withTestCasePluginManager(tcMgr)
         .and.withDefectPluginManager(dMgr)

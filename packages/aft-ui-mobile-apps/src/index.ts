@@ -2,6 +2,7 @@
 export * from './facets/mobile-app-facet';
 /* helpers */
 export * from './helpers/build-name';
+export * from './helpers/mobile-app-verifier';
 /* sessions */
 export * from './sessions/browserstack/browserstack-mobile-app-session-generator-plugin';
 export * from './sessions/browserstack/configuration/browserstack-config';
