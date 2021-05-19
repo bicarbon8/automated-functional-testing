@@ -31,9 +31,11 @@ export abstract class AbstractBrowserSessionGeneratorPlugin extends AbstractSess
         return this._caps;
     }
 
-    async newSession(options?: BrowserSessionOptions): Promise<BrowserSession> {
-        if (await this.enabled()) {
-            if (!options?.driver) {
+    abstract newSession(options?: BrowserSessionOptions): Promise<BrowserSession>;
+
+    protected async createDriver(options?: BrowserSessionOptions): Promise<WebDriver> {
+        if (!options?.driver) {
+            if (await this.enabled()) {
                 try {
                     let url: string = await this.getUrl();
                     let caps: Capabilities = await this.getCapabilities(options);
@@ -43,17 +45,12 @@ export abstract class AbstractBrowserSessionGeneratorPlugin extends AbstractSess
                         .build();
                     await driver.manage().setTimeouts({implicit: 1000});
                     await driver.manage().window().maximize();
-                    return new BrowserSession({
-                        driver: driver,
-                        logMgr: options?.logMgr || this.logMgr,
-                        platform: options?.platform || await this.getPlatform().then(p => p.toString())
-                    });
+                    return driver;
                 } catch (e) {
                     return Promise.reject(e);
                 }
             }
-            return new BrowserSession({driver: options.driver, logMgr: options.logMgr || this.logMgr});
         }
-        return null;
+        return options?.driver;
     }
 }

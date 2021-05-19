@@ -150,25 +150,70 @@ await verifyWithBrowser(async (bv: BrowserVerifier) => {
 .returns("You logged into a secure area!");
 ```
 ## aftconfig.json keys and values supported by aft-ui-selenium package
-- **browserstackbrowsersessiongeneratorplugin** - only required if referencing `browserstack-browser-session-generator-plugin` in the `pluginNames` array of the `browsersessiongeneratorpluginmanager` section of your `aftconfig.json` file
+```
+{
+    "browsersessiongeneratorpluginmanager": {
+        "pluginNames": [
+            "browserstack-browser-session-generator-plugin",
+            "saucelabs-browser-session-generator-plugin",
+            "selenium-grid-session-generator-plugin"
+        ],
+        "searchDir": "../"
+    },
+    "browserstackconfig": {
+        "user": "%browserstack_user%",
+        "key": "%browserstack_key%",
+        "debug": true,
+        "resolution": "640x480",
+        "local": false,
+        "localIdentifier": "abcdefg"
+    },
+    "browserstackbrowsersessiongeneratorplugin": {
+        "enabled": true,
+        "platform": "windows_10_chrome"
+    },
+    "saucelabsconfig": {
+        "username": "%saucelabs_username%",
+        "accessKey": "%saucelabs_accesskey%",
+        "resolution": "1024x768",
+        "tunnel": false,
+        "tunnelId": "abcdefgh"
+    },
+    "saucelabsbrowsersessiongeneratorplugin": {
+        "enabled": true,
+        "platform": "windows_10_chrome"
+    },
+    "seleniumgridsessiongeneratorplugin": {
+        "enabled": true,
+        "url": "http://127.0.0.1:4444/wd/hub",
+        "platform": "windows_10_chrome",
+        "capabilities": {
+            
+        }
+    }
+}
+```
+- **browserstackconfig** - only required if referencing `browserstack-browser-session-generator-plugin` in the `pluginNames` array of the `browsersessiongeneratorpluginmanager` section of your `aftconfig.json` file
   - **user** - [REQUIRED] the BrowserStack username for the account to be used
   - **key** - [REQUIRED] the BrowserStack accesskey for the account to be used
-  - **platform** - required if not set in the `browsersessiongeneratorpluginmanager` section of your `aftconfig.json` file
   - **resolution** - a `string` containing a valid resolution for your BrowserStack session like: `1024x768` _(defaults to no value so BrowserStack will choose)_
   - **local** - a `boolean` value indicating if sessions should connect via an already running BrowserStack _Local_ VPN _(defaults to false)_
   - **localIdentifier** - a `string` containing the BrowserStack _Local_ `localIdentifier` to use when connecting to a _Local_ VPN instance. only required if **local** is set to `true` and your _Local_ VPN instance is using a `localIdentifier`
+- **browserstackbrowsersessiongeneratorplugin** - only required if referencing `browserstack-browser-session-generator-plugin` in the `pluginNames` array of the `browsersessiongeneratorpluginmanager` section of your `aftconfig.json` file
+  - **platform** - a `TestPlatform` string used to define what OS and Browser combination is to be generated
   - **url** - an alternative url for BrowserStack's grid hub _(defaults to `https://hub-cloud.browserstack.com/wd/hub/` if not specified)_
   - **capabilities** - an `object` containing keys and values to be used when creating your BrowserStack Session. this can be used to override default capabilities or to add additional ones _(defaults to none)_
-- **saucelabsbrowsersessiongeneratorplugin** - only required if referencing `sauce-labs-browser-session-generator-plugin` in the `pluginNames` array of the `browsersessiongeneratorpluginmanager` section of your `aftconfig.json` file
+- **saucelabsconfig** - only required if referencing `sauce-labs-browser-session-generator-plugin` in the `pluginNames` array of the `browsersessiongeneratorpluginmanager` section of your `aftconfig.json` file
   - **username** - [REQUIRED] the Sauce Labs username for the account to be used
   - **accesskey** - [REQUIRED] the Sauce Labs accesskey for the account to be used
-  - **platform** - required if not set in the `browsersessiongeneratorpluginmanager` section of your `aftconfig.json` file
   - **resolution** - a `string` containing a valid resolution for your Sauce Labs session like: `1024x768` _(defaults to no value so Sauce Labs will choose)_
   - **tunnel** - a `boolean` value indicating if sessions should connect via an already running Sauce Labs tunnel VPN _(defaults to false)_
   - **tunnelId** - a `string` containing the Sauce Labs `tunnelIdentifier` to use when connecting to a tunnel VPN instance. only required if **tunnel** is set to `true` and your tunnel VPN instance is using a `tunnelIdentifier`
+- **saucelabsbrowsersessiongeneratorplugin** - only required if referencing `sauce-labs-browser-session-generator-plugin` in the `pluginNames` array of the `browsersessiongeneratorpluginmanager` section of your `aftconfig.json` file
+  - **platform** - a `TestPlatform` string used to define what OS and Browser combination is to be generated
   - **url** - an alternative url for Sauce Labs' grid hub _(defaults to `https://ondemand.us-east-1.saucelabs.com/wd/hub/` if not specified)_
   - **capabilities** - an `object` containing keys and values to be used when creating your Sauce Labs Session. this can be used to override default capabilities or to add additional ones _(defaults to none)_
 - **seleniumgridsessiongeneratorplugin** - only required if referencing `selenium-grid-session-generator-plugin` in the `pluginNames` array of the `browsersessiongeneratorpluginmanager` section of your `aftconfig.json` file
-  - **platform** - required if not set in the `browsersessiongeneratorpluginmanager` section of your `aftconfig.json` file
+  - **platform** - a `TestPlatform` string used to define what OS and Browser combination is to be generated
   - **url** - [REQUIRED] the url of your running Selenium Grid instance
   - **capabilities** - an `object` containing keys and values to be used when creating your Browser Session

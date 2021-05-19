@@ -1,10 +1,11 @@
 import { TestPlatform } from "aft-ui";
 import { AbstractBrowserSessionGeneratorPlugin, IBrowserSessionGeneratorPluginOptions } from "../abstract-browser-session-generator-plugin";
 import { BuildName } from "../../helpers/build-name";
-import { Capabilities } from "selenium-webdriver";
+import { Capabilities, WebDriver } from "selenium-webdriver";
 import { nameof } from "ts-simple-nameof";
 import { BrowserSessionOptions } from "../browser-session";
 import { BrowserStackConfig, BrowserStackConfigOptions } from "./configuration/browserstack-config";
+import { BrowserStackBrowserSession } from "./browserstack-browser-session";
 
 export interface BrowserStackBrowserSessionGeneratorPluginOptions extends IBrowserSessionGeneratorPluginOptions, Partial<BrowserStackConfigOptions> {
     _config?: BrowserStackConfig;
@@ -22,6 +23,14 @@ export class BrowserStackBrowserSessionGeneratorPlugin extends AbstractBrowserSe
 
     async onLoad(): Promise<void> {
         /* do nothing */
+    }
+
+    async newSession(options?: BrowserSessionOptions): Promise<BrowserStackBrowserSession> {
+        return new BrowserStackBrowserSession({
+            driver: options?.driver || await this.createDriver(options),
+            logMgr: options?.logMgr || this.logMgr,
+            platform: options?.platform || await this.getPlatform().then(p => p.toString())
+        });
     }
 
     async getCapabilities(options?: BrowserSessionOptions): Promise<Capabilities> {

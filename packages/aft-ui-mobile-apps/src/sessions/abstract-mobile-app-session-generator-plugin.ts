@@ -36,23 +36,21 @@ export abstract class AbstractMobileAppSessionGeneratorPlugin extends AbstractSe
         return this._app;
     }
 
-    async newSession(options?: MobileAppSessionOptions): Promise<MobileAppSession> {
-        if (await this.enabled()) {
-            if (!options?.driver) {
+    abstract newSession(options?: MobileAppSessionOptions): Promise<MobileAppSession>;
+    
+    async createDriver(options?: MobileAppSessionOptions): Promise<Browser<'async'>> {
+        if (!options?.driver) {
+            if (await this.enabled()) {
                 try {
                     let remOpts: RemoteOptions = await this.getRemoteOptions(options);
                     let driver: Browser<'async'> = await remote(remOpts);
-                    return new MobileAppSession({
-                        driver: driver,
-                        logMgr: options?.logMgr || this.logMgr
-                    });
+                    return driver;
                 } catch (e) {
                     return Promise.reject(e);
                 }
             }
-            return new MobileAppSession({driver: options.driver, logMgr: options.logMgr || this.logMgr});
         }
-        return null;
+        return options?.driver;
     }
 
     abstract sendCommand(command: string, data?: any): Promise<any>;

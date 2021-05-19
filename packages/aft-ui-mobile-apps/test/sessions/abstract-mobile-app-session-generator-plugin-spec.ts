@@ -1,6 +1,6 @@
 import { nameof } from "ts-simple-nameof";
 import { rand } from "aft-core";
-import { AbstractMobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginOptions } from "../../src";
+import { AbstractMobileAppSessionGeneratorPlugin, MobileAppSession, MobileAppSessionGeneratorPluginOptions, MobileAppSessionOptions } from "../../src";
 import { RemoteOptions } from "webdriverio";
 
 describe('AbstractMobileAppGridSessionGeneratorPlugin', () => {
@@ -30,6 +30,14 @@ class FakeMobileAppSessionGeneratorPlugin extends AbstractMobileAppSessionGenera
     }
     async onLoad(): Promise<void> {
         /* do nothing */
+    }
+    async newSession(options?: MobileAppSessionOptions): Promise<MobileAppSession> {
+        return new MobileAppSession({
+            driver: options?.driver || await this.createDriver(options),
+            logMgr: options?.logMgr || this.logMgr,
+            platform: options?.platform || await this.getPlatform().then(p => p.toString()),
+            app: options?.app || await this.app()
+        });
     }
     async dispose(error?: Error): Promise<void> {
         /* do nothing */

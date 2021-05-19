@@ -4,24 +4,33 @@ import { AbstractBrowserSessionGeneratorPlugin, IBrowserSessionGeneratorPluginOp
 import { Capabilities } from "selenium-webdriver";
 import { nameof } from "ts-simple-nameof";
 import { BrowserSessionOptions } from "../browser-session";
+import { SauceLabsBrowserSession } from "./sauce-labs-browser-session";
+import { SauceLabsConfig, SauceLabsConfigOptions } from "./configuration/sauce-labs-config";
 
-export interface SauceLabsBrowserSessionGeneratorPluginOptions extends IBrowserSessionGeneratorPluginOptions {
-    username: string;
-    accesskey: string;
-    resolution?: string;
-    tunnel?: boolean;
-    tunnelId?: string;
+export interface SauceLabsBrowserSessionGeneratorPluginOptions extends IBrowserSessionGeneratorPluginOptions, Partial<SauceLabsConfigOptions> {
+    _config?: SauceLabsConfig;
 }
 
 export class SauceLabsBrowserSessionGeneratorPlugin extends AbstractBrowserSessionGeneratorPlugin {
+    private _cfg: SauceLabsConfig;
+
     constructor(options?: SauceLabsBrowserSessionGeneratorPluginOptions) {
         options = options || {} as SauceLabsBrowserSessionGeneratorPluginOptions;
         options.url = options.url || 'https://ondemand.us-east-1.saucelabs.com/wd/hub/';
         super(nameof(SauceLabsBrowserSessionGeneratorPlugin).toLowerCase(), options);
+        this._cfg = options?._config || new SauceLabsConfig(options as SauceLabsConfigOptions);
     }
 
     async onLoad(): Promise<void> {
         /* do nothing */
+    }
+
+    async newSession(options?: BrowserSessionOptions): Promise<SauceLabsBrowserSession> {
+        return new SauceLabsBrowserSession({
+            driver: options?.driver || await this.createDriver(options),
+            logMgr: options?.logMgr || this.logMgr,
+            platform: options?.platform || await this.getPlatform().then(p => p.toString())
+        });
     }
 
     async getCapabilities(options?: BrowserSessionOptions): Promise<Capabilities> {
@@ -47,21 +56,21 @@ export class SauceLabsBrowserSessionGeneratorPlugin extends AbstractBrowserSessi
             capabilities.set('deviceName', platform.deviceName);
         }
         capabilities.set('sauce:options', {
-            'username': await this.optionsMgr.getOption('username'),
-            'accessKey': await this.optionsMgr.getOption('accesskey'),
+            'username': await this._cfg.username(),
+            'accessKey': await this._cfg.accessKey(),
             'build': await BuildName.get(),
             'name': await options?.logMgr?.logName() || await this.logMgr.logName()
         });
-        let resolution: string = await this.optionsMgr.getOption('resolution');
+        let resolution: string = await this._cfg.resolution();
         if (resolution) {
             let opts: object = capabilities.get('sauce:options');
             opts['screenResolution'] = resolution;
             capabilities.set('sauce:options', opts);
         }
-        let tunnel: boolean = await this.optionsMgr.getOption<boolean>('tunnel', false);
+        let tunnel: boolean = await this._cfg.tunnel();
         if (tunnel) {
             let opts: {} = capabilities.get('sauce:options');
-            opts['tunnelIdentifier'] = await this.optionsMgr.getOption('tunnelId');
+            opts['tunnelIdentifier'] = await this._cfg.tunnelId();
             capabilities.set('sauce:options', opts);
         }
         // overwrite the above with passed in capabilities if any

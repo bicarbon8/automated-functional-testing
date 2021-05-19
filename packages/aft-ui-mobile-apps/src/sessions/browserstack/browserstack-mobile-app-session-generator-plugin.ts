@@ -6,6 +6,7 @@ import { RemoteOptions } from "webdriverio";
 import { BrowserStackAppAutomateApi } from "./app-automate/browserstack-app-automate-api";
 import { BrowserStackConfig, BrowserStackConfigOptions } from "./configuration/browserstack-config";
 import { UploadRequest } from "./app-automate/upload-request";
+import { BrowserStackMobileAppSession } from "./browserstack-mobile-app-session";
 
 export interface BrowserStackMobileAppSessionGeneratorPluginOptions extends MobileAppSessionGeneratorPluginOptions, BrowserStackConfigOptions {
     _config?: BrowserStackConfig;
@@ -24,6 +25,15 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileA
 
     async onLoad(): Promise<void> {
         /* do nothing */
+    }
+
+    async newSession(options?: MobileAppSessionOptions): Promise<BrowserStackMobileAppSession> {
+        return new BrowserStackMobileAppSession({
+            driver: options?.driver || await this.createDriver(options),
+            logMgr: options?.logMgr || this.logMgr,
+            platform: options?.platform || await this.getPlatform().then(p => p.toString()),
+            app: options?.app || await this.app()
+        });
     }
 
     async getRemoteOptions(options?: MobileAppSessionOptions): Promise<RemoteOptions> {
@@ -50,9 +60,6 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileA
             switch (command) {
                 case 'upload':
                     resp = await this._api.uploadApp(data as UploadRequest);
-                    break;
-                case 'setStatus': 
-                    // resp = await this._api.setSessionStatus(command as BrowserStackMobileAppSessionStatusCommand);
                     break;
                 case 'getApps':
                     resp = await this._api.getApps();

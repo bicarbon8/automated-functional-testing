@@ -1,5 +1,5 @@
 import { nameof } from "ts-simple-nameof";
-import { Clazz, LoggingPluginManager } from "aft-core";
+import { Clazz, LoggingPluginManager, rand } from "aft-core";
 import { AbstractFacet, ISession, ISessionOptions, TestPlatform } from "aft-ui";
 import { MobileAppFacetOptions } from "../facets/mobile-app-facet";
 import { Browser, RemoteOptions } from "webdriverio";
@@ -25,7 +25,7 @@ export class MobileAppSession implements ISession {
         this.driver = options.driver;
         this.app = options.app;
         this.platform = TestPlatform.parse(options.platform);
-        this.logMgr = options.logMgr || new LoggingPluginManager({logName: `${nameof(MobileAppSession)}_${this.driver?.sessionId}`});
+        this.logMgr = options.logMgr || new LoggingPluginManager({logName: `${nameof(MobileAppSession)}_${rand.guid}`});
     }
     
     async getFacet<T extends AbstractFacet>(facetType: Clazz<T>, options?: MobileAppFacetOptions): Promise<T> {
@@ -35,12 +35,12 @@ export class MobileAppSession implements ISession {
         let facet: T = new facetType(options);
         return facet;
     }
-
-    async dispose(error?: Error): Promise<void> {
+    
+    async dispose(error?: any): Promise<void> {
         if (error) {
-            await this.logMgr.warn(`Error: ${nameof(MobileAppSession)} - ${error.message}`);
+            await this.logMgr.warn(`Error: ${nameof(MobileAppSession)} - ${error}`);
         }
-        await this.logMgr.trace(`shutting down ${nameof(MobileAppSession)}: ${this.driver?.sessionId}`);
+        await this.logMgr.trace(`shutting down ${nameof(MobileAppSession)}`);
         await this.driver?.deleteSession();
     }
 }

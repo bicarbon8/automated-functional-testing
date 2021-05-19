@@ -2,6 +2,7 @@ import { By, Capabilities } from 'selenium-webdriver';
 import { using, LoggingPluginManager, rand } from "aft-core";
 import { TestPlatform } from "aft-ui";
 import { BrowserFacet, BuildName, SauceLabsBrowserSessionGeneratorPlugin, SauceLabsBrowserSessionGeneratorPluginOptions } from '../../../src';
+import { SauceLabsConfig } from '../../../src/sessions/sauce-labs/configuration/sauce-labs-config';
 
 describe('SauceLabsBrowserSessionGeneratorPlugin', () => {
     it('can generate capabilities from the passed in SessionOptions', async () => {
@@ -14,7 +15,7 @@ describe('SauceLabsBrowserSessionGeneratorPlugin', () => {
         });
         let opts: SauceLabsBrowserSessionGeneratorPluginOptions = {
             username: rand.getString(10, true, false, false, false),
-            accesskey: rand.getString(12, true, true, false, false),
+            accessKey: rand.getString(12, true, true, false, false),
             platform: plt.toString(),
             resolution: rand.getString(4, false, true) + 'x' + rand.getString(4, false, true),
             tunnel: true,
@@ -47,9 +48,12 @@ describe('SauceLabsBrowserSessionGeneratorPlugin', () => {
      * - sauce_access_key
      */
     xit('can create a session in Sauce Labs', async () => {
-        let plugin: SauceLabsBrowserSessionGeneratorPlugin = new SauceLabsBrowserSessionGeneratorPlugin({
+        let config: SauceLabsConfig = new SauceLabsConfig({
             username: 'fake-username',
-            accesskey: 'fake-accesskey',
+            accessKey: 'fake-accesskey'
+        });
+        let plugin: SauceLabsBrowserSessionGeneratorPlugin = new SauceLabsBrowserSessionGeneratorPlugin({
+            _config: config,
             platform: 'windows_10_chrome'
         });
         await using (await plugin.newSession(), async (session) => {

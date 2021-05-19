@@ -1,6 +1,6 @@
 import { nameof } from "ts-simple-nameof";
 import { WebDriver } from "selenium-webdriver";
-import { Clazz, LoggingPluginManager } from "aft-core";
+import { Clazz, LoggingPluginManager, rand } from "aft-core";
 import { AbstractFacet, ISession, ISessionOptions, TestPlatform } from "aft-ui";
 import { BrowserFacetOptions } from "../facets/browser-facet";
 
@@ -16,7 +16,7 @@ export class BrowserSession implements ISession {
     constructor(options: BrowserSessionOptions) {
         this.driver = options.driver;
         this.platform = TestPlatform.parse(options.platform);
-        this.logMgr = options.logMgr || new LoggingPluginManager({logName: `${nameof(BrowserSession)}_${this.driver?.getSession().then(s => s.getId())}`});
+        this.logMgr = options.logMgr || new LoggingPluginManager({logName: `${nameof(BrowserSession)}_${rand.guid}`});
     }
     
     async getFacet<T extends AbstractFacet>(facetType: Clazz<T>, options?: BrowserFacetOptions): Promise<T> {
@@ -54,11 +54,11 @@ export class BrowserSession implements ISession {
         return this;
     }
 
-    async dispose(error?: Error): Promise<void> {
+    async dispose(error?: any): Promise<void> {
         if (error) {
-            this.logMgr.warn(`Error: ${nameof(BrowserSession)} - ${error.message}`);
+            await this.logMgr.warn(`Error: ${nameof(BrowserSession)} - ${error}`);
         }
-        this.logMgr.trace(`shutting down ${nameof(BrowserSession)}: ${await this.driver?.getSession().then(s => s.getId())}`);
+        await this.logMgr.trace(`shutting down ${nameof(BrowserSession)}`);
         await this.driver?.quit();
     }
 }

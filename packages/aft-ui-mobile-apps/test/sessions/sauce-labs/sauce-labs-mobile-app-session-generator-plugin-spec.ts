@@ -2,6 +2,7 @@ import { using, LoggingPluginManager, rand } from "aft-core";
 import { TestPlatform } from "aft-ui";
 import { BuildName, MobileAppFacet, SauceLabsMobileAppSessionGeneratorPlugin, SauceLabsMobileAppSessionGeneratorPluginOptions } from '../../../src';
 import { RemoteOptions } from "webdriverio";
+import { SauceLabsConfig } from "../../../src/sessions/sauce-labs/configuration/sauce-labs-config";
 
 describe('SauceLabsMobileAppSessionGeneratorPlugin', () => {
     it('can generate capabilities from the passed in SessionOptions', async () => {
@@ -14,27 +15,27 @@ describe('SauceLabsMobileAppSessionGeneratorPlugin', () => {
         });
         let opts: SauceLabsMobileAppSessionGeneratorPluginOptions = {
             username: rand.getString(10, true, false, false, false),
-            accesskey: rand.getString(12, true, true, false, false),
+            accessKey: rand.getString(12, true, true, false, false),
             platform: plt.toString(),
             tunnel: true,
             tunnelId: rand.getString(11, true),
-            remoteOptions: {
-                capabilities: {"app": `app-${rand.getString(15)}`}
-            },
+            app: `app-${rand.getString(15)}`,
             logMgr: new LoggingPluginManager({logName:'can generate capabilities from the passed in SessionOptions'})
         }
         let session: SauceLabsMobileAppSessionGeneratorPlugin = new SauceLabsMobileAppSessionGeneratorPlugin(opts);
 
         let remOpts: RemoteOptions = await session.getRemoteOptions();
 
+        expect(remOpts.user).toEqual(opts.username);
+        expect(remOpts.key).toEqual(opts.accessKey);
         expect(remOpts.capabilities['platformName']).toEqual(plt.os);
         expect(remOpts.capabilities['platformVersion']).toEqual(plt.osVersion);
         expect(remOpts.capabilities['browserName']).not.toBeDefined();
         expect(remOpts.capabilities['browserVersion']).not.toBeDefined();
         expect(remOpts.capabilities['deviceName']).toEqual(plt.deviceName);
-        expect(remOpts.capabilities['app']).toEqual(opts.remoteOptions.capabilities['app']);
+        expect(remOpts.capabilities['app']).toEqual(opts.app);
         expect(remOpts.user).toEqual(opts.username);
-        expect(remOpts.key).toEqual(opts.accesskey);
+        expect(remOpts.key).toEqual(opts.accessKey);
         expect(remOpts.capabilities['buildName']).toEqual(await BuildName.get());
         expect(remOpts.capabilities['name']).toEqual(await opts.logMgr.logName());
         expect(remOpts.capabilities['tunnelIdentifier']).toEqual(opts.tunnelId);
@@ -49,10 +50,13 @@ describe('SauceLabsMobileAppSessionGeneratorPlugin', () => {
      * - sauce_access_key
      */
     xit('can create a session in Sauce Labs', async () => {
-        let plugin: SauceLabsMobileAppSessionGeneratorPlugin = new SauceLabsMobileAppSessionGeneratorPlugin({
+        let config: SauceLabsConfig = new SauceLabsConfig({
             username: 'fake-username',
-            accesskey: 'fake-accesskey',
-            platform: 'windows_10_chrome'
+            accessKey: 'fake-accesskey'
+        });
+        let plugin: SauceLabsMobileAppSessionGeneratorPlugin = new SauceLabsMobileAppSessionGeneratorPlugin({
+            platform: 'android_11_+_+_Google Pixel XL',
+            _config: config
         });
         await using (await plugin.newSession(), async (session) => {
             let facet: MobileAppFacet = await session.getFacet(MobileAppFacet, {locator: 'button.radius'});

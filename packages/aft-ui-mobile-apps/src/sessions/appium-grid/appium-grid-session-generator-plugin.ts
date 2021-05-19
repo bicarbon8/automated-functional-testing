@@ -1,7 +1,7 @@
 import { AbstractMobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginOptions } from "../abstract-mobile-app-session-generator-plugin";
 import { TestPlatform } from "aft-ui";
 import { nameof } from "ts-simple-nameof";
-import { MobileAppSessionOptions } from "../mobile-app-session";
+import { MobileAppSession, MobileAppSessionOptions } from "../mobile-app-session";
 import { RemoteOptions } from "webdriverio";
 
 export class AppiumGridSessionGeneratorPlugin extends AbstractMobileAppSessionGeneratorPlugin {
@@ -10,6 +10,14 @@ export class AppiumGridSessionGeneratorPlugin extends AbstractMobileAppSessionGe
     }
     async onLoad(): Promise<void> {
         /* do nothing */
+    }
+    async newSession(options?: MobileAppSessionOptions): Promise<MobileAppSession> {
+        return new MobileAppSession({
+            driver: options?.driver || await this.createDriver(options),
+            logMgr: options?.logMgr || this.logMgr,
+            platform: options?.platform || await this.getPlatform().then(p => p.toString()),
+            app: options?.app || await this.app()
+        });
     }
     async getRemoteOptions(options?: MobileAppSessionOptions): Promise<RemoteOptions> {
         let remOpts: RemoteOptions = await super.getRemoteOptions(options);

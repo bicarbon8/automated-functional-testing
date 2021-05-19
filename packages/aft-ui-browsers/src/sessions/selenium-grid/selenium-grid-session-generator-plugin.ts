@@ -2,7 +2,7 @@ import { AbstractBrowserSessionGeneratorPlugin, IBrowserSessionGeneratorPluginOp
 import { TestPlatform } from "aft-ui";
 import { Capabilities } from "selenium-webdriver";
 import { nameof } from "ts-simple-nameof";
-import { BrowserSessionOptions } from "../browser-session";
+import { BrowserSession, BrowserSessionOptions } from "../browser-session";
 
 export class SeleniumGridSessionGeneratorPlugin extends AbstractBrowserSessionGeneratorPlugin {
     constructor(options?: IBrowserSessionGeneratorPluginOptions) {
@@ -10,6 +10,13 @@ export class SeleniumGridSessionGeneratorPlugin extends AbstractBrowserSessionGe
     }
     async onLoad(): Promise<void> {
         /* do nothing */
+    }
+    async newSession(options?: BrowserSessionOptions): Promise<BrowserSession> {
+        return new BrowserSession({
+            driver: options?.driver || await this.createDriver(options),
+            logMgr: options?.logMgr || this.logMgr,
+            platform: options?.platform || await this.getPlatform().then(p => p.toString())
+        });
     }
     async getCapabilities(options?: BrowserSessionOptions): Promise<Capabilities> {
         let capabilities: Capabilities = new Capabilities();
