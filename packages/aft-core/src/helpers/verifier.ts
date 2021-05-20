@@ -34,6 +34,11 @@ export class Verifier implements PromiseLike<void> {
         this._buildMgr = BuildInfoPluginManager.instance();
     }
     
+    /**
+     * a {LoggingPluginManager} that uses either the {withDescription}
+     * or a list of {withTestId} or a uuid as the `logName` depending
+     * on which is available and where `description` is preferred most
+     */
     get logMgr(): LoggingPluginManager {
         if (!this._logMgr) {
             if (this._description) {
@@ -87,34 +92,83 @@ export class Verifier implements PromiseLike<void> {
         }
     }
 
+    /**
+     * a syntactic way of connecting fluent functions for the Verifier
+     */
     get and(): Verifier {
         return this;
     }
 
+    /**
+     * the starting point for setting up a {Verifier} execution. Generally it is preferred
+     * to use the {verify(...)} `const` instead of creating individual {Verifier} instances.
+     * ex:
+     * ```
+     * await verify(async (v: Verifier) => {
+     *   await v.logMgr.info('doing some testing...');
+     *   let feature = new FeatureObj();
+     *   return await feature.returnExpectedValue();
+     * }).withDescription('example usage for Verifier')
+     * .and.withTestId('C1234')
+     * .returns('expected value');
+     * ```
+     * @param assertion the {Func<Verifier, any>} function to be executed by this {Verifier}
+     * @returns this {Verifier} instance
+     */
     verify(assertion: Func<Verifier, any>): Verifier {
         this._assertion = assertion;
         return this;
     }
 
+    /**
+     * allows for setting the `description` to be used as the `logName` in any
+     * logging output from this {Verifier}
+     * @param description the description of this {Verifier}
+     * @returns this {Verifier} instance
+     */
     withDescription(description: string): Verifier {
         this._description = description;
         return this;
     }
 
-    withTestId(test: string): Verifier {
-        if (test) {
-            this._tests.add(test);
+    /**
+     * allows for setting a `testId` to be checked before executing the `assertion`
+     * and to be reported to from any connected logging plugins that connect to
+     * your test case management system. if all the referenced `testId` values should not be
+     * run (as returned by your {AbstractTestCasePlugin.shouldRun(testId)}) then
+     * the `assertion` will not be run.
+     * NOTE: multiple `testId` values can be chained together
+     * @param testId a test identifier for your connected {AbstractTestCasePlugin}
+     * @returns this {Verifier} instance
+     */
+    withTestId(testId: string): Verifier {
+        if (testId) {
+            this._tests.add(testId);
         }
         return this;
     }
 
-    withKnownDefectId(defect: string): Verifier {
-        if (defect) {
-            this._defects.add(defect);
+    /**
+     * allows for setting a `defectId` to be checked before executing the `assertion`.
+     * if the referenced `defectId` is _open_ then the `assertion` will not be run.
+     * @param defectId a defect identifier for your connected {AbstractDefectPlugin}
+     * @returns this {Verifier} instance
+     */
+    withKnownDefectId(defectId: string): Verifier {
+        if (defectId) {
+            this._defects.add(defectId);
         }
         return this;
     }
 
+    /**
+     * allows for specifying either the expected return value or a {VerifierMatcher}
+     * to be used to compare the return value using the {VerifierMatcher.compare()}
+     * function. if not set then only exceptions will cause a `failed` result on
+     * the executed `assertion`
+     * @param result the expected result or a {VerifierMatcher} implementation
+     * @returns this {Verifier} instance
+     */
     returns(result: any | VerifierMatcher): Verifier {
         if (result['compare'] && result['setActual'] && result['failureString']) {
             this._matcher = result;
@@ -124,21 +178,45 @@ export class Verifier implements PromiseLike<void> {
         return this;
     }
 
+    /**
+     * allows for using a specific {LoggingPluginManager} instance. if not
+     * set then one will be created for use by this {Verifier}
+     * @param logMgr a {LoggingPluginManager} instance
+     * @returns this {Verifier} instance
+     */
     withLoggingPluginManager(logMgr: LoggingPluginManager): Verifier {
         this._logMgr = logMgr;
         return this;
     }
 
+    /**
+     * allows for using a specific {TestCasePluginManager} instance. if not
+     * set then the global {TestCasePluginManager.instance()} will be used
+     * @param testMgr a {TestCasePluginManager} instance
+     * @returns this {Verifier} instance
+     */
     withTestCasePluginManager(testMgr: TestCasePluginManager): Verifier {
         this._testMgr = testMgr;
         return this;
     }
 
+    /**
+     * allows for using a specific {DefectPluginManager} instance. if not
+     * set then the global {DefectPluginManager.instance()} will be used
+     * @param defectMgr a {DefectPluginManager} instance
+     * @returns this {Verifier} instance
+     */
     withDefectPluginManager(defectMgr: DefectPluginManager): Verifier {
         this._defectMgr = defectMgr;
         return this;
     }
 
+    /**
+     * allows for using a specific {BuildInfoPluginManager} instance. if not
+     * set then the global {BuildInfoPluginManager.instance()} will be used
+     * @param buildMgr a {BuildInfoPluginManager} instance
+     * @returns this {Verifier} instance
+     */
     withBuildInfoPluginManager(buildMgr: BuildInfoPluginManager): Verifier {
         this._buildMgr = buildMgr;
         return this;
@@ -272,6 +350,22 @@ export class Verifier implements PromiseLike<void> {
     }
 }
 
+/**
+ * creates a new {Verifier} instace to be used for executing some Functional
+ * Test Assertion.
+ * ex:
+ * ```
+ * await verify(async (v: Verifier) => {
+ *   await v.logMgr.info('doing some testing...');
+ *   let feature = new FeatureObj();
+ *   return await feature.returnExpectedValue();
+ * }).withDescription('example usage for Verifier')
+ * .and.withTestId('C1234')
+ * .returns('expected value');
+ * ```
+ * @param assertion the {Func<Verifier, any>} function to be executed by this {Verifier}
+ * @returns a new {Verifier} instance
+ */
 export const verify = (assertion: Func<Verifier, any>): Verifier => {
     let v: Verifier = new Verifier();
     v.verify(assertion);

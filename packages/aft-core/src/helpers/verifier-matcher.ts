@@ -5,6 +5,9 @@ export interface VerifierMatcher {
     failureString(): string;
 }
 
+/**
+ * use {equaling(expected)} instead
+ */
 export class Equaling implements VerifierMatcher {
     readonly expected: any;
     private _actual: any;
@@ -22,10 +25,19 @@ export class Equaling implements VerifierMatcher {
         return `expected '${this.expected}' to equal '${this._actual}'`;
     }
 }
+/**
+ * used to perform a `a == b` comparison
+ * between the `expected` and `actual` result
+ * @param expected the expected value
+ * @returns a new {Equaling} instance
+ */
 export const equaling = (expected: any): Equaling => {
     return new Equaling(expected);
 };
 
+/**
+ * use {exactly(expected)} instead
+ */
 export class Exactly implements VerifierMatcher {
     readonly expected: any;
     private _actual: any;
@@ -43,10 +55,19 @@ export class Exactly implements VerifierMatcher {
         return `expected '${this.expected}' to be the same instance as '${this._actual}'`;
     }
 }
+/**
+ * used to perform a `a === b` comparison
+ * between the `expected` and `actual` result
+ * @param expected the expected value
+ * @returns a new {Exactly} instance
+ */
 export const exactly = (expected: any): Exactly => {
     return new Exactly(expected);
 };
 
+/**
+ * use {between(min, max)} instead
+ */
 export class NumberBetween implements VerifierMatcher {
     private readonly _min: number;
     private readonly _max: number;
@@ -72,10 +93,20 @@ export class NumberBetween implements VerifierMatcher {
         return `expected '${this._actual}' to be between '${this.expected}'`;
     }
 }
+/**
+ * used to perform a `min <= actual <= max` comparison
+ * between the `minimum`, `maximum` and `actual` result
+ * @param minimum the minimum value the `actual` result can be
+ * @param maximum the maximum value the `actual` result can be
+ * @returns a new {NumberBetween} instance
+ */
 export const between = (minimum: number, maximum: number): NumberBetween => {
     return new NumberBetween(minimum, maximum);
 };
 
+/**
+ * use {containing(expected)} instead
+ */
 export class ValueContaining implements VerifierMatcher {
     readonly expected: any;
     private _actual: string | Array<any> | Set<any> | Map<any, any>;
@@ -111,10 +142,20 @@ export class ValueContaining implements VerifierMatcher {
         return `expected '${this.expected}' to be contained in [${_actualStr}]`;
     }
 }
+/**
+ * used to perform a `[a, b, c] includes b` or `Set([a, b, c]) has b`
+ * or `Map([[a, aval], [b, bval]]) has b` comparison
+ * between the `expected` and `actual` result
+ * @param expected the expected value
+ * @returns a new {ValueContaining} instance
+ */
 export const containing = (expected: any): ValueContaining => {
     return new ValueContaining(expected);
 };
 
+/**
+ * use {havingValue()} instead
+ */
 export class HavingValue implements VerifierMatcher {
     readonly expected: string = 'value other than null or undefined';
     private _actual: any;
@@ -129,10 +170,18 @@ export class HavingValue implements VerifierMatcher {
         return `expected '${this._actual}' to be a ${this.expected}`;
     }
 }
+/**
+ * used to perform a `a !== null && a !== undefined` comparison
+ * between the where `a` is the `actual` result
+ * @returns a new {HavingValue} instance
+ */
 export const havingValue = (): HavingValue => {
     return new HavingValue();
 }
 
+/**
+ * use {greaterThan(expected)} instead
+ */
 export class GreaterThan implements VerifierMatcher {
     readonly expected: number;
     private _actual: number;
@@ -150,10 +199,19 @@ export class GreaterThan implements VerifierMatcher {
         return `expected '${this._actual}' to be greater than '${this.expected}'`;
     }
 }
+/**
+ * used to perform a `actual > expected` comparison
+ * between the `expected` and `actual` result
+ * @param expected the expected value
+ * @returns a new {GreaterThan} instance
+ */
 export const greaterThan = (expected: number): GreaterThan => {
     return new GreaterThan(expected);
 }
 
+/**
+ * use {lessThan(expected)} instead
+ */
 export class LessThan implements VerifierMatcher {
     readonly expected: number;
     private _actual: number;
@@ -171,10 +229,19 @@ export class LessThan implements VerifierMatcher {
         return `expected '${this._actual}' to be less than '${this.expected}'`;
     }
 }
+/**
+ * used to perform a `actual < expected` comparison
+ * between the `expected` and `actual` result
+ * @param expected the expected value
+ * @returns a new {LessThan} instance
+ */
 export const lessThan = (expected: number): LessThan => {
     return new LessThan(expected);
 }
 
+/**
+ * use {not(VerifierMatcher)} instead
+ */
 export class Negate implements VerifierMatcher {
     readonly expected: VerifierMatcher;
     constructor(expected: VerifierMatcher) {
@@ -191,6 +258,12 @@ export class Negate implements VerifierMatcher {
         return `not ${this.expected.failureString()}`;
     }
 }
+/**
+ * used to perform a `not(VerifierMatcher.compare())` comparison
+ * between the `expected` and `actual` result
+ * @param expected a {VerifierMatcher} to negate
+ * @returns a new {Negate} instance
+ */
 export const not = (expected: VerifierMatcher): Negate => {
     return new Negate(expected);
 }
