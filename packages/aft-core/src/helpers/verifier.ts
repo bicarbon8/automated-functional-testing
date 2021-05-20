@@ -81,9 +81,8 @@ export class Verifier implements PromiseLike<void> {
     protected async _resolveAssertion(): Promise<void> {
         let result: any = await Promise.resolve(this._assertion(this));
         if (this._matcher !== undefined) {
-            this._matcher.actual = result;
-            if (!this._matcher.compare()) {
-                return Promise.reject(`${this._matcher.onFailureString()}`);
+            if (!this._matcher.setActual(result).compare()) {
+                return Promise.reject(`${this._matcher.failureString()}`);
             }
         }
     }
@@ -117,7 +116,7 @@ export class Verifier implements PromiseLike<void> {
     }
 
     returns(result: any | VerifierMatcher): Verifier {
-        if (result['expected'] && result['compare']) {
+        if (result['compare'] && result['setActual'] && result['failureString']) {
             this._matcher = result;
         } else {
             this._matcher = new Equaling(result);

@@ -1,4 +1,4 @@
-import { between, containing, Equaling, exactly, not } from "../../src/helpers/verifier-matcher";
+import { between, containing, equaling, exactly, greaterThan, havingValue, lessThan, not } from "../../src/helpers/verifier-matcher";
 
 describe('VerifierMatcher', () => {
     describe('Equaling', () => {
@@ -18,9 +18,7 @@ describe('VerifierMatcher', () => {
         ];
         testData.forEach((data) => {
             it(`can get expected result from comparison: ${JSON.stringify(data)}`, () => {
-                let m = new Equaling(data.expected);
-                m.actual = data.actual;
-                expect(m.compare()).toBe(data.result);
+                expect(equaling(data.expected).setActual(data.actual).compare()).toBe(data.result);
             });
         });
     });
@@ -42,9 +40,7 @@ describe('VerifierMatcher', () => {
         ];
         testData.forEach((data) => {
             it(`can get expected result from comparison: ${JSON.stringify(data)}`, () => {
-                let m = exactly(data.expected);
-                m.actual = data.actual;
-                expect(m.compare()).toBe(data.result);
+                expect(exactly(data.expected).setActual(data.actual).compare()).toBe(data.result);
             });
         });
     });
@@ -60,9 +56,7 @@ describe('VerifierMatcher', () => {
         ];
         testData.forEach((data) => {
             it(`can get expected result from comparison: ${JSON.stringify(data)}`, () => {
-                let m = between(data.min, data.max);
-                m.actual = data.actual;
-                expect(m.compare()).toBe(data.result);
+                expect(between(data.min, data.max).setActual(data.actual).compare()).toBe(data.result);
             });
         });
     });
@@ -93,50 +87,76 @@ describe('VerifierMatcher', () => {
             {expected: 'foo', actual: new Map<string, string>([['foo','bar']]), result: true},
             {expected: 'bar', actual: new Map<string, string>([['foo','bar']]), result: false},
             {expected: 'foo', actual: new Map<string, string>(), result: false},
-            {expected: null, actual: new Map<string, string>([[null, 'bar']]), result: true},
+            {expected: null, actual: new Map<string, string>([[null, 'bar']]), result: true}
         ];
         testData.forEach((data) => {
             it(`can get expected result from comparison: ${JSON.stringify(data)}`, () => {
-                let m = containing(data.expected);
-                m.actual = data.actual;
-                expect(m.compare()).toBe(data.result);
+                expect(containing(data.expected).setActual(data.actual).compare()).toBe(data.result);
+            });
+        });
+    });
+
+    describe('HavingValue', () => {
+        let testData = [
+            {actual: 'false', result: true},
+            {actual: 0, result: true},
+            {actual: false, result: true},
+            {actual: null, result: false},
+            {actual: undefined, result: false}
+        ];
+        testData.forEach((data) => {
+            it(`can get expected result from comparison: ${JSON.stringify(data)}`, () => {
+                expect(havingValue().setActual(data.actual).compare()).toBe(data.result);
+            });
+        });
+    });
+
+    describe('GreaterThan', () => {
+        let testData = [
+            {expected: 0, actual: 100, result: true},
+            {expected: 0, actual: 1, result: true},
+            {expected: 0, actual: 0, result: false},
+            {expected: 0, actual: -1, result: false},
+        ];
+        testData.forEach((data) => {
+            it(`can get expected result from comparison: ${JSON.stringify(data)}`, () => {
+                expect(greaterThan(data.expected).setActual(data.actual).compare()).toBe(data.result);
+            });
+        });
+    });
+
+    describe('LessThan', () => {
+        let testData = [
+            {expected: 100, actual: 0, result: true},
+            {expected: 1, actual: 0, result: true},
+            {expected: 0, actual: 0, result: false},
+            {expected: -1, actual: 0, result: false},
+        ];
+        testData.forEach((data) => {
+            it(`can get expected result from comparison: ${JSON.stringify(data)}`, () => {
+                expect(lessThan(data.expected).setActual(data.actual).compare()).toBe(data.result);
             });
         });
     });
 
     describe('Negate', () => {
         let testData = [
-            {expected: containing('foo'), actual: 'foo', result: false},
-            {expected: containing(null), actual: null, result: true},
-            {expected: containing(undefined), actual: undefined, result: true},
-            {expected: containing(null), actual: 'null', result: true},
-            {expected: containing(undefined), actual: 'undefined', result: true},
-            {expected: containing('null'), actual: null, result: true},
-            {expected: containing('undefined'), actual: undefined, result: true},
-            {expected: containing('bar'), actual: 'foo', result: true},
-            {expected: containing('f'), actual: 'foo', result: false},
-            {expected: containing('foo'), actual: 'foo', result: false},
-            {expected: containing('1'), actual: 'foo', result: true},
-            {expected: containing('a'), actual: 'foo', result: true},
-            {expected: containing('foo'), actual: ['foo'], result: false},
-            {expected: containing('bar'), actual: ['foo'], result: true},
-            {expected: containing('foo'), actual: [], result: true},
-            {expected: containing(null), actual: [null], result: false},
-            {expected: containing(undefined), actual: [undefined], result: false},
-            {expected: containing('foo'), actual: new Set<string>(['foo']), result: false},
-            {expected: containing('bar'), actual: new Set<string>(['foo']), result: true},
-            {expected: containing('foo'), actual: new Set<string>(), result: true},
-            {expected: containing(null), actual: new Set<string>([null]), result: false},
-            {expected: containing('foo'), actual: new Map<string, string>([['foo','bar']]), result: false},
-            {expected: containing('bar'), actual: new Map<string, string>([['foo','bar']]), result: true},
-            {expected: containing('foo'), actual: new Map<string, string>(), result: true},
-            {expected: containing(null), actual: new Map<string, string>([[null, 'bar']]), result: false},
+            {expected: equaling('foo'), actual: 'foo', result: false},
+            {expected: equaling('foo'), actual: 'bar', result: true},
+            {expected: exactly(1), actual: 1, result: false},
+            {expected: exactly(1), actual: true, result: true},
+            {expected: between(0, 10), actual: 5, result: false},
+            {expected: between(0, 10), actual: 15, result: true},
+            {expected: containing('foo'), actual: ['foo', 'bar'], result: false},
+            {expected: containing('baz'), actual: ['foo', 'bar'], result: true},
+            {expected: havingValue(), actual: 'foo', result: false},
+            {expected: havingValue(), actual: undefined, result: true},
+            {expected: greaterThan(0), actual: 1, result: false},
+            {expected: greaterThan(100), actual: 0, result: true},
         ];
         testData.forEach((data) => {
             it(`can get expected result from comparison: ${JSON.stringify(data)}`, () => {
-                let m = not(data.expected);
-                m.actual = data.actual;
-                expect(m.compare()).toBe(data.result);
+                expect(not(data.expected).setActual(data.actual).compare()).toBe(data.result);
             });
         });
     });

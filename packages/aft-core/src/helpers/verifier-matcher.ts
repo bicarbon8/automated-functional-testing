@@ -1,35 +1,46 @@
 export interface VerifierMatcher {
-    expected: any;
-    actual: any;
+    readonly expected: any;
+    setActual(actual: any): VerifierMatcher;
     compare(): boolean;
-    onFailureString(): string;
+    failureString(): string;
 }
 
 export class Equaling implements VerifierMatcher {
-    expected: any;
-    actual: any;
+    readonly expected: any;
+    private _actual: any;
     constructor(expected: any) {
         this.expected = expected;
     }
-    compare(): boolean {
-        return this.expected == this.actual;
+    setActual(actual: any): Equaling {
+        this._actual = actual;
+        return this;
     }
-    onFailureString(): string {
-        return `expected '${this.expected}' to equal '${this.actual}'`;
+    compare(): boolean {
+        return this.expected == this._actual;
+    }
+    failureString(): string {
+        return `expected '${this.expected}' to equal '${this._actual}'`;
     }
 }
+export const equaling = (expected: any): Equaling => {
+    return new Equaling(expected);
+};
 
 export class Exactly implements VerifierMatcher {
-    expected: any;
-    actual: any;
+    readonly expected: any;
+    private _actual: any;
     constructor(expected: any) {
         this.expected = expected;
     }
-    compare(): boolean {
-        return this.expected === this.actual;
+    setActual(actual: any): Exactly {
+        this._actual = actual;
+        return this;
     }
-    onFailureString(): string {
-        return `expected '${this.expected}' to be the same instance as '${this.actual}'`;
+    compare(): boolean {
+        return this.expected === this._actual;
+    }
+    failureString(): string {
+        return `expected '${this.expected}' to be the same instance as '${this._actual}'`;
     }
 }
 export const exactly = (expected: any): Exactly => {
@@ -39,22 +50,26 @@ export const exactly = (expected: any): Exactly => {
 export class NumberBetween implements VerifierMatcher {
     private readonly _min: number;
     private readonly _max: number;
-    expected: string;
-    actual: number;
+    readonly expected: string;
+    private _actual: number;
     constructor(minimum: number, maximum: number) {
         this._min = minimum;
         this._max = maximum;
         this.expected = `${this._min}-${this._max}`;
     }
+    setActual(actual: number): NumberBetween {
+        this._actual = actual;
+        return this;
+    }
     compare(): boolean {
-        if (this._min <= this.actual && this.actual <= this._max) {
+        if (this._min <= this._actual && this._actual <= this._max) {
             return true;
         }
         return false;
     }
     
-    onFailureString(): string {
-        return `expected '${this.actual}' to be between '${this.expected}'`;
+    failureString(): string {
+        return `expected '${this._actual}' to be between '${this.expected}'`;
     }
 }
 export const between = (minimum: number, maximum: number): NumberBetween => {
@@ -62,34 +77,38 @@ export const between = (minimum: number, maximum: number): NumberBetween => {
 };
 
 export class ValueContaining implements VerifierMatcher {
-    expected: any;
-    actual: string | Array<any> | Set<any> | Map<any, any>;
+    readonly expected: any;
+    private _actual: string | Array<any> | Set<any> | Map<any, any>;
     constructor(expected: any) {
         this.expected = expected;
     }
+    setActual(actual: string | Array<any> | Set<any> | Map<any, any>): ValueContaining {
+        this._actual = actual;
+        return this;
+    }
     compare(): boolean {
-        if (this.actual) {
-            if (Array.isArray(this.actual)) {
-                return this.actual.includes(this.expected);
+        if (this._actual) {
+            if (Array.isArray(this._actual)) {
+                return this._actual.includes(this.expected);
             }
-            if (this.actual['has'] && this.actual['clear'] && this.actual['size'] !== undefined) {
-                return (this.actual as Set<any>).has(this.expected);
+            if (this._actual['has'] && this._actual['clear'] && this._actual['size'] !== undefined) {
+                return (this._actual as Set<any>).has(this.expected);
             }
             if (this.expected) {
-                return (this.actual as string).includes(this.expected);
+                return (this._actual as string).includes(this.expected);
             }
         }
         return false;
     }
-    onFailureString(): string {
-        let actualStr: string;
-        if (this.actual['has'] && this.actual['clear'] && this.actual['size'] !== undefined) {
-            actualStr = Array.from(this.actual).join(', ');
+    failureString(): string {
+        let _actualStr: string;
+        if (this._actual['has'] && this._actual['clear'] && this._actual['size'] !== undefined) {
+            _actualStr = Array.from(this._actual).join(', ');
         }
-        if (Array.isArray(this.actual)) {
-            actualStr = this.actual.join(', ');
+        if (Array.isArray(this._actual)) {
+            _actualStr = this._actual.join(', ');
         }
-        return `expected '${this.expected}' to be contained in [${actualStr}]`;
+        return `expected '${this.expected}' to be contained in [${_actualStr}]`;
     }
 }
 export const containing = (expected: any): ValueContaining => {
@@ -97,13 +116,17 @@ export const containing = (expected: any): ValueContaining => {
 };
 
 export class HavingValue implements VerifierMatcher {
-    expected: string = 'value other than null or undefined';
-    actual: any;
-    compare(): boolean {
-        return (this.actual !== null && this.actual !== undefined);
+    readonly expected: string = 'value other than null or undefined';
+    private _actual: any;
+    setActual(actual: any): HavingValue {
+        this._actual = actual;
+        return this;
     }
-    onFailureString(): string {
-        return `expected '${this.actual}' to be a ${this.expected}`;
+    compare(): boolean {
+        return (this._actual !== null && this._actual !== undefined);
+    }
+    failureString(): string {
+        return `expected '${this._actual}' to be a ${this.expected}`;
     }
 }
 export const havingValue = (): HavingValue => {
@@ -111,16 +134,20 @@ export const havingValue = (): HavingValue => {
 }
 
 export class GreaterThan implements VerifierMatcher {
-    expected: number;
-    actual: number;
+    readonly expected: number;
+    private _actual: number;
     constructor(expected: number) {
         this.expected = expected;
     }
-    compare(): boolean {
-        return this.actual > this.expected;
+    setActual(actual: number): GreaterThan {
+        this._actual = actual;
+        return this;
     }
-    onFailureString(): string {
-        return `expected '${this.actual}' to be greater than '${this.expected}'`;
+    compare(): boolean {
+        return this._actual > this.expected;
+    }
+    failureString(): string {
+        return `expected '${this._actual}' to be greater than '${this.expected}'`;
     }
 }
 export const greaterThan = (expected: number): GreaterThan => {
@@ -128,16 +155,20 @@ export const greaterThan = (expected: number): GreaterThan => {
 }
 
 export class LessThan implements VerifierMatcher {
-    expected: number;
-    actual: number;
+    readonly expected: number;
+    private _actual: number;
     constructor(expected: number) {
         this.expected = expected;
     }
-    compare(): boolean {
-        return this.actual < this.expected;
+    setActual(actual: number): LessThan {
+        this._actual = actual;
+        return this;
     }
-    onFailureString(): string {
-        return `expected '${this.actual}' to be less than '${this.expected}'`;
+    compare(): boolean {
+        return this._actual < this.expected;
+    }
+    failureString(): string {
+        return `expected '${this._actual}' to be less than '${this.expected}'`;
     }
 }
 export const lessThan = (expected: number): LessThan => {
@@ -145,21 +176,19 @@ export const lessThan = (expected: number): LessThan => {
 }
 
 export class Negate implements VerifierMatcher {
-    expected: VerifierMatcher;
-    set actual(a: any) {
-        this.expected.actual = a;
-    }
-    get actual(): any {
-        return this.expected.actual;
-    }
+    readonly expected: VerifierMatcher;
     constructor(expected: VerifierMatcher) {
         this.expected = expected;
+    }
+    setActual(actual: any): Negate {
+        this.expected.setActual(actual);
+        return this;
     }
     compare(): boolean {
         return !this.expected.compare();
     }
-    onFailureString(): string {
-        return `not ${this.expected.onFailureString()}`;
+    failureString(): string {
+        return `not ${this.expected.failureString()}`;
     }
 }
 export const not = (expected: VerifierMatcher): Negate => {

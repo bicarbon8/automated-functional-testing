@@ -26,9 +26,9 @@ describe('REST Request', () => {
                 await tw.logMgr.info('confirmed response is not null.');
                 await tw.logMgr.step('confirm response.data is not null...');
                 return response.data;
-            }).returns(havingValue())
-            .withLoggingPluginManager(v.logMgr)
-            .and.withTestId('C3131');
+            }).withLoggingPluginManager(v.logMgr)
+            .and.withTestId('C3131')
+            .returns(havingValue());
 
             await verify(async (tw) => {
                 await tw.logMgr.step('confirm can deserialise response.data into typed object...');

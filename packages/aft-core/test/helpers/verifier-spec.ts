@@ -159,9 +159,7 @@ describe('Verifier', () => {
 
             expect('foo').toBe('bar'); // force failure
         } catch (e) {
-            let m = new Equaling(false);
-            m.actual = true;
-            expect(e.toString()).toEqual(m.onFailureString());
+            expect(e.toString()).toEqual(new Equaling(false).setActual(true).failureString());
         }
 
         expect(tcMgr.shouldRun).toHaveBeenCalledTimes(2);

@@ -1,4 +1,4 @@
-import { Verifier, verify, wait } from "aft-core";
+import { containing, Verifier, verify, wait } from "aft-core";
 import { verifyWithBrowser, BrowserVerifier } from "aft-ui-browsers";
 import { expect } from "chai";
 import { HerokuLoginPage } from "./page-objects/heroku-login-page";
@@ -18,11 +18,10 @@ describe('Functional Browser Tests using AFT-UI-BROWSERS', () => {
             await wait.untilTrue(async () => await loginPage.hasMessage(), 20000);
             
             await tw.logMgr.step('get message...');
-            let message: string = await loginPage.getMessage();
-            
-            expect(message).to.contain("You logged into a secure area!");
+            return await loginPage.getMessage();
         }).withDescription('can access websites using AFT and Page Widgets and Facets')
-        .and.withTestId('C3456').and.withTestId('C2345').and.withTestId('C1234');
+        .and.withTestId('C3456').and.withTestId('C2345').and.withTestId('C1234')
+        .returns(containing("You logged into a secure area!"));
     });
 
     it('can recover from StaleElementExceptions automatically', async () => {
@@ -34,7 +33,7 @@ describe('Functional Browser Tests using AFT-UI-BROWSERS', () => {
                 await loginPage.navigateTo();
                 return await loginPage.session.driver.getCurrentUrl();
             }).withLoggingPluginManager(tw.logMgr).and.withTestId('C4567')
-            .returns('https://the-internet.herokuapp.com/login');
+            .returns(containing('the-internet.herokuapp.com/login'));
             
             await verify(async (v: Verifier) => {
                 await v.logMgr.step('click login button...');
