@@ -7,7 +7,7 @@ import { TestRailPlan } from "../../src/api/testrail-plan";
 
 describe('TestRailApi', () => {
     beforeEach(() => {
-        let inst: HttpService = HttpService.instance;
+        let inst: HttpService = new HttpService();
     });
 
     afterEach(() => {

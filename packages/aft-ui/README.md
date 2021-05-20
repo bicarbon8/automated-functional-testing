@@ -66,7 +66,7 @@ export class SeleniumSession implements ISession {
     readonly logMgr: LoggingPluginManager;
     constructor(options: SeleniumSessionOptions) {
         this._driver = options.driver;
-        this.logMgr = options.logMgr || new LoggingPluginManager({logName: `SeleniumSession_${this.driver?.getSession().then(s => s.getId())}`});
+        this.logMgr = options.logMgr || new LoggingPluginManager();
     }
     async getFacet<T extends AbstractFacet>(facetType: Clazz<T>, options?: IFacetOptions): Promise<T> {
         options = options || {};
@@ -100,7 +100,7 @@ export class SeleniumSession implements ISession {
         if (error) {
             this.logMgr.warn(`Error: SeleniumSession - ${error.message}`);
         }
-        this.logMgr.trace(`shutting down SeleniumSession: ${await this.driver?.getSession().then(s => s.getId()))}`);
+        this.logMgr.trace('shutting down SeleniumSession');
         await this.driver?.quit();
     }
 }

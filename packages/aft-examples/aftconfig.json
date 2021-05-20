@@ -4,7 +4,8 @@
         "pluginNames": [
             "console-logging-plugin",
             "testrail-logging-plugin",
-            "kinesis-logging-plugin"
+            "kinesis-logging-plugin",
+            "html-logging-plugin"
         ],
         "searchDir": "../"
     },
@@ -36,17 +37,30 @@
         "enabled": false,
         "level": "trace"
     },
-    "sessiongeneratorpluginmanager": {
-        "pluginNames": ["browserstack-session-generator-plugin"],
-        "searchDir": "../"
+    "htmlloggingplugin": {
+        "enabled": true,
+        "level": "info"
     },
-    "browserstacksessiongeneratorplugin": {
+    "browserstackconfig": {
         "user": "%browserstack_user%",
         "key": "%browserstack_key%",
-        "platform": {
-            "os": "windows",
-            "osVersion": "10",
-            "browser": "chrome"
+        "debug": true
+    },
+    "browsersessiongeneratorpluginmanager": {
+        "pluginNames": ["browserstack-browser-session-generator-plugin"],
+        "searchDir": "../"
+    },
+    "browserstackbrowsersessiongeneratorplugin": {
+        "platform": "windows_10_chrome"
+    },
+    "mobileappsessiongeneratorpluginmanager": {
+        "pluginNames": ["browserstack-mobile-app-session-generator-plugin"],
+        "searchDir": "../"
+    },
+    "browserstackmobileappsessiongeneratorplugin": {
+        "platform": "android_11_+_+_Google Pixel 5",
+        "remoteOptions": {
+            "logLevel": "silent"
         }
     }
 }

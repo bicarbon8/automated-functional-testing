@@ -1,0 +1,43 @@
+{
+    "mobileappsessiongeneratorpluginmanager": {
+        "pluginNames": [
+            "browserstack-mobile-app-session-generator-plugin",
+            "sauce-labs-mobile-app-session-generator-plugin",
+            "appium-grid-session-generator-plugin"
+        ],
+        "searchDir": "../"
+    },
+    "browserstackconfig": {
+        "user": "%browserstack_user%",
+        "key": "%browserstack_key%",
+        "debug": true,
+        "local": false,
+        "localIdentifier": "abcdefg"
+    },
+    "browserstackmobileappsessiongeneratorplugin": {
+        "enabled": true,
+        "platform": "android_11_+_+_Google Pixel 5",
+        "app": "bs://some-identifier-for-your-uploaded-app"
+    },
+    "saucelabsconfig": {
+        "username": "%saucelabs_username%",
+        "accessKey": "%saucelabs_accesskey%",
+        "tunnel": false,
+        "tunnelId": "abcdefgh"
+    },
+    "saucelabsmobileappsessiongeneratorplugin": {
+        "enabled": true,
+        "platform": "android_4.4_+_+_Samsung Galaxy S5 Device",
+        "app": "sauce-storage:your-mobile-app.zip"
+    },
+    "appiumgridsessiongeneratorplugin": {
+        "enabled": true,
+        "platform": "android_10_+_+_Samsung Galaxy S7",
+        "url": "http://127.0.0.1:4444/wd/hub",
+        "remoteOptions": {
+            "capabilities": {
+                
+            }
+        }
+    }
+}

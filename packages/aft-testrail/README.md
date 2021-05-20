@@ -27,7 +27,7 @@ the `TestRailLoggingPlugin` extends from `AbstractLoggingPlugin` in `aft-core`. 
 - **maxLogCharacters** - [OPTIONAL] `number` for the maximum number of additional log characters to send to TestRail when logging a `TestResult` _(defaults to 250)_
 
 ## ITestCaseHandlerPlugin
-the `TestRailTestCasePlugin` extends from `AbstractTestCasePlugin` interface in `aft-core`. if enabled this plugin will lookup the status of TestRail tests based on their case ID from the AFT `testCases` array passed in to a `should` or `TestWrapper`. it can be enabled by including the following in your `aftconfig.json` file:
+the `TestRailTestCasePlugin` extends from `AbstractTestCasePlugin` interface in `aft-core`. if enabled this plugin will lookup the status of TestRail tests based on their case ID from the set of IDs passed in to a `Verifier.withTestId` function. it can be enabled by including the following in your `aftconfig.json` file:
 ```json
 {
     "testcasepluginmanager": {
@@ -67,7 +67,7 @@ to submit results to or filter test execution based on existence and status of t
 - **cacheDurationMs** - the maximum number of milliseconds to cache responses from TestRail's API _(defaults to 300000)_
 
 ## Usage
-you can submit results directly by calling the `aft-core.LoggingPluginManager.logResult(result: TestResult)` function or results will automatically be submitted if using the `aft-core.should(options)` with valid `testCases` specified in the `options` object. 
+you can submit results directly by calling the `aft-core.LoggingPluginManager.logResult(result: TestResult)` function or results will automatically be submitted if using the `aft-core.verify(assertion)` with valid `testCases` specified in the `options` object. 
 
 > NOTE: sending a `TestResult` with a `TestStatus` of `Failed` will be converted to a status of `Retest` before submitting to TestRail**
 
@@ -80,14 +80,13 @@ await logMgr.logResult({
     resultMessage: 'there was an error when running this test'
 });
 ```
-### via `aft-core.should` (`aft-core.TestWrapper`):
+### via `aft-core.verify` (`aft-core.Verifier`):
 ```typescript
 /** 
  * `TestStatus.Retest` result for `C3190`, `C2217763`, and `C3131` sent to TestRail
  * following execution because expectation fails
  */
-await should(() => expect(1 + 1).toBe(3), { 
-    testCases: ['C3190', 'C2217763', 'C3131'],
-    description: 'expected to fail because 1+1 != 3'
-});
+await verify(() => (1 + 1)).returns(3) 
+.withTestId('C3190').and.withTestId('C2217763').and.withTestId('C3131')
+.and.withDescription('expected to fail because 1+1 != 3');
 ```

@@ -1,7 +1,7 @@
 import { By, Locator, WebElement } from 'selenium-webdriver';
-import { SeleniumFacet } from 'aft-ui-selenium';
+import { BrowserFacet } from 'aft-ui-browsers';
 
-export class HerokuContentWidget extends SeleniumFacet {
+export class HerokuContentWidget extends BrowserFacet {
     /**
      * this Facet sets a static locator instead of using a passed
      * in value on the constructor

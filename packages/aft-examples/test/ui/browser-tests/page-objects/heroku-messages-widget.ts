@@ -1,7 +1,7 @@
 import { By, Locator, WebElement } from "selenium-webdriver";
-import { SeleniumFacet } from "aft-ui-selenium";
+import { BrowserFacet } from "aft-ui-browsers";
 
-export class HerokuMessagesWidget extends SeleniumFacet {
+export class HerokuMessagesWidget extends BrowserFacet {
     /**
      * this Facet sets a static locator instead of using a passed
      * in value on the constructor
@@ -25,8 +25,10 @@ export class HerokuMessagesWidget extends SeleniumFacet {
     async getMessage(): Promise<string> {
         if (await this.hasMessage()) {
             return await this.message()
-            .then((message) => {
-                return message.getText();
+            .then(async (message) => {
+                return await message.getText();
+            }).catch((err) => {
+                return null;
             });
         }
         return null;

@@ -34,7 +34,7 @@ export class DefectPluginManager extends AbstractPluginManager<AbstractDefectPlu
         .then(async (plugin: AbstractDefectPlugin) => {
             return await plugin?.getDefect(defectId);
         }).catch(async (err) => {
-            await this._logMgr.warn(err);
+            await this._logMgr.trace(err);
             return null;
         });
     }
@@ -44,7 +44,7 @@ export class DefectPluginManager extends AbstractPluginManager<AbstractDefectPlu
         .then(async (plugin: AbstractDefectPlugin) => {
             return await plugin?.findDefects(searchTerm) || [];
         }).catch(async (err) => {
-            await this._logMgr.warn(err);
+            await this._logMgr.trace(err);
             return [];
         });
     }

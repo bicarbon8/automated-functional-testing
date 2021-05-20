@@ -13,18 +13,21 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
         "pluginNames": [
             "console-logging-plugin",
             "testrail-logging-plugin",
-            "kinesis-logging-plugin"
-        ]
+            "kinesis-logging-plugin",
+            "html-logging-plugin"
+        ],
+        "searchDir": "../"
     },
     "testcasepluginmanager": {
-        "pluginNames": ["testrail-test-case-plugin"]
+        "pluginNames": ["testrail-test-case-plugin"],
+        "searchDir": "../"
     },
     "testrailconfig": {
         "url": "%testrail_url%",
         "user": "%testrail_user%",
-        "accesskey": "%testrail_pass%",
-        "projectid": 3,
-        "suiteids": [744]
+        "access_key": "%testrail_pass%",
+        "project_id": 3,
+        "suite_ids": [744]
     },
     "testrailloggingplugin": {
         "enabled": false,
@@ -43,16 +46,30 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
         "enabled": false,
         "level": "trace"
     },
-    "sessiongeneratorpluginmanager": {
-        "pluginNames": ["browserstack-session-generator-plugin"]
+    "htmlloggingplugin": {
+        "enabled": true,
+        "level": "info"
     },
-    "browserstacksessiongeneratorplugin": {
+    "browserstackconfig": {
         "user": "%browserstack_user%",
         "key": "%browserstack_key%",
-        "platform": {
-            "os": "windows",
-            "osVersion": "10",
-            "browser": "chrome"
+        "debug": true
+    },
+    "browsersessiongeneratorpluginmanager": {
+        "pluginNames": ["browserstack-browser-session-generator-plugin"],
+        "searchDir": "../"
+    },
+    "browserstackbrowsersessiongeneratorplugin": {
+        "platform": "windows_10_chrome"
+    },
+    "mobileappsessiongeneratorpluginmanager": {
+        "pluginNames": ["browserstack-mobile-app-session-generator-plugin"],
+        "searchDir": "../"
+    },
+    "browserstackmobileappsessiongeneratorplugin": {
+        "platform": "android_11_+_+_Google Pixel 5",
+        "remoteOptions": {
+            "logLevel": "silent"
         }
     }
 }
@@ -112,23 +129,18 @@ executing the tests using `npm test` should result in the output like the follow
 ```
 
 ## TestRail Logging
-if using `testrail-logging-plugin` then you must ensure your `should(options)`, `browserShould(options)`, `TestWrapper` or `BrowserTestWrapper` instances have valid TestRail Case ID's referenced. The values specified for the `testCases` option must be the TestRail Case ID's referenced by your existing TestRail Plan (not to be confused with the TestRail Test ID's that start with the letter _T_). Modifications will need to be made in two places per test:
+if using `testrail-logging-plugin` then you must ensure your `verify(assertion)`, `verifyWithBrowser(assertion)`, `verifyWithMobileApp(assertion)`, `Verifier`, `BrowserVerifier`, or `MobileAppVerifier` instances have valid TestRail Case ID's referenced. The values specified for the `withTestId` function must be the TestRail Case ID's referenced by your existing TestRail Plan (not to be confused with the TestRail Test ID's that start with the letter _T_). Modifications will need to be made in two places per test:
 
-### `TestWrapperOptions` or `BrowserTestWrapperOptions`
+### Specifying Test IDs
 in the options object, set the following:
 ```typescript
-await should({expect: () => someTestAction(), testCases: ['C1234', 'C2345', 'C3456']);
+await verify(() => someTestAction()).withTestId('C1234').and.withTestId('C2345').and.withTestId('C3456');
 ```
 specifying the TestRail Case ID's for the Cases you wish to cover.
 
-> NOTE: to ensure Jasmine's _expect_ calls are properly understood by AFT, you should wrap them with AFT's. Ex: 
+> WARNING: Jasmine's _expect_ calls do not return a boolean as their type definitions would make you think and failed `expect` calls will only throw exceptions if the stop on failure option is enabled: 
 ```typescript
-should({expect: () => expect(actual).toBe(expected), description: 'logging name used during testing'});
+verify(() => expect('foo').toBe('bar')); // AFT will report as 'passed'
 
-should({
-  expect: () => {
-    return expect('foo').toEqual('foo');
-  }, 
-  testCases: ['C1234']
-});
+verify(() => 'foo').returns('bar'); // AFT will report as 'failed'
 ```

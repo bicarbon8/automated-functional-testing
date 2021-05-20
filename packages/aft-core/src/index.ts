@@ -10,6 +10,8 @@ export * from './helpers/machine-info';
 export * from './helpers/processing-result';
 export * from './helpers/random-generator';
 export * from './helpers/using';
+export * from './helpers/verifier';
+export * from './helpers/verifier-matcher';
 export * from './helpers/wait';
 /** plugins */
 export * from './plugins/abstract-plugin';
@@ -36,6 +38,3 @@ export * from './plugins/test-cases/itest-case';
 export * from './plugins/test-cases/itest-result';
 export * from './plugins/test-cases/test-exception';
 export * from './plugins/test-cases/test-status';
-/** wrappers */
-export * from './wrappers/should';
-export * from './wrappers/test-wrapper';

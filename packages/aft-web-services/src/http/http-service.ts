@@ -1,10 +1,10 @@
 import { HttpRequest } from "./http-request";
 import { HttpResponse } from "./http-response";
 import { OptionsManager, LoggingPluginManager } from "aft-core";
-import { HttpMethod } from "./http-method";
 import * as http from 'http';
 import * as https from 'https';
 import { nameof } from "ts-simple-nameof";
+import * as FormData from "form-data";
 
 export interface HttpServiceOptions {
     defaultUrl?: string;
@@ -12,6 +12,7 @@ export interface HttpServiceOptions {
     defaultHeaders?: http.OutgoingHttpHeaders;
     defaultMethod?: string;
     defaultPostData?: string;
+    defaultMultipart?: boolean;
     
     _logMgr?: LoggingPluginManager;
     _optMgr?: OptionsManager;
@@ -31,7 +32,7 @@ export class HttpService {
      * issues a request over http / https and returns the response as a
      * `HttpResponse` object. Requests should include a URL at a minimum,
      * but may also specify additional details such as headers, auto redirect,
-     * post data and the request method (GET|POST|DELETE|UPDATE)
+     * post data and the request method (GET|POST|PUT|DELETE|UPDATE)
      * ex:
      * ```
      * await HttpService.instance.performRequest({url: 'https://some.domain/path'});
@@ -42,19 +43,32 @@ export class HttpService {
      *     url: 'https://some.domain/path',
      *     allowAutoRedirect: false,
      *     headers: {"Authorization": "basic AS0978FASLKLJA/=="},
-     *     method: HttpMethod.POST,
-     *     postData: JSON.stringify(someObject) 
+     *     method: 'POST',
+     *     postData: someObject,
+     *     multipart: false
      * });
      * ```
-     * @param req a `HttpResponse` object that specifies details of the request
+     * or multipart post as:
+     * ```
+     * let formData = new FormData();
+     * formData.append("Authorization": "basic AS0978FASLKLJA/==");
+     * await HttpService.instance.performRequest({
+     *     url: 'https://some.domain/path',
+     *     allowAutoRedirect: false,
+     *     method: 'POST',
+     *     postData: formData,
+     *     multipart: true
+     * });
+     * ```
+     * @param req a {HttpResponse} object that specifies details of the request
      */
     async performRequest(req?: HttpRequest): Promise<HttpResponse> {
         req = await this.setRequestDefaults(req);
         await this._logMgr.trace(`issuing '${req.method}' request to '${req.url}' with post body '${req.postData}' and headers '${JSON.stringify(req.headers)}'.`);
         
-        let message: http.IncomingMessage = await this.request(req);
+        let message: http.IncomingMessage = await this._request(req);
 
-        let resp: HttpResponse = await this.response(message, req);
+        let resp: HttpResponse = await this._response(message, req);
 
         await this._logMgr.trace(`received response of '${resp.data}' and headers '${JSON.stringify(resp.headers)}'.`);
         return resp;
@@ -64,30 +78,43 @@ export class HttpService {
         if (!req) {
             req = {} as HttpRequest;
         }
-        req.url = req.url || await this.optionsMgr.getOption('defaultUrl', 'http://127.0.0.1');
-        req.headers = req.headers || await this.optionsMgr.getOption('defaultHeaders', {});
-        req.method = req.method || await this.optionsMgr.getOption('defaultMethod', HttpMethod.GET);
+        req.url = req.url || await this.optionsMgr.getOption(nameof<HttpServiceOptions>(o => o.defaultUrl), 'http://127.0.0.1');
+        req.headers = req.headers || await this.optionsMgr.getOption(nameof<HttpServiceOptions>(o => o.defaultHeaders), {});
+        req.method = req.method || await this.optionsMgr.getOption(nameof<HttpServiceOptions>(o => o.defaultMethod), 'GET');
         if (req.allowAutoRedirect === undefined) {
-            req.allowAutoRedirect = await this.optionsMgr.getOption('defaultAllowRedirect', true);
+            req.allowAutoRedirect = await this.optionsMgr.getOption(nameof<HttpServiceOptions>(o => o.defaultAllowRedirect), true);
         }
-        req.postData = req.postData || await this.optionsMgr.getOption('defaultPostData');
+        req.postData = req.postData || await this.optionsMgr.getOption(nameof<HttpServiceOptions>(o => o.defaultPostData));
+        if (req.multipart === undefined) {
+            req.multipart = await this.optionsMgr.getOption(nameof<HttpServiceOptions>(o => o.defaultMultipart), false);
+        }
         return req;
     }
 
-    private async request(r: HttpRequest): Promise<http.IncomingMessage> {
+    private async _request(r: HttpRequest): Promise<http.IncomingMessage> {
         let message: http.IncomingMessage = await new Promise<http.IncomingMessage>((resolve, reject) => {
             try {
                 let client = (r.url.includes('https://')) ? https : http;
-                let req: http.ClientRequest = client.request(r.url, {
-                    headers: r.headers,
-                    method: r.method
-                }, resolve);
-                if (r.method == HttpMethod.POST || r.method == HttpMethod.UPDATE) {
-                    if (r.postData) {
-                        req.write(r.postData);
+                let req: http.ClientRequest;
+                if (r.multipart) {
+                    let form: FormData = r.postData as FormData;
+                    req = client.request(r.url, {
+                        headers: form.getHeaders(r.headers),
+                        method: r.method
+                    }, resolve);
+                    form.pipe(req, {end: true});
+                } else {
+                    req = client.request(r.url, {
+                        headers: r.headers,
+                        method: r.method
+                    }, resolve);
+                    if (r.method == 'POST' || r.method == 'UPDATE' || r.method == 'PUT') {
+                        if (r.postData) {
+                            req.write(JSON.stringify(r.postData));
+                        }
                     }
+                    req.end(); // close the request
                 }
-                req.end(); // close the request
             } catch (e) {
                 reject(e);
             }
@@ -95,7 +122,7 @@ export class HttpService {
         return message;
     }
 
-    private async response(message: http.IncomingMessage, req: HttpRequest): Promise<HttpResponse> {
+    private async _response(message: http.IncomingMessage, req: HttpRequest): Promise<HttpResponse> {
         message.setEncoding('utf8');
 
         // handle 302 redirect response if enabled
@@ -111,8 +138,8 @@ export class HttpService {
                     }
                 }
             }
-            let redirectedMessage: http.IncomingMessage = await this.request(req);
-            return await this.response(redirectedMessage, req);
+            let redirectedMessage: http.IncomingMessage = await this._request(req);
+            return await this._response(redirectedMessage, req);
         } else {
             let response: HttpResponse = new HttpResponse({
                 statusCode: message.statusCode,

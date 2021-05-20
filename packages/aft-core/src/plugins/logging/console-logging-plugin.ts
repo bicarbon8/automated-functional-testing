@@ -36,6 +36,8 @@ export class ConsoleLoggingPlugin extends AbstractLoggingPlugin {
 
     private async _out(level: LoggingLevel, message: string): Promise<void> {
         let d: string = new Date().toLocaleTimeString();
+        level = level || LoggingLevel.none;
+        message = message || '';
         let out: string = `${d} - ${await this.logName()} - ${level.logString} - ${message}`;
         switch (level) {
             case LoggingLevel.error:
@@ -57,6 +59,8 @@ export class ConsoleLoggingPlugin extends AbstractLoggingPlugin {
             case LoggingLevel.trace:
             case LoggingLevel.debug:
                 console.log(colors.blue(out));
+                break;
+            case LoggingLevel.none:
                 break;
             default:
                 console.log(colors.gray(out));

@@ -25,6 +25,7 @@ the `aft-core` package contains several helper and utility classes, interfaces a
 - **ellide** - string elliding supporting beginning, middle and end ellipsis
 - **wait** - continually retry some action until success or a maximum time elapses
 - **using** - automatically call the `dispose` function of a class that implements the `IDisposable` interface when done
+- **verify** - a function accepting an `assertion` function that simplifies usage of a `Verifier` within your _Jasmine_ or _Mocha_ tests
 - **MachineInfo** - get details of the host machine and user running the tests
 - **OptionsManager** - read in configuration settings from a passed in `object` with fallback to the `aftconfig.json` file which enables specifying environment variables for values
 - **Action&lt;T&gt;** - a function accepting one typed argument `T` and returning `void`
@@ -115,17 +116,15 @@ export class BugzillaDefectPlugin extends AbstractDefectPlugin {
 }
 ```
 
-## Wrappers
-the `TestWrapper` and `should` functions of `aft-core` enable testing with pre-execution filtering based on integration with external test case and defect managers via plugin packages supporting each (see examples above).
-- **should** - a function accepting a `TestWrapperOptions` object that simplifies usage of a `TestWrapper` within your _Jasmine_ or _Mocha_ tests
-- **TestWrapper** - the primary way tests should be executed to enable integration with external systems and logging to any supported logging plugins
+## Testing with the Verifier
+the `Verifier` class and `verify` functions of `aft-core` enable testing with pre-execution filtering based on integration with external test case and defect managers via plugin packages supporting each (see examples above).
 
 ```typescript
 describe('Sample Test', () => {
     it('can perform a demonstration of AFT', async () => {
         let feature: FeatureObj = new FeatureObj();
         /**
-         * the `should(options)` function
+         * the `verify(assertion).returns(expectation)` function
          * checks any specified `AbstractTestCasePlugin`
          * and `AbstractDefectPlugin` implementations
          * to ensure the test should be run. It will then
@@ -133,10 +132,11 @@ describe('Sample Test', () => {
          * with an `ITestResult` indicating the success,
          * failure or skipped status
          */
-        await should({expect: () => expect(feature.performAction()).toEqual('result of action'),
-            testCases: ['C1234'], 
-            description: 'expect that performAction will return \'result of action\''
-        });
+        await verify(async () => await feature.performAction())
+        .withTestId('C1234')
+        .and.withKnownDefectId('DEFECT-123')
+        .and.withDescription('expect that performAction will return \'result of action\'')
+        .returns('result of action');
     });
 });
 ```

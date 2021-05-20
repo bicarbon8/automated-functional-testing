@@ -26,7 +26,7 @@ export class FakeFacet extends AbstractFacet {
         await wait.untilTrue(async () => {
             if (this.parent) {
                 r = await this.parent.getRoot()
-                    .then(p => p.findElements(this.locator)[this.index]);
+                    .then(async p => await p.findElements(this.locator)[this.index]);
             } else {
                 r = await this.session.driver.findElements(this.locator)[this.index];
             }
@@ -40,7 +40,7 @@ export class FakeFacet extends AbstractFacet {
         let duration: number = (options.maxWaitMs === undefined) ? this.maxWaitMs : options.maxWaitMs;
         await wait.untilTrue(async () => {
             elements = await this.getRoot()
-                .then(r => r.findElements(options.locator));
+                .then(async r => await r.findElements(options.locator));
             return elements.length > 0;
         }, duration);
         return elements;
@@ -51,7 +51,7 @@ export class FakeFacet extends AbstractFacet {
         let duration: number = (options.maxWaitMs === undefined) ? this.maxWaitMs : options.maxWaitMs;
         await wait.untilTrue(async () => {
             element = await this.getRoot()
-                .then(r => r.findElement(options.locator));
+                .then(async r => await r.findElement(options.locator));
             return !!element;
         }, duration);
         return element;

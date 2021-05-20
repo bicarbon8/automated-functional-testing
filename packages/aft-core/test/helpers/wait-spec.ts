@@ -26,21 +26,15 @@ describe('Wait', () => {
     
     it('can wait for a condition with a maximum duration', async () => {
         let now: number = new Date().getTime();
-        try
-        {
-            await wait.untilTrue(async () => {
-                // always wait 1 ms and return false
-                await new Promise<void>((resolve, reject) => {
-                    setTimeout(resolve, 1);
-                });
-                TestHelper.count += 1;
-                return false;
-            }, 200);
-
-            expect(true).toEqual(false); // force failure
-        } catch (err) {
-            expect(true).toEqual(true);
-        }
+        
+        await wait.untilTrue(async () => {
+            // always wait 1 ms and return false
+            await new Promise<void>((resolve, reject) => setTimeout(resolve, 1));
+            TestHelper.count += 1;
+            return false;
+        }, 200).catch((err) => {
+            /* do nothing */
+        });
 
         let elapsed: number = convert.toElapsedMs(now);
         expect(elapsed).toBeGreaterThanOrEqual(200);

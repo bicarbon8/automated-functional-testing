@@ -98,7 +98,7 @@ export abstract class AbstractPluginManager<T extends AbstractPlugin<Topts>, Top
         if (plugins?.length) {
             return plugins[0];
         }
-        return null;
+        return Promise.reject(`${this.constructor.name}: unable to find enabled plugin in: [${await this.getPluginNames().then(n => n.join(','))}]`);
     }
 
     async getEnabledPlugins(): Promise<T[]> {

@@ -1,0 +1,38 @@
+{
+    "browsersessiongeneratorpluginmanager": {
+        "pluginNames": [
+            "browserstack-browser-session-generator-plugin",
+            "saucelabs-browser-session-generator-plugin",
+            "selenium-grid-session-generator-plugin"
+        ],
+        "searchDir": "../"
+    },
+    "browserstackconfig": {
+        "user": "%browserstack_user%",
+        "key": "%browserstack_key%",
+        "debug": true,
+        "resolution": "640x480",
+        "local": false,
+        "localIdentifier": "abcdefg"
+    },
+    "browserstackbrowsersessiongeneratorplugin": {
+        "enabled": true,
+        "platform": "windows_10_chrome"
+    },
+    "saucelabsconfig": {
+        "username": "%saucelabs_username%",
+        "accessKey": "%saucelabs_accesskey%",
+        "resolution": "1024x768",
+        "tunnel": false,
+        "tunnelId": "abcdefgh"
+    },
+    "saucelabsbrowsersessiongeneratorplugin": {
+        "enabled": true,
+        "platform": "windows_10_chrome"
+    },
+    "seleniumgridsessiongeneratorplugin": {
+        "enabled": true,
+        "url": "http://127.0.0.1:4444/wd/hub/",
+        "platform": "windows_10_chrome"
+    }
+}

@@ -16,7 +16,7 @@ import { IDisposable } from "./idisposable";
  * @param func a function to be passed the `IDisposable` for use before disposal
  */
 export async function using<T extends IDisposable>(disposable: T, func: Func<T, void | Promise<void>>): Promise<void> {
-    let err: Error;
+    let err: any;
     try {
         await Promise.resolve(func(disposable));
     } catch (e) {

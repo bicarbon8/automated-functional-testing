@@ -4,10 +4,11 @@
   "description": "Automated Functional Testing (AFT) package containing examples of how it can be used",
   "private": true,
   "scripts": {
-    "clean": "rimraf ./dist",
+    "clean": "rimraf ./dist && rimraf .htmlCache",
     "build": "yarn clean && tsc --build",
     "pretest": "yarn build",
-    "test": "jasmine **/*-spec.js",
+    "test": "mocha --timeout 60s **/*-spec.js",
+    "test-parallel": "yarn build && mocha --parallel --jobs 4 --timeout 300s **/*-spec.js",
     "coverage": "nyc yarn test"
   },
   "repository": {
@@ -30,17 +31,21 @@
   "bugs": {
     "url": "https://github.com/bicarbon8/automated-functional-testing/issues"
   },
-  "homepage": "https://github.com/bicarbon8/automated-functional-testing/packages/aft-examples#readme",
+  "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-logging-awskinesis": "^4.0.1",
-    "aft-testrail": "^4.0.1",
-    "aft-ui-selenium": "^4.0.1"
+    "aft-logging-awskinesis": "^5.0.0",
+    "aft-testrail": "^5.0.0",
+    "aft-ui-browsers": "^5.0.0",
+    "aft-ui-mobile-apps": "^5.0.0",
+    "aft-logging-html": "^5.0.0"
   },
   "devDependencies": {
-    "@types/jasmine": "^3.6.10",
+    "@types/chai": "^4.2.17",
+    "@types/mocha": "^8.2.2",
     "@types/node": "^15.0.1",
     "@types/selenium-webdriver": "^4.0.12",
-    "jasmine": "^3.7.0",
+    "chai": "^4.3.4",
+    "mocha": "^8.3.2",
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
     "typescript": "^4.2.4"

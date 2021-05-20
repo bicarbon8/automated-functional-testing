@@ -8,7 +8,7 @@ describe('Sample Test', () => {
     it('can perform a demonstration of AFT', async () => {
         let feature: FeatureObj = new FeatureObj();
         /**
-         * the `should(options)` function
+         * the `verify(assertion).returns(expectation)` function
          * checks any specified `AbstractTestCasePlugin`
          * and `AbstractDefectPlugin` implementations
          * to ensure the test should be run. It will then
@@ -16,60 +16,70 @@ describe('Sample Test', () => {
          * with an `ITestResult` indicating the success,
          * failure or skipped status
          */
-        await should({expect: () => expect(feature.performAction()).toBe('result of action'),
-            testCases: ['C1234'], 
-            description: 'expect that performAction will return \'result of action\''
-        });
+        await verify(async () => await feature.performAction())
+        .withTestId('C1234')
+        .and.withKnownDefectId('DEFECT-123')
+        .and.withDescription('expect that performAction will return \'result of action\'')
+        .returns('result of action');
     });
 });
 ```
 the above results in the following console output if the expectation does not return false or throw an exception:
 ```
-5:29:55 PM - expect_that_performAction_will_return_result_of_action - PASS  - C1234
+5:29:55 PM - expect that performAction will return 'result of action' - PASS  - C1234
 ```
 in more complex scenarios you can perform multiple actions inside the _expectation_ like in the following example:
 ```typescript
 describe('Sample Test', () => {
     it('can perform a more complex demonstration of AFT', async () => {
-        let feature: FeatureObj = new FeatureObj();
         /**
-         * the passed in expectation can accept a `TestWrapper` which can be used
+         * the passed in expectation can accept a `Verifier` which can be used
          * during more complex actions
          */
-        await should({
-            expect: async (tw) => {
-                await tw.logMgr.step('about to call performAction');
-                let result: string = feature.performAction();
-                await tw.logMgr.info(`result of performAction was '${result}'`);
-                let success: boolean = expect(result).toBe('result of action');
-                await tw.logMgr.trace('successfully executed expectation');
-                return success;
-            },
-            testCases: ['C2345', 'C3344'], 
-            description: 'more complex expectation actions'
-        });
+        await verify(async (v: Verifier) => {
+            await v.logMgr.step('creating instance of FeatureObj');
+            let feature: FeatureObj = new FeatureObj();
+            await v.logMgr.step('about to call performAction');
+            let result: string = await feature.performAction();
+            await v.logMgr.info(`result of performAction was '${result}'`);
+            await v.logMgr.trace('successfully executed expectation');
+            return (result == 'result of action');
+        }).withTestId('C2345').and.withTestId('C3344')
+        .and.withDescription('more complex expectation actions')
+        .returns(true);
     });
 });
 ```
 which would output the following logs:
 ```
-5:29:55 PM - more_complex_expectation_actions - STEP  - 1: about to call performAction
-5:29:55 PM - more_complex_expectation_actions - INFO  - result of performAction was 'result of action'
-5:29:56 PM - more_complex_expectation_actions - TRACE - successfully executed expectation
-5:29:56 PM - more_complex_expectation_actions - PASS  - C2345
-5:29:56 PM - more_complex_expectation_actions - PASS  - C3344
+5:29:54 PM - more complex expectation actions - STEP  - 1: creating instance of FeatureObj
+5:29:55 PM - more complex expectation actions - STEP  - 2: about to call performAction
+5:29:55 PM - more complex expectation actions - INFO  - result of performAction was 'result of action'
+5:29:56 PM - more complex expectation actions - TRACE - successfully executed expectation
+5:29:56 PM - more complex expectation actions - PASS  - C2345
+5:29:56 PM - more complex expectation actions - PASS  - C3344
+```
+> WARNING: Jasmine's _expect_ calls do not return a boolean as their type definitions would make you think and failed `expect` calls will only throw exceptions if the stop on failure option is enabled: 
+```typescript
+verify(() => expect('foo').toBe('bar')); // AFT will report as 'passed'
+
+verify(() => 'foo').returns('bar'); // AFT will report as 'failed'
+
+verify(() => {throw new Error('failure');}) // AFT will report as 'failed'
 ```
 
 ## Packages (click on name for more info)
 - [`aft-core`](./packages/aft-core/README.md) - base library containing helpers and configuration and plugin managers
 - [`aft-logging-awskinesis`](./packages/aft-logging-awskinesis/README.md) - logging plugin supporting logging to AWS Kinesis Firehose
+- [`aft-logging-html`](./packages/aft-logging-html/README.md) - logging plugin supporting logging to a HTML results file
 - [`aft-testrail`](./packages/aft-testrail/README.md) - logging and test case management plugins supporting logging test results and filtering test execution based on TestRail Projects, Suites and Plans
-- [`aft-ui`](./packages/aft-ui/README.md) - base library supporting UI testing
-- [`aft-ui-selenium`](./packages/aft-ui-selenium/README.md) - adds support for Selenium-based UI testing using BrowserStack, Sauce Labs or your own Selenium Grid
+- [`aft-ui`](./packages/aft-ui/README.md) - base library supporting development of UI testing packages
+- [`aft-ui-browsers`](./packages/aft-ui-browsers/README.md) - adds support for Selenium-based UI testing using BrowserStack, Sauce Labs or your own Selenium Grid
+- [`aft-ui-mobile-apps`](./packages/aft-ui-mobile-apps/README.md) - adds support for Appium-based UI testing using BrowserStack, Sauce Labs or your own Appium Grid
 - [`aft-web-services`](./packages/aft-web-services/README.md) - adds support for testing REST-based services
 
 ## Plugins
-the primary benefit of using AFT comes from the plugins and the `TestWrapper`. Because logging using AFT's `LoggingPluginManager` will also send to any registered logging plugins, it becomes easy to create logging plugins that send to any external system such as TestRail or to log results to Elasticsearch. Additionally, before running any _expectation_ passed to a `should(options)` function, AFT will confirm if the expectation should actually be run based on the results of a query to any supplied `AbstractTestCasePlugin` implementations and a subsequent query to any supplied `AbstractDefectPlugin` implementations. 
+the primary benefit of using AFT comes from the plugins and the `Verifier`. Because logging using AFT's `LoggingPluginManager` will also send to any registered logging plugins, it is easy to create logging plugins that send to any external system such as TestRail or to log results to Elasticsearch. Additionally, before running any _assertion_ passed to a `verify(assertion)` function, AFT will confirm if the _assertion_ should actually be run based on the results of queries to any supplied `AbstractTestCasePlugin` implementations and a subsequent queries to any supplied `AbstractDefectPlugin` implementations. 
 
 ### Logging Plugins
 `aft-core` comes bundled with a built-in `ConsoleLoggingPlugin` which can be enabled by adding `console-logging-plugin` to the `pluginNames` array under the `loggingpluginmanager` section of your `aftconfig.json`
@@ -95,7 +105,7 @@ the purpose of an `AbstractTestCasePlugin` implementation is to provide executio
     }
 }
 ```
-> NOTE: if no plugin is specified then external Test Case Management integration will be disabled and expectations will be executed without checking their status before execution
+> NOTE: if no plugin is specified then external Test Case Management integration will be disabled and _assertions_ will be executed without checking their status before execution
 
 > NOTE: you can optionally add a `searchDir` field under the `testcasepluginmanager` to specify a root directory to use when searching for test case plugin implementations
 
@@ -108,7 +118,7 @@ the purpose of an `AbstractDefectPlugin` implementation is to provide execution 
     }
 }
 ```
-> NOTE: if no plugin is specified then external Defect Management integration will be disabled and expectations will be executed without checking their status before execution, however if a Defect Management plugin is specified, the execution of any expectations passed into a `should(options)` function will be halted if any non-closed defects are found when searching for defects that contain reference to the specified _Test IDs_
+> NOTE: if no plugin is specified then external Defect Management integration will be disabled and _assertions_ will be executed without checking their status before execution, however if a Defect Management plugin is specified, the execution of any _assertions_ passed into a `verify(assertion)` function will be halted if any non-closed defects are found when searching for defects that contain reference to the values passed in via `withTestId(caseId)` or via direct reference to defect using `withKnownDefectId(defectId)`
 
 > NOTE: you can optionally add a `searchDir` field under the `defectpluginmanager` to specify a root directory to use when searching for defect plugin implementations
 

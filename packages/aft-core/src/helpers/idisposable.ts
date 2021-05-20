@@ -14,5 +14,5 @@
  * Error
  */
 export interface IDisposable {
-    dispose(error?: Error): Promise<void>;
+    dispose(error?: any): Promise<void>;
 }

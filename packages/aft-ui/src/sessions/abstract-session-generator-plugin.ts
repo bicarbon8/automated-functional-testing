@@ -15,7 +15,7 @@ export interface ISessionGeneratorPluginOptions extends IPluginOptions {
      * [OPTIONAL] if not specified a new {LoggingPluginManager} will be created using
      * the Class name as the {logName}
      */
-    _logMgr?: LoggingPluginManager;
+    logMgr?: LoggingPluginManager;
 }
 
 export abstract class AbstractSessionGeneratorPlugin extends AbstractPlugin<ISessionGeneratorPluginOptions> {
@@ -23,12 +23,14 @@ export abstract class AbstractSessionGeneratorPlugin extends AbstractPlugin<ISes
     private _platform: TestPlatform;
     constructor(key: string, options?: ISessionGeneratorPluginOptions) {
         super(key, options);
-        this.logMgr = options?._logMgr || new LoggingPluginManager({logName: this.constructor.name});
+        this.logMgr = options?.logMgr || new LoggingPluginManager({logName: this.constructor.name});
     }
     async getPlatform(): Promise<TestPlatform> {
         if (!this._platform) {
             let plt: string = await this.optionsMgr.getOption(nameof<ISessionGeneratorPluginOptions>(o => o.platform));
-            this._platform = TestPlatform.parse(plt);
+            if (plt) {
+                this._platform = TestPlatform.parse(plt);
+            }
         }
         return this._platform;
     }
