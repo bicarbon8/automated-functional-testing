@@ -29,8 +29,6 @@ export class MobileAppVerifier extends Verifier {
     }
 
     withMobileAppSessionOptions(options: MobileAppSessionOptions): MobileAppVerifier {
-        options = options || {};
-        options.logMgr = options.logMgr || this.logMgr;
         this._sessionOptions = options;
         return this;
     }
@@ -48,14 +46,16 @@ export class MobileAppVerifier extends Verifier {
     }
 
     protected async _resolveAssertion(): Promise<void> {
-        await using(await this.sessionGeneratorPluginManager.newSession(this.sessionOptions), async (session) => {
+        let opts: MobileAppSessionOptions = this.sessionOptions;
+        opts.logMgr = opts.logMgr || this.logMgr;
+        await using(await this.sessionGeneratorPluginManager.newSession(opts), async (session) => {
             this._session = session;
             await super._resolveAssertion();
         });
     }
 }
 
-export const verifyWithMobileApp = (assertion: Func<MobileAppVerifier, any>) => {
+export const verifyWithMobileApp = (assertion: Func<MobileAppVerifier, any>): MobileAppVerifier => {
     let v: MobileAppVerifier = new MobileAppVerifier();
     v.verify(assertion);
     return v;

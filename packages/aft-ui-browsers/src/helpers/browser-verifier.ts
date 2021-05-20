@@ -36,8 +36,6 @@ export class BrowserVerifier extends Verifier {
     }
 
     withBrowserSessionOptions(options: BrowserSessionOptions): BrowserVerifier {
-        options = options || {};
-        options.logMgr = options.logMgr || this.logMgr;
         this._sessionOptions = options;
         return this;
     }
@@ -48,14 +46,16 @@ export class BrowserVerifier extends Verifier {
     }
 
     protected async _resolveAssertion(): Promise<void> {
-        await using(await this.sessionGeneratorPluginManager.newSession(this.sessionOptions), async (session) => {
+        let opts: BrowserSessionOptions = this.sessionOptions;
+        opts.logMgr = opts.logMgr || this.logMgr;
+        await using(await this.sessionGeneratorPluginManager.newSession(opts), async (session) => {
             this._session = session;
             await super._resolveAssertion();
         });
     }
 }
 
-export const verifyWithBrowser = (assertion: Func<BrowserVerifier, any>) => {
+export const verifyWithBrowser = (assertion: Func<BrowserVerifier, any>): BrowserVerifier => {
     let v: BrowserVerifier = new BrowserVerifier();
     v.verify(assertion);
     return v;
