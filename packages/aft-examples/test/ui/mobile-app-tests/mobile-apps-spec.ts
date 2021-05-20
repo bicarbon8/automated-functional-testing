@@ -38,16 +38,14 @@ describe('Functional Mobile App Tests using AFT-UI-MOBILE-APPS', () => {
             await view.searchFor('pizza');
             await tw.logMgr.step('get the results and ensure they contain the search term...');
             let results: string[] = await view.getResults();
-            let contains: boolean = false;
             for (var i=0; i<results.length; i++) {
                 let res: string = results[i];
                 if (res.toLowerCase().includes('pizza')) {
-                    contains = true;
-                    break;
+                    return true;
                 }
             }
-            assert(contains);
         }).withMobileAppSessionOptions({app: customId})
-        .and.withDescription('can search in Wikipedia App');
+        .and.withDescription('can search in Wikipedia App')
+        .returns(true);
     });
 });

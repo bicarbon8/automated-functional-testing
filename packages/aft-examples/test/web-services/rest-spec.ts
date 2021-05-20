@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as FormData from "form-data";
-import { Verifier, verify } from "aft-core";
+import { between, greaterThan, havingValue, Verifier, verify } from "aft-core";
 import { HttpResponse, HttpService } from 'aft-web-services';
 import { expect } from "chai";
 import { ListUsersResponse } from "./response-objects/list-users-response";
@@ -18,16 +18,16 @@ describe('REST Request', () => {
                 return response.statusCode;
             }).withLoggingPluginManager(v.logMgr)
             .and.withTestId('C2217763')
-            .returns(200);
+            .returns(between(200, 399));
 
             await verify(async (tw) => {
                 await tw.logMgr.step('confirm response is not null...');
                 expect(response).to.exist;
                 await tw.logMgr.info('confirmed response is not null.');
                 await tw.logMgr.step('confirm response.data is not null...');
-                expect(response.data).to.exist;
-                await tw.logMgr.info('confirmed response.data is not null.');
-            }).withLoggingPluginManager(v.logMgr)
+                return response.data;
+            }).returns(havingValue())
+            .withLoggingPluginManager(v.logMgr)
             .and.withTestId('C3131');
 
             await verify(async (tw) => {
@@ -36,10 +36,10 @@ describe('REST Request', () => {
                 expect(obj).to.exist;
                 await tw.logMgr.info('confirmed can deserialise response.data into typed object.');
                 await tw.logMgr.step('confirm object data property contains more than one result...');
-                expect(obj.data.length).to.be.greaterThan(0);
-                await tw.logMgr.info('confirmed object data property contains more than one result.');
+                return obj.data.length;
             }).withLoggingPluginManager(v.logMgr)
-            .and.withTestId('C2217764');
+            .and.withTestId('C2217764')
+            .returns(greaterThan(0));
         }).withDescription('can make GET request from JSON REST API');
     });
 
@@ -56,7 +56,8 @@ describe('REST Request', () => {
             });
             await tw.logMgr.info(`received response of ${resp.data}`);
             expect(resp).to.not.be.undefined;
-            expect(resp.data).to.not.be.undefined;
-        }).withDescription('can make a multipart post');
+            return resp.data;
+        }).withDescription('can make a multipart post')
+        .returns(havingValue());
     });
 });

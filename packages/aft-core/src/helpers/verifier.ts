@@ -10,10 +10,11 @@ import { convert } from "./converter";
 import { Func } from "./custom-types";
 import { ProcessingResult } from "./processing-result";
 import { rand } from "./random-generator";
+import { Equaling, VerifierMatcher } from "./verifier-matcher";
 
 export class Verifier implements PromiseLike<void> {
     protected _assertion: Func<Verifier, any>;
-    protected _expectedResult: any;
+    protected _matcher: VerifierMatcher;
     protected _description: string;
     protected _startTime: number;
     protected _innerPromise: Promise<void>;
@@ -79,9 +80,10 @@ export class Verifier implements PromiseLike<void> {
 
     protected async _resolveAssertion(): Promise<void> {
         let result: any = await Promise.resolve(this._assertion(this));
-        if (this._expectedResult !== undefined) {
-            if (result != this._expectedResult) {
-                return Promise.reject(`expected result of '${this._expectedResult}' to equal actual result of '${result}'`);
+        if (this._matcher !== undefined) {
+            this._matcher.actual = result;
+            if (!this._matcher.compare()) {
+                return Promise.reject(`${this._matcher.onFailureString()}`);
             }
         }
     }
@@ -114,8 +116,12 @@ export class Verifier implements PromiseLike<void> {
         return this;
     }
 
-    returns(result: any): Verifier {
-        this._expectedResult = result;
+    returns(result: any | VerifierMatcher): Verifier {
+        if (result['expected'] && result['compare']) {
+            this._matcher = result;
+        } else {
+            this._matcher = new Equaling(result);
+        }
         return this;
     }
 

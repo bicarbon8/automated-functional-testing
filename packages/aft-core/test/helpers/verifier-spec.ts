@@ -1,4 +1,5 @@
 import { DefectPluginManager, DefectStatus, IDefect, LoggingPluginManager, ProcessingResult, rand, TestCasePluginManager, Verifier, verify } from "../../src";
+import { containing, Equaling } from "../../src/helpers/verifier-matcher";
 
 describe('Verifier', () => {
     beforeEach(() => {
@@ -50,12 +51,42 @@ describe('Verifier', () => {
             return Promise.resolve(null);
         });
 
-        await verify(async (v: Verifier) => true)
-        .returns(true)
+        await verify(async (v: Verifier) => 'foo')
+        .returns('foo')
         .withLoggingPluginManager(logMgr)
         .and.withTestCasePluginManager(tcMgr)
         .and.withDefectPluginManager(dMgr)
         .and.withDescription('true should be true')
+        .and.withTestId('C1234').and.withTestId('C2345');
+
+        expect(tcMgr.shouldRun).toHaveBeenCalledTimes(2);
+        expect(dMgr.findDefects).toHaveBeenCalledTimes(2);
+        expect(logMgr.logResult).toHaveBeenCalledTimes(2);
+        expect(logMgr.pass).toHaveBeenCalledTimes(2);
+    });
+
+    it('accepts a VerifierMatcher in the returns function', async () => {
+        let logMgr: LoggingPluginManager = new LoggingPluginManager();
+        spyOn(logMgr, 'logResult').and.callThrough();
+        spyOn(logMgr, 'pass').and.callThrough();
+        let tcMgr = new TestCasePluginManager();
+        spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult> => {
+            return Promise.resolve({success: true});
+        });
+        let dMgr = new DefectPluginManager();
+        spyOn(dMgr, 'findDefects').and.callFake((searchTerm: string): Promise<IDefect[]> => {
+            return Promise.resolve([]);
+        });
+        spyOn(dMgr, 'getDefect').and.callFake((defectId: string): Promise<IDefect> => {
+            return Promise.resolve(null);
+        });
+
+        await verify(async (v: Verifier) => ['foo', 'bar', 'baz'])
+        .returns(containing('bar'))
+        .withLoggingPluginManager(logMgr)
+        .and.withTestCasePluginManager(tcMgr)
+        .and.withDefectPluginManager(dMgr)
+        .and.withDescription('array contains "bar"')
         .and.withTestId('C1234').and.withTestId('C2345');
 
         expect(tcMgr.shouldRun).toHaveBeenCalledTimes(2);
@@ -128,7 +159,9 @@ describe('Verifier', () => {
 
             expect('foo').toBe('bar'); // force failure
         } catch (e) {
-            expect(e.toString()).toEqual(`expected result of 'false' to equal actual result of 'true'`);
+            let m = new Equaling(false);
+            m.actual = true;
+            expect(e.toString()).toEqual(m.onFailureString());
         }
 
         expect(tcMgr.shouldRun).toHaveBeenCalledTimes(2);

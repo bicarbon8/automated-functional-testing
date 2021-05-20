@@ -11,6 +11,7 @@ export * from './helpers/processing-result';
 export * from './helpers/random-generator';
 export * from './helpers/using';
 export * from './helpers/verifier';
+export * from './helpers/verifier-matcher';
 export * from './helpers/wait';
 /** plugins */
 export * from './plugins/abstract-plugin';
