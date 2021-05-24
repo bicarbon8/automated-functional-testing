@@ -1,6 +1,6 @@
 {
   "name": "aft-testrail",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "Automated Functional Testing (AFT) package supporting TestRail integration for test execution control and logging",
   "repository": {
     "type": "git",
@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-web-services": "^5.0.0"
+    "aft-web-services": "^5.0.1"
   },
   "devDependencies": {
     "@types/jasmine": "^3.6.10",
