@@ -53,8 +53,8 @@ await verifyWithMobileApp(async (mav: MobileAppVerifier) => {
             break;
         }
     }
-    assert(contains); // throws on error
-});
+    return contains;
+}).returns(true);
 ```
 ## aftconfig.json keys and values supported by aft-ui-mobile-apps package
 ```
@@ -96,7 +96,7 @@ await verifyWithMobileApp(async (mav: MobileAppVerifier) => {
         "url": "http://127.0.0.1:4444/wd/hub",
         "remoteOptions": {
             "capabilities": {
-                
+                "your-custom-key": "your-custom-value"
             }
         }
     }

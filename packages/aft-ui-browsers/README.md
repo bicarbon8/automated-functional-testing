@@ -1,8 +1,8 @@
-# AFT-UI-Selenium
-Automated Functional Testing (AFT) package providing Selenium-based `SeleniumFacet extends AbstractFacet` Plugins and BrowserStack, Sauce Labs and Selenium Grid `ISession` Plugins extending the `aft-ui` package. This enables testing using BrowserStack's, Sauce Labs's or a Local Selenium Grid for any Browser application tests.
+# AFT-UI-Browsers
+Automated Functional Testing (AFT) package providing Selenium-based `BrowserFacet extends AbstractFacet` Plugins and BrowserStack, Sauce Labs and Selenium Grid `ISession` Plugins extending the `aft-ui` package. This enables testing using BrowserStack, Sauce Labs or a Local Selenium Grid for any Browser application tests.
 
 ## Installation
-`> npm i aft-ui-selenium`
+`> npm i aft-ui-browsers`
 
 ## Page Object Model (POM)
 the POM is a standard design pattern used in UI and layout testing. AFT-UI supports this model via _Sessions_ and _Facets_ where the _Session_ is an object extending from `ISession` and is responsible for managing the UI container (browser, mobile view, etc.)and the _Facet_ is an object extending from `AbstractFacet` and is responsible for managing logical collections of sub-facets and elements in the UI. For example:
@@ -36,15 +36,15 @@ Take the following as an example of how one could interact with the following pa
  * represents the login page object containing widgets encapsulating
  * the functionality of the website
  */
-export class HerokuLoginPage extends SeleniumFacet {
+export class HerokuLoginPage extends BrowserFacet {
     /* the locator can also be specified in options */
     readonly locator: Locator = By.css('html');
     /* facets contained in this page */
     private content(): Promise<HerokuContentFacet> {
-        return this.getFacet(HerokuContentWidget);
+        return this.getFacet(HerokuContentFacet);
     }
     private messages(): Promise<HerokuMessagesFacet> {
-        return this.getFacet(HerokuMessagesWidget, {maxWaitMs: 20000});
+        return this.getFacet(HerokuMessagesFacet, {maxWaitMs: 20000});
     }
     async navigateTo(): Promise<void> {
         await this.session.goTo('https://the-internet.herokuapp.com/login');
@@ -69,7 +69,7 @@ export class HerokuLoginPage extends SeleniumFacet {
  * represents the content of the login page including the 
  * username and password fields and the login button
  */
-export class HerokuContentFacet extends SeleniumFacet {
+export class HerokuContentFacet extends BrowserFacet {
     readonly locator: Locator = By.id("content");
     /**
      * function will get the Facet's root element using
@@ -110,7 +110,7 @@ export class HerokuContentFacet extends SeleniumFacet {
  * represents the results message content shown on successful 
  * or failed login.
  */
-export class HerokuMessagesFacet extends SeleniumFacet {
+export class HerokuMessagesFacet extends BrowserFacet {
     readonly locator: Locator = By.id("flash-messages");
     private async message(): Promise<WebElement> {
         return this.getElement({locator: By.id("flash")});
@@ -155,7 +155,7 @@ await verifyWithBrowser(async (bv: BrowserVerifier) => {
     "browsersessiongeneratorpluginmanager": {
         "pluginNames": [
             "browserstack-browser-session-generator-plugin",
-            "saucelabs-browser-session-generator-plugin",
+            "sauce-labs-browser-session-generator-plugin",
             "selenium-grid-session-generator-plugin"
         ],
         "searchDir": "../"
@@ -188,7 +188,7 @@ await verifyWithBrowser(async (bv: BrowserVerifier) => {
         "url": "http://127.0.0.1:4444/wd/hub",
         "platform": "windows_10_chrome",
         "capabilities": {
-            
+            "your-custom-key": "your-custom-value"
         }
     }
 }
