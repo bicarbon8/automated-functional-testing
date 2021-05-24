@@ -62,8 +62,8 @@ describe('MobileAppVerifier', () => {
         
         await verifyWithMobileApp((mav: MobileAppVerifier) => {
             expect(true).toBeFalse();
-        }).and.withMobileAppSessionGeneratorPluginManager(sessionMgr)
-        .and.withTestId('C1234')
+        }).withTestId('C1234')
+        .and.withMobileAppSessionGeneratorPluginManager(sessionMgr)
         .and.withTestCasePluginManager(tcMgr);
 
         expect(sessionMgr.newSession).not.toHaveBeenCalled();

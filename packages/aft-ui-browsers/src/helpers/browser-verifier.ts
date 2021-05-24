@@ -9,13 +9,6 @@ export class BrowserVerifier extends Verifier {
     protected _sessionOptions: BrowserSessionOptions;
 
     /**
-     * a syntactic way of connecting fluent functions for the BrowserVerifier
-     */
-    get and(): BrowserVerifier {
-        return this;
-    }
-
-    /**
      * a {BrowserSessionGeneratorPluginManager} instance used to generate new
      * Browser sessions
      */
@@ -46,26 +39,6 @@ export class BrowserVerifier extends Verifier {
     }
 
     /**
-     * the starting point for setting up a {BrowserVerifier} execution. Generally it is preferred
-     * to use the {verifyWithBrowser(...)} `const` instead of creating individual {BrowserVerifier} instances.
-     * ex:
-     * ```
-     * await verifyWithBrowser(async (v: BrowserVerifier) => {
-     *   let facet: MyFacet = await v.session.getFacet(MyFacet);
-     *   return await facet.returnExpectedValue();
-     * }).withDescription('example usage for BrowserVerifier')
-     * .and.withTestId('C1234')
-     * .returns('expected value');
-     * ```
-     * @param assertion the {Func<BrowserVerifier, any>} function to be executed by this {BrowserVerifier}
-     * @returns this {BrowserVerifier} instance
-     */
-    verify(assertion: Func<BrowserVerifier, any>): BrowserVerifier {
-        this._assertion = assertion;
-        return this;
-    }
-
-    /**
      * allows for specifying custom {BrowserSessionOptions} to be used when creating
      * a new {BrowserSession} prior to executing the `assertion`.
      * NOTE: if not set then only the {BrowserVerifier.logMgr} will be included in
@@ -73,7 +46,7 @@ export class BrowserVerifier extends Verifier {
      * @param options the {BrowserSessionOptions} to be used to create a new {BrowserSession}
      * @returns this {BrowserVerifier} instance
      */
-    withBrowserSessionOptions(options: BrowserSessionOptions): BrowserVerifier {
+    withBrowserSessionOptions(options: BrowserSessionOptions): this {
         this._sessionOptions = options;
         return this;
     }
@@ -87,7 +60,7 @@ export class BrowserVerifier extends Verifier {
      * @param sessionMgr a {BrowserSessionGeneratorPluginManager} to be used instead of the Global instance
      * @returns this {BrowserVerifier} instance
      */
-    withBrowserSessionGeneratorPluginManager(sessionMgr: BrowserSessionGeneratorPluginManager): BrowserVerifier {
+    withBrowserSessionGeneratorPluginManager(sessionMgr: BrowserSessionGeneratorPluginManager): this {
         this._sessionMgr = sessionMgr;
         return this;
     }

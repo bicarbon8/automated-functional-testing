@@ -9,13 +9,6 @@ export class MobileAppVerifier extends Verifier {
     protected _sessionOptions: MobileAppSessionOptions;
 
     /**
-     * a syntactic way of connecting fluent functions for the MobileAppVerifier
-     */
-    get and(): MobileAppVerifier {
-        return this;
-    }
-
-    /**
      * a {MobileAppSessionGeneratorPluginManager} instance used to generate new
      * Mobile App sessions
      */
@@ -35,26 +28,6 @@ export class MobileAppVerifier extends Verifier {
     }
 
     /**
-     * the starting point for setting up a {MobileAppVerifier} execution. Generally it is preferred
-     * to use the {verifyWithMobileApp(...)} `const` instead of creating individual {MobileAppVerifier} instances.
-     * ex:
-     * ```
-     * await verifyWithMobileApp(async (v: MobileAppVerifier) => {
-     *   let facet: MyFacet = await v.session.getFacet(MyFacet);
-     *   return await facet.returnExpectedValue();
-     * }).withDescription('example usage for MobileAppVerifier')
-     * .and.withTestId('C1234')
-     * .returns('expected value');
-     * ```
-     * @param assertion the {Func<MobileAppVerifier, any>} function to be executed by this {MobileAppVerifier}
-     * @returns this {MobileAppVerifier} instance
-     */
-    verify(assertion: Func<MobileAppVerifier, any>): MobileAppVerifier {
-        this._assertion = assertion;
-        return this;
-    }
-
-    /**
      * allows for specifying custom {MobileAppSessionOptions} to be used when creating
      * a new {MobileAppSession} prior to executing the `assertion`.
      * NOTE: if not set then only the {MobileAppVerifier.logMgr} will be included in
@@ -62,7 +35,7 @@ export class MobileAppVerifier extends Verifier {
      * @param options the {MobileAppSessionOptions} to be used to create a new {MobileAppSession}
      * @returns this {MobileAppVerifier} instance
      */
-    withMobileAppSessionOptions(options: MobileAppSessionOptions): MobileAppVerifier {
+    withMobileAppSessionOptions(options: MobileAppSessionOptions): this {
         this._sessionOptions = options;
         return this;
     }
@@ -76,7 +49,7 @@ export class MobileAppVerifier extends Verifier {
      * @param sessionMgr a {MobileAppSessionGeneratorPluginManager} to be used instead of the Global instance
      * @returns this {MobileAppVerifier} instance
      */
-    withMobileAppSessionGeneratorPluginManager(sessionMgr: MobileAppSessionGeneratorPluginManager): MobileAppVerifier {
+    withMobileAppSessionGeneratorPluginManager(sessionMgr: MobileAppSessionGeneratorPluginManager): this {
         this._sessionMgr = sessionMgr;
         return this;
     }

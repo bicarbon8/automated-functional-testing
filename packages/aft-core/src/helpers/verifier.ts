@@ -95,7 +95,7 @@ export class Verifier implements PromiseLike<void> {
     /**
      * a syntactic way of connecting fluent functions for the Verifier
      */
-    get and(): Verifier {
+    get and(): this {
         return this;
     }
 
@@ -115,7 +115,7 @@ export class Verifier implements PromiseLike<void> {
      * @param assertion the {Func<Verifier, any>} function to be executed by this {Verifier}
      * @returns this {Verifier} instance
      */
-    verify(assertion: Func<Verifier, any>): Verifier {
+    verify(assertion: Func<Verifier, any>): this {
         this._assertion = assertion;
         return this;
     }
@@ -126,7 +126,7 @@ export class Verifier implements PromiseLike<void> {
      * @param description the description of this {Verifier}
      * @returns this {Verifier} instance
      */
-    withDescription(description: string): Verifier {
+    withDescription(description: string): this {
         this._description = description;
         return this;
     }
@@ -141,7 +141,7 @@ export class Verifier implements PromiseLike<void> {
      * @param testId a test identifier for your connected {AbstractTestCasePlugin}
      * @returns this {Verifier} instance
      */
-    withTestId(testId: string): Verifier {
+    withTestId(testId: string): this {
         if (testId) {
             this._tests.add(testId);
         }
@@ -154,7 +154,7 @@ export class Verifier implements PromiseLike<void> {
      * @param defectId a defect identifier for your connected {AbstractDefectPlugin}
      * @returns this {Verifier} instance
      */
-    withKnownDefectId(defectId: string): Verifier {
+    withKnownDefectId(defectId: string): this {
         if (defectId) {
             this._defects.add(defectId);
         }
@@ -169,7 +169,7 @@ export class Verifier implements PromiseLike<void> {
      * @param result the expected result or a {VerifierMatcher} implementation
      * @returns this {Verifier} instance
      */
-    returns(result: any | VerifierMatcher): Verifier {
+    returns(result: any | VerifierMatcher): this {
         if (result['compare'] && result['setActual'] && result['failureString']) {
             this._matcher = result;
         } else {
@@ -184,7 +184,7 @@ export class Verifier implements PromiseLike<void> {
      * @param logMgr a {LoggingPluginManager} instance
      * @returns this {Verifier} instance
      */
-    withLoggingPluginManager(logMgr: LoggingPluginManager): Verifier {
+    withLoggingPluginManager(logMgr: LoggingPluginManager): this {
         this._logMgr = logMgr;
         return this;
     }
@@ -195,7 +195,7 @@ export class Verifier implements PromiseLike<void> {
      * @param testMgr a {TestCasePluginManager} instance
      * @returns this {Verifier} instance
      */
-    withTestCasePluginManager(testMgr: TestCasePluginManager): Verifier {
+    withTestCasePluginManager(testMgr: TestCasePluginManager): this {
         this._testMgr = testMgr;
         return this;
     }
@@ -206,7 +206,7 @@ export class Verifier implements PromiseLike<void> {
      * @param defectMgr a {DefectPluginManager} instance
      * @returns this {Verifier} instance
      */
-    withDefectPluginManager(defectMgr: DefectPluginManager): Verifier {
+    withDefectPluginManager(defectMgr: DefectPluginManager): this {
         this._defectMgr = defectMgr;
         return this;
     }
@@ -217,7 +217,7 @@ export class Verifier implements PromiseLike<void> {
      * @param buildMgr a {BuildInfoPluginManager} instance
      * @returns this {Verifier} instance
      */
-    withBuildInfoPluginManager(buildMgr: BuildInfoPluginManager): Verifier {
+    withBuildInfoPluginManager(buildMgr: BuildInfoPluginManager): this {
         this._buildMgr = buildMgr;
         return this;
     }
