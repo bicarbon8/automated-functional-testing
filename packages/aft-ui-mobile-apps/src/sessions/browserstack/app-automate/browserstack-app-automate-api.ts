@@ -1,6 +1,6 @@
 import { nameof } from "ts-simple-nameof";
 import { convert } from "aft-core";
-import { HttpService, HttpResponse } from "aft-web-services";
+import { HttpService, HttpResponse, httpService } from "aft-web-services";
 import * as fs from "fs";
 import * as FormData from "form-data";
 import { browserstackconfig, BrowserStackConfig } from "../configuration/browserstack-config";
@@ -20,7 +20,7 @@ export class BrowserStackAppAutomateApi {
 
     constructor(options?: BrowserStackAppAutomateApiOptions) {
         this._cfg = options?._config || browserstackconfig;
-        this._httpSvc = options?._httpSvc || HttpService.instance;
+        this._httpSvc = options?._httpSvc || httpService;
     }
     
     async uploadApp(data: UploadRequest): Promise<UploadResponse> {

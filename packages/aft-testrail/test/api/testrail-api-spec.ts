@@ -1,15 +1,11 @@
 import { TestRailApi } from "../../src/api/testrail-api";
-import { HttpRequest, HttpService, HttpResponse } from "aft-web-services";
+import { HttpRequest, HttpResponse, httpService } from "aft-web-services";
 import { TestRailCache } from "../../src/api/testrail-cache";
 import { TestRailConfig } from "../../src";
 import { TestRailPlanEntry } from "../../src/api/testrail-plan-entry";
 import { TestRailPlan } from "../../src/api/testrail-plan";
 
 describe('TestRailApi', () => {
-    beforeEach(() => {
-        let inst: HttpService = new HttpService();
-    });
-
     afterEach(() => {
         TestRailCache.instance.clear();
     });
@@ -19,7 +15,7 @@ describe('TestRailApi', () => {
      * Only run when making changes to retry behaviour
      */
     xit('retries on Rate Limit Error response (long running)', async () => {
-        spyOn(HttpService.instance, 'performRequest').and.callFake(async (request: HttpRequest): Promise<HttpResponse> => {
+        spyOn(httpService, 'performRequest').and.callFake(async (request: HttpRequest): Promise<HttpResponse> => {
             let response: HttpResponse = new HttpResponse();
             if (TestStore.count < 1) {
                 response.statusCode = 429;
@@ -50,7 +46,7 @@ describe('TestRailApi', () => {
     });
 
     it('can cache successful responses', async () => {
-        spyOn(HttpService.instance, 'performRequest').and.callFake(async (request: HttpRequest): Promise<HttpResponse> => {
+        spyOn(httpService, 'performRequest').and.callFake(async (request: HttpRequest): Promise<HttpResponse> => {
             let plan = {
                 id: 1,
                 name: 'fake plan',
@@ -80,7 +76,7 @@ describe('TestRailApi', () => {
         expect(plan.id).toEqual(1);
         expect(plan.entries).toBeDefined();
         expect(plan.entries.length).toBeGreaterThan(0);
-        expect(HttpService.instance.performRequest).toHaveBeenCalledTimes(1);
+        expect(httpService.performRequest).toHaveBeenCalledTimes(1);
 
         let cachedResponse: TestRailPlan = await api.getPlan(123);
 
@@ -88,11 +84,11 @@ describe('TestRailApi', () => {
         expect(cachedResponse.id).toEqual(1);
         expect(cachedResponse.entries).toBeDefined();
         expect(cachedResponse.entries.length).toBeGreaterThan(0);
-        expect(HttpService.instance.performRequest).toHaveBeenCalledTimes(1); // no additional call made
+        expect(httpService.performRequest).toHaveBeenCalledTimes(1); // no additional call made
     });
 
     it('will not cache non 200-299 status code responses', async () => {
-        spyOn(HttpService.instance, 'performRequest').and.callFake(async (request: HttpRequest): Promise<HttpResponse> => {
+        spyOn(httpService, 'performRequest').and.callFake(async (request: HttpRequest): Promise<HttpResponse> => {
             let response: HttpResponse = new HttpResponse({
                 statusCode: 404,
                 data: '{}',
@@ -110,16 +106,16 @@ describe('TestRailApi', () => {
         let test: any = await api.getPlan(123);
 
         expect(test).not.toBeNull();
-        expect(HttpService.instance.performRequest).toHaveBeenCalledTimes(1);
+        expect(httpService.performRequest).toHaveBeenCalledTimes(1);
 
         let nonCachedResponse: any = await api.getPlan(123);
 
         expect(nonCachedResponse).not.toBeNull();
-        expect(HttpService.instance.performRequest).toHaveBeenCalledTimes(2); // failure on request so nothing cached
+        expect(httpService.performRequest).toHaveBeenCalledTimes(2); // failure on request so nothing cached
     });
 
     it('can opt to not cache successful responses', async () => {
-        spyOn(HttpService.instance, 'performRequest').and.callFake(async (request: HttpRequest): Promise<HttpResponse> => {
+        spyOn(httpService, 'performRequest').and.callFake(async (request: HttpRequest): Promise<HttpResponse> => {
             let plan = {
                 id: 1,
                 name: 'fake plan',
@@ -148,14 +144,14 @@ describe('TestRailApi', () => {
         expect(plan).toBeDefined();
         expect(plan.entries.length).toBeGreaterThan(0);
         expect(plan.entries[0].suite_id).toEqual(2);
-        expect(HttpService.instance.performRequest).toHaveBeenCalledTimes(1);
+        expect(httpService.performRequest).toHaveBeenCalledTimes(1);
 
         let cachedResponse: TestRailPlan = await api.createPlan(1, [2, 3]);
 
         expect(cachedResponse).toBeDefined();
         expect(cachedResponse.entries.length).toBeGreaterThan(0);
         expect(cachedResponse.entries[0].suite_id).toEqual(2);
-        expect(HttpService.instance.performRequest).toHaveBeenCalledTimes(2);
+        expect(httpService.performRequest).toHaveBeenCalledTimes(2);
     });
 });
 

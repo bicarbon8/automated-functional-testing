@@ -1,7 +1,12 @@
 import { IncomingHttpHeaders } from "http";
 import { XML } from "../helpers/xml";
-import { HttpResponseOptions } from "./http-response-options";
 import { DOMParser } from 'xmldom';
+
+export interface HttpResponseOptions {
+    headers?: IncomingHttpHeaders;
+    data?: string;
+    statusCode?: number;
+}
 
 export class HttpResponse implements HttpResponseOptions {
     headers?: IncomingHttpHeaders;

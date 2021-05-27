@@ -1,15 +1,16 @@
+import { LoggingPluginManager } from "aft-core";
 import { OutgoingHttpHeaders } from "http";
 import { HttpMethod } from "./http-method";
 
 /**
- * to be used with the `HttpService.instance.performRequest` function
+ * to be used with the `httpService.performRequest` function
  * like follows:
  * ```
- * await HttpService.instance.performRequest({url: 'https://some.domain/path'});
+ * await httpService.performRequest({url: 'https://some.domain/path'});
  * ```
  * or fully as:
  * ```
- * await HttpService.instance.performRequest({
+ * await httpService.performRequest({
  *     url: 'https://some.domain/path',
  *     allowAutoRedirect: false,
  *     headers: {"Authorization": "basic AS0978FASLKLJA/=="},
@@ -26,4 +27,5 @@ export interface HttpRequest {
     method?: HttpMethod;
     postData?: any;
     multipart?: boolean;
+    logMgr?: LoggingPluginManager;
 }

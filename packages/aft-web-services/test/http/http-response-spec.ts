@@ -1,4 +1,4 @@
-import { HttpResponse } from "../../src/http/http-response";
+import { HttpResponse } from "../../src";
 
 describe('HttpResponse', () => {
     it('can deserialise JSON data to Typed JavaScript object', () => {

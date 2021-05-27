@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as FormData from "form-data";
 import { between, greaterThan, havingValue, Verifier, verify } from "aft-core";
-import { HttpResponse, HttpService } from 'aft-web-services';
+import { HttpResponse, httpService } from 'aft-web-services';
 import { expect } from "chai";
 import { ListUsersResponse } from "./response-objects/list-users-response";
 
@@ -12,7 +12,7 @@ describe('REST Request', () => {
             let response: HttpResponse;
             await verify(async (tw) => {            
                 await tw.logMgr.step('making request...');
-                response = await HttpService.instance.performRequest({url: 'https://reqres.in/api/users?page=2'});
+                response = await httpService.performRequest({url: 'https://reqres.in/api/users?page=2'});
                 expect(response).to.exist;
                 await tw.logMgr.info('request completed and received status code: ' + response.statusCode);
                 return response.statusCode;
@@ -48,7 +48,7 @@ describe('REST Request', () => {
             let formData = new FormData();
             formData.append('file', fs.createReadStream(path.join(process.cwd(), 'LICENSE')));
             await tw.logMgr.step('about to send multipart post...');
-            let resp: HttpResponse = await HttpService.instance.performRequest({
+            let resp: HttpResponse = await httpService.performRequest({
                 multipart: true,
                 url: 'https://httpbin.org/post',
                 postData: formData,

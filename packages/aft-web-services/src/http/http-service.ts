@@ -1,6 +1,6 @@
 import { HttpRequest } from "./http-request";
 import { HttpResponse } from "./http-response";
-import { OptionsManager, LoggingPluginManager } from "aft-core";
+import { OptionsManager } from "aft-core";
 import * as http from 'http';
 import * as https from 'https';
 import { nameof } from "ts-simple-nameof";
@@ -14,18 +14,14 @@ export interface HttpServiceOptions {
     defaultPostData?: string;
     defaultMultipart?: boolean;
     
-    _logMgr?: LoggingPluginManager;
     _optMgr?: OptionsManager;
 }
 
 export class HttpService {
     readonly optionsMgr: OptionsManager;
 
-    private _logMgr: LoggingPluginManager;
-
     constructor(options?: HttpServiceOptions) {
         this.optionsMgr = options?._optMgr || new OptionsManager(nameof(HttpService).toLowerCase(), options);
-        this._logMgr = options?._logMgr || new LoggingPluginManager({logName: nameof(HttpService)});
     }
 
     /**
@@ -35,11 +31,11 @@ export class HttpService {
      * post data and the request method (GET|POST|PUT|DELETE|UPDATE)
      * ex:
      * ```
-     * await HttpService.instance.performRequest({url: 'https://some.domain/path'});
+     * await httpService.performRequest({url: 'https://some.domain/path'});
      * ```
      * or fully as:
      * ```
-     * await HttpService.instance.performRequest({
+     * await httpService.performRequest({
      *     url: 'https://some.domain/path',
      *     allowAutoRedirect: false,
      *     headers: {"Authorization": "basic AS0978FASLKLJA/=="},
@@ -52,7 +48,7 @@ export class HttpService {
      * ```
      * let formData = new FormData();
      * formData.append("Authorization": "basic AS0978FASLKLJA/==");
-     * await HttpService.instance.performRequest({
+     * await httpService.performRequest({
      *     url: 'https://some.domain/path',
      *     allowAutoRedirect: false,
      *     method: 'POST',
@@ -64,13 +60,13 @@ export class HttpService {
      */
     async performRequest(req?: HttpRequest): Promise<HttpResponse> {
         req = await this.setRequestDefaults(req);
-        await this._logMgr.trace(`issuing '${req.method}' request to '${req.url}' with post body '${req.postData}' and headers '${JSON.stringify(req.headers)}'.`);
+        await req.logMgr?.debug(`issuing '${req.method}' request to '${req.url}' with post body '${req.postData}' and headers '${JSON.stringify(req.headers)}'.`);
         
         let message: http.IncomingMessage = await this._request(req);
 
         let resp: HttpResponse = await this._response(message, req);
 
-        await this._logMgr.trace(`received response of '${resp.data}' and headers '${JSON.stringify(resp.headers)}'.`);
+        await req.logMgr?.debug(`received response of '${resp.data}' and headers '${JSON.stringify(resp.headers)}'.`);
         return resp;
     }
 
@@ -124,7 +120,6 @@ export class HttpService {
 
     private async _response(message: http.IncomingMessage, req: HttpRequest): Promise<HttpResponse> {
         message.setEncoding('utf8');
-
         // handle 302 redirect response if enabled
         if (message.statusCode == 302 && req.allowAutoRedirect) {
             let req: HttpRequest = {
@@ -163,6 +158,4 @@ export class HttpService {
     }
 }
 
-export module HttpService {
-    export var instance: HttpService = new HttpService();
-}
+export const httpService = new HttpService();

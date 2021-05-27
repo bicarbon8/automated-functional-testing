@@ -4,11 +4,11 @@ import { TestRailApi } from "../../src/api/testrail-api";
 import { TestRailResultRequest } from "../../src/api/testrail-result-request";
 import { TestRailResultResponse } from "../../src/api/testrail-result-response";
 import { TestRailConfig } from "../../src/configuration/testrail-config";
-import { HttpResponse, HttpService } from "aft-web-services";
+import { HttpResponse, httpService } from "aft-web-services";
 
 describe('TestRailLoggingPlugin', () => {
     beforeEach(() => {
-        spyOn(HttpService.instance, 'performRequest').and.returnValue(Promise.resolve(new HttpResponse({
+        spyOn(httpService, 'performRequest').and.returnValue(Promise.resolve(new HttpResponse({
             headers: {'content-type': 'application/json'},
             statusCode: 200,
             data: '{}'
