@@ -8,7 +8,7 @@ export class HerokuLoginPage extends BrowserFacet {
      * this Facet sets a static locator instead of using a passed
      * in value on the constructor
      */
-    readonly locator: Locator = By.css('html');
+    override readonly locator: Locator = By.css('html');
 
     /* begin: widgets */
     async content(): Promise<HerokuContentWidget> {

@@ -1,7 +1,7 @@
 import { MobileAppSession } from "../mobile-app-session";
 
 export class SauceLabsMobileAppSession extends MobileAppSession {
-    async dispose(error: any): Promise<void> {
+    override async dispose(error: any): Promise<void> {
         try {
             await this.driver?.execute(`sauce:job-result=${(error) ? 'failed' : 'passed'}`);
         } catch (e) {

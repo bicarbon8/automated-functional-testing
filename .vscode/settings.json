@@ -1,4 +1,4 @@
 {
-    "debug.node.autoAttach": "on",
-    "debug.allowBreakpointsEverywhere": true
+    "debug.allowBreakpointsEverywhere": true,
+    "typescript.tsdk": "node_modules\\typescript\\lib"
 }

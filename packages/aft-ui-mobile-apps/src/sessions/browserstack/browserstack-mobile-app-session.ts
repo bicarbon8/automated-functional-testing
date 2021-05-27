@@ -1,7 +1,7 @@
 import { MobileAppSession } from "../mobile-app-session";
 
 export class BrowserStackMobileAppSession extends MobileAppSession {
-    async dispose(error?: any): Promise<void> {
+    override async dispose(error?: any): Promise<void> {
         try {
             let setStatus: {} = {
                 "action": "setSessionStatus",

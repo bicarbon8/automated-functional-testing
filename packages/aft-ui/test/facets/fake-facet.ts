@@ -15,9 +15,9 @@ export interface FakeFacetOptions extends IFacetOptions {
 }
 
 export class FakeFacet extends AbstractFacet {
-    readonly locator: FakeLocator;
-    readonly session: FakeSession;
-    readonly parent: FakeFacet;
+    override readonly locator: FakeLocator;
+    override readonly session: FakeSession;
+    override readonly parent: FakeFacet;
     constructor(options?: FakeFacetOptions) {
         super(options);
     }

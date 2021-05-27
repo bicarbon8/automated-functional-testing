@@ -1,7 +1,7 @@
 import { BrowserSession } from "../browser-session";
 
 export class BrowserStackBrowserSession extends BrowserSession {
-    async dispose(error?: any): Promise<void> {
+    override async dispose(error?: any): Promise<void> {
         try {
             let setStatus: {} = {
                 "action": "setSessionStatus",

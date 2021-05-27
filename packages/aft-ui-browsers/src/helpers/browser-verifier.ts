@@ -3,7 +3,7 @@ import { BrowserSession, BrowserSessionOptions } from "../sessions/browser-sessi
 import { BrowserSessionGeneratorPluginManager } from "../sessions/browser-session-generator-plugin-manager";
 
 export class BrowserVerifier extends Verifier {
-    protected _assertion: Func<BrowserVerifier, any>;
+    protected override _assertion: Func<BrowserVerifier, any>;
     protected _sessionMgr: BrowserSessionGeneratorPluginManager;
     protected _session: BrowserSession;
     protected _sessionOptions: BrowserSessionOptions;
@@ -65,7 +65,7 @@ export class BrowserVerifier extends Verifier {
         return this;
     }
 
-    protected async _resolveAssertion(): Promise<void> {
+    protected override async _resolveAssertion(): Promise<void> {
         let opts: BrowserSessionOptions = this.sessionOptions;
         opts.logMgr = opts.logMgr || this.logMgr;
         await using(await this.sessionGeneratorPluginManager.newSession(opts), async (session) => {

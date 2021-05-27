@@ -21,11 +21,11 @@ export class SauceLabsBrowserSessionGeneratorPlugin extends AbstractBrowserSessi
         this._cfg = options?._config || new SauceLabsConfig(options as SauceLabsConfigOptions);
     }
 
-    async onLoad(): Promise<void> {
+    override async onLoad(): Promise<void> {
         /* do nothing */
     }
 
-    async newSession(options?: BrowserSessionOptions): Promise<SauceLabsBrowserSession> {
+    override async newSession(options?: BrowserSessionOptions): Promise<SauceLabsBrowserSession> {
         return new SauceLabsBrowserSession({
             driver: options?.driver || await this.createDriver(options),
             logMgr: options?.logMgr || this.logMgr,
@@ -33,7 +33,7 @@ export class SauceLabsBrowserSessionGeneratorPlugin extends AbstractBrowserSessi
         });
     }
 
-    async getCapabilities(options?: BrowserSessionOptions): Promise<Capabilities> {
+    override async getCapabilities(options?: BrowserSessionOptions): Promise<Capabilities> {
         let capabilities: Capabilities = new Capabilities();
         let platform: TestPlatform = await this.getPlatform();
         if (platform.deviceName) {
@@ -79,7 +79,7 @@ export class SauceLabsBrowserSessionGeneratorPlugin extends AbstractBrowserSessi
         return capabilities;
     }
 
-    async dispose(error?: Error): Promise<void> {
+    override async dispose(error?: Error): Promise<void> {
         /* do nothing */
     }
 }

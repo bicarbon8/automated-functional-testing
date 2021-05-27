@@ -23,11 +23,11 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileA
         this._api = options?._api || new BrowserStackAppAutomateApi({_config: this._cfg});
     }
 
-    async onLoad(): Promise<void> {
+    override async onLoad(): Promise<void> {
         /* do nothing */
     }
 
-    async newSession(options?: MobileAppSessionOptions): Promise<BrowserStackMobileAppSession> {
+    override async newSession(options?: MobileAppSessionOptions): Promise<BrowserStackMobileAppSession> {
         return new BrowserStackMobileAppSession({
             driver: options?.driver || await this.createDriver(options),
             logMgr: options?.logMgr || this.logMgr,
@@ -36,7 +36,7 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileA
         });
     }
 
-    async getRemoteOptions(options?: MobileAppSessionOptions): Promise<RemoteOptions> {
+    override async getRemoteOptions(options?: MobileAppSessionOptions): Promise<RemoteOptions> {
         let remOpts: RemoteOptions = await super.getRemoteOptions(options);
         remOpts.user = remOpts.user || await this._cfg.user();
         remOpts.key = remOpts.key || await this._cfg.key();
@@ -54,7 +54,7 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileA
         return remOpts;
     }
 
-    async sendCommand(command: string, data?: any): Promise<any> {
+    override async sendCommand(command: string, data?: any): Promise<any> {
         let resp: any;
         try {
             switch (command) {
@@ -74,7 +74,7 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileA
         return resp;
     }
 
-    async dispose(error?: Error): Promise<void> {
+    override async dispose(error?: Error): Promise<void> {
         /* do nothing */
     }
 }
