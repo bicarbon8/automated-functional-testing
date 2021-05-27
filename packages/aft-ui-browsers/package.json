@@ -1,6 +1,6 @@
 {
   "name": "aft-ui-browsers",
-  "version": "5.0.2",
+  "version": "6.0.0",
   "description": "Automated Functional Testing (AFT) package supporting UI testing in browsers with support for BrowserStack, Sauce Labs and Local Selenium Grid",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -35,7 +35,7 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-ui": "^5.0.2",
+    "aft-ui": "^6.0.0",
     "selenium-webdriver": "^4.0.0-beta.3"
   },
   "devDependencies": {

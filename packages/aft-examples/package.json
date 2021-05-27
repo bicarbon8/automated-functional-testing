@@ -1,6 +1,6 @@
 {
   "name": "aft-examples",
-  "version": "5.0.2",
+  "version": "6.0.0",
   "description": "Automated Functional Testing (AFT) package containing examples of how it can be used",
   "private": true,
   "scripts": {
@@ -33,11 +33,11 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-logging-awskinesis": "^5.0.2",
-    "aft-logging-html": "^5.0.2",
-    "aft-testrail": "^5.0.2",
-    "aft-ui-browsers": "^5.0.2",
-    "aft-ui-mobile-apps": "^5.0.2"
+    "aft-logging-awskinesis": "^6.0.0",
+    "aft-logging-html": "^6.0.0",
+    "aft-testrail": "^6.0.0",
+    "aft-ui-browsers": "^6.0.0",
+    "aft-ui-mobile-apps": "^6.0.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.17",
