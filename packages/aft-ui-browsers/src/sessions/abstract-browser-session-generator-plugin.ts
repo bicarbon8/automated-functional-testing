@@ -31,7 +31,7 @@ export abstract class AbstractBrowserSessionGeneratorPlugin extends AbstractSess
         return this._caps;
     }
 
-    abstract newSession(options?: BrowserSessionOptions): Promise<BrowserSession>;
+    abstract override newSession(options?: BrowserSessionOptions): Promise<BrowserSession>;
 
     protected async createDriver(options?: BrowserSessionOptions): Promise<WebDriver> {
         if (!options?.driver) {

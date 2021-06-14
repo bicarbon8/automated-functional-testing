@@ -43,10 +43,10 @@ describe('Sample Test', () => {
             let result: string = await feature.performAction();
             await v.logMgr.info(`result of performAction was '${result}'`);
             await v.logMgr.trace('successfully executed expectation');
-            return (result == 'result of action');
+            return result;
         }).withTestId('C2345').and.withTestId('C3344')
         .and.withDescription('more complex expectation actions')
-        .returns(true);
+        .returns(containing('result of action'));
     });
 });
 ```

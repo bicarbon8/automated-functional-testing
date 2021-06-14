@@ -1,7 +1,5 @@
 import * as FormData from "form-data";
-import { HttpService, HttpServiceOptions } from "../../src/http/http-service";
-import { HttpRequest } from "../../src/http/http-request";
-import { HttpResponse } from "../../src/http/http-response";
+import { httpService, HttpService, HttpServiceOptions, HttpRequest, HttpResponse } from "../../src";
 
 describe('HttpService', () => {
     it('will set default request values if not passed in to performRequest', async () => {
@@ -116,7 +114,7 @@ describe('HttpService', () => {
      * NOTE: only for functional local testing. not to be enabled for committed code
      */
     xit('can get values from a real web API', async () => {
-        let resp: HttpResponse = await HttpService.instance.performRequest({url: 'https://reqres.in/api/users?page=2'});
+        let resp: HttpResponse = await httpService.performRequest({url: 'https://reqres.in/api/users?page=2'});
 
         expect(resp).toBeDefined();
         expect(resp.statusCode).toBe(200);

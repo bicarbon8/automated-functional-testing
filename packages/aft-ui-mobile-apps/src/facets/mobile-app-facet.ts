@@ -14,11 +14,11 @@ export interface MobileAppFacetOptions extends IFacetOptions {
 }
 
 export class MobileAppFacet extends AbstractFacet {
-    readonly locator: string;
-    readonly session: MobileAppSession;
-    readonly parent: MobileAppFacet;
+    override readonly locator: string;
+    override readonly session: MobileAppSession;
+    override readonly parent: MobileAppFacet;
 
-    async getElements(options: MobileAppElementOptions): Promise<ElementArray> {
+    override async getElements(options: MobileAppElementOptions): Promise<ElementArray> {
         let elements: ElementArray
         await wait.untilTrue(async () => {
             elements = await this.getRoot().then(async (r) => await r.$$(options.locator));
@@ -27,7 +27,7 @@ export class MobileAppFacet extends AbstractFacet {
         return elements;
     }
 
-    async getElement(options: MobileAppElementOptions): Promise<Element<'async'>> {
+    override async getElement(options: MobileAppElementOptions): Promise<Element<'async'>> {
         let element: Element<'async'>;
         await wait.untilTrue(async () => {
             element = await this.getRoot()
@@ -37,7 +37,7 @@ export class MobileAppFacet extends AbstractFacet {
         return element;
     }
     
-    async getFacet<T extends AbstractFacet>(facetType: Clazz<T>, options?: MobileAppFacetOptions): Promise<T> {
+    override async getFacet<T extends AbstractFacet>(facetType: Clazz<T>, options?: MobileAppFacetOptions): Promise<T> {
         options = options || {};
         options.parent = options.parent || this;
         options.session = options.session || this.session;
@@ -47,7 +47,7 @@ export class MobileAppFacet extends AbstractFacet {
         return facet;
     }
     
-    async getRoot(): Promise<Element<'async'>>  {
+    override async getRoot(): Promise<Element<'async'>>  {
         let el: Element<'async'>;
         await wait.untilTrue(async () => {
             if (this.parent) {

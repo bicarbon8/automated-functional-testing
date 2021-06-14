@@ -36,7 +36,7 @@ export abstract class AbstractMobileAppSessionGeneratorPlugin extends AbstractSe
         return this._app;
     }
 
-    abstract newSession(options?: MobileAppSessionOptions): Promise<MobileAppSession>;
+    abstract override newSession(options?: MobileAppSessionOptions): Promise<MobileAppSession>;
     
     async createDriver(options?: MobileAppSessionOptions): Promise<Browser<'async'>> {
         if (!options?.driver) {

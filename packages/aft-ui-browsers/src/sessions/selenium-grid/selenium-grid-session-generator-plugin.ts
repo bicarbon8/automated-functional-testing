@@ -8,17 +8,17 @@ export class SeleniumGridSessionGeneratorPlugin extends AbstractBrowserSessionGe
     constructor(options?: IBrowserSessionGeneratorPluginOptions) {
         super(nameof(SeleniumGridSessionGeneratorPlugin).toLowerCase(), options);
     }
-    async onLoad(): Promise<void> {
+    override async onLoad(): Promise<void> {
         /* do nothing */
     }
-    async newSession(options?: BrowserSessionOptions): Promise<BrowserSession> {
+    override async newSession(options?: BrowserSessionOptions): Promise<BrowserSession> {
         return new BrowserSession({
             driver: options?.driver || await this.createDriver(options),
             logMgr: options?.logMgr || this.logMgr,
             platform: options?.platform || await this.getPlatform().then(p => p.toString())
         });
     }
-    async getCapabilities(options?: BrowserSessionOptions): Promise<Capabilities> {
+    override async getCapabilities(options?: BrowserSessionOptions): Promise<Capabilities> {
         let capabilities: Capabilities = new Capabilities();
         let platform: TestPlatform = await this.getPlatform();
         let osVersion = '';
@@ -36,7 +36,7 @@ export class SeleniumGridSessionGeneratorPlugin extends AbstractBrowserSessionGe
         capabilities = capabilities.merge(superCaps);
         return capabilities;
     }
-    async dispose(error?: Error): Promise<void> {
+    override async dispose(error?: Error): Promise<void> {
         /* do nothing */
     }
 }

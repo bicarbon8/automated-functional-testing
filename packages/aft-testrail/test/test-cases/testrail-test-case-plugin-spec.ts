@@ -1,5 +1,5 @@
 import { ITestCase, TestStatus, ProcessingResult, TestCasePluginManager, AbstractTestCasePlugin } from 'aft-core';
-import { HttpResponse, HttpService } from 'aft-web-services';
+import { HttpResponse, httpService } from 'aft-web-services';
 import { TestRailConfig, TestRailTestCasePlugin } from "../../src";
 import { TestRailApi } from '../../src/api/testrail-api';
 import { TestRailCase } from '../../src/api/testrail-case';
@@ -7,7 +7,7 @@ import { TestRailTest } from '../../src/api/testrail-test';
 
 describe('TestRailTestCasePlugin', () => {
     beforeEach(() => {
-        spyOn(HttpService.instance, 'performRequest').and.returnValue(Promise.resolve(new HttpResponse({
+        spyOn(httpService, 'performRequest').and.returnValue(Promise.resolve(new HttpResponse({
             headers: {'content-type': 'application/json'},
             statusCode: 200,
             data: '{}'

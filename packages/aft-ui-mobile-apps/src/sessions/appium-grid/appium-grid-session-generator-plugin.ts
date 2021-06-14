@@ -8,10 +8,10 @@ export class AppiumGridSessionGeneratorPlugin extends AbstractMobileAppSessionGe
     constructor(options?: MobileAppSessionGeneratorPluginOptions) {
         super(nameof(AppiumGridSessionGeneratorPlugin).toLowerCase(), options);
     }
-    async onLoad(): Promise<void> {
+    override async onLoad(): Promise<void> {
         /* do nothing */
     }
-    async newSession(options?: MobileAppSessionOptions): Promise<MobileAppSession> {
+    override async newSession(options?: MobileAppSessionOptions): Promise<MobileAppSession> {
         return new MobileAppSession({
             driver: options?.driver || await this.createDriver(options),
             logMgr: options?.logMgr || this.logMgr,
@@ -19,7 +19,7 @@ export class AppiumGridSessionGeneratorPlugin extends AbstractMobileAppSessionGe
             app: options?.app || await this.app()
         });
     }
-    async getRemoteOptions(options?: MobileAppSessionOptions): Promise<RemoteOptions> {
+    override async getRemoteOptions(options?: MobileAppSessionOptions): Promise<RemoteOptions> {
         let remOpts: RemoteOptions = await super.getRemoteOptions(options);
         remOpts.capabilities = {};
         let platform: TestPlatform = (options?.platform) ? TestPlatform.parse(options.platform) : await this.getPlatform();
@@ -30,10 +30,10 @@ export class AppiumGridSessionGeneratorPlugin extends AbstractMobileAppSessionGe
         remOpts.capabilities['platform'] = `${platform.os}${osVersion}`;
         return remOpts;
     }
-    async sendCommand(command: string, data?: any): Promise<any> {
+    override async sendCommand(command: string, data?: any): Promise<any> {
         return Promise.reject(`command '${command}' not supported`);
     }
-    async dispose(error?: Error): Promise<void> {
+    override async dispose(error?: Error): Promise<void> {
         /* do nothing */
     }
 }

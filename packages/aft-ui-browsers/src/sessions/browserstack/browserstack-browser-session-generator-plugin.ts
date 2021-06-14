@@ -21,11 +21,11 @@ export class BrowserStackBrowserSessionGeneratorPlugin extends AbstractBrowserSe
         this._cfg = options?._config || new BrowserStackConfig(options as BrowserStackConfigOptions);
     }
 
-    async onLoad(): Promise<void> {
+    override async onLoad(): Promise<void> {
         /* do nothing */
     }
 
-    async newSession(options?: BrowserSessionOptions): Promise<BrowserStackBrowserSession> {
+    override async newSession(options?: BrowserSessionOptions): Promise<BrowserStackBrowserSession> {
         return new BrowserStackBrowserSession({
             driver: options?.driver || await this.createDriver(options),
             logMgr: options?.logMgr || this.logMgr,
@@ -33,7 +33,7 @@ export class BrowserStackBrowserSessionGeneratorPlugin extends AbstractBrowserSe
         });
     }
 
-    async getCapabilities(options?: BrowserSessionOptions): Promise<Capabilities> {
+    override async getCapabilities(options?: BrowserSessionOptions): Promise<Capabilities> {
         let capabilities: Capabilities = new Capabilities();
         let platform: TestPlatform = await this.getPlatform()
         if (platform.browser) {
@@ -75,7 +75,7 @@ export class BrowserStackBrowserSessionGeneratorPlugin extends AbstractBrowserSe
         return capabilities;
     }
 
-    async dispose(error?: Error): Promise<void> {
+    override async dispose(error?: Error): Promise<void> {
         /* do nothing */
     }
 }

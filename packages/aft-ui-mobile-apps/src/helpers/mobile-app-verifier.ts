@@ -3,7 +3,7 @@ import { MobileAppSession, MobileAppSessionOptions } from "../sessions/mobile-ap
 import { MobileAppSessionGeneratorPluginManager } from "../sessions/mobile-app-session-generator-plugin-manager";
 
 export class MobileAppVerifier extends Verifier {
-    protected _assertion: Func<MobileAppVerifier, any>;
+    protected override _assertion: Func<MobileAppVerifier, any>;
     protected _sessionMgr: MobileAppSessionGeneratorPluginManager;
     protected _session: MobileAppSession;
     protected _sessionOptions: MobileAppSessionOptions;
@@ -65,7 +65,7 @@ export class MobileAppVerifier extends Verifier {
         return this._sessionOptions;
     }
 
-    protected async _resolveAssertion(): Promise<void> {
+    protected override async _resolveAssertion(): Promise<void> {
         let opts: MobileAppSessionOptions = this.sessionOptions;
         opts.logMgr = opts.logMgr || this.logMgr;
         await using(await this.sessionGeneratorPluginManager.newSession(opts), async (session) => {

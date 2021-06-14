@@ -1,4 +1,4 @@
-import { HttpRequest, HttpService, HttpResponse, HttpMethod } from "aft-web-services";
+import { HttpRequest, HttpResponse, httpService } from "aft-web-services";
 import { convert, wait } from "aft-core";
 import { TestRailCase } from "./testrail-case";
 import { TestRailCache } from "./testrail-cache";
@@ -197,7 +197,7 @@ export class TestRailApi {
 
         do { // allow retries on API Rate Limit Exceeded
             retry = false;
-            response = await HttpService.instance.performRequest(request);
+            response = await httpService.performRequest(request);
             let err: ICanHaveError;
             try {
                 err = response.dataAs<ICanHaveError>();

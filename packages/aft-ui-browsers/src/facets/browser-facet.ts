@@ -14,9 +14,9 @@ export interface BrowserFacetOptions extends IFacetOptions {
 }
 
 export class BrowserFacet extends AbstractFacet {
-    readonly locator: Locator;
-    readonly session: BrowserSession;
-    readonly parent: BrowserFacet;
+    override readonly locator: Locator;
+    override readonly session: BrowserSession;
+    override readonly parent: BrowserFacet;
 
     async getElements(options: WebElementOptions): Promise<WebElement[]> {
         let elements: WebElement[]

@@ -19,11 +19,11 @@ export class SauceLabsMobileAppSessionGeneratorPlugin extends AbstractMobileAppS
         this._cfg = options?._config || new SauceLabsConfig(options as SauceLabsConfigOptions);
     }
 
-    async onLoad(): Promise<void> {
+    override async onLoad(): Promise<void> {
         /* do nothing */
     }
 
-    async newSession(options?: MobileAppSessionOptions): Promise<SauceLabsMobileAppSession> {
+    override async newSession(options?: MobileAppSessionOptions): Promise<SauceLabsMobileAppSession> {
         return new SauceLabsMobileAppSession({
             driver: options?.driver || await this.createDriver(options),
             logMgr: options?.logMgr || this.logMgr,
@@ -32,7 +32,7 @@ export class SauceLabsMobileAppSessionGeneratorPlugin extends AbstractMobileAppS
         });
     }
 
-    async getRemoteOptions(options?: MobileAppSessionOptions): Promise<RemoteOptions> {
+    override async getRemoteOptions(options?: MobileAppSessionOptions): Promise<RemoteOptions> {
         let remOpts: RemoteOptions = await super.getRemoteOptions(options);
         remOpts.capabilities = remOpts.capabilities || {};
         let platform: TestPlatform = (options?.platform) ? TestPlatform.parse(options.platform) : await this.getPlatform();
@@ -48,11 +48,11 @@ export class SauceLabsMobileAppSessionGeneratorPlugin extends AbstractMobileAppS
         return remOpts;
     }
 
-    async sendCommand(command: string, data?: any): Promise<any> {
+    override async sendCommand(command: string, data?: any): Promise<any> {
         return Promise.reject(`command '${command}' not supported`);
     }
 
-    async dispose(error?: Error): Promise<void> {
+    override async dispose(error?: Error): Promise<void> {
         /* do nothing */
     }
 }

@@ -8,10 +8,10 @@ export class MockBuildInfoPlugin extends AbstractBuildInfoPlugin {
     async onLoad(): Promise<void> {
         /* do nothing */
     }
-    async getBuildName(): Promise<string> {
+    override async getBuildName(): Promise<string> {
         return `MockBuildName-${rand.getInt(0, 99)}`;
     }
-    async getBuildNumber(): Promise<string> {
+    override async getBuildNumber(): Promise<string> {
         return `MockBuildNumber-${rand.getInt(100, 999)}`;
     }
     async dispose(error?: Error): Promise<void> {

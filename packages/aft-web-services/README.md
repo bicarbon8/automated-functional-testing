@@ -1,12 +1,15 @@
 # AFT-Web-Services
 provides simplified HTTP REST request and response testing support
 
+## Installation
+`> npm i aft-web-services`
+
 ## Usage
-the `aft-web-services` package supports all standard HTTP methods like `GET`, `POST`, `PUT`, `DELETE` and `UPDATE` via the `HttpMethod` module
+the `aft-web-services` package supports all standard HTTP methods like `GET`, `POST`, `PUT`, `DELETE` and `UPDATE` by setting the `HttpRequest.method` field
 ### GET
 ```typescript
 // perform GET request and return a response
-let response: HttpResponse = await HttpService.instance.performRequest({url: 'https://reqres.in/api/users?page=2'});
+let response: HttpResponse = await httpService.performRequest({url: 'https://reqres.in/api/users?page=2'});
 
 // deserialise a JSON or XML response into an object
 let respObj: ListUsersResponse = response.dataAs<ListUsersResponse>();
@@ -15,9 +18,9 @@ let respObj: ListUsersResponse = response.dataAs<ListUsersResponse>();
 ### POST
 ```typescript
 // perform POST request and return a response
-let response: HttpResponse = await HttpService.instance.performRequest({
+let response: HttpResponse = await httpService.performRequest({
     url: 'https://reqres.in/api/users',
-    method: HttpMethod.POST,
+    method: 'POST',
     headers: {'content-type':'application/json'},
     postData: JSON.stringify({name: 'morpheus', job: 'leader'})
 });
