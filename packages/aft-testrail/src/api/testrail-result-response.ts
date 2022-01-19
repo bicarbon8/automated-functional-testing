@@ -1,12 +1,11 @@
 import { ICanHaveError } from "./ican-have-error";
+import { TestRailPagedResponseLinks } from "./testrail-paged-response-links";
+import { TestRailResult } from "./testrail-result";
 
 export interface TestRailResultResponse extends ICanHaveError {
-    comment?: string;
-    created_on?: number;
-    defects?: string;
-    elapsed?: string;
-    id?: number;
-    status_id?: number;
-    test_id?: number;
-    version?: string;
+    offset: number;
+    limit: number;
+    size: number;
+    _links: TestRailPagedResponseLinks;
+    results: TestRailResult[];
 }

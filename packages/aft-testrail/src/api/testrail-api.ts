@@ -11,6 +11,9 @@ import { ICanHaveError } from "./ican-have-error";
 import { AddPlanRequest } from "./add-plan-request";
 import { TestRailPlanEntry } from "./testrail-plan-entry";
 import { TestRailConfig, trconfig } from "../configuration/testrail-config";
+import { TestRailResult } from "./testrail-result";
+import { TestRailGetCasesResponse } from "./testrail-getcases-response";
+import { TestRailGetTestsResponse } from "./testrail-gettests-response";
 
 export class TestRailApi {
     private _config: TestRailConfig;
@@ -25,11 +28,21 @@ export class TestRailApi {
      * @param caseId the test identifier to be used to find a test id to add the result to
      * @param result the `TestRailResultRequest` to be added
      */
-    async addResult(caseId: string, planId: number, result: TestRailResultRequest): Promise<TestRailResultResponse[]> {
+    async addResult(caseId: string, planId: number, result: TestRailResultRequest): Promise<TestRailResult[]> {
         let test: TestRailTest = await this.getTestByCaseId(caseId, planId);
-        let path: string = `add_result/${test.id}`;
+        let path: string = `/api/v2/add_result/${test.id}`;
 
-        let results: TestRailResultResponse[] = await this._post<TestRailResultResponse[]>(path, JSON.stringify(result));
+        let res: TestRailResultResponse = await this._post<TestRailResultResponse>(path, JSON.stringify(result));
+        let results: TestRailResult[] = res?.results || [];
+
+        while (res?._links?.next) {
+            res = await this._get<TestRailResultResponse>(res._links.next, true);
+            if (res?.results?.length) {
+                for (var i=0; i<res.results.length; i++) {
+                    results.push(res.results[i]);
+                }
+            }
+        }
 
         return results;
     }
@@ -62,12 +75,20 @@ export class TestRailApi {
      */
     async getCasesInSuites(projectId: number, suiteIds: number[]): Promise<TestRailCase[]> {
         let allCases: TestRailCase[] = [];
-        let path: string = `get_cases/${projectId}&suite_id=`;
+        let path: string = `/api/v2/get_cases/${projectId}&suite_id=`;
         for (var i=0; i<suiteIds.length; i++) {
-            let cases: TestRailCase[] = await this._get<TestRailCase[]>(path + suiteIds[i], true);
-            if (cases) {
-                for (var j=0; j<cases.length; j++) {
-                    allCases.push(cases[j]);
+            let res: TestRailGetCasesResponse = await this._get<TestRailGetCasesResponse>(path + suiteIds[i], true);
+            if (res?.cases?.length) {
+                for (var j=0; j<res.cases.length; j++) {
+                    allCases.push(res.cases[j]);
+                }
+            }
+            while (res?._links?.next) {
+                res = await this._get<TestRailGetCasesResponse>(res._links.next, true);
+                if (res?.cases?.length) {
+                    for (var j=0; j<res.cases.length; j++) {
+                        allCases.push(res.cases[j]);
+                    }
                 }
             }
         }
@@ -81,13 +102,21 @@ export class TestRailApi {
      */
     async getTestsInRuns(runIds: number[]): Promise<TestRailTest[]> {
         let allTests: TestRailTest[] = [];
-        let path: string = 'get_tests/';
+        let path: string = '/api/v2/get_tests/';
 
         for (var i=0; i<runIds.length; i++) {
-            let tests: TestRailTest[] = await this._get<TestRailTest[]>(path + runIds[i], true);
-            if (tests) {
-                for (var j=0; j<tests.length; j++) {
-                    allTests.push(tests[j]);
+            let res: TestRailGetTestsResponse = await this._get<TestRailGetTestsResponse>(path + runIds[i], true);
+            if (res?.tests?.length) {
+                for (var j=0; j<res.tests.length; j++) {
+                    allTests.push(res.tests[j]);
+                }
+            }
+            while (res?._links?.next) {
+                res = await this._get<TestRailGetTestsResponse>(res._links.next, true);
+                if (res?.tests?.length) {
+                    for (var j=0; j<res.tests.length; j++) {
+                        allTests.push(res.tests[j]);
+                    }
                 }
             }
         }
@@ -102,7 +131,7 @@ export class TestRailApi {
     async getRunsInPlan(planId: number): Promise<TestRailRun[]> {
         let plan: TestRailPlan = await this.getPlan(planId);
         let runs: TestRailRun[] = [];
-        if (plan && plan.entries) {
+        if (plan?.entries?.length) {
             for (var i=0; i<plan.entries.length; i++) {
                 for (var j=0; j<plan.entries[i].runs.length; j++) {
                     runs.push(plan.entries[i].runs[j]);
@@ -117,7 +146,7 @@ export class TestRailApi {
      */
     async getPlan(planId: number): Promise<TestRailPlan> {
         let plan: TestRailPlan;
-        let path: string = `get_plan/${planId}`;
+        let path: string = `/api/v2/get_plan/${planId}`;
         plan = await this._get<TestRailPlan>(path, true);
         return plan;
     }
@@ -142,7 +171,7 @@ export class TestRailApi {
             };
             addPlan.entries.push(entry);
         }
-        let path: string = `add_plan/${projectId}`;
+        let path: string = `/api/v2/add_plan/${projectId}`;
         let plan: TestRailPlan = await this._post<TestRailPlan>(path, JSON.stringify(addPlan));
 
         return plan;
@@ -186,7 +215,7 @@ export class TestRailApi {
         if (url && !url.endsWith('/')) {
             url += '/';
         }
-        return `${url}index.php?/api/v2/`;
+        return `${url}index.php?`;
     }
 
     private async _performRequestWithRateLimitHandling(request: HttpRequest): Promise<HttpResponse> {
