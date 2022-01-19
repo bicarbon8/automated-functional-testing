@@ -1,6 +1,6 @@
 {
     "name": "automated-functional-testing",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "main": "index.js",
     "author": "Jason Holt Smith  <bicarbon8@gmail.com>",
     "license": "MIT",
