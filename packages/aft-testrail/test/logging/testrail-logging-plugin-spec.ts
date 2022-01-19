@@ -5,6 +5,7 @@ import { TestRailResultRequest } from "../../src/api/testrail-result-request";
 import { TestRailResultResponse } from "../../src/api/testrail-result-response";
 import { TestRailConfig } from "../../src/configuration/testrail-config";
 import { HttpResponse, httpService } from "aft-web-services";
+import { TestRailResult } from "../../src/api/testrail-result";
 
 describe('TestRailLoggingPlugin', () => {
     beforeEach(() => {
@@ -75,7 +76,7 @@ describe('TestRailLoggingPlugin', () => {
             accesskey: 'fake-key'
         });
         let mockClient: TestRailApi = new TestRailApi(config);
-        spyOn(mockClient, 'addResult').and.callFake(async (caseId: string, planId: number, request: TestRailResultRequest): Promise<TestRailResultResponse[]> => {
+        spyOn(mockClient, 'addResult').and.callFake(async (caseId: string, planId: number, request: TestRailResultRequest): Promise<TestRailResult[]> => {
             TestStore.caseId = caseId;
             TestStore.request = request;
             TestStore.planId = planId;
