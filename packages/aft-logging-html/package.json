@@ -8,7 +8,7 @@
     "clean": "rimraf ./dist",
     "build": "yarn clean && tsc --build",
     "pretest": "yarn build",
-    "test": "jasmine ./dist/test/**/*-spec.js",
+    "test": "jasmine-ts ./dist/test/**/*-spec.js",
     "coverage": "nyc yarn test"
   },
   "repository": {
@@ -35,8 +35,10 @@
     "@types/jasmine": "^3.6.10",
     "@types/node": "^15.0.1",
     "jasmine": "^3.7.0",
+    "jasmine-ts": "^0.4.0",
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
+    "ts-node": "^10.7.0",
     "typescript": "^4.3.2"
   },
   "dependencies": {

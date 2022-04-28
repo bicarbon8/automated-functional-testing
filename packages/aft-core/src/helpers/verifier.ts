@@ -43,7 +43,7 @@ export class Verifier implements PromiseLike<void> {
         if (!this._logMgr) {
             if (this._description) {
                 this._logMgr = new LoggingPluginManager({logName: this._description});
-            } else if (this._tests) {
+            } else if (this._tests.size > 0) {
                 return new LoggingPluginManager({logName: Array.from(this._tests).join('_')});
             } else {
                 return new LoggingPluginManager();
@@ -367,7 +367,5 @@ export class Verifier implements PromiseLike<void> {
  * @returns a new {Verifier} instance
  */
 export const verify = (assertion: Func<Verifier, any>): Verifier => {
-    let v: Verifier = new Verifier();
-    v.verify(assertion);
-    return v;
+    return new Verifier().verify(assertion);
 };

@@ -10,8 +10,8 @@ describe('BrowserVerifier', () => {
         });
 
         await verifyWithBrowser(async (bv: BrowserVerifier) => {
-            expect(bv.session).toBeDefined();
-            expect(await bv.session.logMgr.logName()).toBe(await bv.logMgr.logName());
+            expect(bv.session).withContext('BrowserVerifier should create a new session').toBeDefined();
+            expect(await bv.session.logMgr.logName()).withContext('the new session should use the same logger as the verifier').toBe(await bv.logMgr.logName());
         }).and.withBrowserSessionGeneratorPluginManager(sessionMgr);
 
         expect(sessionMgr.newSession).toHaveBeenCalledTimes(1);

@@ -91,7 +91,5 @@ export class BrowserVerifier extends Verifier {
  * @returns a new {BrowserVerifier} instance
  */
 export const verifyWithBrowser = (assertion: Func<BrowserVerifier, any>): BrowserVerifier => {
-    let v: BrowserVerifier = new BrowserVerifier();
-    v.verify(assertion);
-    return v;
+    return new BrowserVerifier().verify(assertion);
 }

@@ -104,9 +104,9 @@ describe('AftConfigManager', () => {
                 }
             };
     
-            expect(await aftconfigMgr.getFrom(actual, "bar.asd.jkl")).toBe(actual['bar']['asd']['jkl']);
-            expect(await aftconfigMgr.getFrom(actual, "foo")).toBe(actual['foo']);
-            expect(await aftconfigMgr.getFrom(actual, "bar.baz")).toBe(actual['bar']['baz']);
+            expect(aftconfigMgr.getFrom(actual, "bar.asd.jkl")).toBe(actual['bar']['asd']['jkl']);
+            expect(aftconfigMgr.getFrom(actual, "foo")).toEqual(actual['foo']);
+            expect(aftconfigMgr.getFrom(actual, "bar.baz")).toBe(actual['bar']['baz']);
         });
     
         it('will return undefined if passed in key does not exist', async () => {
@@ -120,7 +120,7 @@ describe('AftConfigManager', () => {
                 }
             };
 
-            expect(await aftconfigMgr.getFrom(actual, "foo.bar")).not.toBeDefined();
+            expect(aftconfigMgr.getFrom(actual, "foo.bar")).not.toBeDefined();
         });
     });
 });

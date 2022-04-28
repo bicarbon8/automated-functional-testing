@@ -28,24 +28,23 @@ import { aftconfigMgr } from "./aftconfig-manager";
 export class OptionsManager {
     readonly key: string;
 
-    private _options: {};
+    private _options: Record<string, any>;
 
-    constructor(key: string, options?: {}) {
+    constructor(key: string, options?: Record<string, any>) {
         this.key = key;
-        // ensure this is purely a plain object with no functions
-        this._options = JSON.parse(JSON.stringify(options || {}));
+        if (Array.isArray(options)) throw `options must be a plain JSON object like "{key: val}" and not an Array`;
+        this._options = options || {};
     }
 
     /**
      * function will lookup a value from the optional options passed to the class
      * and if not found will then check for the same in the `aftconfig.json` under
-     * the configuration key specified by the Class name (all lowercase) plus the
-     * passed in `keys`
+     * the configuration key specified in the constructor plus the passed in `keys`
      * @param keys the lookup keys to be used to retrieve a value
      * @param defaultVal a default value to return in the case that no value is found
      */
     async getOption<Tval>(keys: string, defaultVal?: Tval): Promise<Tval> {
-        let val: Tval = await aftconfigMgr.getFrom<Tval>(this._options, keys);
+        let val: Tval = aftconfigMgr.getFrom<Tval>(this._options, keys);
         if (val === undefined) {
             val = await aftconfigMgr.get<Tval>(`${this.key}.${keys}`, defaultVal);
         }
