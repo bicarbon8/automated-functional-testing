@@ -2,10 +2,9 @@ import { cloneDeep } from "lodash";
 import { AbstractLoggingPlugin, ILoggingPluginOptions } from "./abstract-logging-plugin";
 import { LoggingLevel } from "./logging-level";
 import { FormatOptions } from "./format-options";
-import { AbstractPluginManager, IPluginManagerOptions } from "../abstract-plugin-manager";
+import { PluginManager, IPluginManagerOptions } from "../plugin-manager";
 import { rand } from "../../helpers/random-generator";
 import { convert } from "../../helpers/converter";
-import { nameof } from "ts-simple-nameof";
 import { ITestResult } from "../test-cases/itest-result";
 
 export interface LoggingPluginManagerOptions extends IPluginManagerOptions, ILoggingPluginOptions {
@@ -40,17 +39,17 @@ export interface LoggingPluginManagerOptions extends IPluginManagerOptions, ILog
  * let logMgr2: LoggingPluginManager = new LoggingPluginManager({logName: 'logger for test 2'});
  * ```
  */
-export class LoggingPluginManager extends AbstractPluginManager<AbstractLoggingPlugin, ILoggingPluginOptions> {
+export class LoggingPluginManager extends PluginManager<AbstractLoggingPlugin, ILoggingPluginOptions> {
     private _logName: string;
     private _stepCount: number = 0;
 
     constructor(options?: LoggingPluginManagerOptions) {
-        super(nameof(LoggingPluginManager).toLowerCase(), options);
+        super(options);
     }
 
     async logName(): Promise<string> {
         if (!this._logName) {
-            this._logName = convert.toSafeString(await this.optionsMgr.getOption(nameof<LoggingPluginManagerOptions>(o => o.logName), rand.guid));
+            this._logName = convert.toSafeString(await this.optionsMgr.getOption('logName', rand.guid));
         }
         return this._logName;
     }

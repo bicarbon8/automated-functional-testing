@@ -1,24 +1,41 @@
-import { LPS } from "./logging-plugin-store";
+import { LoggingPluginStore } from "./logging-plugin-store";
 import { LogMessage } from "./log-message";
-import { nameof } from "ts-simple-nameof";
 import { AbstractLoggingPlugin, ILoggingPluginOptions, ITestResult, LoggingLevel } from "../../../src";
 
 export class FakeLoggingPlugin extends AbstractLoggingPlugin {
+    private _lps: LoggingPluginStore;
+    
     constructor(options?: ILoggingPluginOptions) {
-        LPS.onLoad = true;
-        LPS.lvl = LoggingLevel.parse(options?.level);
-        super(nameof(FakeLoggingPlugin), options);
+        super(options);
+    }
+
+    async lps(): Promise<LoggingPluginStore> {
+        if (!this._lps) {
+            this._lps = await this.optionsMgr.getOption('lps', null);
+        }
+        return this._lps;
     }
     async onLoad(): Promise<void> {
-        LPS.onLoad = true;
+        const lps = await this.lps();
+        lps.onLoad = true;
+        const lvl = await this.level();
+        lps.lvl = lvl;
     }
     async log(level: LoggingLevel, message: string): Promise<void> {
-        LPS.logs.push(new LogMessage(level, message));
+        const lps = await this.lps();
+        if (!lps.logs?.length) {
+            lps.logs = [];
+        }
+        lps.logs.push(new LogMessage(level, message));
     }
     async logResult(result: ITestResult): Promise<void> {
-        LPS.results.push(result);
+        const lps = await this.lps();
+        if (!lps.results?.length) {
+            lps.results = [];
+        }
+        lps.results.push(result);
     }
     async dispose(error?: Error): Promise<void> {
-        LPS.disposed = true;
+        await this.lps().then((lps: LoggingPluginStore) => { lps.disposed = true; });
     }
 }

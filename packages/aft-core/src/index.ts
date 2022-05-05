@@ -16,7 +16,7 @@ export * from './helpers/wait';
 /** plugins */
 export * from './plugins/abstract-plugin';
 export * from './plugins/plugin-loader';
-export * from './plugins/abstract-plugin-manager';
+export * from './plugins/plugin-manager';
 /** plugins/build-info */
 export * from './plugins/build-info/ibuild-info-plugin';
 export * from './plugins/build-info/build-info-plugin-manager';

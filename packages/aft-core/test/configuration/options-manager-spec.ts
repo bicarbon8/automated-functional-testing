@@ -1,4 +1,4 @@
-import { aftconfigMgr, OptionsManager, rand } from "../../src";
+import { aftconfig, OptionsManager, rand } from "../../src";
 
 describe('OptionsManager', () => {
     it('can read from a simple object', async () => {
@@ -14,13 +14,9 @@ describe('OptionsManager', () => {
     });
 
     it('falls back to AftConfig if key not found in options object', async () => {
-        const oMgr: OptionsManager = new OptionsManager('foo', {'bar': 'baz'});
-        const getFromSpy = spyOn(aftconfigMgr, 'getFrom').and.callThrough();
-        const getSpy = spyOn(aftconfigMgr, 'get').and.callThrough();
+        const oMgr: OptionsManager = new OptionsManager('loggingpluginmanager', {'bar': 'baz'});
 
-        const result: string = await oMgr.getOption('baz', 'expected');
-        expect(result).toEqual('expected');
-        expect(getFromSpy).toHaveBeenCalledTimes(1);
-        expect(getSpy).toHaveBeenCalledTimes(1);
+        const result: string = await oMgr.getOption('level', 'does-not-exist');
+        expect(result).toEqual(await aftconfig.get('loggingpluginmanager.level', 'does-not-exist'));
     });
 });

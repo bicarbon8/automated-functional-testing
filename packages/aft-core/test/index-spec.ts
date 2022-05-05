@@ -28,5 +28,5 @@ describe('AFT', () => {
         }).withTestId('C1234').and.withTestId('C2345')
         .and.withDescription('some tests require lots of actions')
         .returns(10);
-    });
+    }, 15000);
 });

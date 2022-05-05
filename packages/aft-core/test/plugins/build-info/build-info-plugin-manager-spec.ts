@@ -1,4 +1,3 @@
-import { nameof } from "ts-simple-nameof";
 import { BuildInfoPluginManager, AbstractBuildInfoPlugin } from "../../../src";
 import { MockBuildInfoPlugin } from "./mock-build-info-plugin";
 
@@ -7,7 +6,7 @@ describe('BuildInfoPluginManager', () => {
         let mgr: BuildInfoPluginManager = new BuildInfoPluginManager();
         let actual: string = mgr.optionsMgr.key;
 
-        expect(actual).toEqual(nameof(BuildInfoPluginManager).toLowerCase());
+        expect(actual).toEqual('buildinfopluginmanager');
     });
     
     it('can load a specified IBuildInfoHandlerPlugin', async () => {
@@ -16,7 +15,7 @@ describe('BuildInfoPluginManager', () => {
         
         expect(actual).toBeDefined();
         expect(actual.length).toBeGreaterThan(0);
-        expect(actual[0].optionsMgr.key).toBe(nameof(MockBuildInfoPlugin).toLowerCase());
+        expect(actual[0].optionsMgr.key).toBe('mockbuildinfoplugin');
         expect(await actual[0].getBuildName()).toMatch(/MockBuildName-[0-9]{1,2}/);
         expect(await actual[0].getBuildNumber()).toMatch(/MockBuildNumber-[0-9]{3}/);
     });

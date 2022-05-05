@@ -6,8 +6,8 @@ export interface IDefectPluginOptions extends IPluginOptions {
 }
 
 export abstract class AbstractDefectPlugin extends AbstractPlugin<IDefectPluginOptions> {
-    constructor(key: string, options?: IDefectPluginOptions) {
-        super(key, options);
+    constructor(options?: IDefectPluginOptions) {
+        super(options);
     }
     
     abstract getDefect(defectId: string): Promise<IDefect>;

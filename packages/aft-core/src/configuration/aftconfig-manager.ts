@@ -181,4 +181,4 @@ class AftConfigManager {
     }
 }
 
-export const aftconfigMgr = new AftConfigManager();
+export const aftconfig = new AftConfigManager();

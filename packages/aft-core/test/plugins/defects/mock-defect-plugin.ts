@@ -1,9 +1,8 @@
-import { nameof } from "ts-simple-nameof";
 import { DefectStatus, IDefect, AbstractDefectPlugin, rand, IDefectPluginOptions } from "../../../src";
 
 export class MockDefectPlugin extends AbstractDefectPlugin {
     constructor(options?: IDefectPluginOptions) {
-        super(nameof(MockDefectPlugin), options);
+        super(options);
     }
     async onLoad(): Promise<void> {
         /* do nothing */

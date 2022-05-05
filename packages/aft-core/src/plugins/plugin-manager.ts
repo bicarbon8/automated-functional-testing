@@ -1,6 +1,5 @@
 import { AbstractPlugin, IPluginOptions } from "./abstract-plugin";
 import { pluginLoader } from "./plugin-loader";
-import { nameof } from "ts-simple-nameof";
 import { OptionsManager } from "../configuration/options-manager";
 
 /**
@@ -27,7 +26,7 @@ export interface IPluginManagerOptions {
 
 /**
  * base class for use by classes that load in and manage plugins.
- * the {AbstractPluginManager} instances should specify their
+ * the {PluginManager} instances should specify their
  * plugin names to be loaded in the passed in {options} object
  * or in the `aftconfig.json` file.
  * 
@@ -40,7 +39,7 @@ export interface IPluginManagerOptions {
  * export interface PluginManagerClassInstanceOptions extends IPluginManagerOptions, SomePluginInstanceOptions {
  * 
  * }
- * export class PluginManagerClassInstance extends AbstractPluginManager<SomePluginInstance, SomePluginInstanceOptions> {
+ * export class PluginManagerClassInstance extends PluginManager<SomePluginInstance, SomePluginInstanceOptions> {
  *     constructor(options?: PluginManagerClassInstanceOptions) {
  *         super('pluginmanagerclassinstance', options);
  *     }
@@ -65,7 +64,7 @@ export interface IPluginManagerOptions {
  * NOTE: the `PluginManagerClassInstance` will load plugins listed in the `pluginNames` array
  * and pass them any additional {options} specified (in this case the values for `foo` and `bar`)
  */
-export abstract class AbstractPluginManager<T extends AbstractPlugin<Topts>, Topts extends IPluginOptions> {
+export class PluginManager<T extends AbstractPlugin<Topts>, Topts extends IPluginOptions> {
     private _plugins: Map<string, T>;
     private _opts: Topts;
 
@@ -74,21 +73,21 @@ export abstract class AbstractPluginManager<T extends AbstractPlugin<Topts>, Top
 
     readonly optionsMgr: OptionsManager;
 
-    constructor(key: string, options?: Topts) {
+    constructor(options?: Topts) {
         this._opts = options;
-        this.optionsMgr = this._opts?._optMgr || new OptionsManager(key, this._opts);
+        this.optionsMgr = this._opts?._optMgr || new OptionsManager(this.constructor.name.toLowerCase(), this._opts);
     }
 
     async getPluginNames(): Promise<string[]> {
         if (!this._pluginNames) {
-            this._pluginNames = await this.optionsMgr.getOption(nameof<IPluginManagerOptions>(o => o.pluginNames), []);
+            this._pluginNames = await this.optionsMgr.getOption('pluginNames', []);
         }
         return this._pluginNames;
     }
 
     async getSearchDir(): Promise<string> {
         if (!this._searchDir) {
-            this._searchDir = await this.optionsMgr.getOption(nameof<IPluginManagerOptions>(p => p.searchDir));
+            this._searchDir = await this.optionsMgr.getOption('searchDir');
         }
         return this._searchDir;
     }

@@ -1,7 +1,6 @@
 import { LoggingLevel } from "./logging-level";
 import { AbstractLoggingPlugin, ILoggingPluginOptions } from "./abstract-logging-plugin";
 import * as colors from "colors";
-import { nameof } from "ts-simple-nameof";
 import { ITestResult } from "../test-cases/itest-result";
 
 export interface ConsoleLoggingPluginOptions extends ILoggingPluginOptions {
@@ -10,7 +9,7 @@ export interface ConsoleLoggingPluginOptions extends ILoggingPluginOptions {
 
 export class ConsoleLoggingPlugin extends AbstractLoggingPlugin {
     constructor(options?: ConsoleLoggingPluginOptions) {
-        super(nameof(ConsoleLoggingPlugin).toLowerCase(), options);
+        super(options);
     }
     
     async log(level: LoggingLevel, message: string): Promise<void> {

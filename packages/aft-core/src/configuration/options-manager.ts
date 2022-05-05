@@ -1,4 +1,4 @@
-import { aftconfigMgr } from "./aftconfig-manager";
+import { aftconfig } from "./aftconfig-manager";
 
 /**
  * **WARNING**
@@ -44,9 +44,9 @@ export class OptionsManager {
      * @param defaultVal a default value to return in the case that no value is found
      */
     async getOption<Tval>(keys: string, defaultVal?: Tval): Promise<Tval> {
-        let val: Tval = aftconfigMgr.getFrom<Tval>(this._options, keys);
+        let val: Tval = aftconfig.getFrom<Tval>(this._options, keys);
         if (val === undefined) {
-            val = await aftconfigMgr.get<Tval>(`${this.key}.${keys}`, defaultVal);
+            val = await aftconfig.get<Tval>(`${this.key}.${keys}`, defaultVal);
         }
         return val;
     }

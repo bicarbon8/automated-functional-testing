@@ -5,11 +5,20 @@ import { AbstractPlugin } from './abstract-plugin';
 
 class Loader {
     /**
-     * attempts to load a package named `pluginName` and if
-     * that fails will search the filesystem, starting at the current
+     * attempts to load plugins by name and optional path.
+     * 
+     * ```typescript
+     * let plugin: CustomPlugin = await pluginLoader.load<CustomPlugin>('custom-plugin', {foo: 'bar'});
+     * ```
+     * 
+     * NOTE: the above attempts to load a `custom-plugin` package 
+     * passing in the specified options to its constructor. if loading
+     * fails then it will search the filesystem, starting at the current
      * execution directory and searching all subdirectories, for a file
      * named `custom-plugin.js` which, if found, will be imported and a 
-     * new instance will be created followed by calling the {onLoad} function.
+     * new instance will be created passing in the specified options to
+     * its constructor. following instantiation the {onLoad} function is
+     * awaited and then the new plugin instance is returned
      * 
      * NOTE: each time this is called a new instance of the Plugin is created.
      * @param pluginName the name of the plugin package or file to be imported
@@ -121,12 +130,15 @@ class Loader {
  * class must extend from {AbstractPlugin<any>} and would be expected
  * to accept an {options} object in its constructor.
  * ```typescript
- * let plugin: CustomPlugin = await PluginLoader.load<CustomPlugin>('custom-plugin', {foo: 'bar'});
+ * let plugin: CustomPlugin = await pluginLoader.load<CustomPlugin>('custom-plugin', {foo: 'bar'});
  * ```
- * NOTE: the above will attempt to load `custom-plugin` package and if
- * that fails will search the filesystem, starting at the current
+ * NOTE: the above will attempt to load `custom-plugin` package 
+ * passing in the specified options to its constructor. if loading
+ * fails then it will search the filesystem, starting at the current
  * execution directory and searching all subdirectories, for a file
  * named `custom-plugin.js` which, if found, will be imported and a 
- * new instance will be created followed by calling the {onLoad} function
+ * new instance will be created passing in the specified options to
+ * its constructor. following instantiation the {onLoad} function is
+ * awaited and then the new plugin instance is returned
  */
 export const pluginLoader = new Loader();

@@ -1,9 +1,8 @@
-import { nameof } from "ts-simple-nameof";
 import { ProcessingResult, rand, TestStatus, ITestCase, AbstractTestCasePlugin, ITestCasePluginOptions } from "../../../src";
 
 export class MockTestCasePlugin extends AbstractTestCasePlugin {
     constructor(options?: ITestCasePluginOptions) {
-        super(nameof(MockTestCasePlugin).toLowerCase(), options);
+        super(options);
     }
     async onLoad(): Promise<void> {
         /* do nothing */

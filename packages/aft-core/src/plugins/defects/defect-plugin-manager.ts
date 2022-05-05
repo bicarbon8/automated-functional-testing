@@ -1,8 +1,7 @@
-import { AbstractPluginManager, IPluginManagerOptions } from "../abstract-plugin-manager";
+import { PluginManager, IPluginManagerOptions } from "../plugin-manager";
 import { LoggingPluginManager } from "../logging/logging-plugin-manager";
 import { IDefect } from "./idefect";
 import { AbstractDefectPlugin, IDefectPluginOptions } from "./abstract-defect-plugin";
-import { nameof } from "ts-simple-nameof";
 
 export interface IDefectPluginManagerOptions extends IDefectPluginOptions, IPluginManagerOptions {
     logMgr?: LoggingPluginManager;
@@ -21,12 +20,12 @@ export interface IDefectPluginManagerOptions extends IDefectPluginOptions, IPlug
  * }
  * ```
  */
-export class DefectPluginManager extends AbstractPluginManager<AbstractDefectPlugin, IDefectPluginOptions> {
+export class DefectPluginManager extends PluginManager<AbstractDefectPlugin, IDefectPluginOptions> {
     private _logMgr: LoggingPluginManager;
 
     constructor(options?: IDefectPluginManagerOptions) {
-        super(nameof(DefectPluginManager).toLowerCase(), options);
-        this._logMgr = options?.logMgr || new LoggingPluginManager({logName: nameof(DefectPluginManager), pluginNames: []});
+        super(options);
+        this._logMgr = options?.logMgr || new LoggingPluginManager({logName: this.optionsMgr.key, pluginNames: []});
     }
     
     async getDefect(defectId: string): Promise<IDefect> {

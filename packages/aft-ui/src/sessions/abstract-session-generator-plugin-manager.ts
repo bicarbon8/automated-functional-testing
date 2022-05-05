@@ -1,4 +1,4 @@
-import { AbstractPluginManager, IPluginManagerOptions, LoggingPluginManager } from "aft-core";
+import { PluginManager, IPluginManagerOptions, LoggingPluginManager } from "aft-core";
 import { AbstractSessionGeneratorPlugin, ISessionGeneratorPluginOptions } from "./abstract-session-generator-plugin";
 import { ISession, ISessionOptions } from "./isession";
 
@@ -25,7 +25,7 @@ export interface ISessionGeneratorPluginManagerOptions extends ISessionGenerator
  * }
  * ```
  */
-export abstract class AbstractSessionGeneratorPluginManager<T extends AbstractSessionGeneratorPlugin, TOpts extends ISessionGeneratorPluginOptions> extends AbstractPluginManager<T, TOpts> {
+export abstract class AbstractSessionGeneratorPluginManager<T extends AbstractSessionGeneratorPlugin, TOpts extends ISessionGeneratorPluginOptions> extends PluginManager<T, TOpts> {
     readonly logMgr: LoggingPluginManager;
 
     constructor(key: string, options?: TOpts) {

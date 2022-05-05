@@ -1,9 +1,8 @@
-import { AbstractPluginManager, IPluginManagerOptions } from "../abstract-plugin-manager";
+import { PluginManager, IPluginManagerOptions } from "../plugin-manager";
 import { ProcessingResult } from "../../helpers/processing-result";
 import { LoggingPluginManager } from "../logging/logging-plugin-manager";
 import { ITestCase } from "./itest-case";
 import { AbstractTestCasePlugin, ITestCasePluginOptions } from "./abstract-test-case-plugin";
-import { nameof } from "ts-simple-nameof";
 
 export interface ITestCasePluginManagerOptions extends ITestCasePluginOptions, IPluginManagerOptions {
     logMgr?: LoggingPluginManager;
@@ -22,12 +21,12 @@ export interface ITestCasePluginManagerOptions extends ITestCasePluginOptions, I
  * }
  * ```
  */
-export class TestCasePluginManager extends AbstractPluginManager<AbstractTestCasePlugin, ITestCasePluginOptions> {
+export class TestCasePluginManager extends PluginManager<AbstractTestCasePlugin, ITestCasePluginOptions> {
     readonly logMgr: LoggingPluginManager;
 
     constructor(options?: ITestCasePluginManagerOptions) {
-        super(nameof(TestCasePluginManager).toLowerCase(), options);
-        this.logMgr = options?.logMgr || new LoggingPluginManager({logName: nameof(TestCasePluginManager)});
+        super(options);
+        this.logMgr = options?.logMgr || new LoggingPluginManager({logName: this.optionsMgr.key});
     }
 
     async getTestCase(testId: string): Promise<ITestCase> {

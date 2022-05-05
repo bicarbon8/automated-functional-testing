@@ -1,4 +1,3 @@
-import { nameof } from "ts-simple-nameof";
 import { OptionsManager } from "../configuration/options-manager";
 import { IDisposable } from "../helpers/idisposable";
 
@@ -32,12 +31,12 @@ export interface IPluginOptions {
 export abstract class AbstractPlugin<T extends IPluginOptions> implements IDisposable {
     private _enabled: boolean;
     readonly optionsMgr: OptionsManager;
-    constructor(key: string, options?: T) {
-        this.optionsMgr = new OptionsManager(key, options);
+    constructor(options?: T) {
+        this.optionsMgr = new OptionsManager(this.constructor.name.toLowerCase(), options);
     }
     async enabled(): Promise<boolean> {
         if (this._enabled === undefined) {
-            this._enabled = await this.optionsMgr.getOption(nameof<IPluginOptions>(p => p.enabled), true);
+            this._enabled = await this.optionsMgr.getOption('enabled', true);
         }
         return this._enabled;
     }

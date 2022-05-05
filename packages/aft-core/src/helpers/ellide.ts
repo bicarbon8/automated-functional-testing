@@ -12,12 +12,12 @@ export const ellide = function(original: string, finalLength: number, ellipsisLo
             case EllipsisLocation.middle:
                 let beginningStr: string = original.substring(0, original.length / 2);
                 let endStr: string = original.substring(original.length / 2);
-                let shortenedBeginningStr: string = this.ellide(beginningStr, (finalLength / 2) - (ellipsis.length / 2), 2, ''); // 2 = EllipsisLocation.end
-                let shortenedEndStr: string = this.ellide(endStr, (finalLength / 2) - (ellipsis.length / 2), 0, ''); // 0 = EllipsisLocation.beginning
+                let shortenedBeginningStr: string = ellide(beginningStr, (finalLength / 2) - (ellipsis.length / 2), EllipsisLocation.end, '');
+                let shortenedEndStr: string = ellide(endStr, (finalLength / 2) - (ellipsis.length / 2), EllipsisLocation.beginning, ''); 
                 let removeFromBeginning: boolean = true;
                 while (shortenedBeginningStr.length + ellipsis.length + shortenedEndStr.length > finalLength) {
                     if (removeFromBeginning) {
-                        shortenedBeginningStr = shortenedBeginningStr.substring(0, shortenedBeginningStr.length - 1);
+                        shortenedBeginningStr = shortenedBeginningStr.substring(0, shortenedBeginningStr.length - 2);
                         removeFromBeginning = false;
                     } else {
                         shortenedEndStr = shortenedEndStr.substring(1, shortenedEndStr.length - 1);

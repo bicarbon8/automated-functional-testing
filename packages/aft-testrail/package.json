@@ -11,8 +11,7 @@
   "scripts": {
     "clean": "rimraf ./dist",
     "build": "yarn clean && tsc --build",
-    "pretest": "yarn build",
-    "test": "jasmine-ts ./dist/test/**/*-spec.js",
+    "test": "jasmine-ts ./test/**/*-spec.ts",
     "coverage": "nyc yarn test"
   },
   "keywords": [

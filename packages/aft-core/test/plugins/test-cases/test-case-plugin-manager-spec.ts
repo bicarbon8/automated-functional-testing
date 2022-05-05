@@ -1,5 +1,4 @@
 import { AbstractTestCasePlugin, TestCasePluginManager } from "../../../src";
-import { MockTestCasePlugin } from "./mock-test-case-plugin";
 
 describe('TestCasePluginManager', () => {
     it('can load a specified IDefectPlugin', async () => {
@@ -9,6 +8,6 @@ describe('TestCasePluginManager', () => {
         expect(actual).toBeDefined();
         expect(actual.length).toBeGreaterThan(0);
         expect(await actual[0].enabled()).toBeTruthy();
-        expect(actual[0] instanceof MockTestCasePlugin).toBeTruthy();
+        expect(actual[0].optionsMgr.key).withContext('plugin should be instance of MockTestCasePlugin').toEqual('mocktestcaseplugin');
     });
 });

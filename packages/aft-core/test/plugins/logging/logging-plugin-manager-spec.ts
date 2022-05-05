@@ -1,4 +1,4 @@
-import { LPS } from "./logging-plugin-store";
+import { LoggingPluginStore } from "./logging-plugin-store";
 import { ITestResult, LoggingPluginManager, LoggingPluginManagerOptions, rand, TestStatus, wait } from "../../../src";
 
 let consoleLog = console.log;
@@ -11,15 +11,16 @@ describe('LoggingPluginManager', () => {
         console.log = consoleLog;
     });
 
-    beforeEach(() => {
-        LPS.reset();
-    });
-
     it('will send logs to any registered AbstractLoggingPlugin implementations', async () => {
+        const lps: LoggingPluginStore = {
+            logs: [],
+            results: []
+        };
         let opts: LoggingPluginManagerOptions = {
             logName: 'will send logs to any registered AbstractLoggingPlugin implementations',
-            pluginNames: ['fake-logging-plugin']
-        };
+            pluginNames: ['fake-logging-plugin'],
+            lps: lps
+        } as LoggingPluginManagerOptions;
         let logMgr: LoggingPluginManager = new LoggingPluginManager(opts);
 
         let messages: string[] = [];
@@ -35,18 +36,22 @@ describe('LoggingPluginManager', () => {
             await logMgr.warn(messages[i]);
             await logMgr.error(messages[i]);
         }
-
-        expect(LPS.logs.length).toEqual(5 * 6);
-        expect(LPS.results.length).toEqual(0);
-        expect(LPS.logs[0].message).toEqual(messages[0]);
-        expect(LPS.logs[LPS.logs.length - 1].message).toEqual(messages[messages.length - 1]);
+        expect(lps.logs.length).toEqual(5 * 6);
+        expect(lps.results.length).toEqual(0);
+        expect(lps.logs[0].message).toEqual(messages[0]);
+        expect(lps.logs[lps.logs.length - 1].message).toEqual(messages[messages.length - 1]);
     });
 
     it('will send cloned TestResult to any registered AbstractLoggingPlugin implementations', async () => {
+        const lps: LoggingPluginStore = {
+            logs: [],
+            results: []
+        };
         let opts: LoggingPluginManagerOptions = {
             logName: 'will send cloned TestResult to any registered AbstractLoggingPlugin implementations',
-            pluginNames: ['fake-logging-plugin']
-        };
+            pluginNames: ['fake-logging-plugin'],
+            lps: lps
+        } as LoggingPluginManagerOptions;
         let logMgr: LoggingPluginManager = new LoggingPluginManager(opts);
 
         let result: ITestResult = {
@@ -56,32 +61,34 @@ describe('LoggingPluginManager', () => {
             status: TestStatus.Untested,
             resultMessage: rand.getString(100)
         };
-        
-        // wait 0.1 second
-        await wait.forDuration(10);
 
         await logMgr.logResult(result);
 
-        expect(LPS.logs.length).toEqual(0);
-        expect(LPS.results.length).toEqual(1);
-        expect(LPS.results[0]).not.toBe(result);
-        expect(LPS.results[0].testId).toEqual(result.testId);
-        expect(LPS.results[0].created).toEqual(result.created);
+        expect(lps.logs.length).toEqual(0);
+        expect(lps.results.length).toEqual(1);
+        expect(lps.results[0]).not.toBe(result);
+        expect(lps.results[0].testId).toEqual(result.testId);
+        expect(lps.results[0].created).toEqual(result.created);
     });
 
-    it('calls AbstractLoggingPlugin.finalise on TestLog.finalise', async () => {
-        let opts: LoggingPluginManagerOptions = {
-            logName: 'calls AbstractLoggingPlugin.finalise on TestLog.finalise',
-            pluginNames: ['fake-logging-plugin']
+    it('calls AbstractLoggingPlugin.dispose on LoggingPluginManager.dispose', async () => {
+        const lps: LoggingPluginStore = {
+            logs: [],
+            results: []
         };
+        let opts: LoggingPluginManagerOptions = {
+            logName: 'calls AbstractLoggingPlugin.dispose on LoggingPluginManager.dispose',
+            pluginNames: ['fake-logging-plugin'],
+            lps: lps
+        } as LoggingPluginManagerOptions;
         let logMgr: LoggingPluginManager = new LoggingPluginManager(opts);
 
         await logMgr.info(rand.getString(18));
 
-        expect(LPS.disposed).toEqual(false);
+        expect(lps.disposed).toBeFalsy();
 
         await logMgr.dispose();
 
-        expect(LPS.disposed).toEqual(true);
+        expect(lps.disposed).toEqual(true);
     });
 });
