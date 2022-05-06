@@ -1,4 +1,4 @@
-import { rand, TestCasePluginManager } from "aft-core";
+import { rand, TestCaseManager } from "aft-core";
 import { Session, WebDriver } from "selenium-webdriver";
 import { BrowserSession, BrowserSessionGeneratorPluginManager, BrowserSessionOptions, verifyWithBrowser, BrowserVerifier } from "../../src";
 
@@ -62,7 +62,7 @@ describe('BrowserVerifier', () => {
         spyOn(sessionMgr, 'newSession').and.callFake((options?: BrowserSessionOptions): Promise<BrowserSession> => {
             return Promise.resolve(new BrowserSession(options));
         });
-        let tcMgr: TestCasePluginManager = new TestCasePluginManager();
+        let tcMgr: TestCaseManager = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string) => Promise.resolve({success: false, message: 'no'}));
         
         await verifyWithBrowser((bv: BrowserVerifier) => {

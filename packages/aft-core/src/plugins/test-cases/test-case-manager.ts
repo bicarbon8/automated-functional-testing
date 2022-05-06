@@ -1,11 +1,11 @@
-import { PluginManager, IPluginManagerOptions } from "../plugin-manager";
+import { PluginManager, PluginManagerOptions } from "../plugin-manager";
 import { ProcessingResult } from "../../helpers/processing-result";
-import { LoggingPluginManager } from "../logging/logging-plugin-manager";
+import { LogManager } from "../logging/log-manager";
 import { ITestCase } from "./itest-case";
-import { AbstractTestCasePlugin, ITestCasePluginOptions } from "./abstract-test-case-plugin";
+import { TestCasePlugin, TestCasePluginOptions } from "./test-case-plugin";
 
-export interface ITestCasePluginManagerOptions extends ITestCasePluginOptions, IPluginManagerOptions {
-    logMgr?: LoggingPluginManager;
+export interface TestCaseManagerOptions extends TestCasePluginOptions, PluginManagerOptions {
+    logMgr?: LogManager;
 }
 
 /**
@@ -14,19 +14,19 @@ export interface ITestCasePluginManagerOptions extends ITestCasePluginOptions, I
  * ```
  * {
  *   ...
- *   "testcasepluginmanager": {
+ *   "testcasemanager": {
  *     "pluginNames": ["plugin-name"]
  *   }
  *   ...
  * }
  * ```
  */
-export class TestCasePluginManager extends PluginManager<AbstractTestCasePlugin, ITestCasePluginOptions> {
-    readonly logMgr: LoggingPluginManager;
+export class TestCaseManager extends PluginManager<TestCasePlugin, TestCasePluginOptions> {
+    readonly logMgr: LogManager;
 
-    constructor(options?: ITestCasePluginManagerOptions) {
+    constructor(options?: TestCaseManagerOptions) {
         super(options);
-        this.logMgr = options?.logMgr || new LoggingPluginManager({logName: this.optionsMgr.key});
+        this.logMgr = options?.logMgr || new LogManager({logName: this.optionsMgr.key});
     }
 
     async getTestCase(testId: string): Promise<ITestCase> {
@@ -52,7 +52,7 @@ export class TestCasePluginManager extends PluginManager<AbstractTestCasePlugin,
     async shouldRun(testId: string): Promise<ProcessingResult> {
         return await this.getFirstEnabledPlugin()
         .then(async (handler) => {
-            return await handler?.shouldRun(testId) || {success: true, message: `no ITestCasePlugin in use so run all tests`};
+            return await handler?.shouldRun(testId) || {success: true, message: `no TestCasePlugin in use so run all tests`};
         }).catch(async (err) => {
             await this.logMgr.trace(err);
             return {success: true, message: `${err} - so run all tests`};
@@ -60,12 +60,4 @@ export class TestCasePluginManager extends PluginManager<AbstractTestCasePlugin,
     }
 }
 
-export module TestCasePluginManager {
-    var _inst: TestCasePluginManager = null;
-    export function instance(): TestCasePluginManager {
-        if (_inst === null) {
-            _inst = new TestCasePluginManager();
-        }
-        return _inst;
-    }
-}
+export const testcases = new TestCaseManager();

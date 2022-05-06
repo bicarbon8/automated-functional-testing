@@ -1,7 +1,7 @@
-import { AbstractBuildInfoPlugin, IBuildInfoPluginOptions, rand } from "../../../src";
+import { BuildInfoPlugin, BuildInfoPluginOptions, rand } from "../../../src";
 
-export class MockBuildInfoPlugin extends AbstractBuildInfoPlugin {
-    constructor(options?: IBuildInfoPluginOptions) {
+export class MockBuildInfoPlugin extends BuildInfoPlugin {
+    constructor(options?: BuildInfoPluginOptions) {
         super(options);
     }
     async onLoad(): Promise<void> {

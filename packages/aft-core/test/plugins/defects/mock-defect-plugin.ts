@@ -1,7 +1,7 @@
-import { DefectStatus, IDefect, AbstractDefectPlugin, rand, IDefectPluginOptions } from "../../../src";
+import { DefectStatus, IDefect, DefectPlugin, rand, DefectPluginOptions } from "../../../src";
 
-export class MockDefectPlugin extends AbstractDefectPlugin {
-    constructor(options?: IDefectPluginOptions) {
+export class MockDefectPlugin extends DefectPlugin {
+    constructor(options?: DefectPluginOptions) {
         super(options);
     }
     async onLoad(): Promise<void> {

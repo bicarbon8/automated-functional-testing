@@ -1,4 +1,4 @@
-import { using, LoggingPluginManager, rand } from "aft-core";
+import { using, LogManager, rand } from "aft-core";
 import { TestPlatform } from "aft-ui";
 import { BrowserStackAppAutomateApi, BrowserStackConfig, BrowserStackMobileAppSessionGeneratorPlugin, BrowserStackMobileAppSessionGeneratorPluginOptions, MobileAppFacet, MobileAppSession, UploadRequest, UploadResponse } from "../../../src";
 import { RemoteOptions } from "webdriverio";
@@ -23,7 +23,7 @@ describe('BrowserStackMobileAppSessionGeneratorPlugin', () => {
             remoteOptions: {
                 capabilities: {"app": `app-${rand.getString(10)}`}
             },
-            logMgr: new LoggingPluginManager({logName: 'can generate RemoteOptions from the passed in Options'}),
+            logMgr: new LogManager({logName: 'can generate RemoteOptions from the passed in Options'}),
             _config: cfg
         };
         let plugin: BrowserStackMobileAppSessionGeneratorPlugin = new BrowserStackMobileAppSessionGeneratorPlugin(opts);
@@ -68,7 +68,7 @@ describe('BrowserStackMobileAppSessionGeneratorPlugin', () => {
         });
         let opts: BrowserStackMobileAppSessionGeneratorPluginOptions = {
             platform: platform.toString(),
-            logMgr: new LoggingPluginManager({logName: 'can upload a mobile application using sendCommand'}),
+            logMgr: new LogManager({logName: 'can upload a mobile application using sendCommand'}),
             _config: cfg,
             _api: mockApi
         };

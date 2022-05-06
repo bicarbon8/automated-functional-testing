@@ -1,4 +1,4 @@
-import { LoggingPluginManager } from "aft-core";
+import { LogManager } from "aft-core";
 import { OutgoingHttpHeaders } from "http";
 import { HttpMethod } from "./http-method";
 
@@ -27,5 +27,5 @@ export interface HttpRequest {
     method?: HttpMethod;
     postData?: any;
     multipart?: boolean;
-    logMgr?: LoggingPluginManager;
+    logMgr?: LogManager;
 }

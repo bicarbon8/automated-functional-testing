@@ -1,17 +1,17 @@
-import { AbstractPlugin, IPluginOptions } from "../abstract-plugin";
+import { Plugin, PluginOptions } from "../plugin";
 import { ITestResult } from "../test-cases/itest-result";
 import { LoggingLevel } from "./logging-level";
 import { rand } from "../../helpers/random-generator";
 
-export interface ILoggingPluginOptions extends IPluginOptions {
+export interface LoggingPluginOptions extends PluginOptions {
     logName?: string;
     level?: string;
 }
 
-export abstract class AbstractLoggingPlugin extends AbstractPlugin<ILoggingPluginOptions> {
+export abstract class LoggingPlugin extends Plugin<LoggingPluginOptions> {
     private _name: string;
     private _level: LoggingLevel;
-    constructor(options?: ILoggingPluginOptions) {
+    constructor(options?: LoggingPluginOptions) {
         super(options);
     }
     async logName(): Promise<string> {

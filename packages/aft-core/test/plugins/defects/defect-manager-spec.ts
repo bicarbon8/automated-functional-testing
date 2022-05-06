@@ -1,9 +1,9 @@
-import { DefectPluginManager, AbstractDefectPlugin } from "../../../src";
+import { DefectManager, DefectPlugin } from "../../../src";
 
 describe('DefectPluginManager', () => {
     it('can load a specified IDefectPlugin implementation', async () => {
-        let dpm: DefectPluginManager = new DefectPluginManager({pluginNames: ['mock-defect-plugin']});
-        let actual: AbstractDefectPlugin[] = await dpm.getPlugins();
+        let dpm: DefectManager = new DefectManager({pluginNames: ['mock-defect-plugin']});
+        let actual: DefectPlugin[] = await dpm.getPlugins();
 
         expect(actual).withContext('an array of plugins should be returned').toBeDefined();
         expect(actual.length).withContext('there should be at least 1 plugin').toBeGreaterThan(0);

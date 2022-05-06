@@ -1,11 +1,11 @@
-import { AbstractPlugin, IPluginOptions } from "../abstract-plugin";
+import { Plugin, PluginOptions } from "../plugin";
 
-export interface IBuildInfoPluginOptions extends IPluginOptions {
+export interface BuildInfoPluginOptions extends PluginOptions {
     buildName?: string;
     buildNumber?: string;
 }
 
-export abstract class AbstractBuildInfoPlugin extends AbstractPlugin<IBuildInfoPluginOptions> {
+export abstract class BuildInfoPlugin extends Plugin<BuildInfoPluginOptions> {
     private _buildName: string;
     private _buildNumber: string;
     async getBuildName(): Promise<string> {

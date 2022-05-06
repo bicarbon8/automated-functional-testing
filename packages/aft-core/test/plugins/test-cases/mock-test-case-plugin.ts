@@ -1,7 +1,7 @@
-import { ProcessingResult, rand, TestStatus, ITestCase, AbstractTestCasePlugin, ITestCasePluginOptions } from "../../../src";
+import { ProcessingResult, rand, TestStatus, ITestCase, TestCasePlugin, TestCasePluginOptions } from "../../../src";
 
-export class MockTestCasePlugin extends AbstractTestCasePlugin {
-    constructor(options?: ITestCasePluginOptions) {
+export class MockTestCasePlugin extends TestCasePlugin {
+    constructor(options?: TestCasePluginOptions) {
         super(options);
     }
     async onLoad(): Promise<void> {

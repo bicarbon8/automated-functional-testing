@@ -1,13 +1,14 @@
 import { cloneDeep } from "lodash";
-import { AbstractLoggingPlugin, ILoggingPluginOptions } from "./abstract-logging-plugin";
+import { LoggingPlugin, LoggingPluginOptions } from "./logging-plugin";
 import { LoggingLevel } from "./logging-level";
 import { FormatOptions } from "./format-options";
-import { PluginManager, IPluginManagerOptions } from "../plugin-manager";
+import { PluginManager, PluginManagerOptions } from "../plugin-manager";
 import { rand } from "../../helpers/random-generator";
 import { convert } from "../../helpers/converter";
 import { ITestResult } from "../test-cases/itest-result";
+import * as colors from "colors";
 
-export interface LoggingPluginManagerOptions extends IPluginManagerOptions, ILoggingPluginOptions {
+export interface LogManagerOptions extends PluginManagerOptions, LoggingPluginOptions {
 
 }
 
@@ -22,7 +23,7 @@ export interface LoggingPluginManagerOptions extends IPluginManagerOptions, ILog
  * ```
  * {
  *   ...
- *   "loggingpluginmanager": {
+ *   "logmanager": {
  *     "level": "info",
  *     "pluginNames": [
  *       "logging-plugin1",
@@ -39,11 +40,12 @@ export interface LoggingPluginManagerOptions extends IPluginManagerOptions, ILog
  * let logMgr2: LoggingPluginManager = new LoggingPluginManager({logName: 'logger for test 2'});
  * ```
  */
-export class LoggingPluginManager extends PluginManager<AbstractLoggingPlugin, ILoggingPluginOptions> {
+export class LogManager extends PluginManager<LoggingPlugin, LoggingPluginOptions> {
     private _logName: string;
+    private _level: LoggingLevel;
     private _stepCount: number = 0;
 
-    constructor(options?: LoggingPluginManagerOptions) {
+    constructor(options?: LogManagerOptions) {
         super(options);
     }
 
@@ -52,6 +54,14 @@ export class LoggingPluginManager extends PluginManager<AbstractLoggingPlugin, I
             this._logName = convert.toSafeString(await this.optionsMgr.getOption('logName', rand.guid));
         }
         return this._logName;
+    }
+
+    async level(): Promise<LoggingLevel> {
+        if (!this._level) {
+            let lvl: string = await this.optionsMgr.getOption('level', LoggingLevel.none.name);
+            this._level = LoggingLevel.parse(lvl);
+        }
+        return this._level;
     }
 
     /**
@@ -125,17 +135,21 @@ export class LoggingPluginManager extends PluginManager<AbstractLoggingPlugin, I
      * @param message the string to be logged
      */
     async log(level: LoggingLevel, message: string): Promise<void> {
-        let plugins: AbstractLoggingPlugin[] = await this.getEnabledPlugins();
+        let lvl: LoggingLevel = await this.level();
+        if (level.value >= lvl.value && level != LoggingLevel.none) {
+            await this._out(level, message);
+        }
+        let plugins: LoggingPlugin[] = await this.getEnabledPlugins();
         for (var i=0; i<plugins.length; i++) {
-            let p: AbstractLoggingPlugin = plugins[i];
+            let p: LoggingPlugin = plugins[i];
             if (p) {
                 try {
                     await p.log(level, message);
                 } catch (e) {
-                    console.warn(LoggingPluginManager.format({
+                    console.warn(LogManager.format({
                         name: await this.logName(), 
                         level: LoggingLevel.warn, 
-                        message: `unable to send log message to '${p.constructor.name || 'unknown'}' plugin due to: ${e}`
+                        message: `unable to send log message to '${p?.constructor?.name || 'unknown'}' plugin due to: ${e}`
                     }));
                 }
             }
@@ -148,15 +162,15 @@ export class LoggingPluginManager extends PluginManager<AbstractLoggingPlugin, I
      * @param result a {ITestResult} object to be sent
      */
     async logResult(result: ITestResult): Promise<void> {
-        let plugins: AbstractLoggingPlugin[] = await this.getEnabledPlugins();
+        let plugins: LoggingPlugin[] = await this.getEnabledPlugins();
         for (var i=0; i<plugins.length; i++) {
-            let p: AbstractLoggingPlugin = plugins[i];
+            let p: LoggingPlugin = plugins[i];
             if (p) {
                 try {
                     let r: ITestResult = cloneDeep(result);
                     await p.logResult(r);
                 } catch (e) {
-                    console.warn(LoggingPluginManager.format({
+                    console.warn(LogManager.format({
                         name: await this.logName(),
                         level: LoggingLevel.warn, 
                         message: `unable to send result to Logging Plugin: '${p.constructor.name || 'unknown'}' due to: ${e}`
@@ -172,13 +186,13 @@ export class LoggingPluginManager extends PluginManager<AbstractLoggingPlugin, I
      * of any logging actions before destroying the {LoggingPluginManager} instance
      */
     async dispose(error?: Error): Promise<void> {
-        let plugins: AbstractLoggingPlugin[] = await this.getPlugins();
+        let plugins: LoggingPlugin[] = await this.getPlugins();
         for (var i=0; i<plugins.length; i++) {
-            let p: AbstractLoggingPlugin = plugins[i];
+            let p: LoggingPlugin = plugins[i];
             try {
                 await p.dispose(error);
             } catch (e) {
-                console.warn(LoggingPluginManager.format({
+                console.warn(LogManager.format({
                     name: await this.logName(), 
                     level: LoggingLevel.warn, 
                     message: `unable to call finalise on Logging Plugin: ${p.constructor.name || 'unknown'} due to: ${e}`
@@ -186,9 +200,43 @@ export class LoggingPluginManager extends PluginManager<AbstractLoggingPlugin, I
             }
         }
     }
+
+    private async _out(level: LoggingLevel, message: string): Promise<void> {
+        let d: string = new Date().toLocaleTimeString();
+        level = level || LoggingLevel.none;
+        message = message || '';
+        let out: string = `${d} - ${await this.logName()} - ${level.logString} - ${message}`;
+        switch (level) {
+            case LoggingLevel.error:
+            case LoggingLevel.fail:
+                console.log(colors.red(out));
+                break;
+            case LoggingLevel.warn:
+                console.log(colors.yellow(out));
+                break;
+            case LoggingLevel.info:
+                console.log(colors.white(out));
+                break;
+            case LoggingLevel.pass:
+                console.log(colors.green(out));
+                break;
+            case LoggingLevel.step:
+                console.log(colors.magenta(out));
+                break;
+            case LoggingLevel.trace:
+            case LoggingLevel.debug:
+                console.log(colors.blue(out));
+                break;
+            case LoggingLevel.none:
+                break;
+            default:
+                console.log(colors.gray(out));
+                break;
+        }
+    }
 }
 
-export module LoggingPluginManager {
+export module LogManager {
     export function format(options: FormatOptions) {
         if (!options.name) { options.name = '[unknown name]'; }
         if (!options.message) { options.message = ''; }

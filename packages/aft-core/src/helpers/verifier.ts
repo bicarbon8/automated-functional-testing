@@ -1,10 +1,10 @@
-import { BuildInfoPluginManager } from "../plugins/build-info/build-info-plugin-manager";
-import { DefectPluginManager } from "../plugins/defects/defect-plugin-manager";
+import { buildinfo, BuildInfoManager } from "../plugins/build-info/build-info-manager";
+import { DefectManager, defects } from "../plugins/defects/defect-manager";
 import { DefectStatus } from "../plugins/defects/defect-status";
 import { IDefect } from "../plugins/defects/idefect";
-import { LoggingPluginManager } from "../plugins/logging/logging-plugin-manager";
+import { LogManager } from "../plugins/logging/log-manager";
 import { ITestResult } from "../plugins/test-cases/itest-result";
-import { TestCasePluginManager } from "../plugins/test-cases/test-case-plugin-manager";
+import { TestCaseManager, testcases } from "../plugins/test-cases/test-case-manager";
 import { TestStatus } from "../plugins/test-cases/test-status";
 import { convert } from "./converter";
 import { Func } from "./custom-types";
@@ -20,18 +20,18 @@ export class Verifier implements PromiseLike<void> {
     protected _innerPromise: Promise<void>;
     protected _tests: Set<string>;
     protected _defects: Set<string>;
-    protected _logMgr: LoggingPluginManager;
-    protected _testMgr: TestCasePluginManager;
-    protected _defectMgr: DefectPluginManager;
-    protected _buildMgr: BuildInfoPluginManager;
+    protected _logMgr: LogManager;
+    protected _testMgr: TestCaseManager;
+    protected _defectMgr: DefectManager;
+    protected _buildMgr: BuildInfoManager;
 
     constructor() {
         this._startTime = new Date().getTime();
         this._tests = new Set<string>();
         this._defects = new Set<string>();
-        this._testMgr = TestCasePluginManager.instance();
-        this._defectMgr = DefectPluginManager.instance();
-        this._buildMgr = BuildInfoPluginManager.instance();
+        this._testMgr = testcases;
+        this._defectMgr = defects;
+        this._buildMgr = buildinfo;
     }
     
     /**
@@ -39,14 +39,14 @@ export class Verifier implements PromiseLike<void> {
      * or a list of {withTestId} or a uuid as the `logName` depending
      * on which is available and where `description` is preferred most
      */
-    get logMgr(): LoggingPluginManager {
+    get logMgr(): LogManager {
         if (!this._logMgr) {
             if (this._description) {
-                this._logMgr = new LoggingPluginManager({logName: this._description});
+                this._logMgr = new LogManager({logName: this._description});
             } else if (this._tests.size > 0) {
-                return new LoggingPluginManager({logName: Array.from(this._tests).join('_')});
+                return new LogManager({logName: Array.from(this._tests).join('_')});
             } else {
-                return new LoggingPluginManager();
+                return new LogManager();
             }
         }
         return this._logMgr;
@@ -184,7 +184,7 @@ export class Verifier implements PromiseLike<void> {
      * @param logMgr a {LoggingPluginManager} instance
      * @returns this {Verifier} instance
      */
-    withLoggingPluginManager(logMgr: LoggingPluginManager): this {
+    withLoggingPluginManager(logMgr: LogManager): this {
         this._logMgr = logMgr;
         return this;
     }
@@ -195,7 +195,7 @@ export class Verifier implements PromiseLike<void> {
      * @param testMgr a {TestCasePluginManager} instance
      * @returns this {Verifier} instance
      */
-    withTestCasePluginManager(testMgr: TestCasePluginManager): this {
+    withTestCasePluginManager(testMgr: TestCaseManager): this {
         this._testMgr = testMgr;
         return this;
     }
@@ -206,7 +206,7 @@ export class Verifier implements PromiseLike<void> {
      * @param defectMgr a {DefectPluginManager} instance
      * @returns this {Verifier} instance
      */
-    withDefectPluginManager(defectMgr: DefectPluginManager): this {
+    withDefectPluginManager(defectMgr: DefectManager): this {
         this._defectMgr = defectMgr;
         return this;
     }
@@ -217,7 +217,7 @@ export class Verifier implements PromiseLike<void> {
      * @param buildMgr a {BuildInfoPluginManager} instance
      * @returns this {Verifier} instance
      */
-    withBuildInfoPluginManager(buildMgr: BuildInfoPluginManager): this {
+    withBuildInfoPluginManager(buildMgr: BuildInfoManager): this {
         this._buildMgr = buildMgr;
         return this;
     }

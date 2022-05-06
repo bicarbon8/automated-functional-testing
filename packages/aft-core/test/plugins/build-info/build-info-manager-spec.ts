@@ -1,17 +1,16 @@
-import { BuildInfoPluginManager, AbstractBuildInfoPlugin } from "../../../src";
-import { MockBuildInfoPlugin } from "./mock-build-info-plugin";
+import { BuildInfoManager, BuildInfoPlugin } from "../../../src";
 
 describe('BuildInfoPluginManager', () => {
     it('assigns a configuration key based on the class name', () => {
-        let mgr: BuildInfoPluginManager = new BuildInfoPluginManager();
+        let mgr: BuildInfoManager = new BuildInfoManager();
         let actual: string = mgr.optionsMgr.key;
 
-        expect(actual).toEqual('buildinfopluginmanager');
+        expect(actual).toEqual('buildinfomanager');
     });
     
     it('can load a specified IBuildInfoHandlerPlugin', async () => {
-        let manager: BuildInfoPluginManager = new BuildInfoPluginManager({pluginNames: ['mock-build-info-plugin']});
-        let actual: AbstractBuildInfoPlugin[] = await manager.getPlugins();
+        let manager: BuildInfoManager = new BuildInfoManager({pluginNames: ['mock-build-info-plugin']});
+        let actual: BuildInfoPlugin[] = await manager.getPlugins();
         
         expect(actual).toBeDefined();
         expect(actual.length).toBeGreaterThan(0);
@@ -21,13 +20,13 @@ describe('BuildInfoPluginManager', () => {
     });
 
     it('returns the build name from the first enabled plugin', async () => {
-        let mgr: BuildInfoPluginManager = new BuildInfoPluginManager({pluginNames: ['mock-build-info-plugin']});
+        let mgr: BuildInfoManager = new BuildInfoManager({pluginNames: ['mock-build-info-plugin']});
 
         expect(await mgr.getBuildName()).toMatch(/MockBuildName-[0-9]{1,2}/);
     });
 
     it('returns the build number from the first enabled plugin', async () => {
-        let mgr: BuildInfoPluginManager = new BuildInfoPluginManager({pluginNames: ['mock-build-info-plugin']});
+        let mgr: BuildInfoManager = new BuildInfoManager({pluginNames: ['mock-build-info-plugin']});
 
         expect(await mgr.getBuildNumber()).toMatch(/MockBuildNumber-[0-9]{3}/);
     });

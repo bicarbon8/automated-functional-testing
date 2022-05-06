@@ -1,11 +1,11 @@
 import { LoggingPluginStore } from "./logging-plugin-store";
 import { LogMessage } from "./log-message";
-import { AbstractLoggingPlugin, ILoggingPluginOptions, ITestResult, LoggingLevel } from "../../../src";
+import { LoggingPlugin, LoggingPluginOptions, ITestResult, LoggingLevel } from "../../../src";
 
-export class FakeLoggingPlugin extends AbstractLoggingPlugin {
+export class MockLoggingPlugin extends LoggingPlugin {
     private _lps: LoggingPluginStore;
     
-    constructor(options?: ILoggingPluginOptions) {
+    constructor(options?: LoggingPluginOptions) {
         super(options);
     }
 

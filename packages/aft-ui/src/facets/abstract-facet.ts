@@ -1,10 +1,10 @@
-import { Clazz, LoggingPluginManager, rand } from 'aft-core';
+import { Clazz, LogManager, rand } from 'aft-core';
 import { IElementOptions } from './ielement-options';
 import { ISession } from '../sessions/isession';
 
 export interface IFacetOptions {
     session?: ISession;
-    logMgr?: LoggingPluginManager;
+    logMgr?: LogManager;
     maxWaitMs?: number;
     index?: number;
     parent?: AbstractFacet;
@@ -13,7 +13,7 @@ export interface IFacetOptions {
 
 export abstract class AbstractFacet {
     readonly session: ISession;
-    readonly logMgr: LoggingPluginManager;
+    readonly logMgr: LogManager;
     readonly maxWaitMs: number;
     readonly index: number;
     readonly parent: AbstractFacet;
@@ -22,7 +22,7 @@ export abstract class AbstractFacet {
     constructor(options: IFacetOptions) {
         this.locator = this.locator || options.locator;
         this.session = options.session;
-        this.logMgr = options.logMgr || new LoggingPluginManager({ logName: `${this.constructor.name}_${rand.guid}` });
+        this.logMgr = options.logMgr || new LogManager({ logName: `${this.constructor.name}_${rand.guid}` });
         this.parent = options.parent;
         this.maxWaitMs = (options.maxWaitMs === undefined) ? 10000 : options.maxWaitMs;
         this.index = (options.index === undefined) ? 0 : options.index;

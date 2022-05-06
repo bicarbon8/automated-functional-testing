@@ -1,9 +1,9 @@
-import { AbstractTestCasePlugin, TestCasePluginManager } from "../../../src";
+import { TestCasePlugin, TestCaseManager } from "../../../src";
 
 describe('TestCasePluginManager', () => {
-    it('can load a specified IDefectPlugin', async () => {
-        let tcpm: TestCasePluginManager = new TestCasePluginManager({pluginNames: ['mock-test-case-plugin']});
-        let actual: AbstractTestCasePlugin[] = await tcpm.getPlugins();
+    it('can load a specified TestCasePlugin', async () => {
+        let tcpm: TestCaseManager = new TestCaseManager({pluginNames: ['mock-test-case-plugin']});
+        let actual: TestCasePlugin[] = await tcpm.getPlugins();
 
         expect(actual).toBeDefined();
         expect(actual.length).toBeGreaterThan(0);

@@ -1,5 +1,5 @@
 import { By, Capabilities } from 'selenium-webdriver';
-import { using, LoggingPluginManager, rand } from "aft-core";
+import { using, LogManager, rand } from "aft-core";
 import { TestPlatform } from "aft-ui";
 import { BrowserStackBrowserSessionGeneratorPlugin, BrowserStackBrowserSessionGeneratorPluginOptions, BuildName, BrowserFacet, BrowserSession } from "../../../src";
 
@@ -18,7 +18,7 @@ describe('BrowserStackBrowserSessionGeneratorPlugin', () => {
             platform: platform.toString(),
             resolution: rand.getString(4, false, true) + 'x' + rand.getString(4, false, true),
             local: true,
-            logMgr: new LoggingPluginManager({logName: 'can generate capabilities from the passed in SessionOptions'})
+            logMgr: new LogManager({logName: 'can generate capabilities from the passed in SessionOptions'})
         };
         let session: BrowserStackBrowserSessionGeneratorPlugin = new BrowserStackBrowserSessionGeneratorPlugin(opts);
 

@@ -5,7 +5,7 @@ import { IDisposable } from "../helpers/idisposable";
  * a base options object that must be implemented by any
  * Plugin implementation's constructor options
  */
-export interface IPluginOptions {
+export interface PluginOptions {
     /**
      * [OPTIONAL] if not provided, will default to value in `aftconfig.json` or `true`
      */
@@ -28,7 +28,7 @@ export interface IPluginOptions {
  * }); // `plugin.dispose` is called here
  * ```
  */
-export abstract class AbstractPlugin<T extends IPluginOptions> implements IDisposable {
+export abstract class Plugin<T extends PluginOptions> implements IDisposable {
     private _enabled: boolean;
     readonly optionsMgr: OptionsManager;
     constructor(options?: T) {

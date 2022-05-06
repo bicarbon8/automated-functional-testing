@@ -1,5 +1,5 @@
 import { FakeDriver } from "./fake-driver";
-import { Clazz, LoggingPluginManager } from "aft-core";
+import { Clazz, LogManager } from "aft-core";
 import { AbstractFacet, ISession, ISessionOptions, TestPlatform } from "../../src";
 import { FakeFacetOptions } from "../facets/fake-facet";
 
@@ -15,7 +15,7 @@ export class FakeSession implements ISession {
     resizeValues: object[];
     readonly driver: FakeDriver;
     readonly platform: TestPlatform;
-    readonly logMgr: LoggingPluginManager;
+    readonly logMgr: LogManager;
     constructor(options: FakeSessionOptions) {
         this.driver = options.driver;
         this.platform = TestPlatform.parse(options.platform);

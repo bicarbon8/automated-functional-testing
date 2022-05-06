@@ -1,4 +1,4 @@
-import { using, LoggingPluginManager, rand } from "aft-core";
+import { using, LogManager, rand } from "aft-core";
 import { TestPlatform } from "aft-ui";
 import { BuildName, MobileAppFacet, SauceLabsMobileAppSessionGeneratorPlugin, SauceLabsMobileAppSessionGeneratorPluginOptions } from '../../../src';
 import { RemoteOptions } from "webdriverio";
@@ -20,7 +20,7 @@ describe('SauceLabsMobileAppSessionGeneratorPlugin', () => {
             tunnel: true,
             tunnelId: rand.getString(11, true),
             app: `app-${rand.getString(15)}`,
-            logMgr: new LoggingPluginManager({logName:'can generate capabilities from the passed in SessionOptions'})
+            logMgr: new LogManager({logName:'can generate capabilities from the passed in SessionOptions'})
         }
         let session: SauceLabsMobileAppSessionGeneratorPlugin = new SauceLabsMobileAppSessionGeneratorPlugin(opts);
 

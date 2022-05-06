@@ -1,8 +1,8 @@
 import { LoggingPluginStore } from "./logging-plugin-store";
-import { ITestResult, LoggingPluginManager, LoggingPluginManagerOptions, rand, TestStatus, wait } from "../../../src";
+import { ITestResult, LogManager, LogManagerOptions, rand, TestStatus, wait } from "../../../src";
 
 let consoleLog = console.log;
-describe('LoggingPluginManager', () => {
+describe('LogManager', () => {
     beforeAll(() => {
         console.log = function(){};
     });
@@ -11,17 +11,17 @@ describe('LoggingPluginManager', () => {
         console.log = consoleLog;
     });
 
-    it('will send logs to any registered AbstractLoggingPlugin implementations', async () => {
+    it('will send logs to any registered LoggingPlugin implementations', async () => {
         const lps: LoggingPluginStore = {
             logs: [],
             results: []
         };
-        let opts: LoggingPluginManagerOptions = {
-            logName: 'will send logs to any registered AbstractLoggingPlugin implementations',
-            pluginNames: ['fake-logging-plugin'],
+        let opts: LogManagerOptions = {
+            logName: 'will send logs to any registered LoggingPlugin implementations',
+            pluginNames: ['mock-logging-plugin'],
             lps: lps
-        } as LoggingPluginManagerOptions;
-        let logMgr: LoggingPluginManager = new LoggingPluginManager(opts);
+        } as LogManagerOptions;
+        let logMgr: LogManager = new LogManager(opts);
 
         let messages: string[] = [];
         for (var i=0; i<5; i++) {
@@ -42,17 +42,17 @@ describe('LoggingPluginManager', () => {
         expect(lps.logs[lps.logs.length - 1].message).toEqual(messages[messages.length - 1]);
     });
 
-    it('will send cloned TestResult to any registered AbstractLoggingPlugin implementations', async () => {
+    it('will send cloned TestResult to any registered LoggingPlugin implementations', async () => {
         const lps: LoggingPluginStore = {
             logs: [],
             results: []
         };
-        let opts: LoggingPluginManagerOptions = {
-            logName: 'will send cloned TestResult to any registered AbstractLoggingPlugin implementations',
-            pluginNames: ['fake-logging-plugin'],
+        let opts: LogManagerOptions = {
+            logName: 'will send cloned TestResult to any registered LoggingPlugin implementations',
+            pluginNames: ['mock-logging-plugin'],
             lps: lps
-        } as LoggingPluginManagerOptions;
-        let logMgr: LoggingPluginManager = new LoggingPluginManager(opts);
+        } as LogManagerOptions;
+        let logMgr: LogManager = new LogManager(opts);
 
         let result: ITestResult = {
             testId: 'C' + rand.getInt(1000, 999999),
@@ -71,17 +71,17 @@ describe('LoggingPluginManager', () => {
         expect(lps.results[0].created).toEqual(result.created);
     });
 
-    it('calls AbstractLoggingPlugin.dispose on LoggingPluginManager.dispose', async () => {
+    it('calls LoggingPlugin.dispose on LoggingPluginManager.dispose', async () => {
         const lps: LoggingPluginStore = {
             logs: [],
             results: []
         };
-        let opts: LoggingPluginManagerOptions = {
-            logName: 'calls AbstractLoggingPlugin.dispose on LoggingPluginManager.dispose',
-            pluginNames: ['fake-logging-plugin'],
+        let opts: LogManagerOptions = {
+            logName: 'calls LoggingPlugin.dispose on LoggingPluginManager.dispose',
+            pluginNames: ['mock-logging-plugin'],
             lps: lps
-        } as LoggingPluginManagerOptions;
-        let logMgr: LoggingPluginManager = new LoggingPluginManager(opts);
+        } as LogManagerOptions;
+        let logMgr: LogManager = new LogManager(opts);
 
         await logMgr.info(rand.getString(18));
 

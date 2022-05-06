@@ -1,5 +1,4 @@
-import { nameof } from 'ts-simple-nameof';
-import { ITestCase, AbstractTestCasePlugin, ITestCasePluginOptions, ProcessingResult, TestStatus } from 'aft-core';
+import { ITestCase, TestCasePlugin, TestCasePluginOptions, ProcessingResult, TestStatus } from 'aft-core';
 import { TestRailApi } from '../api/testrail-api';
 import { TestRailCase } from '../api/testrail-case';
 import { TestRailRun } from '../api/testrail-run';
@@ -7,7 +6,7 @@ import { TestRailTest } from '../api/testrail-test';
 import { TestRailConfig, trconfig } from '../configuration/testrail-config';
 import { StatusConverter } from '../helpers/status-converter';
 
-export interface TestRailTestCasePluginOptions extends ITestCasePluginOptions {
+export interface TestRailTestCasePluginOptions extends TestCasePluginOptions {
     _config?: TestRailConfig;
     _client?: TestRailApi;
 }
@@ -23,12 +22,12 @@ export interface TestRailTestCasePluginOptions extends ITestCasePluginOptions {
  * }
  * ```
  */
-export class TestRailTestCasePlugin extends AbstractTestCasePlugin {
+export class TestRailTestCasePlugin extends TestCasePlugin {
     private _config: TestRailConfig;
     private _client: TestRailApi;
 
     constructor(options?: TestRailTestCasePluginOptions) {
-        super(nameof(TestRailTestCasePlugin).toLowerCase(), options);
+        super(options);
         this._config = options?._config || trconfig;
         this._client = options?._client || new TestRailApi(this._config);
     }

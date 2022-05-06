@@ -1,4 +1,4 @@
-import { TestCasePluginManager } from "aft-core";
+import { TestCaseManager } from "aft-core";
 import { Browser } from "webdriverio";
 import { MobileAppSession, MobileAppSessionGeneratorPluginManager, MobileAppSessionOptions, MobileAppVerifier, verifyWithMobileApp } from "../../src";
 
@@ -57,7 +57,7 @@ describe('MobileAppVerifier', () => {
         spyOn(sessionMgr, 'newSession').and.callFake((options?: MobileAppSessionOptions): Promise<MobileAppSession> => {
             return Promise.resolve(new MobileAppSession(options));
         });
-        let tcMgr: TestCasePluginManager = new TestCasePluginManager();
+        let tcMgr: TestCaseManager = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string) => Promise.resolve({success: false, message: 'no'}));
         
         await verifyWithMobileApp((mav: MobileAppVerifier) => {

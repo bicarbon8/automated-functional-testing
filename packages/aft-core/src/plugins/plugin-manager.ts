@@ -1,12 +1,12 @@
-import { AbstractPlugin, IPluginOptions } from "./abstract-plugin";
-import { pluginLoader } from "./plugin-loader";
+import { Plugin, PluginOptions } from "./plugin";
+import { pluginloader } from "./plugin-loader";
 import { OptionsManager } from "../configuration/options-manager";
 
 /**
  * base interface that must be implemented by {options} objects
- * passed to the constructor of {AbstractPluginManager} implementations
+ * passed to the constructor of {PluginManager} implementations
  */
-export interface IPluginManagerOptions {
+export interface PluginManagerOptions {
     /**
      * Required either in `aftconfig.json` file section for the Plugin Manager
      * or to be passed in directly to the Plugin Manager's constructor
@@ -32,11 +32,11 @@ export interface IPluginManagerOptions {
  * 
  * ex: `PluginManagerClassInstance`
  * ```typescript
- * export interface SomePluginInstanceOptions extends IPluginOptions {
+ * export interface SomePluginInstanceOptions extends PluginOptions {
  *     foo?: string;
  *     bar?: boolean;
  * }
- * export interface PluginManagerClassInstanceOptions extends IPluginManagerOptions, SomePluginInstanceOptions {
+ * export interface PluginManagerClassInstanceOptions extends PluginManagerOptions, SomePluginInstanceOptions {
  * 
  * }
  * export class PluginManagerClassInstance extends PluginManager<SomePluginInstance, SomePluginInstanceOptions> {
@@ -64,7 +64,7 @@ export interface IPluginManagerOptions {
  * NOTE: the `PluginManagerClassInstance` will load plugins listed in the `pluginNames` array
  * and pass them any additional {options} specified (in this case the values for `foo` and `bar`)
  */
-export class PluginManager<T extends AbstractPlugin<Topts>, Topts extends IPluginOptions> {
+export class PluginManager<T extends Plugin<Topts>, Topts extends PluginOptions> {
     private _plugins: Map<string, T>;
     private _opts: Topts;
 
@@ -135,7 +135,7 @@ export class PluginManager<T extends AbstractPlugin<Topts>, Topts extends IPlugi
         if (pNames?.length) {
             for (var i=0; i<pNames.length; i++) {
                 let name: string = pNames[i];
-                await pluginLoader.load<T>(name, searchRoot, this._opts)
+                await pluginloader.load<T>(name, searchRoot, this._opts)
                 .then((p) => {
                     plugins.set(p.constructor.name, p);
                 });
