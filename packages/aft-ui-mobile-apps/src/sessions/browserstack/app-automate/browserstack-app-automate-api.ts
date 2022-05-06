@@ -1,4 +1,3 @@
-import { nameof } from "ts-simple-nameof";
 import { convert } from "aft-core";
 import { HttpService, HttpResponse, httpService } from "aft-web-services";
 import * as fs from "fs";
@@ -28,9 +27,9 @@ export class BrowserStackAppAutomateApi {
             return Promise.reject(`file could not be found at: ${data.file}`);
         }
         let formData: FormData = new FormData();
-        formData.append(nameof<UploadRequest>(o => o.file), fs.createReadStream(data.file));
+        formData.append('file', fs.createReadStream(data.file));
         if (data.custom_id) {
-            formData.append(nameof<UploadRequest>(o => o.custom_id), data.custom_id);
+            formData.append('custom_id', data.custom_id);
         }
         let bsResp: HttpResponse = await this._httpSvc.performRequest({
             url: `${await this._cfg.appApiUrl()}upload`,

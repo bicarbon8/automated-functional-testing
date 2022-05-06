@@ -2,13 +2,12 @@ import { AbstractSessionGeneratorPlugin } from "../../src/sessions/abstract-sess
 import { ISessionOptions } from "../../src";
 import { testdata } from "./test-data-helper";
 import { FakeSessionGeneratorPluginOptions } from "./fake-session-generator-plugin";
-import { nameof } from "ts-simple-nameof";
 import { FakeSession } from "./fake-session";
 
 export class FakeSessionGeneratorPluginThrows extends AbstractSessionGeneratorPlugin {
     constructor(options?: FakeSessionGeneratorPluginOptions) {
         testdata.set('constructor', options);
-        super(nameof(FakeSessionGeneratorPluginThrows).toLowerCase(), options);
+        super(options);
     }
     async onLoad(): Promise<void> {
         testdata.set('onload', true);

@@ -1,4 +1,3 @@
-import { nameof } from "ts-simple-nameof";
 import { AbstractSessionGeneratorPluginManager, ISessionGeneratorPluginManagerOptions } from "aft-ui";
 import { BrowserSession, BrowserSessionOptions } from "./browser-session";
 import { AbstractBrowserSessionGeneratorPlugin } from "./abstract-browser-session-generator-plugin";
@@ -9,7 +8,7 @@ export interface BrowserSessionGeneratorPluginManagerOptions extends ISessionGen
 
 export class BrowserSessionGeneratorPluginManager extends AbstractSessionGeneratorPluginManager<AbstractBrowserSessionGeneratorPlugin, BrowserSessionGeneratorPluginManagerOptions> {
     constructor(options?: BrowserSessionGeneratorPluginManagerOptions) {
-        super(nameof(BrowserSessionGeneratorPluginManager).toLowerCase(), options);
+        super(options);
     }
 
     async newSession(options?: BrowserSessionOptions): Promise<BrowserSession> {

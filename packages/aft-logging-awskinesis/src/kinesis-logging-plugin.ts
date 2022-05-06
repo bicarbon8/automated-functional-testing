@@ -77,14 +77,14 @@ export class KinesisLoggingPlugin extends LoggingPlugin {
 
     async batch(): Promise<boolean> {
         if (this._batch === undefined) {
-            this._batch = await this.optionsMgr.getOption<boolean>('batch', true);
+            this._batch = await this.optionsMgr.get<boolean>('batch', true);
         }
         return this._batch;
     }
 
     async batchSize(): Promise<number> {
         if (this._batchSize === undefined) {
-            this._batchSize = await this.optionsMgr.getOption<number>('batchSize', 10);
+            this._batchSize = await this.optionsMgr.get<number>('batchSize', 10);
         }
         return this._batchSize;
     }

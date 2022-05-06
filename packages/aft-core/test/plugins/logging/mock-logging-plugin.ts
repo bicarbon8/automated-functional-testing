@@ -11,7 +11,7 @@ export class MockLoggingPlugin extends LoggingPlugin {
 
     async lps(): Promise<LoggingPluginStore> {
         if (!this._lps) {
-            this._lps = await this.optionsMgr.getOption('lps', null);
+            this._lps = await this.optionsMgr.get('lps', null);
         }
         return this._lps;
     }

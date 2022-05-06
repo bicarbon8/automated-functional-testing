@@ -3,7 +3,6 @@ import { LoggingPlugin, LoggingPluginOptions } from "./logging-plugin";
 import { LoggingLevel } from "./logging-level";
 import { FormatOptions } from "./format-options";
 import { PluginManager, PluginManagerOptions } from "../plugin-manager";
-import { rand } from "../../helpers/random-generator";
 import { convert } from "../../helpers/converter";
 import { ITestResult } from "../test-cases/itest-result";
 import * as colors from "colors";
@@ -17,7 +16,7 @@ export interface LogManagerOptions extends PluginManagerOptions, LoggingPluginOp
  * should be logged to the console and formats the logging output
  * to indicate the source of the logging data. Additionally this
  * class manages logging plugins and serves as the interface for 
- * sending `TestResult` data to `AbstractLoggingPlugin` instances.
+ * sending `TestResult` data to `LoggingPlugin` instances.
  * Configuration for this class can be passed in directly or 
  * specified in `aftconfig.json` like:
  * ```
@@ -36,8 +35,8 @@ export interface LogManagerOptions extends PluginManagerOptions, LoggingPluginOp
  * NOTE: multiple instances of this class are expected to be created as each instance should have a unique
  * {logName} associated with it. Ex:
  * ```typescript
- * let logMgr1: LoggingPluginManager = new LoggingPluginManager({logName: 'logger for test 1'});
- * let logMgr2: LoggingPluginManager = new LoggingPluginManager({logName: 'logger for test 2'});
+ * let logMgr1: LogManager = new LogManager({logName: 'logger for test 1'});
+ * let logMgr2: LogManager = new LogManager({logName: 'logger for test 2'});
  * ```
  */
 export class LogManager extends PluginManager<LoggingPlugin, LoggingPluginOptions> {
@@ -51,14 +50,14 @@ export class LogManager extends PluginManager<LoggingPlugin, LoggingPluginOption
 
     async logName(): Promise<string> {
         if (!this._logName) {
-            this._logName = convert.toSafeString(await this.optionsMgr.getOption('logName', rand.guid));
+            this._logName = convert.toSafeString(await this.optionsMgr.get('logName'));
         }
         return this._logName;
     }
 
     async level(): Promise<LoggingLevel> {
         if (!this._level) {
-            let lvl: string = await this.optionsMgr.getOption('level', LoggingLevel.none.name);
+            let lvl: string = await this.optionsMgr.get('level', LoggingLevel.none.name);
             this._level = LoggingLevel.parse(lvl);
         }
         return this._level;
@@ -183,7 +182,7 @@ export class LogManager extends PluginManager<LoggingPlugin, LoggingPluginOption
     /**
      * loops through any loaded {AbstractLoggingPlugin} objects and calls
      * their {dispose} function. This should be called upon completion
-     * of any logging actions before destroying the {LoggingPluginManager} instance
+     * of any logging actions before destroying the {LogManager} instance
      */
     async dispose(error?: Error): Promise<void> {
         let plugins: LoggingPlugin[] = await this.getPlugins();
@@ -202,11 +201,13 @@ export class LogManager extends PluginManager<LoggingPlugin, LoggingPluginOption
     }
 
     private async _out(level: LoggingLevel, message: string): Promise<void> {
-        let d: string = new Date().toLocaleTimeString();
-        level = level || LoggingLevel.none;
-        message = message || '';
-        let out: string = `${d} - ${await this.logName()} - ${level.logString} - ${message}`;
-        switch (level) {
+        const opt: FormatOptions = {
+            name: await this.logName(),
+            message: message,
+            level: level
+        };
+        let out: string = LogManager.format(opt);
+        switch (opt.level) {
             case LoggingLevel.error:
             case LoggingLevel.fail:
                 console.log(colors.red(out));
@@ -237,8 +238,9 @@ export class LogManager extends PluginManager<LoggingPlugin, LoggingPluginOption
 }
 
 export module LogManager {
-    export function format(options: FormatOptions) {
-        if (!options.name) { options.name = '[unknown name]'; }
+    export function format(options?: FormatOptions) {
+        options = options || {};
+        if (!options.name) { options.name = '[AFT]'; }
         if (!options.message) { options.message = ''; }
         if (!options.level) { options.level = LoggingLevel.none }
         let d: string = new Date().toLocaleTimeString();

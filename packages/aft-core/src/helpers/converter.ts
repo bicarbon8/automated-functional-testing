@@ -47,9 +47,11 @@ class Converter {
      */
     toSafeString(input: string, options: SafeStringOption[] = SafeStringOption.defaults): string {
         let output: string = input;
-        for (var i=0; i<options.length; i++) {
-            let o: SafeStringOption = options[i];
-            output = output.replace(o.exclude, o.replaceWith);
+        if (input) {
+            for (var i=0; i<options.length; i++) {
+                let o: SafeStringOption = options[i];
+                output = output.replace(o.exclude, o.replaceWith);
+            }
         }
         return output;
     }

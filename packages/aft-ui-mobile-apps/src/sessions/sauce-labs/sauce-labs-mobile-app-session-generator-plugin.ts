@@ -1,7 +1,6 @@
 import { TestPlatform } from "aft-ui";
 import { BuildName } from "../../helpers/build-name";
 import { AbstractMobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginOptions } from "../abstract-mobile-app-session-generator-plugin";
-import { nameof } from "ts-simple-nameof";
 import { MobileAppSessionOptions } from "../mobile-app-session";
 import { RemoteOptions } from "webdriverio";
 import { SauceLabsMobileAppSession } from "./sauce-labs-mobile-app-session";
@@ -15,7 +14,7 @@ export class SauceLabsMobileAppSessionGeneratorPlugin extends AbstractMobileAppS
     private _cfg: SauceLabsConfig;
 
     constructor(options?: SauceLabsMobileAppSessionGeneratorPluginOptions) {
-        super(nameof(SauceLabsMobileAppSessionGeneratorPlugin).toLowerCase(), options);
+        super(options);
         this._cfg = options?._config || new SauceLabsConfig(options as SauceLabsConfigOptions);
     }
 

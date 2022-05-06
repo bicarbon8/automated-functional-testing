@@ -1,5 +1,4 @@
 import { WebDriver, Builder, Capabilities } from "selenium-webdriver";
-import { nameof } from "ts-simple-nameof";
 import { AbstractSessionGeneratorPlugin, ISessionGeneratorPluginOptions } from "aft-ui";
 import { BrowserSession, BrowserSessionOptions } from "./browser-session";
 
@@ -12,20 +11,20 @@ export abstract class AbstractBrowserSessionGeneratorPlugin extends AbstractSess
     private _url: string;
     private _caps: Capabilities;
 
-    constructor(key: string, options?: IBrowserSessionGeneratorPluginOptions) {
-        super(key, options);
+    constructor(options?: IBrowserSessionGeneratorPluginOptions) {
+        super(options);
     }
 
     async getUrl(): Promise<string> {
         if (!this._url) {
-            this._url = await this.optionsMgr.getOption(nameof<IBrowserSessionGeneratorPluginOptions>(o => o.url));
+            this._url = await this.optionsMgr.get('url');
         }
         return this._url;
     }
 
     async getCapabilities(options?: BrowserSessionOptions): Promise<Capabilities> {
         if (!this._caps) {
-            let c: {} = await this.optionsMgr.getOption<{}>(nameof<IBrowserSessionGeneratorPluginOptions>(o => o.capabilities), {});
+            let c: {} = await this.optionsMgr.get<{}>('capabilities', {});
             this._caps = new Capabilities(c);
         }
         return this._caps;

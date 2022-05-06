@@ -1,5 +1,4 @@
 import { OptionsManager } from 'aft-core';
-import { nameof } from "ts-simple-nameof";
 
 export class BrowserStackConfigOptions {
     user: string;
@@ -40,54 +39,54 @@ export class BrowserStackConfig {
     private _optMgr: OptionsManager;
 
     constructor(options?: BrowserStackConfigOptions) {
-        this._optMgr = options?._optMgr || new OptionsManager(nameof(BrowserStackConfig).toLowerCase(), options);
+        this._optMgr = options?._optMgr || new OptionsManager(this.constructor.name.toLowerCase(), options);
     }
     
     async apiUrl(): Promise<string> {
         if (!this._apiUrl) {
-            this._apiUrl = await this._optMgr.getOption(nameof<BrowserStackConfigOptions>(o => o.apiUrl), 'https://api.browserstack.com/automate/');
+            this._apiUrl = await this._optMgr.get('apiUrl', 'https://api.browserstack.com/automate/');
         }
         return this._apiUrl;
     }
 
     async user(): Promise<string> {
         if (!this._user) {
-            this._user = await this._optMgr.getOption(nameof<BrowserStackConfigOptions>(o => o.user));
+            this._user = await this._optMgr.get('user');
         }
         return this._user;
     }
 
     async key(): Promise<string> {
         if (!this._key) {
-            this._key = await this._optMgr.getOption(nameof<BrowserStackConfigOptions>(o => o.key));
+            this._key = await this._optMgr.get('key');
         }
         return this._key;
     }
 
     async resolution(): Promise<string> {
         if (!this._resolution) {
-            this._resolution = await this._optMgr.getOption(nameof<BrowserStackConfigOptions>(o => o.resolution));
+            this._resolution = await this._optMgr.get('resolution');
         }
         return this._resolution;
     }
 
     async debug(): Promise<boolean> {
         if (this._debug === undefined) {
-            this._debug = await this._optMgr.getOption(nameof<BrowserStackConfigOptions>(o => o.debug), false);
+            this._debug = await this._optMgr.get('debug', false);
         }
         return this._debug;
     }
 
     async local(): Promise<boolean> {
         if (this._local === undefined) {
-            this._local = await this._optMgr.getOption(nameof<BrowserStackConfigOptions>(o => o.local), false);
+            this._local = await this._optMgr.get('local', false);
         }
         return this._local;
     }
 
     async localIdentifier(): Promise<string> {
         if (!this._localIdentifier) {
-            this._localIdentifier = await this._optMgr.getOption(nameof<BrowserStackConfigOptions>(o => o.localIdentifier));
+            this._localIdentifier = await this._optMgr.get('localIdentifier');
         }
         return this._localIdentifier;
     }

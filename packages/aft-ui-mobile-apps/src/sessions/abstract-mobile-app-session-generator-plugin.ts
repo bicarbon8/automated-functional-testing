@@ -1,4 +1,3 @@
-import { nameof } from "ts-simple-nameof";
 import { AbstractSessionGeneratorPlugin, ISessionGeneratorPluginOptions } from "aft-ui";
 import { MobileAppSession, MobileAppSessionOptions } from "./mobile-app-session";
 import { Browser, remote, RemoteOptions } from "webdriverio";
@@ -10,12 +9,12 @@ export interface MobileAppSessionGeneratorPluginOptions extends ISessionGenerato
 export abstract class AbstractMobileAppSessionGeneratorPlugin extends AbstractSessionGeneratorPlugin {
     private _app: string;
     
-    constructor(key: string, options?: MobileAppSessionGeneratorPluginOptions) {
-        super(key, options);
+    constructor(options?: MobileAppSessionGeneratorPluginOptions) {
+        super(options);
     }
 
     async getRemoteOptions(options?: MobileAppSessionOptions): Promise<RemoteOptions> {
-        let remOpts: RemoteOptions = await this.optionsMgr.getOption<RemoteOptions>(nameof<MobileAppSessionGeneratorPluginOptions>(o => o.remoteOptions), {} as RemoteOptions);
+        let remOpts: RemoteOptions = await this.optionsMgr.get<RemoteOptions>('remoteOptions', {} as RemoteOptions);
         if (options?.remoteOptions) {
             for (var key in options.remoteOptions) {
                 remOpts[key] = options.remoteOptions[key];
@@ -31,7 +30,7 @@ export abstract class AbstractMobileAppSessionGeneratorPlugin extends AbstractSe
 
     async app(): Promise<string> {
         if (!this._app) {
-            this._app = await this.optionsMgr.getOption(nameof<MobileAppSessionGeneratorPluginOptions>(o => o.app));
+            this._app = await this.optionsMgr.get('app');
         }
         return this._app;
     }

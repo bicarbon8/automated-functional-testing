@@ -26,29 +26,31 @@ export interface PluginManagerOptions {
 
 /**
  * base class for use by classes that load in and manage plugins.
- * the {PluginManager} instances should specify their
- * plugin names to be loaded in the passed in {options} object
- * or in the `aftconfig.json` file.
+ * the `PluginManager` instances should specify their
+ * plugin names to be loaded in the passed in `options` object
+ * or in the `aftconfig.json` file under a section whose name
+ * exactly matches the `PluginManager` instance's class name in all
+ * lowercase.
  * 
- * ex: `PluginManagerClassInstance`
+ * ex: `PluginManagerInstance`
  * ```typescript
- * export interface SomePluginInstanceOptions extends PluginOptions {
+ * export interface PluginInstanceOptions extends PluginOptions {
  *     foo?: string;
  *     bar?: boolean;
  * }
- * export interface PluginManagerClassInstanceOptions extends PluginManagerOptions, SomePluginInstanceOptions {
+ * export interface PluginManagerInstanceOptions extends PluginManagerOptions, PluginInstanceOptions {
  * 
  * }
- * export class PluginManagerClassInstance extends PluginManager<SomePluginInstance, SomePluginInstanceOptions> {
- *     constructor(options?: PluginManagerClassInstanceOptions) {
- *         super('pluginmanagerclassinstance', options);
+ * export class PluginManagerInstance extends PluginManager<SomePluginInstance, PluginInstanceOptions> {
+ *     constructor(options?: PluginManagerInstanceOptions) {
+ *         super(options);
  *     }
  * }
  * ```
  * ex: `aftconfig.json`
  * ```json
  * {
- *   "pluginmanagerclassinstance": {
+ *   "pluginmanagerinstance": {
  *     ...
  *     "pluginNames": [
  *       "some-custom-plugin",
@@ -61,8 +63,8 @@ export interface PluginManagerOptions {
  *   }
  * }
  * ```
- * NOTE: the `PluginManagerClassInstance` will load plugins listed in the `pluginNames` array
- * and pass them any additional {options} specified (in this case the values for `foo` and `bar`)
+ * NOTE: the `PluginManagerInstance` will load plugins listed in the `pluginNames` array
+ * and pass them any additional `options` specified (in this case the values for `foo` and `bar`)
  */
 export class PluginManager<T extends Plugin<Topts>, Topts extends PluginOptions> {
     private _plugins: Map<string, T>;
@@ -80,14 +82,14 @@ export class PluginManager<T extends Plugin<Topts>, Topts extends PluginOptions>
 
     async getPluginNames(): Promise<string[]> {
         if (!this._pluginNames) {
-            this._pluginNames = await this.optionsMgr.getOption('pluginNames', []);
+            this._pluginNames = await this.optionsMgr.get('pluginNames', []);
         }
         return this._pluginNames;
     }
 
     async getSearchDir(): Promise<string> {
         if (!this._searchDir) {
-            this._searchDir = await this.optionsMgr.getOption('searchDir');
+            this._searchDir = await this.optionsMgr.get('searchDir');
         }
         return this._searchDir;
     }

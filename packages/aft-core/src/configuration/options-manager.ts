@@ -6,24 +6,36 @@ import { aftconfig } from "./aftconfig-manager";
  * DO NOT USE FOR COMPLEX CLASSES! ONLY SIMPLE JSON OBJECTS
  * SUPPORTED
  * 
- * manages the retrieval of options based on either a passed
- * in set of options or by looking in the `aftconfig.json` section
- * specified by the {key} passed to the constructor followed by any
- * specified {keys} passed to the {getOption} function. For example
- * in the following `aftconfig.json` snippet:
+ * manages the retrieval of options from either a passed in JSON
+ * object or, if not found there, by looking in the `aftconfig.json` section
+ * specified by the `key` passed to the constructor followed by any
+ * specified `keys` passed to the `get` function. For example, given a
+ * key of `myspecialkey` and object of:
+ * ```json
+ * {
+ *   "foo": "this is 'foo'",
+ *   "bar": true,
+ *   "baz": {
+ *     "foo": "this is 'baz.foo'"
+ *   }
+ * }
+ * ```
+ * then calling `get('baz.foo')` would return `"this is 'baz.foo'"` and
+ * calling `get('baz.bar')` would look in the `aftconfig.json` file because
+ * the value does not exist in the above JSON object and if it contained
+ * the following:
  * ```json
  * {
  *   ...
- *   "key": {
- *     "foo": "this is 'key.foo'",
- *     "bar": true,
+ *   "myspecialkey": {
  *     "baz": {
- *       "foo": "this is 'key.baz.foo'"
+ *       "bar": "this is 'myspecialkey.baz.bar'"
  *     }
  *   }
  *   ...
  * }
  * ```
+ * would then return `"this is 'myspecialkey.baz.bar'"`, otherwise `null`
  */
 export class OptionsManager {
     readonly key: string;
@@ -32,7 +44,6 @@ export class OptionsManager {
 
     constructor(key: string, options?: Record<string, any>) {
         this.key = key;
-        if (Array.isArray(options)) throw `options must be a plain JSON object like "{key: val}" and not an Array`;
         this._options = options || {};
     }
 
@@ -43,11 +54,15 @@ export class OptionsManager {
      * @param keys the lookup keys to be used to retrieve a value
      * @param defaultVal a default value to return in the case that no value is found
      */
-    async getOption<Tval>(keys: string, defaultVal?: Tval): Promise<Tval> {
-        let val: Tval = aftconfig.getFrom<Tval>(this._options, keys);
-        if (val === undefined) {
-            val = await aftconfig.get<Tval>(`${this.key}.${keys}`, defaultVal);
-        }
-        return val;
+    async get<Tval>(keys?: string, defaultVal?: Tval): Promise<Tval> {
+        if (keys) {
+            let val: Tval = aftconfig.getFrom<Tval>(this._options, keys);
+            if (val === undefined) {
+                val = await aftconfig.get<Tval>(`${this.key}.${keys}`, defaultVal);
+            }
+            return val;
+        } 
+        let val: Tval = await aftconfig.get<Tval>(`${this.key}`, defaultVal);
+        return {...val, ...this._options} as Tval;
     }
 }

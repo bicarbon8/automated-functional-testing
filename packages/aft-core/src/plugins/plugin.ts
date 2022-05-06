@@ -36,7 +36,7 @@ export abstract class Plugin<T extends PluginOptions> implements IDisposable {
     }
     async enabled(): Promise<boolean> {
         if (this._enabled === undefined) {
-            this._enabled = await this.optionsMgr.getOption('enabled', true);
+            this._enabled = await this.optionsMgr.get('enabled', true);
         }
         return this._enabled;
     }

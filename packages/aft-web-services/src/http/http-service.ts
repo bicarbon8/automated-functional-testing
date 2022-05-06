@@ -3,7 +3,6 @@ import { HttpResponse } from "./http-response";
 import { OptionsManager } from "aft-core";
 import * as http from 'http';
 import * as https from 'https';
-import { nameof } from "ts-simple-nameof";
 import * as FormData from "form-data";
 
 export interface HttpServiceOptions {
@@ -21,7 +20,7 @@ export class HttpService {
     readonly optionsMgr: OptionsManager;
 
     constructor(options?: HttpServiceOptions) {
-        this.optionsMgr = options?._optMgr || new OptionsManager(nameof(HttpService).toLowerCase(), options);
+        this.optionsMgr = options?._optMgr || new OptionsManager(this.constructor.name.toLowerCase(), options);
     }
 
     /**
@@ -74,15 +73,15 @@ export class HttpService {
         if (!req) {
             req = {} as HttpRequest;
         }
-        req.url = req.url || await this.optionsMgr.getOption(nameof<HttpServiceOptions>(o => o.defaultUrl), 'http://127.0.0.1');
-        req.headers = req.headers || await this.optionsMgr.getOption(nameof<HttpServiceOptions>(o => o.defaultHeaders), {});
-        req.method = req.method || await this.optionsMgr.getOption(nameof<HttpServiceOptions>(o => o.defaultMethod), 'GET');
+        req.url = req.url || await this.optionsMgr.get('defaultUrl', 'http://127.0.0.1');
+        req.headers = req.headers || await this.optionsMgr.get('defaultHeaders', {});
+        req.method = req.method || await this.optionsMgr.get('defaultMethod', 'GET');
         if (req.allowAutoRedirect === undefined) {
-            req.allowAutoRedirect = await this.optionsMgr.getOption(nameof<HttpServiceOptions>(o => o.defaultAllowRedirect), true);
+            req.allowAutoRedirect = await this.optionsMgr.get('defaultAllowRedirect', true);
         }
-        req.postData = req.postData || await this.optionsMgr.getOption(nameof<HttpServiceOptions>(o => o.defaultPostData));
+        req.postData = req.postData || await this.optionsMgr.get('defaultPostData');
         if (req.multipart === undefined) {
-            req.multipart = await this.optionsMgr.getOption(nameof<HttpServiceOptions>(o => o.defaultMultipart), false);
+            req.multipart = await this.optionsMgr.get('defaultMultipart', false);
         }
         return req;
     }

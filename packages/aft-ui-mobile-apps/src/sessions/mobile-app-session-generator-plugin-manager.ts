@@ -1,4 +1,3 @@
-import { nameof } from "ts-simple-nameof";
 import { AbstractSessionGeneratorPluginManager, ISessionGeneratorPluginManagerOptions } from "aft-ui";
 import { AbstractMobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginOptions } from "./abstract-mobile-app-session-generator-plugin";
 import { MobileAppSession, MobileAppSessionOptions } from "./mobile-app-session";
@@ -9,7 +8,7 @@ export interface MobileAppSessionGeneratorPluginManagerOptions extends ISessionG
 
 export class MobileAppSessionGeneratorPluginManager extends AbstractSessionGeneratorPluginManager<AbstractMobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginManagerOptions> {
     constructor(options?: MobileAppSessionGeneratorPluginManagerOptions) {
-        super(nameof(MobileAppSessionGeneratorPluginManager).toLowerCase(), options);
+        super(options);
     }
 
     async newSession(options?: MobileAppSessionOptions): Promise<MobileAppSession> {

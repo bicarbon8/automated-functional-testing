@@ -2,7 +2,6 @@ import { TestPlatform } from "aft-ui";
 import { AbstractBrowserSessionGeneratorPlugin, IBrowserSessionGeneratorPluginOptions } from "../abstract-browser-session-generator-plugin";
 import { BuildName } from "../../helpers/build-name";
 import { Capabilities, WebDriver } from "selenium-webdriver";
-import { nameof } from "ts-simple-nameof";
 import { BrowserSessionOptions } from "../browser-session";
 import { BrowserStackConfig, BrowserStackConfigOptions } from "./configuration/browserstack-config";
 import { BrowserStackBrowserSession } from "./browserstack-browser-session";
@@ -17,7 +16,7 @@ export class BrowserStackBrowserSessionGeneratorPlugin extends AbstractBrowserSe
     constructor(options?: BrowserStackBrowserSessionGeneratorPluginOptions) {
         options = options || {} as BrowserStackBrowserSessionGeneratorPluginOptions;
         options.url = options.url || 'https://hub-cloud.browserstack.com/wd/hub/';
-        super(nameof(BrowserStackBrowserSessionGeneratorPlugin).toLowerCase(), options);
+        super(options);
         this._cfg = options?._config || new BrowserStackConfig(options as BrowserStackConfigOptions);
     }
 

@@ -16,13 +16,13 @@ export abstract class LoggingPlugin extends Plugin<LoggingPluginOptions> {
     }
     async logName(): Promise<string> {
         if (!this._name) {
-            this._name = await this.optionsMgr.getOption('logName', `${this.constructor.name}_${rand.guid}`);
+            this._name = await this.optionsMgr.get('logName', `${this.constructor.name}_${rand.guid}`);
         }
         return this._name;
     }
     async level(): Promise<LoggingLevel> {
         if (!this._level) {
-            let lvl: string = await this.optionsMgr.getOption('level', LoggingLevel.none.name);
+            let lvl: string = await this.optionsMgr.get('level', LoggingLevel.none.name);
             this._level = LoggingLevel.parse(lvl);
         }
         return this._level;

@@ -1,12 +1,11 @@
 import { AbstractBrowserSessionGeneratorPlugin, IBrowserSessionGeneratorPluginOptions } from "../abstract-browser-session-generator-plugin";
 import { TestPlatform } from "aft-ui";
 import { Capabilities } from "selenium-webdriver";
-import { nameof } from "ts-simple-nameof";
 import { BrowserSession, BrowserSessionOptions } from "../browser-session";
 
 export class SeleniumGridSessionGeneratorPlugin extends AbstractBrowserSessionGeneratorPlugin {
     constructor(options?: IBrowserSessionGeneratorPluginOptions) {
-        super(nameof(SeleniumGridSessionGeneratorPlugin).toLowerCase(), options);
+        super(options);
     }
     override async onLoad(): Promise<void> {
         /* do nothing */

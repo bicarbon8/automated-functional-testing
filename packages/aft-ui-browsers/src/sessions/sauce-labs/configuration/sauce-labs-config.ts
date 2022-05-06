@@ -1,4 +1,3 @@
-import { nameof } from "ts-simple-nameof";
 import { OptionsManager } from "aft-core";
 
 export interface SauceLabsConfigOptions {
@@ -12,7 +11,7 @@ export interface SauceLabsConfigOptions {
 }
 
 /**
- * reads configuration from either the passed in {SauceLabsConfigOptions}
+ * reads configuration from either the passed in `SauceLabsConfigOptions`
  * or the `aftconfig.json` file under a heading of `saucelabsconfig` like:
  * ```json
  * {
@@ -35,40 +34,40 @@ export class SauceLabsConfig {
     private _optMgr: OptionsManager;
 
     constructor(options?: SauceLabsConfigOptions) {
-        this._optMgr = options?._optMgr || new OptionsManager(nameof(SauceLabsConfig).toLowerCase(), options);
+        this._optMgr = options?._optMgr || new OptionsManager(this.constructor.name.toLowerCase(), options);
     }
 
     async username(): Promise<string> {
         if (!this._username) {
-            this._username = await this._optMgr.getOption(nameof<SauceLabsConfigOptions>(o => o.username));
+            this._username = await this._optMgr.get('username');
         }
         return this._username;
     }
 
     async accessKey(): Promise<string> {
         if (!this._accessKey) {
-            this._accessKey = await this._optMgr.getOption(nameof<SauceLabsConfigOptions>(o => o.accessKey));
+            this._accessKey = await this._optMgr.get('accessKey');
         }
         return this._accessKey;
     }
 
     async resolution(): Promise<string> {
         if (!this._resolution) {
-            this._resolution = await this._optMgr.getOption(nameof<SauceLabsConfigOptions>(o => o.resolution));
+            this._resolution = await this._optMgr.get('resolution');
         }
         return this._resolution;
     }
 
     async tunnel(): Promise<boolean> {
         if (this._tunnel === undefined) {
-            this._tunnel = await this._optMgr.getOption(nameof<SauceLabsConfigOptions>(o => o.tunnel), false);
+            this._tunnel = await this._optMgr.get('tunnel', false);
         }
         return this._tunnel;
     }
 
     async tunnelId(): Promise<string> {
         if (!this._tunnelId) {
-            this._tunnelId = await this._optMgr.getOption(nameof<SauceLabsConfigOptions>(o => o.tunnelId));
+            this._tunnelId = await this._optMgr.get('tunnelId');
         }
         return this._tunnelId;
     }

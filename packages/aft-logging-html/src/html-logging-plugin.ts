@@ -1,9 +1,8 @@
-import { nameof } from "ts-simple-nameof";
 import * as path from "path";
-import { AbstractLoggingPlugin, ILoggingPluginOptions, ITestResult, LoggingLevel, TestStatus } from "aft-core";
+import { LoggingPlugin, LoggingPluginOptions, ITestResult, LoggingLevel, TestStatus } from "aft-core";
 import { HtmlResult, HtmlTestResult, HtmlFileManager, htmlFileMgr } from "./html-file-manager";
 
-export interface HtmlLoggingPluginOptions extends ILoggingPluginOptions {
+export interface HtmlLoggingPluginOptions extends LoggingPluginOptions {
     fileName?: string;
     outputDir?: string;
     maxLogLines?: number;
@@ -11,7 +10,7 @@ export interface HtmlLoggingPluginOptions extends ILoggingPluginOptions {
     _htmlFileMgr?: HtmlFileManager;
 }
 
-export class HtmlLoggingPlugin extends AbstractLoggingPlugin {
+export class HtmlLoggingPlugin extends LoggingPlugin {
     private _htmlFileMgr: HtmlFileManager;
     private _logs: string[];
     private _results: HtmlTestResult[];
@@ -21,7 +20,7 @@ export class HtmlLoggingPlugin extends AbstractLoggingPlugin {
     private _maxLogLines: number;
     
     constructor(options?: HtmlLoggingPluginOptions) {
-        super(nameof(HtmlLoggingPlugin).toLowerCase(), options);
+        super(options);
         this._htmlFileMgr = options?._htmlFileMgr || htmlFileMgr;
         this._logs = [];
         this._results = [];
@@ -29,14 +28,14 @@ export class HtmlLoggingPlugin extends AbstractLoggingPlugin {
 
     async fileName(): Promise<string> {
         if (!this._fileName) {
-            this._fileName = await this.optionsMgr?.getOption(nameof<HtmlLoggingPluginOptions>(o => o.fileName), 'testresults.html');
+            this._fileName = await this.optionsMgr?.get('fileName', 'testresults.html');
         }
         return this._fileName;
     }
 
     async outputDir(): Promise<string> {
         if (!this._outputDir) {
-            let dir: string = await this.optionsMgr?.getOption(nameof<HtmlLoggingPluginOptions>(o => o.outputDir), process.cwd());
+            let dir: string = await this.optionsMgr?.get('outputDir', process.cwd());
             if (path.isAbsolute(dir)) {
                 this._outputDir = dir;
             } else {
@@ -59,7 +58,7 @@ export class HtmlLoggingPlugin extends AbstractLoggingPlugin {
 
     async maxLogLines(): Promise<number> {
         if (this._maxLogLines === undefined) {
-            this._maxLogLines = await this.optionsMgr.getOption(nameof<HtmlLoggingPluginOptions>(o => o.maxLogLines), 5);
+            this._maxLogLines = await this.optionsMgr.get('maxLogLines', 5);
         }
         return this._maxLogLines;
     }

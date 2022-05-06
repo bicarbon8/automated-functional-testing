@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { AbstractLoggingPlugin, LoggingLevel, LoggingPluginManager, rand } from "aft-core";
+import { LoggingPlugin, LoggingLevel, LogManager, rand } from "aft-core";
 import { HtmlLoggingPlugin } from "../src";
 
 describe('HtmlLoggingPlugin', () => {
@@ -69,11 +69,11 @@ describe('HtmlLoggingPlugin', () => {
     });
 
     it('can be loaded successfully from the LoggingPluginManager', async () => {
-        let logMgr: LoggingPluginManager = new LoggingPluginManager({
+        let logMgr: LogManager = new LogManager({
             pluginNames: ['html-logging-plugin'],
             searchDir: './dist'
         });
-        let plugins: AbstractLoggingPlugin[] = await logMgr.getPlugins();
+        let plugins: LoggingPlugin[] = await logMgr.getPlugins();
 
         expect(plugins).toBeDefined();
         expect(plugins.length).toBeGreaterThan(0);

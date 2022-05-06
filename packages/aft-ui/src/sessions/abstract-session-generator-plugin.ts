@@ -26,7 +26,7 @@ export abstract class AbstractSessionGeneratorPlugin extends Plugin<ISessionGene
     }
     async getPlatform(): Promise<TestPlatform> {
         if (!this._platform) {
-            let plt: string = await this.optionsMgr.getOption('platform');
+            let plt: string = await this.optionsMgr.get('platform');
             if (plt) {
                 this._platform = TestPlatform.parse(plt);
             }

@@ -1,4 +1,4 @@
-import { aftconfigMgr, OptionsManager, rand } from 'aft-core';
+import { aftconfig, OptionsManager, rand } from 'aft-core';
 import { TestRailConfig, TestRailConfigOptions, trconfig } from "../../src/configuration/testrail-config";
 
 describe('TestRailConfig', () => {
@@ -6,7 +6,7 @@ describe('TestRailConfig', () => {
         let expectedUrl: string = 'http://fake.testrail.ie';
         let fakeKey: string = rand.getString(12, true);
         let optMgr: OptionsManager = new OptionsManager(fakeKey);
-        let conf = await aftconfigMgr.aftConfig();
+        let conf = await aftconfig.aftConfig();
         conf[fakeKey] = {"url": expectedUrl} as TestRailConfigOptions;
         let trConfig: TestRailConfig = new TestRailConfig({
             user: null,

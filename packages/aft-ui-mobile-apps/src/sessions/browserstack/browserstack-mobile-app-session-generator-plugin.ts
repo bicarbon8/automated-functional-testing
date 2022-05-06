@@ -1,6 +1,5 @@
 import { TestPlatform } from "aft-ui";
 import { AbstractMobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginOptions } from "../abstract-mobile-app-session-generator-plugin";
-import { nameof } from "ts-simple-nameof";
 import { MobileAppSessionOptions } from "../mobile-app-session";
 import { RemoteOptions } from "webdriverio";
 import { BrowserStackAppAutomateApi } from "./app-automate/browserstack-app-automate-api";
@@ -18,7 +17,7 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileA
     private _api: BrowserStackAppAutomateApi;
 
     constructor(options?: BrowserStackMobileAppSessionGeneratorPluginOptions) {
-        super(nameof(BrowserStackMobileAppSessionGeneratorPlugin).toLowerCase(), options);
+        super(options);
         this._cfg = options?._config || new BrowserStackConfig(options as BrowserStackConfigOptions);
         this._api = options?._api || new BrowserStackAppAutomateApi({_config: this._cfg});
     }
@@ -65,7 +64,7 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileA
                     resp = await this._api.getApps();
                     break;
                 default:
-                    resp = { error: `unknown command of '${command}' sent to ${nameof(BrowserStackMobileAppSessionGeneratorPlugin)}.sendCommand` };
+                    resp = { error: `unknown command of '${command}' sent to BrowserStackMobileAppSessionGeneratorPlugin.sendCommand` };
                     break;
             }
         } catch (e) {

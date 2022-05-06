@@ -2,7 +2,6 @@ import { TestPlatform } from "aft-ui";
 import { BuildName } from "../../helpers/build-name";
 import { AbstractBrowserSessionGeneratorPlugin, IBrowserSessionGeneratorPluginOptions } from "../abstract-browser-session-generator-plugin";
 import { Capabilities } from "selenium-webdriver";
-import { nameof } from "ts-simple-nameof";
 import { BrowserSessionOptions } from "../browser-session";
 import { SauceLabsBrowserSession } from "./sauce-labs-browser-session";
 import { SauceLabsConfig, SauceLabsConfigOptions } from "./configuration/sauce-labs-config";
@@ -17,7 +16,7 @@ export class SauceLabsBrowserSessionGeneratorPlugin extends AbstractBrowserSessi
     constructor(options?: SauceLabsBrowserSessionGeneratorPluginOptions) {
         options = options || {} as SauceLabsBrowserSessionGeneratorPluginOptions;
         options.url = options.url || 'https://ondemand.us-east-1.saucelabs.com/wd/hub/';
-        super(nameof(SauceLabsBrowserSessionGeneratorPlugin).toLowerCase(), options);
+        super(options);
         this._cfg = options?._config || new SauceLabsConfig(options as SauceLabsConfigOptions);
     }
 

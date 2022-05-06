@@ -13,7 +13,6 @@ export class LoggingLevel {
 }
 
 export module LoggingLevel {
-    export var none = new LoggingLevel('none', Number.MIN_VALUE);
     export var trace = new LoggingLevel('trace', -1);
     export var debug = new LoggingLevel('debug', 0);
     export var info = new LoggingLevel('info', 1);
@@ -22,6 +21,7 @@ export module LoggingLevel {
     export var pass = new LoggingLevel('pass', 4);
     export var fail = new LoggingLevel('fail', 5);
     export var error = new LoggingLevel('error', 6);
+    export var none = new LoggingLevel('none', Number.MAX_VALUE);
 
     export function parse(level: string): LoggingLevel {
         if (level) {

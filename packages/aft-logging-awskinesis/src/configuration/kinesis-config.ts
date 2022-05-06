@@ -1,4 +1,3 @@
-import { nameof } from "ts-simple-nameof";
 import { OptionsManager } from "aft-core";
 import { AuthenticationType } from "./authentication-type";
 import AWS = require("aws-sdk");
@@ -42,43 +41,43 @@ export class KinesisConfig {
     private _optMgr: OptionsManager;
 
     constructor(options?: IKinesisConfigOptions) {
-        this._optMgr = new OptionsManager(nameof(KinesisConfig).toLowerCase(), options);
+        this._optMgr = new OptionsManager(this.constructor.name.toLowerCase(), options);
     }
 
     async accessKeyId(): Promise<string> {
         if (!this._accessKeyId) {
-            this._accessKeyId = await this._optMgr.getOption(nameof<IKinesisConfigOptions>(p => p.accessKeyId));
+            this._accessKeyId = await this._optMgr.get('accessKeyId');
         }
         return this._accessKeyId;
     }
     async secretAccessKey(): Promise<string> {
         if (!this._secretAccessKey) {
-            this._secretAccessKey = await this._optMgr.getOption(nameof<IKinesisConfigOptions>(p => p.secretAccessKey));
+            this._secretAccessKey = await this._optMgr.get('secretAccessKey');
         }
         return this._secretAccessKey;
     }
     async sessionToken(): Promise<string> {
         if (!this._sessionToken) {
-            this._sessionToken = await this._optMgr.getOption(nameof<IKinesisConfigOptions>(p => p.sessionToken));
+            this._sessionToken = await this._optMgr.get('sessionToken');
         }
         return this._sessionToken;
     }
     async authType(): Promise<AuthenticationType> {
         if (!this._authenticationType) {
-            let t: string = await this._optMgr.getOption(nameof<IKinesisConfigOptions>(p => p.authenticationType), AuthenticationType[AuthenticationType.instance]);
+            let t: string = await this._optMgr.get('authenticationType', AuthenticationType[AuthenticationType.instance]);
             this._authenticationType = AuthenticationType[t];
         }
         return this._authenticationType;
     }
     async region(): Promise<string> {
         if (!this._region) {
-            this._region = await this._optMgr.getOption(nameof<IKinesisConfigOptions>(p => p.region));
+            this._region = await this._optMgr.get('region');
         }
         return this._region;
     }
     async deliveryStream(): Promise<string> {
         if (!this._deliveryStream) {
-            this._deliveryStream = await this._optMgr.getOption(nameof<IKinesisConfigOptions>(p => p.deliveryStream));
+            this._deliveryStream = await this._optMgr.get('deliveryStream');
         }
         return this._deliveryStream;
     }

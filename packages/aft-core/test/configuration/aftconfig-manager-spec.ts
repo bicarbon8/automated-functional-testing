@@ -34,7 +34,7 @@ describe('AftConfigManager', () => {
     
             expect(level).not.toBeNull();
             expect(level).not.toBeUndefined();
-            expect(level).toEqual(LoggingLevel.info.name);
+            expect(level).toEqual(LoggingLevel.none.name);
         });
 
         it('can modify loaded aftconfig.json object', async () => {

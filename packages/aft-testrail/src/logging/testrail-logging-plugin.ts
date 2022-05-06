@@ -50,7 +50,7 @@ export class TestRailLoggingPlugin extends LoggingPlugin {
 
     async getMaxLogCharacters(): Promise<number> {
         if (this._maxLogChars === undefined) {
-            this._maxLogChars = await this.optionsMgr.getOption('maxLogCharacters', 250);
+            this._maxLogChars = await this.optionsMgr.get('maxLogCharacters', 250);
         }
         return this._maxLogChars;
     }
