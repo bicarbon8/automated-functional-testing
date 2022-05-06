@@ -6,9 +6,8 @@
   "scripts": {
     "clean": "rimraf ./dist && rimraf .htmlCache",
     "build": "yarn clean && tsc --build",
-    "test": "mocha --timeout 60s **/*-spec.js",
-    "test-parallel": "yarn build && mocha --parallel --jobs 4 --timeout 300s **/*-spec.js",
-    "coverage": "nyc yarn test"
+    "test": "mocha --timeout 60s **/*.spec.js",
+    "test-parallel": "yarn build && mocha --parallel --jobs 4 --timeout 300s **/*.spec.js"
   },
   "repository": {
     "type": "git",

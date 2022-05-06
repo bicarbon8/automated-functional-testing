@@ -123,6 +123,6 @@ describe('TestRailTestCasePlugin', () => {
         let plugin: TestCasePlugin = await mgr.getFirstEnabledPlugin();
 
         expect(plugin).toBeDefined();
-        expect(plugin instanceof TestRailTestCasePlugin).toBeTrue();
+        expect(plugin.constructor.name).toEqual('TestRailTestCasePlugin');
     });
 });

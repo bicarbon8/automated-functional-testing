@@ -1,10 +1,10 @@
 import { Func, using, Verifier } from "aft-core";
 import { MobileAppSession, MobileAppSessionOptions } from "../sessions/mobile-app-session";
-import { MobileAppSessionGeneratorPluginManager } from "../sessions/mobile-app-session-generator-plugin-manager";
+import { mobileAppSessionGeneratorMgr, MobileAppSessionGeneratorManager } from "../sessions/mobile-app-session-generator-manager";
 
 export class MobileAppVerifier extends Verifier {
     protected override _assertion: Func<MobileAppVerifier, any>;
-    protected _sessionMgr: MobileAppSessionGeneratorPluginManager;
+    protected _sessionMgr: MobileAppSessionGeneratorManager;
     protected _session: MobileAppSession;
     protected _sessionOptions: MobileAppSessionOptions;
 
@@ -12,9 +12,9 @@ export class MobileAppVerifier extends Verifier {
      * a {MobileAppSessionGeneratorPluginManager} instance used to generate new
      * Mobile App sessions
      */
-    get sessionGeneratorPluginManager(): MobileAppSessionGeneratorPluginManager {
+    get sessionGeneratorPluginManager(): MobileAppSessionGeneratorManager {
         if (!this._sessionMgr) {
-            this._sessionMgr = MobileAppSessionGeneratorPluginManager.instance();
+            this._sessionMgr = mobileAppSessionGeneratorMgr;
         }
         return this._sessionMgr;
     }
@@ -49,7 +49,7 @@ export class MobileAppVerifier extends Verifier {
      * @param sessionMgr a {MobileAppSessionGeneratorPluginManager} to be used instead of the Global instance
      * @returns this {MobileAppVerifier} instance
      */
-    withMobileAppSessionGeneratorPluginManager(sessionMgr: MobileAppSessionGeneratorPluginManager): this {
+    withMobileAppSessionGeneratorPluginManager(sessionMgr: MobileAppSessionGeneratorManager): this {
         this._sessionMgr = sessionMgr;
         return this;
     }

@@ -59,7 +59,7 @@ await verifyWithMobileApp(async (mav: MobileAppVerifier) => {
 ## aftconfig.json keys and values supported by aft-ui-mobile-apps package
 ```
 {
-    "mobileappsessiongeneratorpluginmanager": {
+    "mobileappsessiongeneratormanager": {
         "pluginNames": [
             "browserstack-mobile-app-session-generator-plugin",
             "sauce-labs-mobile-app-session-generator-plugin",
@@ -102,7 +102,7 @@ await verifyWithMobileApp(async (mav: MobileAppVerifier) => {
     }
 }
 ```
-- **browserstackconfig** - only required if referencing `browserstack-mobile-app-session-generator-plugin` in the `pluginNames` array of the `mobileappsessiongeneratorpluginmanager` section of your `aftconfig.json` file
+- **browserstackconfig** - only required if referencing `browserstack-mobile-app-session-generator-plugin` in the `pluginNames` array of the `mobileappsessiongeneratormanager` section of your `aftconfig.json` file
   - **user** - [REQUIRED] the BrowserStack username for the account to be used
   - **key** - [REQUIRED] the BrowserStack accesskey for the account to be used
   - **debug** - a `boolean` value indicating if the `browserstack.debug` capability should be included

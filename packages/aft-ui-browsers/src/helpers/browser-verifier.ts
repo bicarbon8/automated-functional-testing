@@ -1,10 +1,10 @@
 import { Func, using, Verifier } from "aft-core";
 import { BrowserSession, BrowserSessionOptions } from "../sessions/browser-session";
-import { BrowserSessionGeneratorPluginManager } from "../sessions/browser-session-generator-plugin-manager";
+import { BrowserSessionGeneratorManager, browserSessionGeneratorMgr } from "../sessions/browser-session-generator-manager";
 
 export class BrowserVerifier extends Verifier {
     protected override _assertion: Func<BrowserVerifier, any>;
-    protected _sessionMgr: BrowserSessionGeneratorPluginManager;
+    protected _sessionMgr: BrowserSessionGeneratorManager;
     protected _session: BrowserSession;
     protected _sessionOptions: BrowserSessionOptions;
 
@@ -12,9 +12,9 @@ export class BrowserVerifier extends Verifier {
      * a {BrowserSessionGeneratorPluginManager} instance used to generate new
      * Browser sessions
      */
-    get sessionGeneratorPluginManager(): BrowserSessionGeneratorPluginManager {
+    get sessionGeneratorPluginManager(): BrowserSessionGeneratorManager {
         if (!this._sessionMgr) {
-            this._sessionMgr = BrowserSessionGeneratorPluginManager.instance();
+            this._sessionMgr = browserSessionGeneratorMgr;
         }
         return this._sessionMgr;
     }
@@ -60,7 +60,7 @@ export class BrowserVerifier extends Verifier {
      * @param sessionMgr a {BrowserSessionGeneratorPluginManager} to be used instead of the Global instance
      * @returns this {BrowserVerifier} instance
      */
-    withBrowserSessionGeneratorPluginManager(sessionMgr: BrowserSessionGeneratorPluginManager): this {
+    withBrowserSessionGeneratorPluginManager(sessionMgr: BrowserSessionGeneratorManager): this {
         this._sessionMgr = sessionMgr;
         return this;
     }

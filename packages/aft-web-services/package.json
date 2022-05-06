@@ -10,10 +10,9 @@
   "types": "./dist/src/index.d.ts",
   "scripts": {
     "clean": "rimraf ./dist",
-    "build": "npm run clean && tsc --declaration",
-    "pretest": "npm run build",
+    "build": "yarn clean && tsc --build",
     "test": "jasmine-ts ./test/**/*-spec.ts",
-    "coverage": "nyc npm run test"
+    "coverage": "nyc yarn test"
   },
   "keywords": [
     "aft",

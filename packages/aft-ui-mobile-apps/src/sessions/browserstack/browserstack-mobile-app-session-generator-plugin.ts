@@ -1,5 +1,5 @@
 import { TestPlatform } from "aft-ui";
-import { AbstractMobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginOptions } from "../abstract-mobile-app-session-generator-plugin";
+import { MobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginOptions } from "../mobile-app-session-generator-plugin";
 import { MobileAppSessionOptions } from "../mobile-app-session";
 import { RemoteOptions } from "webdriverio";
 import { BrowserStackAppAutomateApi } from "./app-automate/browserstack-app-automate-api";
@@ -12,7 +12,7 @@ export interface BrowserStackMobileAppSessionGeneratorPluginOptions extends Mobi
     _api?: BrowserStackAppAutomateApi;
 }
 
-export class BrowserStackMobileAppSessionGeneratorPlugin extends AbstractMobileAppSessionGeneratorPlugin {
+export class BrowserStackMobileAppSessionGeneratorPlugin extends MobileAppSessionGeneratorPlugin {
     private _cfg: BrowserStackConfig;
     private _api: BrowserStackAppAutomateApi;
 

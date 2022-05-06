@@ -1,6 +1,6 @@
 import * as path from "path";
 import { rand } from "aft-core";
-import { MobileAppSessionGeneratorPluginManager, MobileAppVerifier, verifyWithMobileApp } from "aft-ui-mobile-apps";
+import { mobileAppSessionGeneratorMgr, MobileAppVerifier, verifyWithMobileApp } from "aft-ui-mobile-apps";
 import { WikipediaView } from "./page-objects/wikipedia-view";
 import { assert } from "chai";
 
@@ -8,7 +8,7 @@ var customId: string;
 
 describe('Functional Mobile App Tests using AFT-UI-MOBILE-APPS', () => {
     before(async () => {
-        let mgr = MobileAppSessionGeneratorPluginManager.instance();
+        let mgr = mobileAppSessionGeneratorMgr;
         let resp = await mgr.sendCommand('getApps');
         let app: any;
         for (var i=0; i<resp?.apps?.length; i++) {

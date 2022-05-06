@@ -285,7 +285,7 @@ export class Verifier implements PromiseLike<void> {
             await this._logMessage(status, message);
         }
 
-        let results: ITestResult[] = await this._generateTestResults(status, message, ...this._tests);
+        let results: ITestResult[] = await this._generateTestResults(status, message, ...Array.from(this._tests.values()));
         for (var i=0; i<results.length; i++) {
             let result: ITestResult = results[i];
             try {

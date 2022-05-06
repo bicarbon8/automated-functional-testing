@@ -1,16 +1,16 @@
 import { TestPlatform } from "aft-ui";
-import { BuildName } from "../../helpers/build-name";
-import { AbstractBrowserSessionGeneratorPlugin, IBrowserSessionGeneratorPluginOptions } from "../abstract-browser-session-generator-plugin";
+import { BrowserSessionGeneratorPlugin, BrowserSessionGeneratorOptions } from "../browser-session-generator-plugin";
 import { Capabilities } from "selenium-webdriver";
 import { BrowserSessionOptions } from "../browser-session";
 import { SauceLabsBrowserSession } from "./sauce-labs-browser-session";
 import { SauceLabsConfig, SauceLabsConfigOptions } from "./configuration/sauce-labs-config";
+import { buildinfo } from "aft-core";
 
-export interface SauceLabsBrowserSessionGeneratorPluginOptions extends IBrowserSessionGeneratorPluginOptions, Partial<SauceLabsConfigOptions> {
+export interface SauceLabsBrowserSessionGeneratorPluginOptions extends BrowserSessionGeneratorOptions, Partial<SauceLabsConfigOptions> {
     _config?: SauceLabsConfig;
 }
 
-export class SauceLabsBrowserSessionGeneratorPlugin extends AbstractBrowserSessionGeneratorPlugin {
+export class SauceLabsBrowserSessionGeneratorPlugin extends BrowserSessionGeneratorPlugin {
     private _cfg: SauceLabsConfig;
 
     constructor(options?: SauceLabsBrowserSessionGeneratorPluginOptions) {
@@ -57,7 +57,7 @@ export class SauceLabsBrowserSessionGeneratorPlugin extends AbstractBrowserSessi
         capabilities.set('sauce:options', {
             'username': await this._cfg.username(),
             'accessKey': await this._cfg.accessKey(),
-            'build': await BuildName.get(),
+            'build': await buildinfo.get(),
             'name': await options?.logMgr?.logName() || await this.logMgr.logName()
         });
         let resolution: string = await this._cfg.resolution();

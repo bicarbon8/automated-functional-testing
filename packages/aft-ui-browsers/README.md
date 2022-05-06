@@ -152,7 +152,7 @@ await verifyWithBrowser(async (bv: BrowserVerifier) => {
 ## aftconfig.json keys and values supported by aft-ui-selenium package
 ```
 {
-    "browsersessiongeneratorpluginmanager": {
+    "browsersessiongeneratormanager": {
         "pluginNames": [
             "browserstack-browser-session-generator-plugin",
             "sauce-labs-browser-session-generator-plugin",
@@ -193,7 +193,7 @@ await verifyWithBrowser(async (bv: BrowserVerifier) => {
     }
 }
 ```
-- **browserstackconfig** - only required if referencing `browserstack-browser-session-generator-plugin` in the `pluginNames` array of the `browsersessiongeneratorpluginmanager` section of your `aftconfig.json` file
+- **browserstackconfig** - only required if referencing `browserstack-browser-session-generator-plugin` in the `pluginNames` array of the `browsersessiongeneratormanager` section of your `aftconfig.json` file
   - **user** - [REQUIRED] the BrowserStack username for the account to be used
   - **key** - [REQUIRED] the BrowserStack accesskey for the account to be used
   - **resolution** - a `string` containing a valid resolution for your BrowserStack session like: `1024x768` _(defaults to no value so BrowserStack will choose)_

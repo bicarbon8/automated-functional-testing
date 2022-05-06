@@ -1,17 +1,17 @@
 import { WebDriver, Builder, Capabilities } from "selenium-webdriver";
-import { AbstractSessionGeneratorPlugin, ISessionGeneratorPluginOptions } from "aft-ui";
+import { SessionGeneratorPlugin, SessionGeneratorPluginOptions } from "aft-ui";
 import { BrowserSession, BrowserSessionOptions } from "./browser-session";
 
-export interface IBrowserSessionGeneratorPluginOptions extends ISessionGeneratorPluginOptions {
+export interface BrowserSessionGeneratorOptions extends SessionGeneratorPluginOptions {
     url?: string;
     capabilities?: {};
 }
 
-export abstract class AbstractBrowserSessionGeneratorPlugin extends AbstractSessionGeneratorPlugin {
+export abstract class BrowserSessionGeneratorPlugin extends SessionGeneratorPlugin {
     private _url: string;
     private _caps: Capabilities;
 
-    constructor(options?: IBrowserSessionGeneratorPluginOptions) {
+    constructor(options?: BrowserSessionGeneratorOptions) {
         super(options);
     }
 

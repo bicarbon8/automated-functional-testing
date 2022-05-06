@@ -77,6 +77,6 @@ describe('HtmlLoggingPlugin', () => {
 
         expect(plugins).toBeDefined();
         expect(plugins.length).toBeGreaterThan(0);
-        expect(plugins[0] instanceof HtmlLoggingPlugin).toBeTrue();
+        expect(plugins[0].constructor.name).toEqual('HtmlLoggingPlugin');
     });
 });

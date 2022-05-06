@@ -1,10 +1,10 @@
 import { rand, TestCaseManager } from "aft-core";
 import { Session, WebDriver } from "selenium-webdriver";
-import { BrowserSession, BrowserSessionGeneratorPluginManager, BrowserSessionOptions, verifyWithBrowser, BrowserVerifier } from "../../src";
+import { BrowserSession, BrowserSessionGeneratorManager, BrowserSessionOptions, verifyWithBrowser, BrowserVerifier } from "../../src";
 
 describe('BrowserVerifier', () => {
     it('can create a BrowserSession', async () => {
-        let sessionMgr: BrowserSessionGeneratorPluginManager = new BrowserSessionGeneratorPluginManager();
+        let sessionMgr: BrowserSessionGeneratorManager = new BrowserSessionGeneratorManager();
         spyOn(sessionMgr, 'newSession').and.callFake((options?: BrowserSessionOptions): Promise<BrowserSession> => {
             return Promise.resolve(new BrowserSession(options));
         });
@@ -18,7 +18,7 @@ describe('BrowserVerifier', () => {
     });
 
     it('can create a BrowserSession using specific BrowserSessionOptions', async () => {
-        let sessionMgr: BrowserSessionGeneratorPluginManager = new BrowserSessionGeneratorPluginManager();
+        let sessionMgr: BrowserSessionGeneratorManager = new BrowserSessionGeneratorManager();
         spyOn(sessionMgr, 'newSession').and.callFake((options?: BrowserSessionOptions): Promise<BrowserSession> => {
             expect(options.platform).toEqual('windows_8.1_firefox');
             return Promise.resolve(new BrowserSession(options));
@@ -36,7 +36,7 @@ describe('BrowserVerifier', () => {
     });
 
     it('disposes of BrowserSession on completion', async () => {
-        let sessionMgr: BrowserSessionGeneratorPluginManager = new BrowserSessionGeneratorPluginManager();
+        let sessionMgr: BrowserSessionGeneratorManager = new BrowserSessionGeneratorManager();
         spyOn(sessionMgr, 'newSession').and.callFake((options?: BrowserSessionOptions): Promise<BrowserSession> => {
             return Promise.resolve(new BrowserSession(options));
         });
@@ -58,7 +58,7 @@ describe('BrowserVerifier', () => {
     });
 
     it('no BrowserSession is created if assertion should not be run', async () => {
-        let sessionMgr: BrowserSessionGeneratorPluginManager = new BrowserSessionGeneratorPluginManager();
+        let sessionMgr: BrowserSessionGeneratorManager = new BrowserSessionGeneratorManager();
         spyOn(sessionMgr, 'newSession').and.callFake((options?: BrowserSessionOptions): Promise<BrowserSession> => {
             return Promise.resolve(new BrowserSession(options));
         });

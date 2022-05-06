@@ -1,13 +1,14 @@
 import { PluginManager, PluginManagerOptions, LogManager } from "aft-core";
-import { AbstractSessionGeneratorPlugin, ISessionGeneratorPluginOptions } from "./abstract-session-generator-plugin";
+import { SessionGeneratorPlugin, SessionGeneratorPluginOptions } from "./session-generator-plugin";
 import { ISession, ISessionOptions } from "./isession";
 
-export interface ISessionGeneratorPluginManagerOptions extends ISessionGeneratorPluginOptions, PluginManagerOptions {
+export interface SessionGeneratorManagerOptions extends SessionGeneratorPluginOptions, PluginManagerOptions {
     
 }
 
 /**
- * provides configuration values under a `sessiongeneratorpluginmanager` section containing:
+ * abstract class that should be extended by `PluginManager` instances that manage UI Session Generator Plugins
+ * configuration options supported by this class are:
  * * `platform` - _[optional]_ an string containing any, none or all of the following string values: _os_, _osVersion_, _browser_, _browserVersion_, _deviceName_
  * * `loadWaitDuration` - _[optional]_ a number representing the max milliseconds to wait for a UI element (defaults to 10000 ms)
  * * `pluginNames` - an array containing any {ISessionPlugin<any, any, any>} implementations to load (NOTE: only the first enabled will be used)
@@ -15,7 +16,7 @@ export interface ISessionGeneratorPluginManagerOptions extends ISessionGenerator
  * ```
  * {
  *   ...
- *   "sessiongeneratorpluginmanager": {
+ *   "sessiongeneratormanagerinstance": {
  *     "platform": "windows_10_chrome_87_Google Pixel XL",
  *     "loadWaitDuration": 30000,
  *     "pluginNames": ["some-custom-session-plugin"],
@@ -25,7 +26,7 @@ export interface ISessionGeneratorPluginManagerOptions extends ISessionGenerator
  * }
  * ```
  */
-export abstract class AbstractSessionGeneratorPluginManager<T extends AbstractSessionGeneratorPlugin, TOpts extends ISessionGeneratorPluginOptions> extends PluginManager<T, TOpts> {
+export abstract class SessionGeneratorManager<T extends SessionGeneratorPlugin, TOpts extends SessionGeneratorPluginOptions> extends PluginManager<T, TOpts> {
     readonly logMgr: LogManager;
 
     constructor(options?: TOpts) {

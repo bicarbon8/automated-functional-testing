@@ -9,18 +9,19 @@
     "packages/*"
   ],
   "scripts": {
-    "clean": "yarn run rimraf **/dist",
+    "clean": "yarn run rimraf ./packages/**/dist && yarn run rimraf ./packages/**/coverage && yarn run rimraf ./packages/**/.nyc_output",
     "build": "yarn clean && yarn tsc -b",
-    "test": "yarn test-core && yarn test-awskinesis && yarn test-testrail && yarn test-ui && yarn test-browsers && yarn test-mobile-apps && yarn test-web-services && yarn test-html",
-    "test-core": "yarn workspace aft-core test",
-    "test-awskinesis": "yarn workspace aft-logging-awskinesis test",
-    "test-testrail": "yarn workspace aft-testrail test",
-    "test-ui": "yarn workspace aft-ui test",
-    "test-browsers": "yarn workspace aft-ui-browsers test",
-    "test-mobile-apps": "yarn workspace aft-ui-mobile-apps test",
-    "test-web-services": "yarn workspace aft-web-services test",
-    "test-html": "yarn workspace aft-logging-html test",
-    "test-examples": "yarn workspace aft-examples test"
+    "test": "nx run-many --target=test --projects=aft-core,aft-logging-awskinesis,aft-logging-html,aft-testrail,aft-ui,aft-ui-browsers,aft-ui-mobile-apps,aft-web-services",
+    "coverage": "nx run-many --target=coverage --projects=aft-core,aft-logging-awskinesis,aft-logging-html,aft-testrail,aft-ui,aft-ui-browsers,aft-ui-mobile-apps,aft-web-services",
+    "test-core": "nx run aft-core:test",
+    "test-awskinesis": "nx run aft-logging-awskinesis:test",
+    "test-testrail": "nx run aft-testrail:test",
+    "test-ui": "nx run aft-ui:test",
+    "test-browsers": "nx run aft-ui-browsers:test",
+    "test-mobile-apps": "nx run aft-ui-mobile-apps:test",
+    "test-web-services": "nx run aft-web-services:test",
+    "test-html": "nx run aft-logging-html:test",
+    "test-examples": "nx run aft:examples test"
   },
   "dependencies": {
     "lerna": "^4.0.0"
@@ -28,11 +29,9 @@
   "packageManager": "yarn@3.2.0",
   "devDependencies": {
     "@nrwl/nx-cloud": "latest",
-    "jasmine-ts": "^0.4.0",
+    "node": "^17.7.2",
     "nx": "14.1.4",
-    "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
-    "ts-node": "^10.7.0",
     "typescript": "^4.6.4"
   }
 }

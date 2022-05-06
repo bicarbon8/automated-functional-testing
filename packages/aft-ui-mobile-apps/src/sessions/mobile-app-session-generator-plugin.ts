@@ -1,12 +1,12 @@
-import { AbstractSessionGeneratorPlugin, ISessionGeneratorPluginOptions } from "aft-ui";
+import { SessionGeneratorPlugin, SessionGeneratorPluginOptions } from "aft-ui";
 import { MobileAppSession, MobileAppSessionOptions } from "./mobile-app-session";
 import { Browser, remote, RemoteOptions } from "webdriverio";
 
-export interface MobileAppSessionGeneratorPluginOptions extends ISessionGeneratorPluginOptions, MobileAppSessionOptions {
+export interface MobileAppSessionGeneratorPluginOptions extends SessionGeneratorPluginOptions, MobileAppSessionOptions {
     
 }
 
-export abstract class AbstractMobileAppSessionGeneratorPlugin extends AbstractSessionGeneratorPlugin {
+export abstract class MobileAppSessionGeneratorPlugin extends SessionGeneratorPlugin {
     private _app: string;
     
     constructor(options?: MobileAppSessionGeneratorPluginOptions) {

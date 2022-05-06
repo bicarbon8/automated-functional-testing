@@ -1,7 +1,7 @@
 import { By, Capabilities } from 'selenium-webdriver';
-import { using, LogManager, rand } from "aft-core";
+import { using, LogManager, rand, buildinfo } from "aft-core";
 import { TestPlatform } from "aft-ui";
-import { BrowserStackBrowserSessionGeneratorPlugin, BrowserStackBrowserSessionGeneratorPluginOptions, BuildName, BrowserFacet, BrowserSession } from "../../../src";
+import { BrowserStackBrowserSessionGeneratorPlugin, BrowserStackBrowserSessionGeneratorPluginOptions, BrowserFacet, BrowserSession } from "../../../src";
 
 describe('BrowserStackBrowserSessionGeneratorPlugin', () => {
     it('can generate capabilities from the passed in SessionOptions', async () => {
@@ -33,7 +33,7 @@ describe('BrowserStackBrowserSessionGeneratorPlugin', () => {
         expect(capabilities.get('device')).toEqual(platform.deviceName);
         expect(capabilities.get('realMobile')).toEqual('true');
         expect(capabilities.get('browserstack.local')).toEqual(true);
-        expect(capabilities.get('build')).toEqual(await BuildName.get());
+        expect(capabilities.get('build')).toEqual(await buildinfo.get());
         expect(capabilities.get('name')).toEqual(await opts.logMgr.logName());
     });
     

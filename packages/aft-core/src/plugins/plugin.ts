@@ -21,9 +21,9 @@ export interface PluginOptions {
  * 
  * NOTE:
  * * the `onLoad` function is called automatically after the plugin instance is created
- * * the `dispose` function is only called if the plugin is used within a {using} call
+ * * the `dispose` function is only called if the plugin is used within a `using` block
  * ```
- * await using(pluginInstance, (plugin) => {
+ * await using(createPluginInstance(), (plugin) => {
  *     plugin.doStuff();
  * }); // `plugin.dispose` is called here
  * ```
@@ -35,7 +35,7 @@ export abstract class Plugin<T extends PluginOptions> implements IDisposable {
         this.optionsMgr = new OptionsManager(this.constructor.name.toLowerCase(), options);
     }
     async enabled(): Promise<boolean> {
-        if (this._enabled === undefined) {
+        if (this._enabled == null) {
             this._enabled = await this.optionsMgr.get('enabled', true);
         }
         return this._enabled;

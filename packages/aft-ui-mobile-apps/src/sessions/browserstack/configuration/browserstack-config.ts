@@ -1,5 +1,4 @@
-import { OptionsManager } from 'aft-core';
-import { BuildName } from '../../../helpers/build-name';
+import { buildinfo, OptionsManager } from 'aft-core';
 
 export class BrowserStackConfigOptions {
     user?: string;
@@ -88,7 +87,7 @@ export class BrowserStackConfig {
 
     async buildName(): Promise<string> {
         if (!this._buildName) {
-            this._buildName = await this._optMgr.get('buildName', await BuildName.get());
+            this._buildName = await this._optMgr.get('buildName', await buildinfo.get());
         }
         return this._buildName;
     }

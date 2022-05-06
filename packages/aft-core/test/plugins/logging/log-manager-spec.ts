@@ -1,5 +1,5 @@
 import { LoggingPluginStore } from "./logging-plugin-store";
-import { ITestResult, LogManager, LogManagerOptions, rand, TestStatus, wait } from "../../../src";
+import { ITestResult, LogManager, LogManagerOptions, rand, TestStatus } from "../../../src";
 
 let consoleLog = console.log;
 describe('LogManager', () => {
