@@ -1,36 +1,38 @@
 {
-    "name": "automated-functional-testing",
-    "version": "1.0.0",
-    "main": "index.js",
-    "author": "Jason Holt Smith  <bicarbon8@gmail.com>",
-    "license": "MIT",
-    "private": true,
-    "workspaces": [
-        "packages/*"
-    ],
-    "scripts": {
-        "clean": "yarn run rimraf **/dist",
-        "build": "yarn clean && yarn tsc -b",
-        "test": "yarn test-core && yarn test-awskinesis && yarn test-testrail && yarn test-ui && yarn test-browsers && yarn test-mobile-apps && yarn test-web-services && yarn test-html",
-        "test-core": "yarn workspace aft-core test",
-        "test-awskinesis": "yarn workspace aft-logging-awskinesis test",
-        "test-testrail": "yarn workspace aft-testrail test",
-        "test-ui": "yarn workspace aft-ui test",
-        "test-browsers": "yarn workspace aft-ui-browsers test",
-        "test-mobile-apps": "yarn workspace aft-ui-mobile-apps test",
-        "test-web-services": "yarn workspace aft-web-services test",
-        "test-html": "yarn workspace aft-logging-html test",
-        "test-examples": "yarn workspace aft-examples test"
-    },
-    "dependencies": {
-        "lerna": "^4.0.0"
-    },
-    "packageManager": "yarn@3.2.0",
-    "devDependencies": {
-        "jasmine-ts": "^0.4.0",
-        "nyc": "^15.1.0",
-        "rimraf": "^3.0.2",
-        "ts-node": "^10.7.0",
-        "typescript": "^4.6.4"
-    }
+  "name": "automated-functional-testing",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Jason Holt Smith  <bicarbon8@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "clean": "yarn run rimraf **/dist",
+    "build": "yarn clean && yarn tsc -b",
+    "test": "yarn test-core && yarn test-awskinesis && yarn test-testrail && yarn test-ui && yarn test-browsers && yarn test-mobile-apps && yarn test-web-services && yarn test-html",
+    "test-core": "yarn workspace aft-core test",
+    "test-awskinesis": "yarn workspace aft-logging-awskinesis test",
+    "test-testrail": "yarn workspace aft-testrail test",
+    "test-ui": "yarn workspace aft-ui test",
+    "test-browsers": "yarn workspace aft-ui-browsers test",
+    "test-mobile-apps": "yarn workspace aft-ui-mobile-apps test",
+    "test-web-services": "yarn workspace aft-web-services test",
+    "test-html": "yarn workspace aft-logging-html test",
+    "test-examples": "yarn workspace aft-examples test"
+  },
+  "dependencies": {
+    "lerna": "^4.0.0"
+  },
+  "packageManager": "yarn@3.2.0",
+  "devDependencies": {
+    "@nrwl/nx-cloud": "latest",
+    "jasmine-ts": "^0.4.0",
+    "nx": "14.1.4",
+    "nyc": "^15.1.0",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.4"
+  }
 }

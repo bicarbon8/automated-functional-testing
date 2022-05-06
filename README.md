@@ -135,3 +135,8 @@ the purpose of an `AbstractDefectPlugin` implementation is to provide execution 
 - when you are happy with your changes, submit a Pull Request back to the _main_ branch at https://github.com/bicarbon8/automated-functional-testing
 
 > NOTE: all changes require unit tests and these tests are expected to pass when run via `yarn test`
+
+- Run "yarn nx run-many --target=build --all" to run the build script for every project in the monorepo.
+- Run it again to replay the cached computation.
+- Run "yarn nx graph" to see the structure of the monorepo.
+- Learn more at https://nx.dev/migration/adding-to-monorepo
