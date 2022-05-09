@@ -1,6 +1,6 @@
 {
   "name": "aft-ui",
-  "version": "6.0.1",
+  "version": "7.0.0",
   "description": "Automated Functional Testing (AFT) core package supporting UI testing via plugins",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-core": "^6.0.1"
+    "aft-core": "^7.0.0"
   },
   "devDependencies": {
     "@types/jasmine": "^3.6.10",
