@@ -1,4 +1,4 @@
-import { BuildInfoManager, BuildInfoPlugin, MachineInfo, MachineInfoData } from "../../../src";
+import { BuildInfoManager, BuildInfoPlugin, convert, MachineInfo, MachineInfoData } from "../../../src";
 
 describe('BuildInfoPluginManager', () => {
     it('assigns a configuration key based on the class name', () => {
@@ -37,8 +37,9 @@ describe('BuildInfoPluginManager', () => {
         const mi: MachineInfoData = await MachineInfo.get();
 
         expect(actual).withContext('is valid string').toBeDefined();
-        expect(actual).withContext('machineName').toContain(mi.name);
-        expect(actual).withContext('machineUser').toContain(mi.user);
+        const safeStr = [{exclude: /[\()\;\\\/\|\<\>""'*&^%$#@!,.\-\+_=\?]/gi, replaceWith: ''}];
+        expect(actual).withContext('machineName').toContain(convert.toSafeString(mi.name, safeStr));
+        expect(actual).withContext('machineUser').toContain(convert.toSafeString(mi.user, safeStr));
     });
 
     it('will generate a string based on the plugin if a BuildInfoPlugin is available', async () => {
