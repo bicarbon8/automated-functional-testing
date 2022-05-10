@@ -5,7 +5,7 @@ provides TestRail result logging as well as test execution filtering for users o
 the `TestRailLoggingPlugin` extends from `AbstractLoggingPlugin` in `aft-core`. if enabled, this plugin will log test results to test cases in a TestRail Plan (if no plan is specified a new one is created in the `onLoad` function of the plugin). it can be enabled by including the following in your `aftconfig.json` file:
 ```json
 {
-    "loggingpluginmanager": {
+    "logmanager": {
         "pluginNames": [
             "testrail-logging-plugin"
         ]
@@ -30,7 +30,7 @@ the `TestRailLoggingPlugin` extends from `AbstractLoggingPlugin` in `aft-core`. 
 the `TestRailTestCasePlugin` extends from `AbstractTestCasePlugin` interface in `aft-core`. if enabled this plugin will lookup the status of TestRail tests based on their case ID from the set of IDs passed in to a `Verifier.withTestId` function. it can be enabled by including the following in your `aftconfig.json` file:
 ```json
 {
-    "testcasepluginmanager": {
+    "testcasemanager": {
         "pluginNames": [
             "testrail-test-case-plugin"
         ]
@@ -67,13 +67,13 @@ to submit results to or filter test execution based on existence and status of t
 - **cacheDurationMs** - the maximum number of milliseconds to cache responses from TestRail's API _(defaults to 300000)_
 
 ## Usage
-you can submit results directly by calling the `aft-core.LoggingPluginManager.logResult(result: TestResult)` function or results will automatically be submitted if using the `aft-core.verify(assertion)` with valid `testCases` specified in the `options` object. 
+you can submit results directly by calling the `aft-core.LogManager.logResult(result: TestResult)` function or results will automatically be submitted if using the `aft-core.verify(assertion)` with valid `testCases` specified in the `options` object. 
 
 > NOTE: sending a `TestResult` with a `TestStatus` of `Failed` will be converted to a status of `Retest` before submitting to TestRail**
 
-### via `aft-core.LoggingPluginManager`:
+### via `aft-core.LogManager`:
 ```typescript
-let logMgr = new LoggingPluginManager({logName: 'example'});
+let logMgr = new LogManager({logName: 'example'});
 await logMgr.logResult({
     testId: 'C3190', // must be an existing TestRail Case ID contained in your referenced TestRail Plan ID
     status: TestStatus.Failed,

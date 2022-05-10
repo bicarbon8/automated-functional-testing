@@ -63,9 +63,9 @@ class AftConfigManager {
      */
     async get<T>(keys: string, defaultVal?: T): Promise<T> {
         let conf: object = await this.aftConfig();
-        let val: T = await this.getFrom<T>(conf, keys)
+        let val: T = this.getFrom<T>(conf, keys);
         
-        return (val === undefined || val === null) ? defaultVal : val;
+        return (val == null) ? defaultVal : val;
     }
 
     /**
@@ -77,51 +77,13 @@ class AftConfigManager {
      * @param obj the object to search for values within
      * @param keys the keys to be used in looking up values separated by the . character
      */
-    async getFrom<T>(obj: any, keys: string): Promise<T> {
+    getFrom<T>(obj: Record<string, any>, keys: string): T {
         let result: T;
-        if (obj === undefined || obj === null) {
+        if (obj == null || keys == null || keys.length < 1) {
             return result;
         }
         let keysArray: string[] = keys.split('.');
-        let currentKey: string = keysArray.shift();
-
-        if (currentKey.length > 0) {
-            switch(typeof obj) {
-                case "object":
-                    result = await this.getFrom(obj[currentKey], keysArray.join('.'));
-                    break;
-                case "string":
-                    let envRes: ProcessingResult = AftConfigManager.isEnvVar(obj);
-                    if (envRes.success) {
-                        let jsonRes: ProcessingResult = AftConfigManager.isJsonString(envRes.obj);
-                        if (jsonRes.success) {
-                            result = await this.getFrom(jsonRes.obj, keys);
-                        }
-                    }
-                    break;
-                default:
-                    return Promise.reject(`invalid Argument: ${obj}, Type: ${typeof obj} passed to aftconfigMgr.getFrom`);
-            }
-        } else {
-            switch(typeof obj) {
-                case "string":
-                    let envRes: ProcessingResult = AftConfigManager.isEnvVar(obj);
-                    if (envRes.success) {
-                        let jsonRes: ProcessingResult = AftConfigManager.isJsonString(envRes.obj);
-                        if (jsonRes.success) {
-                            result = jsonRes.obj;
-                        } else {
-                            result = envRes.obj;
-                        }
-                    } else {
-                        result = obj as unknown as T;
-                    }
-                    break;
-                default:
-                    result = obj;
-                    break;
-            }
-        }
+        result = this._getFrom(obj, ...keysArray);
         return result;
     }
 
@@ -163,6 +125,60 @@ class AftConfigManager {
         }
         return {success: false, message: err};
     }
+
+    /**
+     * recurses the passed in `obj` using the passed in array of `keys`
+     * @param obj the object to get the value of a property from
+     * @param keys the array of keys to recurse through
+     * @returns a value from the last key or undefined if not found
+     */
+    private _getFrom<T>(obj: Record<string, any>, ...keys: string[]): T {
+        let result: T;
+        const currentKey: string = keys.shift();
+        if (currentKey) {
+            let res = obj[currentKey];
+
+            if (keys.length > 0) {
+                if (res) {
+                    result = this._getFrom<T>(res, ...keys);
+                } // else return undefined
+            } else {
+                if (typeof res === 'string') {
+                    result = this._processString<T>(res);
+                } else {
+                    result = res as T;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * attempts to extract an object from the passed in string if that
+     * string references an environment variable key (%key%) by first
+     * getting the variable and then attempting to parse it as JSON. if
+     * it can be parsed as JSON an object is returned otherwise the string
+     * value will be returned which will be undefined if some other type
+     * is expected
+     * @param str input string that may contain an environment key
+     * @returns an object of the specified type or undefined
+     */
+    private _processString<T>(str: string): T {
+        let result: T;
+        const envRes: ProcessingResult = AftConfigManager.isEnvVar(str);
+        if (envRes.success) {
+            const jsonRes: ProcessingResult = AftConfigManager.isJsonString(envRes.obj);
+            if (jsonRes.success) {
+                result = jsonRes.obj;
+            } else {
+                result = envRes.obj;
+            }
+        } else {
+            result = str as unknown as T;
+        }
+        return result;
+    }
 }
 
-export const aftconfigMgr = new AftConfigManager();
+export const aftconfig = new AftConfigManager();

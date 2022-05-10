@@ -1,15 +1,14 @@
 {
-    "loggingpluginmanager": {
+    "logmanager": {
         "level": "info",
         "pluginNames": [
-            "console-logging-plugin",
             "testrail-logging-plugin",
             "kinesis-logging-plugin",
             "html-logging-plugin"
         ],
         "searchDir": "../"
     },
-    "testcasepluginmanager": {
+    "testcasemanager": {
         "pluginNames": ["testrail-test-case-plugin"],
         "searchDir": "../"
     },
@@ -46,14 +45,14 @@
         "key": "%browserstack_key%",
         "debug": true
     },
-    "browsersessiongeneratorpluginmanager": {
+    "browsersessiongeneratormanager": {
         "pluginNames": ["browserstack-browser-session-generator-plugin"],
         "searchDir": "../"
     },
     "browserstackbrowsersessiongeneratorplugin": {
         "platform": "windows_10_chrome"
     },
-    "mobileappsessiongeneratorpluginmanager": {
+    "mobileappsessiongeneratormanager": {
         "pluginNames": ["browserstack-mobile-app-session-generator-plugin"],
         "searchDir": "../"
     },

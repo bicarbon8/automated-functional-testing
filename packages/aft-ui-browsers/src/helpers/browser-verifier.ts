@@ -1,20 +1,20 @@
 import { Func, using, Verifier } from "aft-core";
 import { BrowserSession, BrowserSessionOptions } from "../sessions/browser-session";
-import { BrowserSessionGeneratorPluginManager } from "../sessions/browser-session-generator-plugin-manager";
+import { BrowserSessionGeneratorManager, browserSessionGeneratorMgr } from "../sessions/browser-session-generator-manager";
 
 export class BrowserVerifier extends Verifier {
     protected override _assertion: Func<BrowserVerifier, any>;
-    protected _sessionMgr: BrowserSessionGeneratorPluginManager;
+    protected _sessionMgr: BrowserSessionGeneratorManager;
     protected _session: BrowserSession;
     protected _sessionOptions: BrowserSessionOptions;
 
     /**
-     * a {BrowserSessionGeneratorPluginManager} instance used to generate new
+     * a {BrowserSessionGeneratorManager} instance used to generate new
      * Browser sessions
      */
-    get sessionGeneratorPluginManager(): BrowserSessionGeneratorPluginManager {
+    get sessionGeneratorManager(): BrowserSessionGeneratorManager {
         if (!this._sessionMgr) {
-            this._sessionMgr = BrowserSessionGeneratorPluginManager.instance();
+            this._sessionMgr = browserSessionGeneratorMgr;
         }
         return this._sessionMgr;
     }
@@ -52,15 +52,15 @@ export class BrowserVerifier extends Verifier {
     }
 
     /**
-     * allows for passing in an instance of {BrowserSessionGeneratorPluginManager} to be
+     * allows for passing in an instance of {BrowserSessionGeneratorManager} to be
      * used in locating a {AbstractBrowserSessionGeneratorPlugin} instance to use in 
      * generating a {BrowserSession}.
-     * NOTE: if not set then the global {BrowserSessionGeneratorPluginManager.instance()}
+     * NOTE: if not set then the global {BrowserSessionGeneratorManager.instance()}
      * will be used
-     * @param sessionMgr a {BrowserSessionGeneratorPluginManager} to be used instead of the Global instance
+     * @param sessionMgr a {BrowserSessionGeneratorManager} to be used instead of the Global instance
      * @returns this {BrowserVerifier} instance
      */
-    withBrowserSessionGeneratorPluginManager(sessionMgr: BrowserSessionGeneratorPluginManager): this {
+    withBrowserSessionGeneratorManager(sessionMgr: BrowserSessionGeneratorManager): this {
         this._sessionMgr = sessionMgr;
         return this;
     }
@@ -68,7 +68,7 @@ export class BrowserVerifier extends Verifier {
     protected override async _resolveAssertion(): Promise<void> {
         let opts: BrowserSessionOptions = this.sessionOptions;
         opts.logMgr = opts.logMgr || this.logMgr;
-        await using(await this.sessionGeneratorPluginManager.newSession(opts), async (session) => {
+        await using(await this.sessionGeneratorManager.newSession(opts), async (session) => {
             this._session = session;
             await super._resolveAssertion();
         });
@@ -91,7 +91,5 @@ export class BrowserVerifier extends Verifier {
  * @returns a new {BrowserVerifier} instance
  */
 export const verifyWithBrowser = (assertion: Func<BrowserVerifier, any>): BrowserVerifier => {
-    let v: BrowserVerifier = new BrowserVerifier();
-    v.verify(assertion);
-    return v;
+    return new BrowserVerifier().verify(assertion);
 }

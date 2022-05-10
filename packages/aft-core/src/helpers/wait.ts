@@ -1,6 +1,15 @@
+import { LogManager } from "../plugins/logging/log-manager";
+import { TestException } from "../plugins/test-cases/test-exception";
+import { convert } from "./converter";
 import { Func } from "./custom-types";
 
-export class Wait {
+class Wait {
+    private readonly _logMgr: LogManager;
+
+    constructor() {
+        this._logMgr = new LogManager({pluginNames: []});
+    }
+
     /**
      * function will execute an asynchronous action and await a result repeating execution every 1 millisecond until a 
      * result of 'true' is returned or the 'msDuration' specified has elapsed. If the action never returns 'true' and 
@@ -12,33 +21,30 @@ export class Wait {
     async untilTrue(condition: Func<void, boolean | PromiseLike<boolean>>, msDuration: number, onFailAction?: Func<void, any>) : Promise<void> {
         let result: boolean = false;
         let attempts: number = 0;
-        let startTime: number = new Date().getTime();
-        let now: number;
-        let elapsed: number;
-        let exMessage: string;
-        let exStack: string;
+        const startTime: number = new Date().getTime();
+        let err: Error;
 
         do {
             try {
                 attempts++;
                 result = await Promise.resolve(condition());
             } catch (e) {
-                exMessage = (e as Error).message;
-                exStack = (e as Error).stack;
-                try {
-                    if (onFailAction) {onFailAction();}
-                } catch {}
+                err = e as Error;
+                if (onFailAction) {
+                    await Promise.resolve(onFailAction())
+                    .catch(async (err) => {
+                        await this._logMgr.warn(`wait.forCondition onFailAction threw: ${TestException.short(err)}`);
+                    });
+                }
             }
             await this.forDuration(1);
-            now = new Date().getTime();
-            elapsed = now - startTime;
-        } while (result !== true && elapsed < msDuration);
+        } while (result !== true && convert.toElapsedMs(startTime) < msDuration);
 
         if (result) {
             return Promise.resolve();
         }
             
-        return Promise.reject(`unable to successfully execute Wait.forCondition(() => {...}) within '${attempts}' attempts due to: '${exMessage}' at:\n${exStack}`);
+        return Promise.reject(`unable to successfully execute Wait.forCondition(() => {...}) within '${attempts}' attempts due to: ${TestException.short(err)}`);
     }
 
     /**

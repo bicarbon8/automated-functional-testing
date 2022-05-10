@@ -1,22 +1,31 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { convert } from '../helpers/converter';
-import { AbstractPlugin } from './abstract-plugin';
+import { Plugin } from './plugin';
 
-class Loader {
+class PluginLoader {
     /**
-     * attempts to load a package named `pluginName` and if
-     * that fails will search the filesystem, starting at the current
+     * attempts to load plugins by name and optional path.
+     * 
+     * ```typescript
+     * let plugin: CustomPlugin = await pluginLoader.load<CustomPlugin>('custom-plugin', {foo: 'bar'});
+     * ```
+     * 
+     * NOTE: the above attempts to load a `custom-plugin` package 
+     * passing in the specified options to its constructor. if loading
+     * fails then it will search the filesystem, starting at the current
      * execution directory and searching all subdirectories, for a file
      * named `custom-plugin.js` which, if found, will be imported and a 
-     * new instance will be created followed by calling the {onLoad} function.
+     * new instance will be created passing in the specified options to
+     * its constructor. following instantiation the {onLoad} function is
+     * awaited and then the new plugin instance is returned
      * 
      * NOTE: each time this is called a new instance of the Plugin is created.
      * @param pluginName the name of the plugin package or file to be imported
      * @param options [optional] object containing options passed to the plugin constructor
      * @returns an instance of the plugin
      */
-    async load<T extends AbstractPlugin<any>>(pluginName: string, searchRoot?: string, options?: any): Promise<T> {
+    async load<T extends Plugin<any>>(pluginName: string, searchRoot?: string, options?: any): Promise<T> {
         searchRoot = searchRoot || process.cwd();
         if (!path.isAbsolute(searchRoot)) {
             searchRoot = path.join(process.cwd(), searchRoot);
@@ -24,7 +33,7 @@ class Loader {
         return await this._validatePlugin<T>(pluginName, searchRoot, options);
     }
 
-    private async _validatePlugin<T extends AbstractPlugin<any>>(pluginName: string, searchRoot: string, options?: any): Promise<T> {
+    private async _validatePlugin<T extends Plugin<any>>(pluginName: string, searchRoot: string, options?: any): Promise<T> {
         let plugin: T;
 
         try {
@@ -32,7 +41,7 @@ class Loader {
         } catch (e) {
             try {
                 // console.debug(`searching for plugin '${pluginName}' starting at: ${searchRoot}`);
-                let pathToPlugin: string = await this._findPlugin(searchRoot, `${pluginName}.js`);
+                let pathToPlugin: string = await this._findPlugin(searchRoot, new RegExp(`^${pluginName}\.(js|ts)$`));
                 if (pathToPlugin) {
                     // console.debug(`found plugin '${pluginName}' at: ${pathToPlugin}`);
                     pathToPlugin = pathToPlugin.replace('.js', '');
@@ -68,7 +77,7 @@ class Loader {
         return Promise.reject(`unable to load plugin named: '${pluginName}'`);
     }
 
-    private async _findPlugin(dir: string, name: string): Promise<string> {
+    private async _findPlugin(dir: string, name: string | RegExp): Promise<string> {
         // console.debug(`searching '${dir}' for '${name}'`);
         let filePath: string = await new Promise((resolve, reject) => {
             try {
@@ -85,7 +94,7 @@ class Loader {
                                     break;
                                 }
                             } else {
-                                if (file == name) {
+                                if (file.match(name)) {
                                     resolve(fileAndPath);
                                     break;
                                 }
@@ -121,12 +130,15 @@ class Loader {
  * class must extend from {AbstractPlugin<any>} and would be expected
  * to accept an {options} object in its constructor.
  * ```typescript
- * let plugin: CustomPlugin = await PluginLoader.load<CustomPlugin>('custom-plugin', {foo: 'bar'});
+ * let plugin: CustomPlugin = await pluginloader.load<CustomPlugin>('custom-plugin', {foo: 'bar'});
  * ```
- * NOTE: the above will attempt to load `custom-plugin` package and if
- * that fails will search the filesystem, starting at the current
+ * NOTE: the above will attempt to load `custom-plugin` package 
+ * passing in the specified options to its constructor. if loading
+ * fails then it will search the filesystem, starting at the current
  * execution directory and searching all subdirectories, for a file
  * named `custom-plugin.js` which, if found, will be imported and a 
- * new instance will be created followed by calling the {onLoad} function
+ * new instance will be created passing in the specified options to
+ * its constructor. following instantiation the {onLoad} function is
+ * awaited and then the new plugin instance is returned
  */
-export const pluginLoader = new Loader();
+export const pluginloader = new PluginLoader();

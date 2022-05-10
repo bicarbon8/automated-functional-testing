@@ -1,6 +1,6 @@
-import { using, LoggingPluginManager, rand } from "aft-core";
+import { using, LogManager, rand, buildinfo } from "aft-core";
 import { TestPlatform } from "aft-ui";
-import { BuildName, MobileAppFacet, SauceLabsMobileAppSessionGeneratorPlugin, SauceLabsMobileAppSessionGeneratorPluginOptions } from '../../../src';
+import { MobileAppFacet, SauceLabsMobileAppSessionGeneratorPlugin, SauceLabsMobileAppSessionGeneratorPluginOptions } from '../../../src';
 import { RemoteOptions } from "webdriverio";
 import { SauceLabsConfig } from "../../../src/sessions/sauce-labs/configuration/sauce-labs-config";
 
@@ -20,7 +20,7 @@ describe('SauceLabsMobileAppSessionGeneratorPlugin', () => {
             tunnel: true,
             tunnelId: rand.getString(11, true),
             app: `app-${rand.getString(15)}`,
-            logMgr: new LoggingPluginManager({logName:'can generate capabilities from the passed in SessionOptions'})
+            logMgr: new LogManager({logName:'can generate capabilities from the passed in SessionOptions'})
         }
         let session: SauceLabsMobileAppSessionGeneratorPlugin = new SauceLabsMobileAppSessionGeneratorPlugin(opts);
 
@@ -36,7 +36,7 @@ describe('SauceLabsMobileAppSessionGeneratorPlugin', () => {
         expect(remOpts.capabilities['app']).toEqual(opts.app);
         expect(remOpts.user).toEqual(opts.username);
         expect(remOpts.key).toEqual(opts.accessKey);
-        expect(remOpts.capabilities['buildName']).toEqual(await BuildName.get());
+        expect(remOpts.capabilities['buildName']).toEqual(await buildinfo.get());
         expect(remOpts.capabilities['name']).toEqual(await opts.logMgr.logName());
         expect(remOpts.capabilities['tunnelIdentifier']).toEqual(opts.tunnelId);
     });

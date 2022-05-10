@@ -22,11 +22,11 @@ describe('AFT', () => {
             for (var i=0; i<count; i++) {
                 await v.logMgr.info(`running count: ${i}`);
                 await v.logMgr.warn(`random string: ${rand.getString()}`);
-                result = result && expect(i).not.toBeNaN();
+                result = result && !isNaN(i);
             }
             return count;
         }).withTestId('C1234').and.withTestId('C2345')
         .and.withDescription('some tests require lots of actions')
         .returns(10);
-    });
+    }, 15000);
 });

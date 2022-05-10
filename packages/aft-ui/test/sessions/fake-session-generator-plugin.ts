@@ -1,16 +1,15 @@
-import { nameof } from "ts-simple-nameof";
-import { AbstractSessionGeneratorPlugin, ISessionGeneratorPluginOptions } from "../../src";
+import { SessionGeneratorPlugin, SessionGeneratorPluginOptions } from "../../src";
 import { FakeDriver } from "./fake-driver";
 import { FakeSession, FakeSessionOptions } from "./fake-session";
 import { testdata } from "./test-data-helper";
 
-export interface FakeSessionGeneratorPluginOptions extends ISessionGeneratorPluginOptions {
+export interface FakeSessionGeneratorPluginOptions extends SessionGeneratorPluginOptions {
 
 }
 
-export class FakeSessionGeneratorPlugin extends AbstractSessionGeneratorPlugin {
+export class FakeSessionGeneratorPlugin extends SessionGeneratorPlugin {
     constructor(options?: FakeSessionGeneratorPluginOptions) {
-        super(nameof(FakeSessionGeneratorPlugin).toLowerCase(), options);
+        super(options);
         testdata.set('constructor', options);
     }
     async onLoad(): Promise<void> {

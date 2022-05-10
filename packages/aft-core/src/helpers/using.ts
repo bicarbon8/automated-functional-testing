@@ -2,8 +2,8 @@ import { Func } from "./custom-types";
 import { IDisposable } from "./idisposable";
 
 /**
- * function will execute a passed in function passing in the supplied {IDisposable}
- * and then calling the `dispose` method on the {IDisposable} when execution of the 
+ * function will execute a passed in function passing in the supplied `IDisposable`
+ * and then calling the `dispose` method on the `IDisposable` when execution of the 
  * function is done.
  * Usage Example:
  * ```

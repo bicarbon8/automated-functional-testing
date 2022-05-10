@@ -1,6 +1,5 @@
-import { nameof } from "ts-simple-nameof";
 import { rand } from "aft-core";
-import { AbstractMobileAppSessionGeneratorPlugin, MobileAppSession, MobileAppSessionGeneratorPluginOptions, MobileAppSessionOptions } from "../../src";
+import { MobileAppSessionGeneratorPlugin, MobileAppSession, MobileAppSessionGeneratorPluginOptions, MobileAppSessionOptions } from "../../src";
 import { RemoteOptions } from "webdriverio";
 
 describe('AbstractMobileAppGridSessionGeneratorPlugin', () => {
@@ -24,9 +23,9 @@ describe('AbstractMobileAppGridSessionGeneratorPlugin', () => {
     });
 });
 
-class FakeMobileAppSessionGeneratorPlugin extends AbstractMobileAppSessionGeneratorPlugin {
+class FakeMobileAppSessionGeneratorPlugin extends MobileAppSessionGeneratorPlugin {
     constructor(options?: MobileAppSessionGeneratorPluginOptions) {
-        super(nameof(FakeMobileAppSessionGeneratorPlugin).toLowerCase(), options);
+        super(options);
     }
     async onLoad(): Promise<void> {
         /* do nothing */

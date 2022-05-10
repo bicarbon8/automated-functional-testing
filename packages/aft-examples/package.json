@@ -1,15 +1,13 @@
 {
   "name": "aft-examples",
-  "version": "6.0.1",
+  "version": "7.0.0",
   "description": "Automated Functional Testing (AFT) package containing examples of how it can be used",
   "private": true,
   "scripts": {
     "clean": "rimraf ./dist && rimraf .htmlCache",
     "build": "yarn clean && tsc --build",
-    "pretest": "yarn build",
-    "test": "mocha --timeout 60s **/*-spec.js",
-    "test-parallel": "yarn build && mocha --parallel --jobs 4 --timeout 300s **/*-spec.js",
-    "coverage": "nyc yarn test"
+    "test": "mocha --timeout 60s **/*.spec.js",
+    "test-parallel": "yarn build && mocha --parallel --jobs 4 --timeout 300s **/*.spec.js"
   },
   "repository": {
     "type": "git",
@@ -33,11 +31,11 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-logging-awskinesis": "^6.0.1",
-    "aft-logging-html": "^6.0.1",
-    "aft-testrail": "^6.0.1",
-    "aft-ui-browsers": "^6.0.1",
-    "aft-ui-mobile-apps": "^6.0.1"
+    "aft-logging-awskinesis": "^7.0.0",
+    "aft-logging-html": "^7.0.0",
+    "aft-testrail": "^7.0.0",
+    "aft-ui-browsers": "^7.0.0",
+    "aft-ui-mobile-apps": "^7.0.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.17",

@@ -1,5 +1,4 @@
 import { OptionsManager } from 'aft-core';
-import { nameof } from "ts-simple-nameof";
 
 export class TestRailConfigOptions {
     url: string;
@@ -43,54 +42,54 @@ export class TestRailConfig {
     private _optMgr: OptionsManager;
 
     constructor(options?: TestRailConfigOptions) {
-        this._optMgr = options?._optMgr || new OptionsManager(nameof(TestRailConfig).toLowerCase(), options);
+        this._optMgr = options?._optMgr || new OptionsManager(this.constructor.name.toLowerCase(), options);
     }
     
     async getUrl(): Promise<string> {
         if (!this._url) {
-            this._url = await this._optMgr.getOption(nameof<TestRailConfigOptions>(o => o.url));
+            this._url = await this._optMgr.get('url');
         }
         return this._url;
     }
 
     async getUser(): Promise<string> {
         if (!this._user) {
-            this._user = await this._optMgr.getOption(nameof<TestRailConfigOptions>(o => o.user));
+            this._user = await this._optMgr.get('user');
         }
         return this._user;
     }
 
     async getAccessKey(): Promise<string> {
         if (!this._accessKey) {
-            this._accessKey = await this._optMgr.getOption(nameof<TestRailConfigOptions>(o => o.accesskey));
+            this._accessKey = await this._optMgr.get('accesskey');
         }
         return this._accessKey;
     }
 
     async getProjectId(): Promise<number> {
         if (this._projectId === undefined) {
-            this._projectId = await this._optMgr.getOption(nameof<TestRailConfigOptions>(o => o.projectid), -1);
+            this._projectId = await this._optMgr.get('projectid', -1);
         }
         return this._projectId;
     }
 
     async getSuiteIds(): Promise<number[]> {
         if (this._suiteIds === undefined) {
-            this._suiteIds = await this._optMgr.getOption(nameof<TestRailConfigOptions>(o => o.suiteids), []);
+            this._suiteIds = await this._optMgr.get('suiteids', []);
         }
         return this._suiteIds;
     }
 
     async getPlanId(): Promise<number> {
         if (this._planId === undefined) {
-            this._planId = await this._optMgr.getOption(nameof<TestRailConfigOptions>(o => o.planid), -1);
+            this._planId = await this._optMgr.get('planid', -1);
         }
         return this._planId;
     }
 
     async getCacheDuration(): Promise<number> {
         if (this._cacheDuration === undefined) {
-            this._cacheDuration = await this._optMgr.getOption(nameof<TestRailConfigOptions>(o => o.cacheDurationMs), 300000);
+            this._cacheDuration = await this._optMgr.get('cacheDurationMs', 300000);
         }
         return this._cacheDuration;
     }

@@ -1,5 +1,5 @@
 # AFT-Logging-AWSKinesis
-an Automated Functional Testing (AFT) library providing logging to an AWS Kinesis Firehose endpoint for any `TestResult` objects logged via the `aft-core.LoggingPluginManager`
+an Automated Functional Testing (AFT) library providing logging to an AWS Kinesis Firehose endpoint for any `TestResult` objects logged via the `aft-core.LogManager`
 
 ## Installation
 `> npm i aft-logging-awskinesis`
@@ -8,7 +8,7 @@ an Automated Functional Testing (AFT) library providing logging to an AWS Kinesi
 to send values to AWS Kinesis Firehose endpoints you must specify the AWS Credentials, the AWS Region Endpoint and the AWS Kinesis Delivery Stream. These take the following form in your `aftconfig.json`:
 ```json
 {
-  "loggingpluginmanager": {
+  "logmanager": {
     "pluginNames": ["kinesis-logging-plugin"]
   },
   "kinesisconfig": {
@@ -61,12 +61,12 @@ the log record that is sent to your AWS Kinesis Firehose endpoint will have the 
     }
 }
 ```
-- **logName** - the `logName` passed to this plugin when loaded from the `LoggingPluginManager`
+- **logName** - the `logName` passed to this plugin when loaded from the `LogManager`
 - **message** - the `string` being logged by some component
 - **level** - a `string` value from one of the `aft-core.LoggingLevel` values based on the level of the message being logged
 - **version** - the current version of the `KinesisLoggingPlugin`
-- **buildName** - a `string` retrieved from the `BuildInfoPluginManager.getBuildName` function
-- **buildNumber** - a `string` retrieved from the `BuildInfoPluginManager.getBuildNumber` function
+- **buildName** - a `string` retrieved from the `BuildInfoManager.getBuildName` function
+- **buildNumber** - a `string` retrieved from the `BuildInfoManager.getBuildNumber` function
 - **machineInfo** - an `aft-core.MachineInfoData` object containing the following:
   - **ip** - a `string` of the machine's IP address
   - **name** - a `string` of the machine's name
@@ -100,7 +100,7 @@ the log record that is sent to your AWS Kinesis Firehose endpoint will have the 
     }
 }
 ```
-- **logName** - the `logName` passed to this plugin when loaded from the `LoggingPluginManager`
+- **logName** - the `logName` passed to this plugin when loaded from the `LogManager`
 - **result** - an `ITestResult` object containing the following:
   - **testId** - a `string` containing any unique ID for the test result being recorded
   - **resultMessage** - a `string` message of the final result
@@ -110,8 +110,8 @@ the log record that is sent to your AWS Kinesis Firehose endpoint will have the 
   - **defects** - an array of `aft-core.IDefect` objects
   - **metadata** - an `object` that can contain additional data for the `ITestResult`
 - **version** - the current version of the `KinesisLoggingPlugin`
-- **buildName** - a `string` retrieved from the `BuildInfoPluginManager.getBuildName` function
-- **buildNumber** - a `string` retrieved from the `BuildInfoPluginManager.getBuildNumber` function
+- **buildName** - a `string` retrieved from the `BuildInfoManager.getBuildName` function
+- **buildNumber** - a `string` retrieved from the `BuildInfoManager.getBuildNumber` function
 - **machineInfo** - an `aft-core.MachineInfoData` object containing the following:
   - **ip** - a `string` of the machine's IP address
   - **name** - a `string` of the machine's name

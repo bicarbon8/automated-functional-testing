@@ -1,23 +1,22 @@
 import { TestPlatform } from "aft-ui";
-import { AbstractBrowserSessionGeneratorPlugin, IBrowserSessionGeneratorPluginOptions } from "../abstract-browser-session-generator-plugin";
-import { BuildName } from "../../helpers/build-name";
+import { BrowserSessionGeneratorPlugin, BrowserSessionGeneratorOptions } from "../browser-session-generator-plugin";
 import { Capabilities, WebDriver } from "selenium-webdriver";
-import { nameof } from "ts-simple-nameof";
 import { BrowserSessionOptions } from "../browser-session";
 import { BrowserStackConfig, BrowserStackConfigOptions } from "./configuration/browserstack-config";
 import { BrowserStackBrowserSession } from "./browserstack-browser-session";
+import { buildinfo } from "aft-core";
 
-export interface BrowserStackBrowserSessionGeneratorPluginOptions extends IBrowserSessionGeneratorPluginOptions, Partial<BrowserStackConfigOptions> {
+export interface BrowserStackBrowserSessionGeneratorPluginOptions extends BrowserSessionGeneratorOptions, Partial<BrowserStackConfigOptions> {
     _config?: BrowserStackConfig;
 }
 
-export class BrowserStackBrowserSessionGeneratorPlugin extends AbstractBrowserSessionGeneratorPlugin {
+export class BrowserStackBrowserSessionGeneratorPlugin extends BrowserSessionGeneratorPlugin {
     private _cfg: BrowserStackConfig;
     
     constructor(options?: BrowserStackBrowserSessionGeneratorPluginOptions) {
         options = options || {} as BrowserStackBrowserSessionGeneratorPluginOptions;
         options.url = options.url || 'https://hub-cloud.browserstack.com/wd/hub/';
-        super(nameof(BrowserStackBrowserSessionGeneratorPlugin).toLowerCase(), options);
+        super(options);
         this._cfg = options?._config || new BrowserStackConfig(options as BrowserStackConfigOptions);
     }
 
@@ -59,7 +58,7 @@ export class BrowserStackBrowserSessionGeneratorPlugin extends AbstractBrowserSe
         capabilities.set('browserstack.user', await this._cfg.user());
         capabilities.set('browserstack.key', await this._cfg.key());
         capabilities.set('browserstack.debug', await this._cfg.debug());
-        capabilities.set('build', await BuildName.get());
+        capabilities.set('build', await buildinfo.get());
         capabilities.set('name', await options?.logMgr?.logName() || await this.logMgr.logName());
         let local: boolean = await this._cfg.local();
         if (local) {

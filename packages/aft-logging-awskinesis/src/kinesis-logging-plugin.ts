@@ -1,12 +1,11 @@
-import { AbstractLoggingPlugin, LoggingLevel, ITestResult, MachineInfo, BuildInfoPluginManager, ILoggingPluginOptions } from "aft-core";
+import { LoggingPlugin, LogLevel, ITestResult, MachineInfo, BuildInfoManager, LoggingPluginOptions, buildinfo } from "aft-core";
 import { Firehose } from "aws-sdk";
 import pkg = require('../package.json');
-import { nameof } from "ts-simple-nameof";
 import AWS = require("aws-sdk");
 import { kinesisConf, KinesisConfig } from "./configuration/kinesis-config";
 import { KinesisLogRecord } from "./kinesis-log-record";
 
-export interface IKinesisLoggingPluginOptions extends ILoggingPluginOptions {
+export interface IKinesisLoggingPluginOptions extends LoggingPluginOptions {
     /**
      * indicates if log records should be sent in batches (defaults to true)
      */
@@ -27,7 +26,7 @@ export interface IKinesisLoggingPluginOptions extends ILoggingPluginOptions {
     /**
      * provided for testing purposes. not for normal use
      */
-    _buildInfoMgr?: BuildInfoPluginManager;
+    _buildInfoMgr?: BuildInfoManager;
 }
 
 /**
@@ -43,19 +42,19 @@ export interface IKinesisLoggingPluginOptions extends ILoggingPluginOptions {
  * }
  * ```
  */
-export class KinesisLoggingPlugin extends AbstractLoggingPlugin {
+export class KinesisLoggingPlugin extends LoggingPlugin {
     private _logs: Firehose.Record[];
     private _batch: boolean;
     private _batchSize: number;
     private _client: AWS.Firehose;
     private _config: KinesisConfig;
-    private _buildInfoMgr: BuildInfoPluginManager;
+    private _buildInfoMgr: BuildInfoManager;
     
     constructor(options?: IKinesisLoggingPluginOptions) {
-        super(nameof(KinesisLoggingPlugin).toLowerCase(), options);
+        super(options);
         this._client = options?._client;
         this._config = options?._config || kinesisConf;
-        this._buildInfoMgr = options?._buildInfoMgr || BuildInfoPluginManager.instance();
+        this._buildInfoMgr = options?._buildInfoMgr || buildinfo;
         this._logs = [];
     }
 
@@ -78,22 +77,22 @@ export class KinesisLoggingPlugin extends AbstractLoggingPlugin {
 
     async batch(): Promise<boolean> {
         if (this._batch === undefined) {
-            this._batch = await this.optionsMgr.getOption<boolean>(nameof<IKinesisLoggingPluginOptions>(o => o.batch), true);
+            this._batch = await this.optionsMgr.get<boolean>('batch', true);
         }
         return this._batch;
     }
 
     async batchSize(): Promise<number> {
         if (this._batchSize === undefined) {
-            this._batchSize = await this.optionsMgr.getOption<number>(nameof<IKinesisLoggingPluginOptions>(o => o.batchSize), 10);
+            this._batchSize = await this.optionsMgr.get<number>('batchSize', 10);
         }
         return this._batchSize;
     }
 
-    async log(level: LoggingLevel, message: string): Promise<void> {
+    async log(level: LogLevel, message: string): Promise<void> {
         if (await this.enabled()) {
-            let l: LoggingLevel = await this.level();
-            if (level.value >= l.value && level != LoggingLevel.none) {
+            let l: LogLevel = await this.level();
+            if (level.value >= l.value && level != LogLevel.none) {
                 let record: Firehose.Record = this._createKinesisLogRecord({
                     logName: await this.logName(),
                     level: level.name,

@@ -1,5 +1,5 @@
 import { TestRailLoggingPlugin } from "../../src/logging/testrail-logging-plugin";
-import { rand, LoggingLevel, EllipsisLocation, ITestResult, TestStatus, ellide } from "aft-core";
+import { rand, LogLevel, EllipsisLocation, ITestResult, TestStatus, ellide } from "aft-core";
 import { TestRailApi } from "../../src/api/testrail-api";
 import { TestRailResultRequest } from "../../src/api/testrail-result-request";
 import { TestRailResultResponse } from "../../src/api/testrail-result-response";
@@ -38,7 +38,7 @@ describe('TestRailLoggingPlugin', () => {
         let getLogsSpy = spyOn<any>(plugin, '_getLogs').and.callThrough();
 
         let expected: string = rand.getString(250, true, true);
-        await plugin.log(LoggingLevel.info, expected);
+        await plugin.log(LogLevel.info, expected);
 
         let actual: string = getLogsSpy.call(plugin);
         expect(actual).toEqual(expected);
@@ -62,8 +62,8 @@ describe('TestRailLoggingPlugin', () => {
         let notExpected: string = rand.getString(200, true, true);
         let expected: string = rand.getString(250, true, true);
         
-        await plugin.log(LoggingLevel.info, notExpected);
-        await plugin.log(LoggingLevel.info, expected);
+        await plugin.log(LogLevel.info, notExpected);
+        await plugin.log(LogLevel.info, expected);
 
         let actual: string = getLogsSpy.call(plugin);
         expect(actual).toEqual(ellide(`${notExpected}${expected}`, 250, EllipsisLocation.beginning));
@@ -141,7 +141,7 @@ describe('TestRailLoggingPlugin', () => {
         let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin({_config: config, level: 'trace', enabled: true});
         await plugin.onLoad();
         
-        await plugin.log(LoggingLevel.error, rand.getString(100));
+        await plugin.log(LogLevel.error, rand.getString(100));
         
         let testResult: ITestResult = {
             testId: 'C4663085', // must be an existing TestRail Case ID

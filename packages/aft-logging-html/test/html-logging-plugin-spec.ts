@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { AbstractLoggingPlugin, LoggingLevel, LoggingPluginManager, rand } from "aft-core";
+import { LoggingPlugin, LogLevel, LogManager, rand } from "aft-core";
 import { HtmlLoggingPlugin } from "../src";
 
 describe('HtmlLoggingPlugin', () => {
@@ -16,7 +16,7 @@ describe('HtmlLoggingPlugin', () => {
             maxLogLines: 14
         });
         for (var i=0; i<25; i++) {
-            await plugin.log(LoggingLevel.info, rand.getString(100));
+            await plugin.log(LogLevel.info, rand.getString(100));
         }
 
         let actual: string[] = plugin.getLogs();
@@ -30,14 +30,14 @@ describe('HtmlLoggingPlugin', () => {
             maxLogLines: 3
         });
         for (var i=0; i<3; i++) {
-            await plugin.log(LoggingLevel.info, rand.getString(100));
+            await plugin.log(LogLevel.info, rand.getString(100));
         }
 
         let actual: string[] = plugin.getLogs();
         expect(actual.length).toBe(3);
         expect(actual[0]).not.toContain('...');
 
-        await plugin.log(LoggingLevel.info, rand.getString(100));
+        await plugin.log(LogLevel.info, rand.getString(100));
 
         actual = plugin.getLogs();
         expect(actual.length).toBe(3);
@@ -50,15 +50,15 @@ describe('HtmlLoggingPlugin', () => {
             level: "step",
             maxLogLines: 14
         });
-        await plugin.log(LoggingLevel.none, 'level none');
-        await plugin.log(LoggingLevel.trace, 'level trace');
-        await plugin.log(LoggingLevel.debug, 'level debug');
-        await plugin.log(LoggingLevel.info, 'level info');
-        await plugin.log(LoggingLevel.step, 'level step');
-        await plugin.log(LoggingLevel.warn, 'level warn');
-        await plugin.log(LoggingLevel.pass, 'level pass');
-        await plugin.log(LoggingLevel.fail, 'level fail');
-        await plugin.log(LoggingLevel.error, 'level error');
+        await plugin.log(LogLevel.none, 'level none');
+        await plugin.log(LogLevel.trace, 'level trace');
+        await plugin.log(LogLevel.debug, 'level debug');
+        await plugin.log(LogLevel.info, 'level info');
+        await plugin.log(LogLevel.step, 'level step');
+        await plugin.log(LogLevel.warn, 'level warn');
+        await plugin.log(LogLevel.pass, 'level pass');
+        await plugin.log(LogLevel.fail, 'level fail');
+        await plugin.log(LogLevel.error, 'level error');
 
         let actual: string[] = plugin.getLogs();
         expect(actual.length).toBe(5);
@@ -68,15 +68,14 @@ describe('HtmlLoggingPlugin', () => {
         expect(actual).not.toContain('level info');
     });
 
-    it('can be loaded successfully from the LoggingPluginManager', async () => {
-        let logMgr: LoggingPluginManager = new LoggingPluginManager({
-            pluginNames: ['html-logging-plugin'],
-            searchDir: './dist'
+    it('can be loaded successfully from the LogManager', async () => {
+        let logMgr: LogManager = new LogManager({
+            pluginNames: ['html-logging-plugin']
         });
-        let plugins: AbstractLoggingPlugin[] = await logMgr.getPlugins();
+        let plugins: LoggingPlugin[] = await logMgr.getPlugins();
 
         expect(plugins).toBeDefined();
         expect(plugins.length).toBeGreaterThan(0);
-        expect(plugins[0] instanceof HtmlLoggingPlugin).toBeTrue();
+        expect(plugins[0].constructor.name).toEqual('HtmlLoggingPlugin');
     });
 });

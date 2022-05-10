@@ -1,36 +1,33 @@
-import { AbstractBrowserSessionGeneratorPlugin, BrowserSessionGeneratorPluginManager, BrowserStackBrowserSessionGeneratorPlugin, SauceLabsBrowserSessionGeneratorPlugin, SeleniumGridSessionGeneratorPlugin } from "../../src";
+import { BrowserSessionGeneratorPlugin, BrowserSessionGeneratorManager, BrowserStackBrowserSessionGeneratorPlugin, SauceLabsBrowserSessionGeneratorPlugin, SeleniumGridSessionGeneratorPlugin } from "../../src";
 
-describe('BrowserSessionGeneratorPluginManager', () => {
+describe('BrowserSessionGeneratorManager', () => {
     it('can load the BrowserStackBrowserSessionGeneratorPlugin', async () => {
-        let mgr: BrowserSessionGeneratorPluginManager = new BrowserSessionGeneratorPluginManager({
-            pluginNames: ['browserstack-browser-session-generator-plugin'],
-            searchDir: './dist/'
+        let mgr: BrowserSessionGeneratorManager = new BrowserSessionGeneratorManager({
+            pluginNames: ['browserstack-browser-session-generator-plugin']
         });
-        let plugin: AbstractBrowserSessionGeneratorPlugin = await mgr.getFirstEnabledPlugin();
+        let plugin: BrowserSessionGeneratorPlugin = await mgr.getFirstEnabledPlugin();
 
         expect(plugin).toBeDefined();
-        expect(plugin instanceof BrowserStackBrowserSessionGeneratorPlugin).toBeTrue();
+        expect(plugin.constructor.name).toEqual('BrowserStackBrowserSessionGeneratorPlugin');
     });
 
     it('can load the SauceLabsBrowserSessionGeneratorPlugin', async () => {
-        let mgr: BrowserSessionGeneratorPluginManager = new BrowserSessionGeneratorPluginManager({
-            pluginNames: ['sauce-labs-browser-session-generator-plugin'],
-            searchDir: './dist/'
+        let mgr: BrowserSessionGeneratorManager = new BrowserSessionGeneratorManager({
+            pluginNames: ['sauce-labs-browser-session-generator-plugin']
         });
-        let plugin: AbstractBrowserSessionGeneratorPlugin = await mgr.getFirstEnabledPlugin();
+        let plugin: BrowserSessionGeneratorPlugin = await mgr.getFirstEnabledPlugin();
 
         expect(plugin).toBeDefined();
-        expect(plugin instanceof SauceLabsBrowserSessionGeneratorPlugin).toBeTrue();
+        expect(plugin.constructor.name).toEqual('SauceLabsBrowserSessionGeneratorPlugin');
     });
 
     it('can load the SeleniumGridSessionGeneratorPlugin', async () => {
-        let mgr: BrowserSessionGeneratorPluginManager = new BrowserSessionGeneratorPluginManager({
-            pluginNames: ['selenium-grid-session-generator-plugin'],
-            searchDir: './dist/'
+        let mgr: BrowserSessionGeneratorManager = new BrowserSessionGeneratorManager({
+            pluginNames: ['selenium-grid-session-generator-plugin']
         });
-        let plugin: AbstractBrowserSessionGeneratorPlugin = await mgr.getFirstEnabledPlugin();
+        let plugin: BrowserSessionGeneratorPlugin = await mgr.getFirstEnabledPlugin();
 
         expect(plugin).toBeDefined();
-        expect(plugin instanceof SeleniumGridSessionGeneratorPlugin).toBeTrue();
+        expect(plugin.constructor.name).toEqual('SeleniumGridSessionGeneratorPlugin');
     });
 });

@@ -41,6 +41,27 @@ describe('Wait', () => {
         expect(elapsed).toBeLessThan(1000);
         expect(TestHelper.count).toBeGreaterThan(10);
     });
+
+    it('can execute a failure action on each failed attempt', async () => {
+        let actual: number = 0;
+        await wait.untilTrue(() => {throw new Error('fake error');}, 200, async () => {
+            actual++;
+            await wait.forDuration(50);
+        }).catch((err) => {/* do nothing */});
+
+        expect(actual).toBeGreaterThan(1);
+    });
+
+    it('can handle exceptions in the failure action on each failed attempt', async () => {
+        let actual: number = 0;
+        await wait.untilTrue(() => {throw new Error('fake error');}, 200, async () => {
+            actual++;
+            await wait.forDuration(50);
+            throw new Error('onFailureAction error');
+        }).catch((err) => {/* do nothing */});
+
+        expect(actual).toBeGreaterThan(1);
+    });
 });
 
 module TestHelper {

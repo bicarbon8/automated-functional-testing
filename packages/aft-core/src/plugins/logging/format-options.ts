@@ -1,7 +1,7 @@
-import { LoggingLevel } from "./logging-level";
+import { LogLevel } from "./log-level";
 
 export interface FormatOptions {
     name?: string;
-    level: LoggingLevel;
-    message: string;
+    level?: LogLevel;
+    message?: string;
 }

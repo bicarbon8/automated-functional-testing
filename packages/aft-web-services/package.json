@@ -1,6 +1,6 @@
 {
   "name": "aft-web-services",
-  "version": "6.0.1",
+  "version": "7.0.0",
   "description": "Automated Functional Testing (AFT) module for testing web services over HTTP and HTTPS",
   "repository": {
     "type": "git",
@@ -9,11 +9,10 @@
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "scripts": {
-    "clean": "rimraf ./dist",
-    "build": "npm run clean && tsc --declaration",
-    "pretest": "npm run build",
-    "test": "jasmine ./dist/test/**/*-spec.js",
-    "coverage": "nyc npm run test"
+    "clean": "rimraf ./dist && rimraf ./.nyc_output && rimraf ./coverage",
+    "build": "yarn clean && tsc --build",
+    "test": "jasmine-ts ./test/**/*-spec.ts",
+    "coverage": "nyc yarn test"
   },
   "keywords": [
     "aft",
@@ -31,7 +30,7 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-core": "^6.0.1",
+    "aft-core": "^7.0.0",
     "form-data": "^4.0.0",
     "xmldom": "^0.6.0"
   },
@@ -40,8 +39,10 @@
     "@types/node": "^15.0.1",
     "@types/xmldom": "^0.1.30",
     "jasmine": "^3.7.0",
+    "jasmine-ts": "^0.4.0",
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
+    "ts-node": "^10.7.0",
     "typescript": "^4.3.2"
   }
 }

@@ -1,4 +1,4 @@
-import { DefectPluginManager, DefectStatus, IDefect, LoggingPluginManager, ProcessingResult, rand, TestCasePluginManager, Verifier, verify } from "../../src";
+import { DefectManager, DefectStatus, IDefect, LogManager, ProcessingResult, rand, TestCaseManager, Verifier, verify } from "../../src";
 import { containing, Equaling } from "../../src/helpers/verifier-matcher";
 
 describe('Verifier', () => {
@@ -15,11 +15,11 @@ describe('Verifier', () => {
     });
 
     it('uses \'test case IDs\' as logMgr name if no description provided', async () => {
-        let tcMgr = new TestCasePluginManager();
+        let tcMgr = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult> => {
             return Promise.resolve({success: true});
         });
-        let dMgr = new DefectPluginManager();
+        let dMgr = new DefectManager();
         spyOn(dMgr, 'findDefects').and.callFake((searchTerm: string): Promise<IDefect[]> => {
             return Promise.resolve([]);
         });
@@ -31,19 +31,19 @@ describe('Verifier', () => {
             expect(await v.logMgr.logName()).toEqual('C1234_C2345');
         })
         .withTestId('C1234').and.withTestId('C2345')
-        .and.withTestCasePluginManager(tcMgr)
-        .and.withDefectPluginManager(dMgr);
+        .and.withTestCaseManager(tcMgr)
+        .and.withDefectManager(dMgr);
     });
     
     it('can execute a passing expectation', async () => {
-        let logMgr: LoggingPluginManager = new LoggingPluginManager();
+        let logMgr: LogManager = new LogManager();
         spyOn(logMgr, 'logResult').and.callThrough();
         spyOn(logMgr, 'pass').and.callThrough();
-        let tcMgr = new TestCasePluginManager();
+        let tcMgr = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult> => {
             return Promise.resolve({success: true});
         });
-        let dMgr = new DefectPluginManager();
+        let dMgr = new DefectManager();
         spyOn(dMgr, 'findDefects').and.callFake((searchTerm: string): Promise<IDefect[]> => {
             return Promise.resolve([]);
         });
@@ -53,9 +53,9 @@ describe('Verifier', () => {
 
         await verify(async (v: Verifier) => 'foo')
         .returns('foo')
-        .withLoggingPluginManager(logMgr)
-        .and.withTestCasePluginManager(tcMgr)
-        .and.withDefectPluginManager(dMgr)
+        .withLogManager(logMgr)
+        .and.withTestCaseManager(tcMgr)
+        .and.withDefectManager(dMgr)
         .and.withDescription('true should be true')
         .and.withTestId('C1234').and.withTestId('C2345');
 
@@ -66,14 +66,14 @@ describe('Verifier', () => {
     });
 
     it('accepts a VerifierMatcher in the returns function', async () => {
-        let logMgr: LoggingPluginManager = new LoggingPluginManager();
+        let logMgr: LogManager = new LogManager();
         spyOn(logMgr, 'logResult').and.callThrough();
         spyOn(logMgr, 'pass').and.callThrough();
-        let tcMgr = new TestCasePluginManager();
+        let tcMgr = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult> => {
             return Promise.resolve({success: true});
         });
-        let dMgr = new DefectPluginManager();
+        let dMgr = new DefectManager();
         spyOn(dMgr, 'findDefects').and.callFake((searchTerm: string): Promise<IDefect[]> => {
             return Promise.resolve([]);
         });
@@ -83,9 +83,9 @@ describe('Verifier', () => {
 
         await verify(async (v: Verifier) => ['foo', 'bar', 'baz'])
         .returns(containing('bar'))
-        .withLoggingPluginManager(logMgr)
-        .and.withTestCasePluginManager(tcMgr)
-        .and.withDefectPluginManager(dMgr)
+        .withLogManager(logMgr)
+        .and.withTestCaseManager(tcMgr)
+        .and.withDefectManager(dMgr)
         .and.withDescription('array contains "bar"')
         .and.withTestId('C1234').and.withTestId('C2345');
 
@@ -96,14 +96,14 @@ describe('Verifier', () => {
     });
 
     it('throws on exception in assertion', async () => {
-        let logMgr: LoggingPluginManager = new LoggingPluginManager();
+        let logMgr: LogManager = new LogManager();
         spyOn(logMgr, 'logResult').and.callThrough();
         spyOn(logMgr, 'fail').and.callThrough();
-        let tcMgr = new TestCasePluginManager();
+        let tcMgr = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult> => {
             return Promise.resolve({success: true});
         });
-        let dMgr = new DefectPluginManager();
+        let dMgr = new DefectManager();
         spyOn(dMgr, 'findDefects').and.callFake((searchTerm: string): Promise<IDefect[]> => {
             return Promise.resolve([]);
         });
@@ -115,9 +115,9 @@ describe('Verifier', () => {
             await verify(() => {
                 throw new Error('fake error');
             })
-            .withLoggingPluginManager(logMgr)
-            .withTestCasePluginManager(tcMgr)
-            .withDefectPluginManager(dMgr)
+            .withLogManager(logMgr)
+            .withTestCaseManager(tcMgr)
+            .withDefectManager(dMgr)
             .withDescription('true should be true')
             .and.withTestId('C1234').and.withTestId('C2345');
 
@@ -133,14 +133,14 @@ describe('Verifier', () => {
     });
 
     it('throws on failed comparison with expected result', async () => {
-        let logMgr: LoggingPluginManager = new LoggingPluginManager();
+        let logMgr: LogManager = new LogManager();
         spyOn(logMgr, 'logResult').and.callThrough();
         spyOn(logMgr, 'fail').and.callThrough();
-        let tcMgr = new TestCasePluginManager();
+        let tcMgr = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult> => {
             return Promise.resolve({success: true});
         });
-        let dMgr = new DefectPluginManager();
+        let dMgr = new DefectManager();
         spyOn(dMgr, 'findDefects').and.callFake((searchTerm: string): Promise<IDefect[]> => {
             return Promise.resolve([]);
         });
@@ -151,9 +151,9 @@ describe('Verifier', () => {
         try {
             await verify(() => true)
             .returns(false)
-            .and.withLoggingPluginManager(logMgr)
-            .and.withTestCasePluginManager(tcMgr)
-            .and.withDefectPluginManager(dMgr)
+            .and.withLogManager(logMgr)
+            .and.withTestCaseManager(tcMgr)
+            .and.withDefectManager(dMgr)
             .and.withDescription('failure expected due to true not being false')
             .and.withTestId('C1234').and.withTestId('C2345');
 
@@ -169,14 +169,14 @@ describe('Verifier', () => {
     });
 
     it('will not execute expectation if test case manager says should not run for all cases', async () => {
-        let logMgr: LoggingPluginManager = new LoggingPluginManager();
+        let logMgr: LogManager = new LogManager();
         spyOn(logMgr, 'logResult').and.callThrough();
         spyOn(logMgr, 'warn').and.callThrough();
-        let tcMgr = new TestCasePluginManager();
+        let tcMgr = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult> => {
             return Promise.resolve({success: false, message: 'test already has result'});
         });
-        let dMgr = new DefectPluginManager();
+        let dMgr = new DefectManager();
         spyOn(dMgr, 'findDefects').and.callFake((searchTerm: string): Promise<IDefect[]> => {
             return Promise.resolve([]);
         });
@@ -187,9 +187,9 @@ describe('Verifier', () => {
         await verify(() => {
             testStore.set('executed', true);
         })
-        .withLoggingPluginManager(logMgr)
-        .and.withTestCasePluginManager(tcMgr)
-        .and.withDefectPluginManager(dMgr)
+        .withLogManager(logMgr)
+        .and.withTestCaseManager(tcMgr)
+        .and.withDefectManager(dMgr)
         .and.withTestId('C1234').and.withTestId('C2345');
 
         expect(tcMgr.shouldRun).toHaveBeenCalledTimes(2);
@@ -200,10 +200,10 @@ describe('Verifier', () => {
     });
 
     it('will execute expectation if test case manager says any cases should be run', async () => {
-        let logMgr: LoggingPluginManager = new LoggingPluginManager();
+        let logMgr: LogManager = new LogManager();
         spyOn(logMgr, 'logResult').and.callThrough();
         spyOn(logMgr, 'pass').and.callThrough();
-        let tcMgr = new TestCasePluginManager();
+        let tcMgr = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult> => {
             if (testId == 'C1234') {
                 return Promise.resolve({success: false, message: 'test already has result'});
@@ -211,7 +211,7 @@ describe('Verifier', () => {
                 return Promise.resolve({success: true});
             }
         });
-        let dMgr = new DefectPluginManager();
+        let dMgr = new DefectManager();
         spyOn(dMgr, 'findDefects').and.callFake((searchTerm: string): Promise<IDefect[]> => {
             return Promise.resolve([]);
         });
@@ -222,9 +222,9 @@ describe('Verifier', () => {
         await verify(() => {
             testStore.set('executed', true);
         })
-        .withLoggingPluginManager(logMgr)
-        .and.withTestCasePluginManager(tcMgr)
-        .and.withDefectPluginManager(dMgr)
+        .withLogManager(logMgr)
+        .and.withTestCaseManager(tcMgr)
+        .and.withDefectManager(dMgr)
         .and.withTestId('C1234').and.withTestId('C2345');
 
         expect(tcMgr.shouldRun).toHaveBeenCalledWith('C1234');
@@ -236,14 +236,14 @@ describe('Verifier', () => {
     });
 
     it('will not execute expectation if defect manager finds open defect referencing test id', async () => {
-        let logMgr: LoggingPluginManager = new LoggingPluginManager();
+        let logMgr: LogManager = new LogManager();
         spyOn(logMgr, 'logResult').and.callThrough();
         spyOn(logMgr, 'warn').and.callThrough();
-        let tcMgr = new TestCasePluginManager();
+        let tcMgr = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult> => {
             return Promise.resolve({success: true});
         });
-        let dMgr = new DefectPluginManager();
+        let dMgr = new DefectManager();
         spyOn(dMgr, 'findDefects').and.callFake((searchTerm: string): Promise<IDefect[]> => {
             return Promise.resolve([{
                 id: 'DEFECT-123',
@@ -258,9 +258,9 @@ describe('Verifier', () => {
         await verify(() => {
             testStore.set('executed', true);
         })
-        .withLoggingPluginManager(logMgr)
-        .and.withTestCasePluginManager(tcMgr)
-        .and.withDefectPluginManager(dMgr)
+        .withLogManager(logMgr)
+        .and.withTestCaseManager(tcMgr)
+        .and.withDefectManager(dMgr)
         .and.withTestId('C1234');
 
         expect(tcMgr.shouldRun).toHaveBeenCalledTimes(1);
@@ -271,14 +271,14 @@ describe('Verifier', () => {
     });
 
     it('will not execute expectation if any referenced defect is open', async () => {
-        let logMgr: LoggingPluginManager = new LoggingPluginManager();
+        let logMgr: LogManager = new LogManager();
         spyOn(logMgr, 'logResult').and.callThrough();
         spyOn(logMgr, 'warn').and.callThrough();
-        let tcMgr = new TestCasePluginManager();
+        let tcMgr = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult> => {
             return Promise.resolve({success: true});
         });
-        let dMgr = new DefectPluginManager();
+        let dMgr = new DefectManager();
         spyOn(dMgr, 'findDefects').and.callFake((searchTerm: string): Promise<IDefect[]> => {
             return Promise.resolve([]);
         });
@@ -299,9 +299,9 @@ describe('Verifier', () => {
         await verify(() => {
             testStore.set('executed', true);
         })
-        .withLoggingPluginManager(logMgr)
-        .and.withTestCasePluginManager(tcMgr)
-        .and.withDefectPluginManager(dMgr)
+        .withLogManager(logMgr)
+        .and.withTestCaseManager(tcMgr)
+        .and.withDefectManager(dMgr)
         .and.withTestId('C1234')
         .and.withKnownDefectId('DEFECT-123').and.withKnownDefectId('DEFECT-234');
 
@@ -314,14 +314,14 @@ describe('Verifier', () => {
     });
 
     it('will execute expectation if all defects are closed', async () => {
-        let logMgr: LoggingPluginManager = new LoggingPluginManager();
+        let logMgr: LogManager = new LogManager();
         spyOn(logMgr, 'logResult').and.callThrough();
         spyOn(logMgr, 'pass').and.callThrough();
-        let tcMgr = new TestCasePluginManager();
+        let tcMgr = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult> => {
             return Promise.resolve({success: true});
         });
-        let dMgr = new DefectPluginManager();
+        let dMgr = new DefectManager();
         spyOn(dMgr, 'findDefects').and.callFake((searchTerm: string): Promise<IDefect[]> => {
             return Promise.resolve([]);
         });
@@ -335,9 +335,9 @@ describe('Verifier', () => {
         await verify(() => {
             testStore.set('executed', true);
         })
-        .withLoggingPluginManager(logMgr)
-        .and.withTestCasePluginManager(tcMgr)
-        .and.withDefectPluginManager(dMgr)
+        .withLogManager(logMgr)
+        .and.withTestCaseManager(tcMgr)
+        .and.withDefectManager(dMgr)
         .and.withKnownDefectId('DEFECT-123')
         .and.withKnownDefectId('DEFECT-234');
 

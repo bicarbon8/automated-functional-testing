@@ -1,9 +1,8 @@
-import { nameof } from "ts-simple-nameof";
-import { AbstractBuildInfoPlugin, IBuildInfoPluginOptions, rand } from "../../../src";
+import { BuildInfoPlugin, BuildInfoPluginOptions, rand } from "../../../src";
 
-export class MockBuildInfoPlugin extends AbstractBuildInfoPlugin {
-    constructor(options?: IBuildInfoPluginOptions) {
-        super(nameof(MockBuildInfoPlugin).toLowerCase(), options);
+export class MockBuildInfoPlugin extends BuildInfoPlugin {
+    constructor(options?: BuildInfoPluginOptions) {
+        super(options);
     }
     async onLoad(): Promise<void> {
         /* do nothing */

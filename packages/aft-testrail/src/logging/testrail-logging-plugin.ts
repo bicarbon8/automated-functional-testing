@@ -1,12 +1,11 @@
-import { AbstractLoggingPlugin, LoggingLevel, ITestResult, EllipsisLocation, ellide, ILoggingPluginOptions } from "aft-core";
+import { LoggingPlugin, LogLevel, ITestResult, EllipsisLocation, ellide, LoggingPluginOptions } from "aft-core";
 import { TestRailApi } from "../api/testrail-api";
 import { TestRailResultRequest } from "../api/testrail-result-request";
 import { TestRailPlan } from "../api/testrail-plan";
 import { TestRailConfig, trconfig } from "../configuration/testrail-config";
 import { StatusConverter } from "../helpers/status-converter";
-import { nameof } from "ts-simple-nameof";
 
-export interface TestRailLoggingPluginOptions extends ILoggingPluginOptions {
+export interface TestRailLoggingPluginOptions extends LoggingPluginOptions {
     maxLogCharacters?: number;
 
     _config?: TestRailConfig;
@@ -25,14 +24,14 @@ export interface TestRailLoggingPluginOptions extends ILoggingPluginOptions {
  * }
  * ```
  */
-export class TestRailLoggingPlugin extends AbstractLoggingPlugin {
+export class TestRailLoggingPlugin extends LoggingPlugin {
     private _logs: string;
     private _config: TestRailConfig;
     private _client: TestRailApi;
     private _maxLogChars: number;
     
     constructor(options?: TestRailLoggingPluginOptions) {
-        super(nameof(TestRailLoggingPlugin).toLowerCase(), options);
+        super(options);
         this._logs = '';
         
         this._config = options?._config || trconfig;
@@ -51,14 +50,14 @@ export class TestRailLoggingPlugin extends AbstractLoggingPlugin {
 
     async getMaxLogCharacters(): Promise<number> {
         if (this._maxLogChars === undefined) {
-            this._maxLogChars = await this.optionsMgr.getOption(nameof<TestRailLoggingPluginOptions>(o => o.maxLogCharacters), 250);
+            this._maxLogChars = await this.optionsMgr.get('maxLogCharacters', 250);
         }
         return this._maxLogChars;
     }
 
-    async log(level: LoggingLevel, message: string): Promise<void> {
+    async log(level: LogLevel, message: string): Promise<void> {
         if (await this.enabled()) {
-            let l: LoggingLevel = await this.level();
+            let l: LogLevel = await this.level();
             if (level.value >= l.value) {
                 if (this._logs.length > 0) {
                     this._logs += '\n'; // separate new logs from previous

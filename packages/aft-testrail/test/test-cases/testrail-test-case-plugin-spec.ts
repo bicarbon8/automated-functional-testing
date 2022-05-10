@@ -1,4 +1,4 @@
-import { ITestCase, TestStatus, ProcessingResult, TestCasePluginManager, AbstractTestCasePlugin } from 'aft-core';
+import { ITestCase, TestStatus, ProcessingResult, TestCaseManager, TestCasePlugin } from 'aft-core';
 import { HttpResponse, httpService } from 'aft-web-services';
 import { TestRailConfig, TestRailTestCasePlugin } from "../../src";
 import { TestRailApi } from '../../src/api/testrail-api';
@@ -115,14 +115,14 @@ describe('TestRailTestCasePlugin', () => {
         expect(api.getCasesInSuites).not.toHaveBeenCalled();
     });
 
-    it('can be loaded by the testcasepluginmanager', async () => {
-        let mgr: TestCasePluginManager = new TestCasePluginManager({
+    it('can be loaded by the testcasemanager', async () => {
+        let mgr: TestCaseManager = new TestCaseManager({
             pluginNames: ['testrail-test-case-plugin'],
             searchDir: './dist'
         });
-        let plugin: AbstractTestCasePlugin = await mgr.getFirstEnabledPlugin();
+        let plugin: TestCasePlugin = await mgr.getFirstEnabledPlugin();
 
         expect(plugin).toBeDefined();
-        expect(plugin instanceof TestRailTestCasePlugin).toBeTrue();
+        expect(plugin.constructor.name).toEqual('TestRailTestCasePlugin');
     });
 });

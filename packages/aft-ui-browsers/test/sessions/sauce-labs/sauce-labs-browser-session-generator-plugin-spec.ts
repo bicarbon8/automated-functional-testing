@@ -1,7 +1,7 @@
 import { By, Capabilities } from 'selenium-webdriver';
-import { using, LoggingPluginManager, rand } from "aft-core";
+import { using, LogManager, rand, buildinfo } from "aft-core";
 import { TestPlatform } from "aft-ui";
-import { BrowserFacet, BuildName, SauceLabsBrowserSessionGeneratorPlugin, SauceLabsBrowserSessionGeneratorPluginOptions } from '../../../src';
+import { BrowserFacet, SauceLabsBrowserSessionGeneratorPlugin, SauceLabsBrowserSessionGeneratorPluginOptions } from '../../../src';
 import { SauceLabsConfig } from '../../../src/sessions/sauce-labs/configuration/sauce-labs-config';
 
 describe('SauceLabsBrowserSessionGeneratorPlugin', () => {
@@ -20,7 +20,7 @@ describe('SauceLabsBrowserSessionGeneratorPlugin', () => {
             resolution: rand.getString(4, false, true) + 'x' + rand.getString(4, false, true),
             tunnel: true,
             tunnelId: rand.getString(11, true),
-            logMgr: new LoggingPluginManager({logName:'can generate capabilities from the passed in SessionOptions'})
+            logMgr: new LogManager({logName:'can generate capabilities from the passed in SessionOptions'})
         }
         let session: SauceLabsBrowserSessionGeneratorPlugin = new SauceLabsBrowserSessionGeneratorPlugin(opts);
 
@@ -33,7 +33,7 @@ describe('SauceLabsBrowserSessionGeneratorPlugin', () => {
         expect(caps.get('deviceName')).toEqual(plt.deviceName);
         let sauceOpts: object = caps.get('sauce:options');
         expect(sauceOpts).toBeDefined();
-        expect(sauceOpts['build']).toEqual(await BuildName.get());
+        expect(sauceOpts['build']).toEqual(await buildinfo.get());
         expect(sauceOpts['name']).toEqual(await opts.logMgr.logName());
         expect(sauceOpts['screenResolution']).toEqual(opts.resolution);
         expect(sauceOpts['tunnelIdentifier']).toEqual(opts.tunnelId);

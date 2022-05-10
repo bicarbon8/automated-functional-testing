@@ -79,48 +79,47 @@ verify(() => {throw new Error('failure');}) // AFT will report as 'failed'
 - [`aft-web-services`](./packages/aft-web-services/README.md) - adds support for testing REST-based services
 
 ## Plugins
-the primary benefit of using AFT comes from the plugins and the `Verifier`. Because logging using AFT's `LoggingPluginManager` will also send to any registered logging plugins, it is easy to create logging plugins that send to any external system such as TestRail or to log results to Elasticsearch. Additionally, before running any _assertion_ passed to a `verify(assertion)` function, AFT will confirm if the _assertion_ should actually be run based on the results of queries to any supplied `AbstractTestCasePlugin` implementations and a subsequent queries to any supplied `AbstractDefectPlugin` implementations. 
+the primary benefit of using AFT comes from the plugins and the `Verifier`. Because logging using AFT's `LogManager` will also send to any registered logging plugins, it is easy to create logging plugins that send to any external system such as TestRail or to log results to Elasticsearch. Additionally, before running any _assertion_ passed to a `verify(assertion)` function, AFT will confirm if the _assertion_ should actually be run based on the results of queries to any supplied `TestCasePlugin` implementations and a subsequent queries to any supplied `DefectPlugin` implementations. 
 
 ### Logging Plugins
-`aft-core` comes bundled with a built-in `ConsoleLoggingPlugin` which can be enabled by adding `console-logging-plugin` to the `pluginNames` array under the `loggingpluginmanager` section of your `aftconfig.json`
+`aft-core` provides a `LoggingPlugin` abstract class which can be extended to create custom loggers which are then loaded by adding their filenames to the `pluginNames` array under the `logmanager` section of your `aftconfig.json`
 ```json
 {
-    "loggingpluginmanager": {
+    "logmanager": {
         "pluginNames": [
-            "console-logging-plugin",
-            "your-own-logging-plugin"
+            "testrail-logging-plugin"
         ],
         "level": "info"
     }
 }
 ```
-> NOTE: you can optionally add a `searchDir` field under the `loggingpluginmanager` to specify a root directory to use when searching for logging plugin implementations
+> NOTE: you can optionally add a `searchDir` field under the `logmanager` configuration to specify a root directory to use when searching for logging plugin implementations
 
 ### Test Case Plugin
-the purpose of an `AbstractTestCasePlugin` implementation is to provide execution control over any expectations by way of supplied _Test IDs_. to specify an implementation of the plugin to load you can add the following to your `aftconfig.json` (where plugins `testrail-test-case-plugin.js` is contained within the test execution directory or a subdirectory of it):
+the purpose of a `TestCasePlugin` implementation is to provide execution control over any expectations by way of supplied _Test IDs_. to specify an implementation of the plugin to load you can add the following to your `aftconfig.json` (where plugins `testrail-test-case-plugin.js` is contained within the test execution directory or a subdirectory of it):
 ```json
 {
-    "testcasepluginmanager": {
+    "testcasemanager": {
         "pluginNames": ["testrail-test-case-plugin"]
     }
 }
 ```
 > NOTE: if no plugin is specified then external Test Case Management integration will be disabled and _assertions_ will be executed without checking their status before execution
 
-> NOTE: you can optionally add a `searchDir` field under the `testcasepluginmanager` to specify a root directory to use when searching for test case plugin implementations
+> NOTE: you can optionally add a `searchDir` field under the `testcasemanager` to specify a root directory to use when searching for test case plugin implementations
 
 ### Defect Plugin
-the purpose of an `AbstractDefectPlugin` implementation is to provide execution control over any expectations by way of supplied _Test IDs_ referenced in an external ticket tracking system like Bugzilla or Jira. to specify an implementation of the plugin to load you can add the following to your `aftconfig.json` (where plugins `defect-plugin.js` is contained within the test execution directory or a subdirectory of it):
+the purpose of a `DefectPlugin` implementation is to provide execution control over any expectations by way of supplied _Test IDs_ referenced in an external ticket tracking system like Bugzilla or Jira. to specify an implementation of the plugin to load you can add the following to your `aftconfig.json` (where plugins `defect-plugin.js` is contained within the test execution directory or a subdirectory of it):
 ```json
 {
-    "defectpluginmanager": {
+    "defectmanager": {
         "pluginNames": ["defect-plugin"]
     }
 }
 ```
 > NOTE: if no plugin is specified then external Defect Management integration will be disabled and _assertions_ will be executed without checking their status before execution, however if a Defect Management plugin is specified, the execution of any _assertions_ passed into a `verify(assertion)` function will be halted if any non-closed defects are found when searching for defects that contain reference to the values passed in via `withTestId(caseId)` or via direct reference to defect using `withKnownDefectId(defectId)`
 
-> NOTE: you can optionally add a `searchDir` field under the `defectpluginmanager` to specify a root directory to use when searching for defect plugin implementations
+> NOTE: you can optionally add a `searchDir` field under the `defectmanager` to specify a root directory to use when searching for defect plugin implementations
 
 ## Example Test Project
 - [`aft-examples`](./packages/aft-examples/README.md) - a demonstration of how to develop UI and REST based functional test automation using AFT is located under `./packages/aft-examples`
@@ -130,8 +129,9 @@ the purpose of an `AbstractDefectPlugin` implementation is to provide execution 
 - clone the code using `git clone https://github.com/<your-project-area>/automated-functional-testing automated-functional-testing` where `<your-project-area>` is replaced with the location of your Fork
 - install yarn using `npm i yarn -g` _(if you don't already have it installed)_
 - run `yarn install` to install all dependencies
-- build each project using `yarn workspace <project-name> build` where `<project-name>` is a value like `aft-core` or `aft-ui`
-- test using `yarn test` or `yarn workspace <project-name> test`
+- run a build to ensure `yarn` understands and caches the project layout using `yarn build`
+  - NOTE: you can build each project individually using `yarn workspace <project-name> build` where `<project-name>` is a value like `aft-core` or `aft-ui`
+- run the tests using `yarn test` or individually using `yarn workspace <project-name> test`
 - when you are happy with your changes, submit a Pull Request back to the _main_ branch at https://github.com/bicarbon8/automated-functional-testing
 
 > NOTE: all changes require unit tests and these tests are expected to pass when run via `yarn test`

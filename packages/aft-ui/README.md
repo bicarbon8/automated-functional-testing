@@ -5,7 +5,7 @@ Automated Functional Testing (AFT) package supporting UI interactions using the 
 `> npm i aft-ui`
 
 ## Page Object Model (POM)
-the POM is a standard design pattern used in UI and layout testing. AFT-UI supports this model via an `AbstractFacet` class that is made up of one or more `AbstractFacet` classes and / or elements encapsulating logical blocks of functionality on the page. The `aft-ui` package supports development of libraries used to generate UI test sessions (via the `SessionGeneratorPluginManager`, `AbstractSessionGeneratorPlugin`, classes and `ISession` interface).
+the POM is a standard design pattern used in UI and layout testing. AFT-UI supports this model via an `AbstractFacet` class that is made up of one or more `AbstractFacet` classes and / or elements encapsulating logical blocks of functionality on the page. The `aft-ui` package supports development of libraries used to generate UI test sessions (via the `SessionGeneratorManager`, `AbstractSessionGeneratorPlugin`, classes and `ISession` interface).
 
 ### Creating a Session Generator Plugin (Selenium)
 the `AbstractSessionGeneratorPlugin` implementation is responsible for creating new UI session instances (classes extending from `ISession`)
@@ -63,10 +63,10 @@ export interface SeleniumSessionOptions extends ISessionOptions {
 
 export class SeleniumSession implements ISession {
     readonly driver: WebDriver; // overrides 'unknown' driver type from 'ISession'
-    readonly logMgr: LoggingPluginManager;
+    readonly logMgr: LogManager;
     constructor(options: SeleniumSessionOptions) {
         this._driver = options.driver;
-        this.logMgr = options.logMgr || new LoggingPluginManager();
+        this.logMgr = options.logMgr || new LogManager();
     }
     async getFacet<T extends AbstractFacet>(facetType: Clazz<T>, options?: IFacetOptions): Promise<T> {
         options = options || {};
@@ -170,6 +170,6 @@ export class SeleniumFacet extends AbstractFacet {
 }
 ```
 ## aftconfig.json keys and values supported by aft-ui package
-- **sessiongeneratorpluginmanager** - allows for specifying which `AbstractSessionGeneratorPlugin` implementations should be loaded and optionally what `TestPlatform` should be used
+- **sessiongeneratormanager** - allows for specifying which `AbstractSessionGeneratorPlugin` implementations should be loaded and optionally what `TestPlatform` should be used
   - **pluginNames** - a `string[]` of names for `AbstractSessionGeneratorPlugin` implementations to load. only one can be used at any given time, but multiple can be listed with the top-most being used unless specifically not enabled
   - **platform** - an optional `TestPlatform` object listing the _OS_, _OS version_, _Browser_, _Browser version_, and _Device name_ to use when creating new sessions. if not specified here, this value must be specified in the configuration section for the loaded `AbstractSessionGeneratorPlugin`

@@ -1,5 +1,5 @@
 # AFT-Logging-HTML
-an Automated Functional Testing (AFT) library providing logging to an HTML file for any `TestResult` objects logged via the `aft-core.LoggingPluginManager`
+an Automated Functional Testing (AFT) library providing logging to an HTML file for any `TestResult` objects logged via the `aft-core.LogManager`
 
 ## Installation
 `> npm i aft-logging-html`
@@ -8,7 +8,7 @@ an Automated Functional Testing (AFT) library providing logging to an HTML file 
 to specify the filename and output directory for the generated HTML results add the following to your `aftconfig.json`:
 ```json
 {
-  "loggingpluginmanager": {
+  "logmanager": {
     "pluginNames": ["html-logging-plugin"]
   },
   "htmlloggingplugin": {

@@ -1,12 +1,11 @@
-import { AbstractMobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginOptions } from "../abstract-mobile-app-session-generator-plugin";
+import { MobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginOptions } from "../mobile-app-session-generator-plugin";
 import { TestPlatform } from "aft-ui";
-import { nameof } from "ts-simple-nameof";
 import { MobileAppSession, MobileAppSessionOptions } from "../mobile-app-session";
 import { RemoteOptions } from "webdriverio";
 
-export class AppiumGridSessionGeneratorPlugin extends AbstractMobileAppSessionGeneratorPlugin {
+export class AppiumGridSessionGeneratorPlugin extends MobileAppSessionGeneratorPlugin {
     constructor(options?: MobileAppSessionGeneratorPluginOptions) {
-        super(nameof(AppiumGridSessionGeneratorPlugin).toLowerCase(), options);
+        super(options);
     }
     override async onLoad(): Promise<void> {
         /* do nothing */

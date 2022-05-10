@@ -1,6 +1,6 @@
 {
-    "loggingpluginmanager": {
-        "level": "info",
+    "logmanager": {
+        "level": "none",
         "pluginNames": []
     }
 }

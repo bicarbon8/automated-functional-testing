@@ -1,5 +1,5 @@
 {
-    "mobileappsessiongeneratorpluginmanager": {
+    "mobileappsessiongeneratormanager": {
         "pluginNames": [
             "browserstack-mobile-app-session-generator-plugin",
             "sauce-labs-mobile-app-session-generator-plugin",

@@ -1,9 +1,9 @@
-import { LoggingLevel } from "../../../src/plugins/logging/logging-level";
+import { LogLevel } from "../../../src/plugins/logging/log-level";
 
 export class LogMessage {
-    level: LoggingLevel;
+    level: LogLevel;
     message: string;
-    constructor(level: LoggingLevel, message: string) {
+    constructor(level: LogLevel, message: string) {
         this.level = level;
         this.message = message;
     }

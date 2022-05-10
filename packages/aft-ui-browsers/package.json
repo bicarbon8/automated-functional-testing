@@ -1,14 +1,13 @@
 {
   "name": "aft-ui-browsers",
-  "version": "6.0.1",
+  "version": "7.0.0",
   "description": "Automated Functional Testing (AFT) package supporting UI testing in browsers with support for BrowserStack, Sauce Labs and Local Selenium Grid",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "scripts": {
-    "clean": "rimraf ./dist",
+    "clean": "rimraf ./dist && rimraf ./.nyc_output && rimraf ./coverage",
     "build": "yarn clean && tsc --build",
-    "pretest": "yarn build",
-    "test": "jasmine ./dist/test/**/*-spec.js",
+    "test": "jasmine-ts ./test/**/*-spec.ts",
     "coverage": "nyc yarn test"
   },
   "repository": {
@@ -35,7 +34,7 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-ui": "^6.0.1",
+    "aft-ui": "^7.0.0",
     "selenium-webdriver": "^4.0.0-beta.3"
   },
   "devDependencies": {
@@ -43,8 +42,10 @@
     "@types/node": "^15.0.1",
     "@types/selenium-webdriver": "^4.0.12",
     "jasmine": "^3.7.0",
+    "jasmine-ts": "^0.4.0",
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
+    "ts-node": "^10.7.0",
     "typescript": "^4.3.2"
   }
 }

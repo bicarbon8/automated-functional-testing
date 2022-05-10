@@ -1,9 +1,9 @@
 {
-    "loggingpluginmanager": {
+    "logmanager": {
         "pluginNames": ["testrail-logging-plugin"],
         "level": "info"
     },
-    "testcasepluginmanager": {
+    "testcasemanager": {
         "pluginNames": ["testrail-test-case-plugin"]
     },
     "testrailconfig": {
