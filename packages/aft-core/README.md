@@ -6,7 +6,7 @@ the base AFT library providing support for Plugins and some test configuration a
 
 ## Configuration
 the `aft-core` package contains classes for reading in configuration from a .json file and performing automatic environment variable replacements on values read in from configuration.
-- **aftconfigMgr** - provides functions for reading in .json files and extracting environment variables from values. setting a field's value to `"%your_env_var%"` will instruct `aftconfigMgr` to read in the value of `your_env_var` from the environment variables and return this value when you request the field from your configuration
+- **aftconfig** - provides functions for reading in .json files and extracting environment variables from values. setting a field's value to `"%your_env_var%"` will instruct `aftconfig` to read in the value of `your_env_var` from the environment variables and return this value when you request the field from your configuration
 - **OptionsManager** - provides support for passing in options objects with fallback to configuration file sections with a final fallback to an optional default value.
 
 ```json

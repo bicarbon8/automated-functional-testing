@@ -1,6 +1,6 @@
 import { TestCasePlugin, TestCaseManager } from "../../../src";
 
-describe('TestCasePluginManager', () => {
+describe('TestCaseManager', () => {
     it('can load a specified TestCasePlugin', async () => {
         let tcpm: TestCaseManager = new TestCaseManager({pluginNames: ['mock-test-case-plugin']});
         let actual: TestCasePlugin[] = await tcpm.getPlugins();

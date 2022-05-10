@@ -11,7 +11,7 @@ export interface SessionGeneratorPluginOptions extends PluginOptions {
     platform?: string;
 
     /**
-     * [OPTIONAL] if not specified a new {LoggingPluginManager} will be created using
+     * [OPTIONAL] if not specified a new {LogManager} will be created using
      * the Class name as the {logName}
      */
     logMgr?: LogManager;

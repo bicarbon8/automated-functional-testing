@@ -115,7 +115,7 @@ describe('TestRailTestCasePlugin', () => {
         expect(api.getCasesInSuites).not.toHaveBeenCalled();
     });
 
-    it('can be loaded by the testcasepluginmanager', async () => {
+    it('can be loaded by the testcasemanager', async () => {
         let mgr: TestCaseManager = new TestCaseManager({
             pluginNames: ['testrail-test-case-plugin'],
             searchDir: './dist'

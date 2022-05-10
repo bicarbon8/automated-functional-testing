@@ -1,10 +1,9 @@
 import { BrowserSessionGeneratorPlugin, BrowserSessionGeneratorManager, BrowserStackBrowserSessionGeneratorPlugin, SauceLabsBrowserSessionGeneratorPlugin, SeleniumGridSessionGeneratorPlugin } from "../../src";
 
-describe('BrowserSessionGeneratorPluginManager', () => {
+describe('BrowserSessionGeneratorManager', () => {
     it('can load the BrowserStackBrowserSessionGeneratorPlugin', async () => {
         let mgr: BrowserSessionGeneratorManager = new BrowserSessionGeneratorManager({
-            pluginNames: ['browserstack-browser-session-generator-plugin'],
-            searchDir: './dist/'
+            pluginNames: ['browserstack-browser-session-generator-plugin']
         });
         let plugin: BrowserSessionGeneratorPlugin = await mgr.getFirstEnabledPlugin();
 
@@ -14,8 +13,7 @@ describe('BrowserSessionGeneratorPluginManager', () => {
 
     it('can load the SauceLabsBrowserSessionGeneratorPlugin', async () => {
         let mgr: BrowserSessionGeneratorManager = new BrowserSessionGeneratorManager({
-            pluginNames: ['sauce-labs-browser-session-generator-plugin'],
-            searchDir: './dist/'
+            pluginNames: ['sauce-labs-browser-session-generator-plugin']
         });
         let plugin: BrowserSessionGeneratorPlugin = await mgr.getFirstEnabledPlugin();
 
@@ -25,8 +23,7 @@ describe('BrowserSessionGeneratorPluginManager', () => {
 
     it('can load the SeleniumGridSessionGeneratorPlugin', async () => {
         let mgr: BrowserSessionGeneratorManager = new BrowserSessionGeneratorManager({
-            pluginNames: ['selenium-grid-session-generator-plugin'],
-            searchDir: './dist/'
+            pluginNames: ['selenium-grid-session-generator-plugin']
         });
         let plugin: BrowserSessionGeneratorPlugin = await mgr.getFirstEnabledPlugin();
 

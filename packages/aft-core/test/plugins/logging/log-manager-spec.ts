@@ -105,13 +105,13 @@ describe('LogManager', () => {
         expect(lps.results[0].created).toEqual(result.created);
     });
 
-    it('calls LoggingPlugin.dispose on LoggingPluginManager.dispose', async () => {
+    it('calls LoggingPlugin.dispose on LogManager.dispose', async () => {
         const lps: LoggingPluginStore = {
             logs: [],
             results: []
         };
         let opts: LogManagerOptions = {
-            logName: 'calls LoggingPlugin.dispose on LoggingPluginManager.dispose',
+            logName: 'calls LoggingPlugin.dispose on LogManager.dispose',
             pluginNames: ['mock-logging-plugin'],
             lps: lps
         } as LogManagerOptions;

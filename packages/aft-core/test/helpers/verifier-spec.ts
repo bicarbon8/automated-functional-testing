@@ -31,8 +31,8 @@ describe('Verifier', () => {
             expect(await v.logMgr.logName()).toEqual('C1234_C2345');
         })
         .withTestId('C1234').and.withTestId('C2345')
-        .and.withTestCasePluginManager(tcMgr)
-        .and.withDefectPluginManager(dMgr);
+        .and.withTestCaseManager(tcMgr)
+        .and.withDefectManager(dMgr);
     });
     
     it('can execute a passing expectation', async () => {
@@ -53,9 +53,9 @@ describe('Verifier', () => {
 
         await verify(async (v: Verifier) => 'foo')
         .returns('foo')
-        .withLoggingPluginManager(logMgr)
-        .and.withTestCasePluginManager(tcMgr)
-        .and.withDefectPluginManager(dMgr)
+        .withLogManager(logMgr)
+        .and.withTestCaseManager(tcMgr)
+        .and.withDefectManager(dMgr)
         .and.withDescription('true should be true')
         .and.withTestId('C1234').and.withTestId('C2345');
 
@@ -83,9 +83,9 @@ describe('Verifier', () => {
 
         await verify(async (v: Verifier) => ['foo', 'bar', 'baz'])
         .returns(containing('bar'))
-        .withLoggingPluginManager(logMgr)
-        .and.withTestCasePluginManager(tcMgr)
-        .and.withDefectPluginManager(dMgr)
+        .withLogManager(logMgr)
+        .and.withTestCaseManager(tcMgr)
+        .and.withDefectManager(dMgr)
         .and.withDescription('array contains "bar"')
         .and.withTestId('C1234').and.withTestId('C2345');
 
@@ -115,9 +115,9 @@ describe('Verifier', () => {
             await verify(() => {
                 throw new Error('fake error');
             })
-            .withLoggingPluginManager(logMgr)
-            .withTestCasePluginManager(tcMgr)
-            .withDefectPluginManager(dMgr)
+            .withLogManager(logMgr)
+            .withTestCaseManager(tcMgr)
+            .withDefectManager(dMgr)
             .withDescription('true should be true')
             .and.withTestId('C1234').and.withTestId('C2345');
 
@@ -151,9 +151,9 @@ describe('Verifier', () => {
         try {
             await verify(() => true)
             .returns(false)
-            .and.withLoggingPluginManager(logMgr)
-            .and.withTestCasePluginManager(tcMgr)
-            .and.withDefectPluginManager(dMgr)
+            .and.withLogManager(logMgr)
+            .and.withTestCaseManager(tcMgr)
+            .and.withDefectManager(dMgr)
             .and.withDescription('failure expected due to true not being false')
             .and.withTestId('C1234').and.withTestId('C2345');
 
@@ -187,9 +187,9 @@ describe('Verifier', () => {
         await verify(() => {
             testStore.set('executed', true);
         })
-        .withLoggingPluginManager(logMgr)
-        .and.withTestCasePluginManager(tcMgr)
-        .and.withDefectPluginManager(dMgr)
+        .withLogManager(logMgr)
+        .and.withTestCaseManager(tcMgr)
+        .and.withDefectManager(dMgr)
         .and.withTestId('C1234').and.withTestId('C2345');
 
         expect(tcMgr.shouldRun).toHaveBeenCalledTimes(2);
@@ -222,9 +222,9 @@ describe('Verifier', () => {
         await verify(() => {
             testStore.set('executed', true);
         })
-        .withLoggingPluginManager(logMgr)
-        .and.withTestCasePluginManager(tcMgr)
-        .and.withDefectPluginManager(dMgr)
+        .withLogManager(logMgr)
+        .and.withTestCaseManager(tcMgr)
+        .and.withDefectManager(dMgr)
         .and.withTestId('C1234').and.withTestId('C2345');
 
         expect(tcMgr.shouldRun).toHaveBeenCalledWith('C1234');
@@ -258,9 +258,9 @@ describe('Verifier', () => {
         await verify(() => {
             testStore.set('executed', true);
         })
-        .withLoggingPluginManager(logMgr)
-        .and.withTestCasePluginManager(tcMgr)
-        .and.withDefectPluginManager(dMgr)
+        .withLogManager(logMgr)
+        .and.withTestCaseManager(tcMgr)
+        .and.withDefectManager(dMgr)
         .and.withTestId('C1234');
 
         expect(tcMgr.shouldRun).toHaveBeenCalledTimes(1);
@@ -299,9 +299,9 @@ describe('Verifier', () => {
         await verify(() => {
             testStore.set('executed', true);
         })
-        .withLoggingPluginManager(logMgr)
-        .and.withTestCasePluginManager(tcMgr)
-        .and.withDefectPluginManager(dMgr)
+        .withLogManager(logMgr)
+        .and.withTestCaseManager(tcMgr)
+        .and.withDefectManager(dMgr)
         .and.withTestId('C1234')
         .and.withKnownDefectId('DEFECT-123').and.withKnownDefectId('DEFECT-234');
 
@@ -335,9 +335,9 @@ describe('Verifier', () => {
         await verify(() => {
             testStore.set('executed', true);
         })
-        .withLoggingPluginManager(logMgr)
-        .and.withTestCasePluginManager(tcMgr)
-        .and.withDefectPluginManager(dMgr)
+        .withLogManager(logMgr)
+        .and.withTestCaseManager(tcMgr)
+        .and.withDefectManager(dMgr)
         .and.withKnownDefectId('DEFECT-123')
         .and.withKnownDefectId('DEFECT-234');
 

@@ -12,7 +12,7 @@ describe('BrowserVerifier', () => {
         await verifyWithBrowser(async (bv: BrowserVerifier) => {
             expect(bv.session).withContext('BrowserVerifier should create a new session').toBeDefined();
             expect(await bv.session.logMgr.logName()).withContext('the new session should use the same logger as the verifier').toBe(await bv.logMgr.logName());
-        }).and.withBrowserSessionGeneratorPluginManager(sessionMgr);
+        }).and.withBrowserSessionGeneratorManager(sessionMgr);
 
         expect(sessionMgr.newSession).toHaveBeenCalledTimes(1);
     });
@@ -27,7 +27,7 @@ describe('BrowserVerifier', () => {
         await verifyWithBrowser((bv: BrowserVerifier) => {
             expect(bv.session).toBeDefined();
             expect(bv.session.platform.toString()).toEqual('windows_8.1_firefox_+_+');
-        }).and.withBrowserSessionGeneratorPluginManager(sessionMgr)
+        }).and.withBrowserSessionGeneratorManager(sessionMgr)
         .and.withBrowserSessionOptions({
             platform: 'windows_8.1_firefox'
         });
@@ -51,7 +51,7 @@ describe('BrowserVerifier', () => {
         await verifyWithBrowser((bv: BrowserVerifier) => {
             expect(bv.session).toBeDefined();
         }).and.withBrowserSessionOptions({driver: driver})
-        .and.withBrowserSessionGeneratorPluginManager(sessionMgr);
+        .and.withBrowserSessionGeneratorManager(sessionMgr);
 
         expect(sessionMgr.newSession).toHaveBeenCalledTimes(1);
         expect(driver.quit).toHaveBeenCalledTimes(1);
@@ -67,9 +67,9 @@ describe('BrowserVerifier', () => {
         
         await verifyWithBrowser((bv: BrowserVerifier) => {
             expect(true).toBeFalse();
-        }).and.withBrowserSessionGeneratorPluginManager(sessionMgr)
+        }).and.withBrowserSessionGeneratorManager(sessionMgr)
         .and.withTestId('C1234')
-        .and.withTestCasePluginManager(tcMgr);
+        .and.withTestCaseManager(tcMgr);
 
         expect(sessionMgr.newSession).not.toHaveBeenCalled();
     });

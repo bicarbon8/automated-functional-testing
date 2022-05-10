@@ -30,7 +30,7 @@ describe('AftConfigManager', () => {
     describe('aftConfig', () => {
         it('can read from aftconfig.json config file', async () => {
             let conf: object = await aftconfig.aftConfig();
-            let level: string = conf['loggingpluginmanager'].level;
+            let level: string = conf['logmanager'].level;
     
             expect(level).not.toBeNull();
             expect(level).not.toBeUndefined();

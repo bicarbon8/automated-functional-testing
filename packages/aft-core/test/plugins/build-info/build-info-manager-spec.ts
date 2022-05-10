@@ -1,6 +1,6 @@
 import { BuildInfoManager, BuildInfoPlugin, convert, MachineInfo, MachineInfoData } from "../../../src";
 
-describe('BuildInfoPluginManager', () => {
+describe('BuildInfoManager', () => {
     it('assigns a configuration key based on the class name', () => {
         let mgr: BuildInfoManager = new BuildInfoManager();
         let actual: string = mgr.optionsMgr.key;

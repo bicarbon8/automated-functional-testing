@@ -35,7 +35,7 @@ export class Verifier implements PromiseLike<void> {
     }
     
     /**
-     * a {LoggingPluginManager} that uses either the {withDescription}
+     * a {LogManager} that uses either the {withDescription}
      * or a list of {withTestId} or a uuid as the `logName` depending
      * on which is available and where `description` is preferred most
      */
@@ -179,45 +179,45 @@ export class Verifier implements PromiseLike<void> {
     }
 
     /**
-     * allows for using a specific {LoggingPluginManager} instance. if not
+     * allows for using a specific {LogManager} instance. if not
      * set then one will be created for use by this {Verifier}
-     * @param logMgr a {LoggingPluginManager} instance
+     * @param logMgr a {LogManager} instance
      * @returns this {Verifier} instance
      */
-    withLoggingPluginManager(logMgr: LogManager): this {
+    withLogManager(logMgr: LogManager): this {
         this._logMgr = logMgr;
         return this;
     }
 
     /**
-     * allows for using a specific {TestCasePluginManager} instance. if not
-     * set then the global {TestCasePluginManager.instance()} will be used
-     * @param testMgr a {TestCasePluginManager} instance
+     * allows for using a specific {TestCaseManager} instance. if not
+     * set then the global {TestCaseManager.instance()} will be used
+     * @param testMgr a {TestCaseManager} instance
      * @returns this {Verifier} instance
      */
-    withTestCasePluginManager(testMgr: TestCaseManager): this {
+    withTestCaseManager(testMgr: TestCaseManager): this {
         this._testMgr = testMgr;
         return this;
     }
 
     /**
-     * allows for using a specific {DefectPluginManager} instance. if not
-     * set then the global {DefectPluginManager.instance()} will be used
-     * @param defectMgr a {DefectPluginManager} instance
+     * allows for using a specific {DefectManager} instance. if not
+     * set then the global {DefectManager.instance()} will be used
+     * @param defectMgr a {DefectManager} instance
      * @returns this {Verifier} instance
      */
-    withDefectPluginManager(defectMgr: DefectManager): this {
+    withDefectManager(defectMgr: DefectManager): this {
         this._defectMgr = defectMgr;
         return this;
     }
 
     /**
-     * allows for using a specific {BuildInfoPluginManager} instance. if not
-     * set then the global {BuildInfoPluginManager.instance()} will be used
-     * @param buildMgr a {BuildInfoPluginManager} instance
+     * allows for using a specific {BuildInfoManager} instance. if not
+     * set then the global {BuildInfoManager.instance()} will be used
+     * @param buildMgr a {BuildInfoManager} instance
      * @returns this {Verifier} instance
      */
-    withBuildInfoPluginManager(buildMgr: BuildInfoManager): this {
+    withBuildInfoManager(buildMgr: BuildInfoManager): this {
         this._buildMgr = buildMgr;
         return this;
     }
@@ -267,7 +267,7 @@ export class Verifier implements PromiseLike<void> {
 
     /**
      * creates `ITestResult` objects for each `testId` and sends these
-     * to the `LoggingPluginManager.logResult` function
+     * to the `LogManager.logResult` function
      * @param result an `IProcessingResult` returned from executing the 
      * expectation
      */

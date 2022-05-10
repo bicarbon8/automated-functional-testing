@@ -16,7 +16,7 @@ describe('REST Request', () => {
                 expect(response).to.exist;
                 await tw.logMgr.info('request completed and received status code: ' + response.statusCode);
                 return response.statusCode;
-            }).withLoggingPluginManager(v.logMgr)
+            }).withLogManager(v.logMgr)
             .and.withTestId('C2217763')
             .returns(between(200, 399));
 
@@ -26,7 +26,7 @@ describe('REST Request', () => {
                 await tw.logMgr.info('confirmed response is not null.');
                 await tw.logMgr.step('confirm response.data is not null...');
                 return response.data;
-            }).withLoggingPluginManager(v.logMgr)
+            }).withLogManager(v.logMgr)
             .and.withTestId('C3131')
             .returns(havingValue());
 
@@ -37,7 +37,7 @@ describe('REST Request', () => {
                 await tw.logMgr.info('confirmed can deserialise response.data into typed object.');
                 await tw.logMgr.step('confirm object data property contains more than one result...');
                 return obj.data.length;
-            }).withLoggingPluginManager(v.logMgr)
+            }).withLogManager(v.logMgr)
             .and.withTestId('C2217764')
             .returns(greaterThan(0));
         }).withDescription('can make GET request from JSON REST API');

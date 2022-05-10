@@ -1,6 +1,6 @@
 import { DefectManager, DefectPlugin } from "../../../src";
 
-describe('DefectPluginManager', () => {
+describe('DefectManager', () => {
     it('can load a specified IDefectPlugin implementation', async () => {
         let dpm: DefectManager = new DefectManager({pluginNames: ['mock-defect-plugin']});
         let actual: DefectPlugin[] = await dpm.getPlugins();

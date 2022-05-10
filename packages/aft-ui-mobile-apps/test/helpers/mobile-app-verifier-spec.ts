@@ -12,7 +12,7 @@ describe('MobileAppVerifier', () => {
         await verifyWithMobileApp(async (mav: MobileAppVerifier) => {
             expect(mav.session).toBeDefined();
             expect(await mav.session.logMgr.logName()).toBe(await mav.logMgr.logName());
-        }).and.withMobileAppSessionGeneratorPluginManager(sessionMgr);
+        }).and.withMobileAppSessionGeneratorManager(sessionMgr);
 
         expect(sessionMgr.newSession).toHaveBeenCalledTimes(1);
     });
@@ -29,7 +29,7 @@ describe('MobileAppVerifier', () => {
             expect(mav.session.platform.toString()).toEqual('android_11_+_+_Google Pixel 5');
         }).and.withMobileAppSessionOptions({
             platform: 'android_11_+_+_Google Pixel 5'
-        }).and.withMobileAppSessionGeneratorPluginManager(sessionMgr);
+        }).and.withMobileAppSessionGeneratorManager(sessionMgr);
 
         expect(sessionMgr.newSession).toHaveBeenCalledTimes(1);
     });
@@ -46,7 +46,7 @@ describe('MobileAppVerifier', () => {
         await verifyWithMobileApp((mav: MobileAppVerifier) => {
             expect(mav.session).toBeDefined();
         }).and.withMobileAppSessionOptions({driver: driver})
-        .and.withMobileAppSessionGeneratorPluginManager(sessionMgr);
+        .and.withMobileAppSessionGeneratorManager(sessionMgr);
 
         expect(sessionMgr.newSession).toHaveBeenCalledTimes(1);
         expect(driver.deleteSession).toHaveBeenCalledTimes(1);
@@ -63,8 +63,8 @@ describe('MobileAppVerifier', () => {
         await verifyWithMobileApp((mav: MobileAppVerifier) => {
             expect(true).toBeFalse();
         }).withTestId('C1234')
-        .and.withMobileAppSessionGeneratorPluginManager(sessionMgr)
-        .and.withTestCasePluginManager(tcMgr);
+        .and.withMobileAppSessionGeneratorManager(sessionMgr)
+        .and.withTestCaseManager(tcMgr);
 
         expect(sessionMgr.newSession).not.toHaveBeenCalled();
     });

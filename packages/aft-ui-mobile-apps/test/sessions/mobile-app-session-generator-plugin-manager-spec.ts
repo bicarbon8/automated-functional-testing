@@ -1,10 +1,9 @@
 import { MobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorManager } from "../../src";
 
-describe('MobileAppSessionGeneratorPluginManager', () => {
+describe('MobileAppSessionGeneratorManager', () => {
     it('can load BrowserStackMobileAppSessionGeneratorPlugin', async () => {
         let mgr: MobileAppSessionGeneratorManager = new MobileAppSessionGeneratorManager({
-            pluginNames: ['browserstack-mobile-app-session-generator-plugin'],
-            searchDir: './dist/'
+            pluginNames: ['browserstack-mobile-app-session-generator-plugin']
         });
 
         let plugin: MobileAppSessionGeneratorPlugin = await mgr.getFirstEnabledPlugin();
@@ -15,8 +14,7 @@ describe('MobileAppSessionGeneratorPluginManager', () => {
 
     it('can load SauceLabsMobileAppSessionGeneratorPlugin', async () => {
         let mgr: MobileAppSessionGeneratorManager = new MobileAppSessionGeneratorManager({
-            pluginNames: ['sauce-labs-mobile-app-session-generator-plugin'],
-            searchDir: './dist/'
+            pluginNames: ['sauce-labs-mobile-app-session-generator-plugin']
         });
 
         let plugin: MobileAppSessionGeneratorPlugin = await mgr.getFirstEnabledPlugin();
@@ -27,8 +25,7 @@ describe('MobileAppSessionGeneratorPluginManager', () => {
 
     it('can load AppiumGridSessionGeneratorPlugin', async () => {
         let mgr: MobileAppSessionGeneratorManager = new MobileAppSessionGeneratorManager({
-            pluginNames: ['appium-grid-session-generator-plugin'],
-            searchDir: './dist/'
+            pluginNames: ['appium-grid-session-generator-plugin']
         });
 
         let plugin: MobileAppSessionGeneratorPlugin = await mgr.getFirstEnabledPlugin();

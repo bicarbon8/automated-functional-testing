@@ -8,17 +8,16 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
 
 ```json
 {
-    "loggingpluginmanager": {
+    "logmanager": {
         "level": "info",
         "pluginNames": [
-            "console-logging-plugin",
             "testrail-logging-plugin",
             "kinesis-logging-plugin",
             "html-logging-plugin"
         ],
         "searchDir": "../"
     },
-    "testcasepluginmanager": {
+    "testcasemanager": {
         "pluginNames": ["testrail-test-case-plugin"],
         "searchDir": "../"
     },
@@ -55,14 +54,14 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
         "key": "%browserstack_key%",
         "debug": true
     },
-    "browsersessiongeneratorpluginmanager": {
+    "browsersessiongeneratormanager": {
         "pluginNames": ["browserstack-browser-session-generator-plugin"],
         "searchDir": "../"
     },
     "browserstackbrowsersessiongeneratorplugin": {
         "platform": "windows_10_chrome"
     },
-    "mobileappsessiongeneratorpluginmanager": {
+    "mobileappsessiongeneratormanager": {
         "pluginNames": ["browserstack-mobile-app-session-generator-plugin"],
         "searchDir": "../"
     },
@@ -74,10 +73,10 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
     }
 }
 ```
-- **loggingpluginmanager** - allows for loading of `AbstractLoggingPlugin` implementations
+- **logmanager** - allows for loading of `LoggingPlugin` implementations
   - **pluginNames** - `string[]` containing the name of any logging plugins to be loaded
   - **level** - `string` containing a global override for all logging plugins. valid values can be any of the following: `trace`, `debug`, `info`, `step`, `warn`, `error`
-- **testcasepluginmanager** - allows for loading of `AbstractTestCasePlugin` implementations
+- **testcasemanager** - allows for loading of `TestCasePlugin` implementations
   - **pluginNames** - `string[]` containing the name of any test case plugins to be loaded
 - **testrailconfig** - configuration values to use for TestRail integration
   - **url** - `string` containing the URL used for accessing your TestRail instance. _NOTE: this is **NOT** the API url, but the URL to access the base instance of TestRail_
@@ -88,7 +87,7 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
   - **planid** - `number` containing the TestRail plan you are referencing in your tests. _NOTE: if not specified and using the `testrail-logging-plugin` a new TestRail plan will be created based on your `projectid` and `suiteids`_
 - **testrailloggingplugin** - configuration specific to the `testrail-logging-plugin`
   - **enabled** - `boolean` indicating if this plugin is active _(defaults to `true`)_
-  - **level** - `string` used to control how verbose logging is when submitting results to TestRail's API. _NOTE: only valid if **NOT** setting a value for `level` in the `loggingpluginmanager` section
+  - **level** - `string` used to control how verbose logging is when submitting results to TestRail's API. _NOTE: only valid if **NOT** setting a value for `level` in the `loggingmanager` section
 - **testrailtestcaseplugin** - configuration specific to the `testrail-test-case-plugin`
   - **enabled** - `boolean` indicating if this plugin is active _(defaults to `true`)_
 - **kinesisconfig** - configuration values to use for AWS authentication with Kinesis Firehose _(used by the `kinesis-logging-plugin`)_
@@ -101,17 +100,17 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
     - **credsFile** - indicating the authentication information is stored in the user's Credentials File
 - **kinesisloggingplugin** - configuration values pertaining to the `kinesis-logging-plugin`
   - **enabled** - `boolean` indicating if this plugin is active _(defaults to `true`)_
-  - **level** - `string` used to control how verbose logging is when submitting results to the Kinesis Firehose endpoint. _NOTE: only valid if **NOT** setting a value for `level` in the `loggingpluginmanager` section
-- **sessiongeneratorpluginmanager** - allows for loading of `AbstractSessionGeneratorPlugins` implementations
+  - **level** - `string` used to control how verbose logging is when submitting results to the Kinesis Firehose endpoint. _NOTE: only valid if **NOT** setting a value for `level` in the `loggingmanager` section
+- **sessiongeneratormanager** - allows for loading of `SessionGeneratorPlugins` implementations
   - **pluginNames** - `string[]` containing the name of any session generator plugins to be loaded. _NOTE: only one session generator plugin can be active at a time so only the first enabled plugin will actually be used_
   - **platform** - `TestPlatform` object containing the `os`, `osVersion`, `browser`, `browserVersion` and `deviceName` to be used for any generated sessions. _NOTE: if specified here, this value overrides `platform` specified under an individual session generator plugin's configuration section_
 - **browserstacksessiongeneratorplugin** - configuration specific to the `browserstack-session-generator-plugin`
   - **user** - `string` containing a valid BrowserStack user with access to their _Automate_ product
   - **key** - `string` containing a valid BrowserStack access key for the above user
-  - **platform** - `TestPlatform` object containing the `os`, `osVersion`, `browser`, `browserVersion` and `deviceName` to be used for any generated sessions. _NOTE: only valid if **NOT** already specified in the `sessiongeneratorpluginmanager` section
+  - **platform** - `TestPlatform` object containing the `os`, `osVersion`, `browser`, `browserVersion` and `deviceName` to be used for any generated sessions. _NOTE: only valid if **NOT** already specified in the `sessiongeneratormanager` section
 
 ## Test Execution
-executing the tests using `npm test` should result in the output like the following sent to the console (assuming the `console-logging-plugin` is loaded and enabled):
+executing the tests using `npm test` should result in the output like the following sent to the console (assuming the `logmanager.level` is set to something like `info` in your `aftconfig.json`):
 ```
 14:51:33 - can access websites using AFT and Page Widgets and Facets - STEP  - 1: navigate to LoginPage...
 14:51:35 - can access websites using AFT and Page Widgets and Facets - STEP  - 2: login

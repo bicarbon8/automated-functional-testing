@@ -1,5 +1,5 @@
 {
-    "browsersessiongeneratorpluginmanager": {
+    "browsersessiongeneratormanager": {
         "pluginNames": [
             "browserstack-browser-session-generator-plugin",
             "saucelabs-browser-session-generator-plugin",

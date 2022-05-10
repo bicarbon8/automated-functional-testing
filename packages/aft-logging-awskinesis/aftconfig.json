@@ -1,5 +1,5 @@
 {
-    "loggingpluginmanager": {
+    "logmanager": {
         "pluginNames": ["kinesis-logging-plugin"],
         "searchDir": "../"
     },

@@ -50,7 +50,7 @@ export interface PluginManagerOptions {
  * ex: `aftconfig.json`
  * ```json
  * {
- *   "pluginmanagerinstance": {
+ *   "managerinstance": {
  *     ...
  *     "pluginNames": [
  *       "some-custom-plugin",

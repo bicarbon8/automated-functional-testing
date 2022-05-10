@@ -9,10 +9,10 @@ export class MobileAppVerifier extends Verifier {
     protected _sessionOptions: MobileAppSessionOptions;
 
     /**
-     * a {MobileAppSessionGeneratorPluginManager} instance used to generate new
+     * a {MobileAppSessionGeneratorManager} instance used to generate new
      * Mobile App sessions
      */
-    get sessionGeneratorPluginManager(): MobileAppSessionGeneratorManager {
+    get sessionGeneratorManager(): MobileAppSessionGeneratorManager {
         if (!this._sessionMgr) {
             this._sessionMgr = mobileAppSessionGeneratorMgr;
         }
@@ -41,15 +41,15 @@ export class MobileAppVerifier extends Verifier {
     }
 
     /**
-     * allows for passing in an instance of {MobileAppSessionGeneratorPluginManager} to be
+     * allows for passing in an instance of {MobileAppSessionGeneratorManager} to be
      * used in locating a {AbstractMobileAppSessionGeneratorPlugin} instance to use in 
      * generating a {MobileAppSession}.
-     * NOTE: if not set then the global {MobileAppSessionGeneratorPluginManager.instance()}
+     * NOTE: if not set then the global {MobileAppSessionGeneratorManager.instance()}
      * will be used
-     * @param sessionMgr a {MobileAppSessionGeneratorPluginManager} to be used instead of the Global instance
+     * @param sessionMgr a {MobileAppSessionGeneratorManager} to be used instead of the Global instance
      * @returns this {MobileAppVerifier} instance
      */
-    withMobileAppSessionGeneratorPluginManager(sessionMgr: MobileAppSessionGeneratorManager): this {
+    withMobileAppSessionGeneratorManager(sessionMgr: MobileAppSessionGeneratorManager): this {
         this._sessionMgr = sessionMgr;
         return this;
     }
@@ -68,7 +68,7 @@ export class MobileAppVerifier extends Verifier {
     protected override async _resolveAssertion(): Promise<void> {
         let opts: MobileAppSessionOptions = this.sessionOptions;
         opts.logMgr = opts.logMgr || this.logMgr;
-        await using(await this.sessionGeneratorPluginManager.newSession(opts), async (session) => {
+        await using(await this.sessionGeneratorManager.newSession(opts), async (session) => {
             this._session = session;
             await super._resolveAssertion();
         });

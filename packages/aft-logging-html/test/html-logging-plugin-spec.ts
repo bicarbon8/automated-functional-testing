@@ -68,10 +68,9 @@ describe('HtmlLoggingPlugin', () => {
         expect(actual).not.toContain('level info');
     });
 
-    it('can be loaded successfully from the LoggingPluginManager', async () => {
+    it('can be loaded successfully from the LogManager', async () => {
         let logMgr: LogManager = new LogManager({
-            pluginNames: ['html-logging-plugin'],
-            searchDir: './dist'
+            pluginNames: ['html-logging-plugin']
         });
         let plugins: LoggingPlugin[] = await logMgr.getPlugins();
 
