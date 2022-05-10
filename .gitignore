@@ -24,6 +24,6 @@ node_modules/
 #compiled js
 dist/
 *.tgz
-.yarn/
+.yarn/cache/
 coverage/
 .nyc_output/
