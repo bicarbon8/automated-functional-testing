@@ -1,5 +1,5 @@
 import * as path from "path";
-import { LoggingPlugin, LoggingPluginOptions, ITestResult, LoggingLevel, TestStatus } from "aft-core";
+import { LoggingPlugin, LoggingPluginOptions, ITestResult, LogLevel, TestStatus } from "aft-core";
 import { HtmlResult, HtmlTestResult, HtmlFileManager, htmlFileMgr } from "./html-file-manager";
 
 export interface HtmlLoggingPluginOptions extends LoggingPluginOptions {
@@ -67,10 +67,10 @@ export class HtmlLoggingPlugin extends LoggingPlugin {
         /* do nothing */
     }
 
-    async log(level: LoggingLevel, message: string): Promise<void> {
+    async log(level: LogLevel, message: string): Promise<void> {
         if (await this.enabled()) {
-            let expectedLevel: LoggingLevel = await this.level();
-            if (level.value >= expectedLevel.value && level.value != LoggingLevel.none.value) {
+            let expectedLevel: LogLevel = await this.level();
+            if (level.value >= expectedLevel.value && level.value != LogLevel.none.value) {
                 this._logs.push(`${level.name} - ${message}`);
                 let max: number = await this.maxLogLines();
                 while (this._logs.length > max) {

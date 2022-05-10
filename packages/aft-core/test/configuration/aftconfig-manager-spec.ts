@@ -1,6 +1,6 @@
 import { aftconfig } from "../../src/configuration/aftconfig-manager";
 import { rand } from "../../src/helpers/random-generator";
-import { LoggingLevel } from "../../src/plugins/logging/logging-level";
+import { LogLevel } from "../../src/plugins/logging/log-level";
 
 describe('AftConfigManager', () => {
     describe('loadJsonFile', () => {
@@ -34,7 +34,7 @@ describe('AftConfigManager', () => {
     
             expect(level).not.toBeNull();
             expect(level).not.toBeUndefined();
-            expect(level).toEqual(LoggingLevel.none.name);
+            expect(level).toEqual(LogLevel.none.name);
         });
 
         it('can modify loaded aftconfig.json object', async () => {

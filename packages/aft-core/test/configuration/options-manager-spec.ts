@@ -30,4 +30,13 @@ describe('OptionsManager', () => {
         expect(result.bar).toEqual('baz');
         expect(result.level).toEqual(await aftconfig.get('loggingpluginmanager.level', 'not-found'));
     });
+
+    it('returns the default value if specified key not found internally or in aftconfig', async () => {
+        const oMgr: OptionsManager = new OptionsManager('foobarbaz', {'foo': {'bar': {'baz': true}}});
+
+        const result: string = await oMgr.get('does-not-exist', 'default-value-return');
+        
+        expect(result).withContext('result is valid').toBeDefined();
+        expect(result).withContext('default value was returned').toEqual('default-value-return');
+    });
 });

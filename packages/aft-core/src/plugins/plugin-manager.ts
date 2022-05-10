@@ -95,7 +95,7 @@ export class PluginManager<T extends Plugin<Topts>, Topts extends PluginOptions>
     }
 
     async getFirstEnabledPlugin(): Promise<T> {
-        let plugins: T[] = await this.getEnabledPlugins();
+        const plugins: T[] = await this.getEnabledPlugins();
         if (plugins?.length) {
             return plugins[0];
         }
@@ -103,8 +103,8 @@ export class PluginManager<T extends Plugin<Topts>, Topts extends PluginOptions>
     }
 
     async getEnabledPlugins(): Promise<T[]> {
-        let enabled: T[] = [];
-        let plugins: T[] = await this.getPlugins();
+        const enabled: T[] = [];
+        const plugins: T[] = await this.getPlugins();
         if (plugins?.length) {
             for (var i=0; i<plugins.length; i++) {
                 let p: T = plugins[i];
@@ -131,9 +131,9 @@ export class PluginManager<T extends Plugin<Topts>, Topts extends PluginOptions>
     }
 
     private async _loadPlugins(): Promise<Map<string, T>> {
-        let plugins = new Map<string, T>();
-        let pNames: string[] = await this.getPluginNames();
-        let searchRoot: string = await this.getSearchDir();
+        const plugins = new Map<string, T>();
+        const pNames: string[] = await this.getPluginNames();
+        const searchRoot: string = await this.getSearchDir();
         if (pNames?.length) {
             for (var i=0; i<pNames.length; i++) {
                 let name: string = pNames[i];

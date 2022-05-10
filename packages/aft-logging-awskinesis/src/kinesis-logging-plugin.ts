@@ -1,4 +1,4 @@
-import { LoggingPlugin, LoggingLevel, ITestResult, MachineInfo, BuildInfoManager, LoggingPluginOptions, buildinfo } from "aft-core";
+import { LoggingPlugin, LogLevel, ITestResult, MachineInfo, BuildInfoManager, LoggingPluginOptions, buildinfo } from "aft-core";
 import { Firehose } from "aws-sdk";
 import pkg = require('../package.json');
 import AWS = require("aws-sdk");
@@ -89,10 +89,10 @@ export class KinesisLoggingPlugin extends LoggingPlugin {
         return this._batchSize;
     }
 
-    async log(level: LoggingLevel, message: string): Promise<void> {
+    async log(level: LogLevel, message: string): Promise<void> {
         if (await this.enabled()) {
-            let l: LoggingLevel = await this.level();
-            if (level.value >= l.value && level != LoggingLevel.none) {
+            let l: LogLevel = await this.level();
+            if (level.value >= l.value && level != LogLevel.none) {
                 let record: Firehose.Record = this._createKinesisLogRecord({
                     logName: await this.logName(),
                     level: level.name,

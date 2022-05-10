@@ -1,6 +1,6 @@
 import { Plugin, PluginOptions } from "../plugin";
 import { ITestResult } from "../test-cases/itest-result";
-import { LoggingLevel } from "./logging-level";
+import { LogLevel } from "./log-level";
 import { rand } from "../../helpers/random-generator";
 
 export interface LoggingPluginOptions extends PluginOptions {
@@ -10,7 +10,7 @@ export interface LoggingPluginOptions extends PluginOptions {
 
 export abstract class LoggingPlugin extends Plugin<LoggingPluginOptions> {
     private _name: string;
-    private _level: LoggingLevel;
+    private _level: LogLevel;
     constructor(options?: LoggingPluginOptions) {
         super(options);
     }
@@ -20,13 +20,13 @@ export abstract class LoggingPlugin extends Plugin<LoggingPluginOptions> {
         }
         return this._name;
     }
-    async level(): Promise<LoggingLevel> {
+    async level(): Promise<LogLevel> {
         if (!this._level) {
-            let lvl: string = await this.optionsMgr.get('level', LoggingLevel.none.name);
-            this._level = LoggingLevel.parse(lvl);
+            let lvl: string = await this.optionsMgr.get('level', LogLevel.none.name);
+            this._level = LogLevel.parse(lvl);
         }
         return this._level;
     }
-    abstract log(level: LoggingLevel, message: string): Promise<void>;
+    abstract log(level: LogLevel, message: string): Promise<void>;
     abstract logResult(result: ITestResult): Promise<void>;
 }

@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { LoggingLevel, rand, TestStatus } from "aft-core";
+import { LogLevel, rand, TestStatus } from "aft-core";
 import { HtmlFileManager, HtmlLoggingPlugin, HtmlResult, HtmlTestResult } from "../src";
 
 describe('HtmlFileManager', () => {
@@ -23,8 +23,8 @@ describe('HtmlFileManager', () => {
         });
         await plugin.onLoad();
 
-        await plugin.log(LoggingLevel.pass, rand.getString(123));
-        await plugin.log(LoggingLevel.error, rand.getString(123));
+        await plugin.log(LogLevel.pass, rand.getString(123));
+        await plugin.log(LogLevel.error, rand.getString(123));
         await plugin.logResult({
             created: new Date(),
             resultId: rand.guid,

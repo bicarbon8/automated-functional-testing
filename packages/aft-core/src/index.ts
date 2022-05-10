@@ -28,7 +28,7 @@ export * from './plugins/defects/defect-manager';
 /** plugins/logging */
 export * from './plugins/logging/format-options';
 export * from './plugins/logging/log-manager';
-export * from './plugins/logging/logging-level';
+export * from './plugins/logging/log-level';
 export * from './plugins/logging/logging-plugin';
 /** plugins/test-cases */
 export * from './plugins/test-cases/test-case-plugin';

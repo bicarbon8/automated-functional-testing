@@ -1,5 +1,5 @@
 import { KinesisLoggingPlugin } from "../src/kinesis-logging-plugin";
-import { MachineInfo, TestStatus, LoggingLevel, rand, ITestResult } from "aft-core";
+import { MachineInfo, TestStatus, LogLevel, rand, ITestResult } from "aft-core";
 import pkg = require('../package.json');
 import Firehose = require("aws-sdk/clients/firehose");
 import { KinesisConfig } from "../src/configuration/kinesis-config";
@@ -9,7 +9,7 @@ describe('KinesisLoggingPlugin', () => {
     it('can batch messages for sending', async () => {
         let plugin: KinesisLoggingPlugin = new KinesisLoggingPlugin({
             enabled: true,
-            level: LoggingLevel.info.name,
+            level: LogLevel.info.name,
             batch: true,
             batchSize: 10
         });
@@ -23,7 +23,7 @@ describe('KinesisLoggingPlugin', () => {
 
         for (var i=0; i<20; i++) {
             let logMessage: string = rand.getString(99, true, true);
-            await plugin.log(LoggingLevel.warn, logMessage);
+            await plugin.log(LogLevel.warn, logMessage);
         }
 
         expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(20);
@@ -34,7 +34,7 @@ describe('KinesisLoggingPlugin', () => {
     it('can disable batch sending of messages', async () => {
         let plugin: KinesisLoggingPlugin = new KinesisLoggingPlugin({
             enabled: true,
-            level: LoggingLevel.info.name,
+            level: LogLevel.info.name,
             batch: false,
             batchSize: 10
         });
@@ -48,7 +48,7 @@ describe('KinesisLoggingPlugin', () => {
 
         for (var i=0; i<20; i++) {
             let logMessage: string = rand.getString(99, true, true);
-            await plugin.log(LoggingLevel.warn, logMessage);
+            await plugin.log(LogLevel.warn, logMessage);
         }
 
         expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(20);
@@ -59,7 +59,7 @@ describe('KinesisLoggingPlugin', () => {
     it('sends any unsent batched logs on dispose', async () => {
         let plugin: KinesisLoggingPlugin = new KinesisLoggingPlugin({
             enabled: true,
-            level: LoggingLevel.info.name,
+            level: LogLevel.info.name,
             batch: true,
             batchSize: 10
         });
@@ -73,7 +73,7 @@ describe('KinesisLoggingPlugin', () => {
 
         for (var i=0; i<9; i++) {
             let logMessage: string = rand.getString(99, true, true);
-            await plugin.log(LoggingLevel.warn, logMessage);
+            await plugin.log(LogLevel.warn, logMessage);
         }
 
         expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(9);
@@ -89,7 +89,7 @@ describe('KinesisLoggingPlugin', () => {
     it('only sends messages of the appropriate level', async () => {
         let plugin: KinesisLoggingPlugin = new KinesisLoggingPlugin({
             enabled: true,
-            level: LoggingLevel.info.name,
+            level: LogLevel.info.name,
             batch: false,
             batchSize: 10
         });
@@ -101,9 +101,9 @@ describe('KinesisLoggingPlugin', () => {
             /* do nothing */
         });
 
-        await plugin.log(LoggingLevel.debug, rand.guid);
-        await plugin.log(LoggingLevel.info, rand.guid);
-        await plugin.log(LoggingLevel.warn, rand.guid);
+        await plugin.log(LogLevel.debug, rand.guid);
+        await plugin.log(LogLevel.info, rand.guid);
+        await plugin.log(LogLevel.warn, rand.guid);
 
         expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(2);
         expect(spySendBatch).toHaveBeenCalledTimes(0);
@@ -114,7 +114,7 @@ describe('KinesisLoggingPlugin', () => {
         let plugin: KinesisLoggingPlugin = new KinesisLoggingPlugin({
             logName: 'adds expected fields to the log record',
             enabled: true,
-            level: LoggingLevel.info.name,
+            level: LogLevel.info.name,
             batch: false,
             batchSize: 10
         });
@@ -123,11 +123,11 @@ describe('KinesisLoggingPlugin', () => {
         });
 
         let expectedMessage: string = rand.guid;
-        await plugin.log(LoggingLevel.warn, expectedMessage);
+        await plugin.log(LogLevel.warn, expectedMessage);
 
         let logRecord: Firehose.Record = TestStore.get<Firehose.Record>('_send');
         let data: KinesisLogRecord = JSON.parse(logRecord.Data.toString()) as KinesisLogRecord;
-        expect(data.level).toEqual(LoggingLevel.warn.name);
+        expect(data.level).toEqual(LogLevel.warn.name);
         expect(data.logName).toEqual('adds expected fields to the log record');
         expect(data.message).toEqual(expectedMessage);
         expect(data.machineInfo).toEqual(await MachineInfo.get());
@@ -143,7 +143,7 @@ describe('KinesisLoggingPlugin', () => {
         let plugin: KinesisLoggingPlugin = new KinesisLoggingPlugin({
             logName: 'can send real logs and ITestResult objects',
             enabled: true,
-            level: LoggingLevel.trace.name,
+            level: LogLevel.trace.name,
             batch: true,
             batchSize: 10,
             _config: new KinesisConfig({
@@ -164,7 +164,7 @@ describe('KinesisLoggingPlugin', () => {
         };
         let message: string = rand.getString(250);
 
-        await plugin.log(LoggingLevel.info, message);
+        await plugin.log(LogLevel.info, message);
         await plugin.logResult(result);
         await plugin.dispose();
     });

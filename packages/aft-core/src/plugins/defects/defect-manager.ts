@@ -8,7 +8,11 @@ export interface DefectManagerOptions extends DefectPluginOptions, PluginManager
 }
 
 /**
- * loads and provides an interface between any `IDefectPlugin`
+ * loads and provides an interface between any `DefectPlugin`
+ * to lookup defects in connected systems such as Jira, Bugzilla
+ * or any other system that is used to store product defects so 
+ * they can be used for test execution control (i.e. a test with
+ * and associated open defect will not be executed)
  * to specify a plugin use the following `aftconfig.json` key:
  * ```
  * {

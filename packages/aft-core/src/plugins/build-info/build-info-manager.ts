@@ -33,6 +33,11 @@ export class BuildInfoManager extends PluginManager<BuildInfoPlugin, BuildInfoPl
         this._logMgr = options?._logMgr || new LogManager({logName: this.optionsMgr.key, pluginNames: []});
     }
 
+    /**
+     * returns a build name as provided by the first enabled plugin
+     * @returns the build name returned by the first enabled plugin
+     * or null if none exist
+     */
     async getBuildName(): Promise<string> {
         return await this.getFirstEnabledPlugin()
         .then(async (plugin) => {
@@ -43,6 +48,12 @@ export class BuildInfoManager extends PluginManager<BuildInfoPlugin, BuildInfoPl
         });
     }
 
+    /**
+     * returns a build number as a string as provided by the first enabled
+     * plugin
+     * @returns the build number returned by the first enabled plugin
+     * or null if none exist
+     */
     async getBuildNumber(): Promise<string> {
         return await this.getFirstEnabledPlugin()
         .then(async (plugin) => {

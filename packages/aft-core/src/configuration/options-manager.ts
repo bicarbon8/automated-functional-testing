@@ -63,7 +63,6 @@ export class OptionsManager {
             return val;
         } 
         let val: Tval = await aftconfig.get<Tval>(`${this.key}`, defaultVal);
-        val = val || {} as Tval;
         return {...val, ...this._options} as Tval;
     }
 }

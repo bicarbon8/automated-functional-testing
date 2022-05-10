@@ -1,6 +1,6 @@
 import { LoggingPluginStore } from "./logging-plugin-store";
 import { LogMessage } from "./log-message";
-import { LoggingPlugin, LoggingPluginOptions, ITestResult, LoggingLevel } from "../../../src";
+import { LoggingPlugin, LoggingPluginOptions, ITestResult, LogLevel } from "../../../src";
 
 export class MockLoggingPlugin extends LoggingPlugin {
     private _lps: LoggingPluginStore;
@@ -11,7 +11,7 @@ export class MockLoggingPlugin extends LoggingPlugin {
 
     async lps(): Promise<LoggingPluginStore> {
         if (!this._lps) {
-            this._lps = await this.optionsMgr.get('lps', null);
+            this._lps = await this.optionsMgr.get<LoggingPluginStore>('lps', {logs: [], results: []});
         }
         return this._lps;
     }
@@ -21,7 +21,7 @@ export class MockLoggingPlugin extends LoggingPlugin {
         const lvl = await this.level();
         lps.lvl = lvl;
     }
-    async log(level: LoggingLevel, message: string): Promise<void> {
+    async log(level: LogLevel, message: string): Promise<void> {
         const lps = await this.lps();
         if (!lps.logs?.length) {
             lps.logs = [];

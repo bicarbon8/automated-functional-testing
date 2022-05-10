@@ -1,39 +1,79 @@
+import { convert } from '../../helpers/converter';
 import { ellide } from '../../helpers/ellide';
 
+/**
+ * provides a standardised way of generating log-friendly exception details
+ * in either short or full formatting. Usage would look like:
+ * ```json
+ * try {
+ *   functionThatThrowsTypeError();
+ * } catch (e: Error) {
+ *   await logManager.warn(TestException.short(e));
+ *   await logManager.warn(TestException.full(e));
+ * }
+ * ```
+ * which would output:
+ * ```
+ * YYYYMMDD - [AFT] - WARN  - TypeError: [100 characters of description] --- [100 characters of the stack trace]
+ * YYYYMMDD - [AFT] - WARN  - TypeError: [full type error description message] --- [full stack trace of as much as the Error contained]
+ * ```
+ */
 export class TestException {
-    Type: string;
-    Message: string;
-    StackTrace: string;
+    readonly err: Error;
 
-    constructor(err: Error, full: boolean = true) {
-        if (err) {
-            let message: string = this.removeBadCharacters(err.message);
-            let stack: string = this.removeBadCharacters(err.stack);
+    private readonly _type: string;
+    private readonly _message: string;
+    private readonly _stack: string;
 
-            let msg = (full) ? message : ellide(message, 100);
-            let stk = (full) ? stack : ellide(stack, 100);
-
-            this.Type = err.name;
-            this.Message = msg;
-            this.StackTrace = stk;
+    constructor(err: Error) {
+        this.err = err;
+        if (this.err) {
+            this._type = err.name;
+            this._message = this._removeBadCharacters(err.message);
+            this._stack = this._removeBadCharacters(err.stack);
         }
     }
 
-    private removeBadCharacters(input: string): string {
-        return (input) ? input.replace('`', '').replace('<', '&lt;').replace('>', '&gt;') : '';
+    short(): string {
+        return this._formatOutput(false);
     }
 
-    asSimpleString() {
-        return this.Type + ': ' + this.Message + ' --- ' + this.StackTrace;
+    full(): string {
+        return this._formatOutput(true);
+    }
+
+    private _removeBadCharacters(input: string): string {
+        return (input) ? convert.toSafeString(input, [
+            {exclude: /\`/g, replaceWith: ''},
+            {exclude: /\</g, replaceWith: '&lt;'},
+            {exclude: /\>/g, replaceWith: '&gt;'},
+            {exclude: /[\n\t]/g, replaceWith: ''}
+        ]) : '';
+    }
+
+    private _formatOutput(full: boolean): string {
+        let msg = (full) ? this._message : ellide(this._message, 100);
+        let stk = (full) ? this._stack : ellide(this._stack, 100);
+        return `${this._type}: ${msg} --- ${stk}`;
     }
 }
 
 export module TestException {
-    export function generate(err: Error): TestException {
-        return new TestException(err, false);
+    /**
+     * @param err the `Error` to parse
+     * @returns a shortened string formatted as `Error.name: Error.message --- Error.stack`
+     * where any single quotes are removed, and some elements are HTML encoded
+     */
+    export function short(err: Error): string {
+        return new TestException(err).short();
     }
 
-    export function generateFull(err: Error): TestException {
-        return new TestException(err, true);
+    /**
+     * @param err the `Error` to parse
+     * @returns a full length string formatted as `Error.name: Error.message --- Error.stack`
+     * where any single quotes are removed and smoe elements are HTML encoded
+     */
+    export function full(err: Error): string {
+        return new TestException(err).full();
     }
 }

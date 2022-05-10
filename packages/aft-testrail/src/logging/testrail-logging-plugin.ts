@@ -1,4 +1,4 @@
-import { LoggingPlugin, LoggingLevel, ITestResult, EllipsisLocation, ellide, LoggingPluginOptions } from "aft-core";
+import { LoggingPlugin, LogLevel, ITestResult, EllipsisLocation, ellide, LoggingPluginOptions } from "aft-core";
 import { TestRailApi } from "../api/testrail-api";
 import { TestRailResultRequest } from "../api/testrail-result-request";
 import { TestRailPlan } from "../api/testrail-plan";
@@ -55,9 +55,9 @@ export class TestRailLoggingPlugin extends LoggingPlugin {
         return this._maxLogChars;
     }
 
-    async log(level: LoggingLevel, message: string): Promise<void> {
+    async log(level: LogLevel, message: string): Promise<void> {
         if (await this.enabled()) {
-            let l: LoggingLevel = await this.level();
+            let l: LogLevel = await this.level();
             if (level.value >= l.value) {
                 if (this._logs.length > 0) {
                     this._logs += '\n'; // separate new logs from previous

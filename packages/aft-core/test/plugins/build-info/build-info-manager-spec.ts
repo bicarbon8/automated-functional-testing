@@ -1,4 +1,4 @@
-import { BuildInfoManager, BuildInfoPlugin } from "../../../src";
+import { BuildInfoManager, BuildInfoPlugin, MachineInfo, MachineInfoData } from "../../../src";
 
 describe('BuildInfoPluginManager', () => {
     it('assigns a configuration key based on the class name', () => {
@@ -8,7 +8,7 @@ describe('BuildInfoPluginManager', () => {
         expect(actual).toEqual('buildinfomanager');
     });
     
-    it('can load a specified IBuildInfoHandlerPlugin', async () => {
+    it('can load a specified BuildInfoPlugin', async () => {
         let manager: BuildInfoManager = new BuildInfoManager({pluginNames: ['mock-build-info-plugin']});
         let actual: BuildInfoPlugin[] = await manager.getPlugins();
         
@@ -29,5 +29,25 @@ describe('BuildInfoPluginManager', () => {
         let mgr: BuildInfoManager = new BuildInfoManager({pluginNames: ['mock-build-info-plugin']});
 
         expect(await mgr.getBuildNumber()).toMatch(/MockBuildNumber-[0-9]{3}/);
+    });
+
+    it('will generate a string based on the machine user and name if no BuildInfoPlugin available', async () => {
+        let mgr: BuildInfoManager = new BuildInfoManager({pluginNames: []});
+        const actual: string = await mgr.get();
+        const mi: MachineInfoData = await MachineInfo.get();
+
+        expect(actual).withContext('is valid string').toBeDefined();
+        expect(actual).withContext('machineName').toContain(mi.name);
+        expect(actual).withContext('machineUser').toContain(mi.user);
+    });
+
+    it('will generate a string based on the plugin if a BuildInfoPlugin is available', async () => {
+        let mgr: BuildInfoManager = new BuildInfoManager({pluginNames: ['mock-build-info-plugin']});
+        const actual: string = await mgr.get();
+        const mi: MachineInfoData = await MachineInfo.get();
+
+        expect(actual).withContext('is valid string').toBeDefined();
+        expect(actual).withContext('machineName').not.toContain(mi.name);
+        expect(actual).withContext('machineUser').not.toContain(mi.user);
     });
 });
