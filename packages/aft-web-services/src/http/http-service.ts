@@ -1,26 +1,80 @@
-import { HttpRequest } from "./http-request";
-import { HttpResponse } from "./http-response";
-import { OptionsManager } from "aft-core";
+import { cfgmgr, IConfigProvider, IHasConfig, IHasOptions, LogManager, optmgr } from "aft-core";
 import * as http from 'http';
 import * as https from 'https';
 import * as FormData from "form-data";
+import { HttpMethod, HttpRequest, HttpResponse } from "./http-custom-types";
 
-export interface HttpServiceOptions {
+export type HttpServiceOptions = {
     defaultUrl?: string;
-    defaultAllowRedirect?: boolean;
-    defaultHeaders?: http.OutgoingHttpHeaders;
+    defaultHeaders?: object;
     defaultMethod?: string;
+    defaultAllowRedirect?: boolean;
     defaultPostData?: string;
     defaultMultipart?: boolean;
-    
-    _optMgr?: OptionsManager;
-}
+    defaultLogMgr?: LogManager;
+};
 
-export class HttpService {
-    readonly optionsMgr: OptionsManager;
+/**
+ * supports performing requests over http / https returning the response as a
+ * `HttpResponse` object. Requests should include a URL at a minimum,
+ * but may also specify additional details such as headers, auto redirect,
+ * post data and the request method (GET|POST|PUT|DELETE|UPDATE)
+ * ex:
+ * ```typescript
+ * await httpService.performRequest({url: 'https://some.domain/path'});
+ * ```
+ * or fully as:
+ * ```typescript
+ * await httpService.performRequest({
+ *     url: 'https://some.domain/path',
+ *     allowAutoRedirect: false,
+ *     headers: {"Authorization": "basic AS0978FASLKLJA/=="},
+ *     method: 'POST',
+ *     postData: someObject,
+ *     multipart: false
+ * });
+ * ```
+ * or multipart post as:
+ * ```typescript
+ * let formData = new FormData();
+ * formData.append("Authorization": "basic AS0978FASLKLJA/==");
+ * await httpService.performRequest({
+ *     url: 'https://some.domain/path',
+ *     allowAutoRedirect: false,
+ *     method: 'POST',
+ *     postData: formData,
+ *     multipart: true
+ * });
+ * ```
+ */
+export class HttpService implements IHasConfig<HttpServiceOptions>, IHasOptions<HttpServiceOptions> {
+    private _config: IConfigProvider<HttpServiceOptions>;
+    private _opts: HttpServiceOptions;
+    private _logMgr: LogManager;
 
     constructor(options?: HttpServiceOptions) {
-        this.optionsMgr = options?._optMgr || new OptionsManager(this.constructor.name.toLowerCase(), options);
+        options = options || {} as HttpServiceOptions;
+        this._opts = optmgr.process(options);
+    }
+
+    option<K extends keyof HttpServiceOptions, V extends HttpServiceOptions[K]>(key: K, defaultVal?: V): V {
+        const result: V = this._opts[key] as V;
+        return (result === undefined) ? defaultVal : result;
+    }
+
+    config<K extends keyof HttpServiceOptions, V extends HttpServiceOptions[K]>(key: K, defaultVal?: V): Promise<V> {
+        if (!this._config) {
+            this._config = cfgmgr.get(this.constructor.name, this._opts);
+        }
+        return this._config.get(key, defaultVal);
+    }
+    
+    
+    async defaultLogMgr(): Promise<LogManager> {
+        if (!this._logMgr) {
+            this._logMgr = await this.config('defaultLogMgr') || new LogManager({logName: this.constructor.name});
+        }
+        return this._logMgr;
     }
 
     /**
@@ -29,11 +83,11 @@ export class HttpService {
      * but may also specify additional details such as headers, auto redirect,
      * post data and the request method (GET|POST|PUT|DELETE|UPDATE)
      * ex:
-     * ```
+     * ```typescript
      * await httpService.performRequest({url: 'https://some.domain/path'});
      * ```
      * or fully as:
-     * ```
+     * ```typescript
      * await httpService.performRequest({
      *     url: 'https://some.domain/path',
      *     allowAutoRedirect: false,
@@ -44,7 +98,7 @@ export class HttpService {
      * });
      * ```
      * or multipart post as:
-     * ```
+     * ```typescript
      * let formData = new FormData();
      * formData.append("Authorization": "basic AS0978FASLKLJA/==");
      * await httpService.performRequest({
@@ -55,7 +109,7 @@ export class HttpService {
      *     multipart: true
      * });
      * ```
-     * @param req a {HttpResponse} object that specifies details of the request
+     * @param req a `HttpResponse` object that specifies details of the request
      */
     async performRequest(req?: HttpRequest): Promise<HttpResponse> {
         req = await this.setRequestDefaults(req);
@@ -70,19 +124,18 @@ export class HttpService {
     }
 
     private async setRequestDefaults(req?: HttpRequest): Promise<HttpRequest> {
-        if (!req) {
-            req = {} as HttpRequest;
-        }
-        req.url = req.url || await this.optionsMgr.get('defaultUrl', 'http://127.0.0.1');
-        req.headers = req.headers || await this.optionsMgr.get('defaultHeaders', {});
-        req.method = req.method || await this.optionsMgr.get('defaultMethod', 'GET');
+        req = req || {} as HttpRequest;
+        req.url = req.url || await this.config('defaultUrl', 'http://127.0.0.1');
+        req.headers = req.headers || await this.config('defaultHeaders', {});
+        req.method = req.method || await this.config<any, HttpMethod>('defaultMethod', 'GET');
         if (req.allowAutoRedirect === undefined) {
-            req.allowAutoRedirect = await this.optionsMgr.get('defaultAllowRedirect', true);
+            req.allowAutoRedirect = await this.config('defaultAllowRedirect', true);
         }
-        req.postData = req.postData || await this.optionsMgr.get('defaultPostData');
+        req.postData = req.postData || await this.config('defaultPostData');
         if (req.multipart === undefined) {
-            req.multipart = await this.optionsMgr.get('defaultMultipart', false);
+            req.multipart = await this.config('defaultMultipart', false);
         }
+        req.logMgr = req.logMgr || await this.defaultLogMgr();
         return req;
     }
 
@@ -135,10 +188,10 @@ export class HttpService {
             let redirectedMessage: http.IncomingMessage = await this._request(req);
             return await this._response(redirectedMessage, req);
         } else {
-            let response: HttpResponse = new HttpResponse({
+            let response: HttpResponse = {
                 statusCode: message.statusCode,
                 headers: message.headers
-            });
+            };
             await new Promise<any>((resolve, reject) => {
                 try {
                     message.on('data', (chunk) => {
@@ -157,4 +210,37 @@ export class HttpService {
     }
 }
 
+/**
+ * supports performing requests over http / https returning the response as a
+ * `HttpResponse` object. Requests should include a URL at a minimum,
+ * but may also specify additional details such as headers, auto redirect,
+ * post data and the request method (GET|POST|PUT|DELETE|UPDATE)
+ * ex:
+ * ```typescript
+ * await httpService.performRequest({url: 'https://some.domain/path'});
+ * ```
+ * or fully as:
+ * ```typescript
+ * await httpService.performRequest({
+ *     url: 'https://some.domain/path',
+ *     allowAutoRedirect: false,
+ *     headers: {"Authorization": "basic AS0978FASLKLJA/=="},
+ *     method: 'POST',
+ *     postData: someObject,
+ *     multipart: false
+ * });
+ * ```
+ * or multipart post as:
+ * ```typescript
+ * let formData = new FormData();
+ * formData.append("Authorization": "basic AS0978FASLKLJA/==");
+ * await httpService.performRequest({
+ *     url: 'https://some.domain/path',
+ *     allowAutoRedirect: false,
+ *     method: 'POST',
+ *     postData: formData,
+ *     multipart: true
+ * });
+ * ```
+ */
 export const httpService = new HttpService();

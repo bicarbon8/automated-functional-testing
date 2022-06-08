@@ -1,13 +1,16 @@
+import * as fs from "fs";
+import * as path from "path";
 import { TestRailApi } from "../../src/api/testrail-api";
 import { HttpRequest, HttpResponse, httpService } from "aft-web-services";
-import { TestRailCache } from "../../src/api/testrail-cache";
-import { TestRailConfig } from "../../src";
-import { TestRailPlanEntry } from "../../src/api/testrail-plan-entry";
-import { TestRailPlan } from "../../src/api/testrail-plan";
+import { TestRailConfig, TestRailConfigOptions } from "../../src";
+import { TestRailPlan, TestRailPlanEntry } from "../../src/api/testrail-custom-types";
 
 describe('TestRailApi', () => {
-    afterEach(() => {
-        TestRailCache.instance.clear();
+    beforeEach(() => {
+        const fsmapPath: string = path.join(process.cwd(), 'FileSystemMap');
+        if (fs.existsSync(fsmapPath)) {
+            fs.rmSync(fsmapPath, {recursive: true, force: true});
+        }
     });
 
     /**
@@ -16,7 +19,7 @@ describe('TestRailApi', () => {
      */
     xit('retries on Rate Limit Error response (long running)', async () => {
         spyOn(httpService, 'performRequest').and.callFake(async (request: HttpRequest): Promise<HttpResponse> => {
-            let response: HttpResponse = new HttpResponse();
+            let response: HttpResponse = {};
             if (TestStore.count < 1) {
                 response.statusCode = 429;
                 response.data = '{"error":"API Rate Limit Exceeded"}';
@@ -29,11 +32,12 @@ describe('TestRailApi', () => {
             return response;
         });
 
-        let config: TestRailConfig = new TestRailConfig({
+        const opts: TestRailConfigOptions = {
             url: 'http://127.0.0.1/',
             user: 'fake@fake.fake',
             accesskey: 'fake_key'
-        });
+        };
+        let config: TestRailConfig = new TestRailConfig(opts);
         let api: TestRailApi = new TestRailApi(config);
 
         try {
@@ -56,19 +60,20 @@ describe('TestRailApi', () => {
                     } as TestRailPlanEntry
                 ]
             } as TestRailPlan;
-            let response: HttpResponse = new HttpResponse({
+            let response: HttpResponse = {
                 statusCode: 200,
                 headers: {},
                 data: JSON.stringify(plan)
-            });
+            };
             return response;
         });
 
-        let config: TestRailConfig = new TestRailConfig({
+        const opts: TestRailConfigOptions = {
             url: 'http://127.0.0.1/',
             user: 'fake@fake.fake',
             accesskey: 'fake_key'
-        });
+        };
+        let config: TestRailConfig = new TestRailConfig(opts);
         let api: TestRailApi = new TestRailApi(config);
         let plan: TestRailPlan = await api.getPlan(123);
 
@@ -89,19 +94,20 @@ describe('TestRailApi', () => {
 
     it('will not cache non 200-299 status code responses', async () => {
         spyOn(httpService, 'performRequest').and.callFake(async (request: HttpRequest): Promise<HttpResponse> => {
-            let response: HttpResponse = new HttpResponse({
+            let response: HttpResponse = {
                 statusCode: 404,
                 data: '{}',
                 headers: {}
-            });
+            };
             return response;
         });
 
-        let config: TestRailConfig = new TestRailConfig({
+        const opts: TestRailConfigOptions = {
             url: 'http://127.0.0.1/',
             user: 'fake@fake.fake',
             accesskey: 'fake_key'
-        });
+        };
+        let config: TestRailConfig = new TestRailConfig(opts);
         let api: TestRailApi = new TestRailApi(config);
         let test: any = await api.getPlan(123);
 
@@ -125,19 +131,20 @@ describe('TestRailApi', () => {
                     } as TestRailPlanEntry
                 ]
             } as TestRailPlan;
-            let response: HttpResponse = new HttpResponse({
+            let response: HttpResponse = {
                 statusCode: 200,
                 headers: {},
                 data: JSON.stringify(plan)
-            });
+            };
             return response;
         });
 
-        let config: TestRailConfig = new TestRailConfig({
+        const opts: TestRailConfigOptions = {
             url: 'http://127.0.0.1/',
             user: 'fake@fake.fake',
             accesskey: 'fake_key'
-        });
+        };
+        let config: TestRailConfig = new TestRailConfig(opts);
         let api: TestRailApi = new TestRailApi(config);
         let plan: TestRailPlan = await api.createPlan(1, [2, 3]);
 

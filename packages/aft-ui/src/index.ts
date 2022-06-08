@@ -1,9 +1,9 @@
 /* configuration */
-export * from './configuration/test-platform';
+export * from './configuration/ui-platform';
 /* facets */
-export * from './facets/abstract-facet';
-export * from './facets/ielement-options';
+export * from './facets/ui-facet';
+export * from './facets/ui-element-options';
 /* sessions */
-export * from './sessions/session-generator-plugin';
-export * from './sessions/isession';
-export * from './sessions/session-generator-manager';
+export * from './sessions/ui-session-generator-plugin';
+export * from './sessions/ui-session';
+export * from './sessions/ui-session-generator-manager';

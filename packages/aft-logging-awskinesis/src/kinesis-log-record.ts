@@ -1,10 +1,10 @@
-import { ITestResult, MachineInfoData } from "aft-core";
+import { TestResult, MachineInfoData } from "aft-core";
 
 export interface KinesisLogRecord {
     logName?: string;
     message?: string;
     level?: string;
-    result?: ITestResult;
+    result?: TestResult;
     version?: string;
     buildName?: string;
     buildNumber?: string;

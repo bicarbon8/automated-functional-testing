@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         /* Basic Options */
-        "target": "es5",
+        "target": "es6",
         "module": "commonjs",
         "lib": ["es5", "dom", "scripthost", "es2018.promise"],
         "sourceMap": true,

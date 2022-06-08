@@ -31,9 +31,10 @@
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
     "aft-core": "^7.0.0",
-    "aws-sdk": "^2.897.0"
+    "aws-sdk": "^2.1151.0"
   },
   "devDependencies": {
+    "@aws-sdk/types": "^3.78.0",
     "@types/jasmine": "^3.6.10",
     "@types/node": "^15.0.1",
     "jasmine": "^3.7.0",

@@ -1,25 +1,27 @@
 import { By, Capabilities } from 'selenium-webdriver';
 import { using, LogManager, rand, buildinfo } from "aft-core";
-import { TestPlatform } from "aft-ui";
-import { BrowserFacet, SauceLabsBrowserSessionGeneratorPlugin, SauceLabsBrowserSessionGeneratorPluginOptions } from '../../../src';
-import { SauceLabsConfig } from '../../../src/sessions/sauce-labs/configuration/sauce-labs-config';
+import { UiPlatform } from "aft-ui";
+import { BrowserFacet, BrowserFacetOptions, SauceLabsBrowserSessionGeneratorPlugin, SauceLabsBrowserSessionGeneratorPluginOptions, SauceLabsConfig } from '../../../src';
 
 describe('SauceLabsBrowserSessionGeneratorPlugin', () => {
     it('can generate capabilities from the passed in SessionOptions', async () => {
-        let plt: TestPlatform = new TestPlatform({
+        let plt: UiPlatform = new UiPlatform({
             os: 'os-' + rand.getString(10),
             osVersion: 'osVersion-' + rand.getString(2, false, true),
             browser: 'browser-' + rand.getString(15),
             browserVersion: 'browserVersion-' + rand.getString(2, false, true),
             deviceName: 'deviceName-' + rand.getString(22)
         });
-        let opts: SauceLabsBrowserSessionGeneratorPluginOptions = {
+        const config: SauceLabsConfig = new SauceLabsConfig({
             username: rand.getString(10, true, false, false, false),
             accessKey: rand.getString(12, true, true, false, false),
-            platform: plt.toString(),
             resolution: rand.getString(4, false, true) + 'x' + rand.getString(4, false, true),
             tunnel: true,
-            tunnelId: rand.getString(11, true),
+            tunnelId: rand.getString(11, true)
+        });
+        let opts: SauceLabsBrowserSessionGeneratorPluginOptions = {
+            config: config,
+            uiplatform: plt.toString(),
             logMgr: new LogManager({logName:'can generate capabilities from the passed in SessionOptions'})
         }
         let session: SauceLabsBrowserSessionGeneratorPlugin = new SauceLabsBrowserSessionGeneratorPlugin(opts);
@@ -34,9 +36,9 @@ describe('SauceLabsBrowserSessionGeneratorPlugin', () => {
         let sauceOpts: object = caps.get('sauce:options');
         expect(sauceOpts).toBeDefined();
         expect(sauceOpts['build']).toEqual(await buildinfo.get());
-        expect(sauceOpts['name']).toEqual(await opts.logMgr.logName());
-        expect(sauceOpts['screenResolution']).toEqual(opts.resolution);
-        expect(sauceOpts['tunnelIdentifier']).toEqual(opts.tunnelId);
+        expect(sauceOpts['name']).toEqual(opts.logMgr.logName);
+        expect(sauceOpts['screenResolution']).toEqual(await config.resolution());
+        expect(sauceOpts['tunnelIdentifier']).toEqual(await config.tunnelId());
     });
     
     /**
@@ -48,15 +50,15 @@ describe('SauceLabsBrowserSessionGeneratorPlugin', () => {
      * - sauce_access_key
      */
     xit('can create a session in Sauce Labs', async () => {
-        let config: SauceLabsConfig = new SauceLabsConfig({
+        const config: SauceLabsConfig = new SauceLabsConfig({
             username: 'fake-username',
-            accessKey: 'fake-accesskey'
+            accessKey: 'fake-accesskey',
         });
         let plugin: SauceLabsBrowserSessionGeneratorPlugin = new SauceLabsBrowserSessionGeneratorPlugin({
-            _config: config,
-            platform: 'windows_10_chrome'
+            uiplatform: 'windows_10_chrome',
+            config: config
         });
-        await using (await plugin.newSession(), async (session) => {
+        await using (await plugin.newUiSession(), async (session) => {
             let expectedUrl: string = 'https://the-internet.herokuapp.com/login';
             await session.goTo(expectedUrl);
 
@@ -64,10 +66,10 @@ describe('SauceLabsBrowserSessionGeneratorPlugin', () => {
 
             expect(actualUrl).toEqual(expectedUrl);
 
-            let facet: BrowserFacet = await session.getFacet(BrowserFacet, {locator: By.css('button.radius')});
+            let facet: BrowserFacet = await session.getFacet<BrowserFacet, BrowserFacetOptions>(BrowserFacet, {locator: By.css('button.radius')});
 
             expect(facet).toBeDefined();
-            expect(await facet.getRoot().then(async (r) => await r.getText())).toEqual('Login');
+            expect(await facet.getRoot().then(r => r.getText())).toEqual('Login');
         });
     }, 300000);
 });

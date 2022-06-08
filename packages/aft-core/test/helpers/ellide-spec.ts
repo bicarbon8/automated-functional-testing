@@ -23,7 +23,7 @@ describe('ellide', () => {
     it('can override ellipsis at the end of a string', () => {
         const original: string = rand.getStringFrom(100, rand.ALPHAS + ' ');
 
-        const actual: string = ellide(original, 50, EllipsisLocation.end, '.....');
+        const actual: string = ellide(original, 50, 'end', '.....');
 
         expect(actual.length).withContext('length should be as specified by finalLength argument').toBe(50);
         expect(actual.slice(0, 45)).withContext('first part of string should match').toEqual(original.slice(0, 45));
@@ -33,7 +33,7 @@ describe('ellide', () => {
     it('can add ellipsis at the beginning', () => {
         const original: string = rand.getStringFrom(100, rand.ALPHAS + ' ');
 
-        const actual: string = ellide(original, 50, EllipsisLocation.beginning);
+        const actual: string = ellide(original, 50, 'beginning');
 
         expect(actual.length).withContext('length should be as specified by finalLength argument').toBe(50);
         expect(actual.slice(0, 3)).withContext('ellipsis should be at beginning').toEqual('...');
@@ -43,7 +43,7 @@ describe('ellide', () => {
     it('can add ellipsis in the middle', () => {
         const original: string = rand.getStringFrom(100, rand.ALPHAS + ' ');
 
-        const actual: string = ellide(original, 50, EllipsisLocation.middle);
+        const actual: string = ellide(original, 50, 'middle');
 
         expect(actual.length).withContext('length should be as specified by finalLength argument').toBe(50);
         expect(actual).withContext('ellipsis should be in the middle').toContain('...');

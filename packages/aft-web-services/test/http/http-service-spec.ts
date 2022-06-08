@@ -1,5 +1,6 @@
 import * as FormData from "form-data";
-import { httpService, HttpService, HttpServiceOptions, HttpRequest, HttpResponse } from "../../src";
+import { httpService, HttpRequest, HttpResponse, httpData } from "../../src";
+import { HttpService } from "../../src/http/http-service";
 
 describe('HttpService', () => {
     it('will set default request values if not passed in to performRequest', async () => {
@@ -21,7 +22,7 @@ describe('HttpService', () => {
     });
 
     it('can override default request values via constructor options if not passed in to performRequest', async () => {
-        let options: HttpServiceOptions = {
+        const options = {
             defaultUrl: 'https://fake.url/test',
             defaultHeaders: {"Authorization": "basic a098dfasd09/=="},
             defaultAllowRedirect: true,
@@ -53,10 +54,10 @@ describe('HttpService', () => {
         };
 
         spyOn<any>(svc, '_request').and.returnValue({});
-        let mockResponse: HttpResponse = new HttpResponse({
+        let mockResponse: HttpResponse = {
             statusCode: 200,
             data: '{"foo": "bar"}'
-        });
+        };
         spyOn<any>(svc, '_response').and.returnValue(mockResponse);
 
         let response: HttpResponse = await svc.performRequest(request);
@@ -74,10 +75,10 @@ describe('HttpService', () => {
         };
 
         spyOn<any>(svc, '_request').and.returnValue({});
-        let mockResponse: HttpResponse = new HttpResponse({
+        let mockResponse: HttpResponse = {
             statusCode: 200,
             data: '{"foo": "bar"}'
-        });
+        };
         spyOn<any>(svc, '_response').and.returnValue(mockResponse);
 
         let response: HttpResponse = await svc.performRequest(request);
@@ -98,10 +99,10 @@ describe('HttpService', () => {
         };
 
         spyOn<any>(svc, '_request').and.returnValue({});
-        let mockResponse: HttpResponse = new HttpResponse({
+        let mockResponse: HttpResponse = {
             statusCode: 200,
             data: '{"foo": "bar"}'
-        });
+        };
         spyOn<any>(svc, '_response').and.returnValue(mockResponse);
 
         let response: HttpResponse = await svc.performRequest(request);
@@ -121,7 +122,7 @@ describe('HttpService', () => {
         expect(resp.headers).toBeDefined();
         expect(resp.headers['content-type']).toBe('application/json; charset=utf-8');
         expect(resp.data).toBeDefined();
-        let data: ListUsersResponse = resp.dataAs<ListUsersResponse>();
+        let data: ListUsersResponse = httpData.as<ListUsersResponse>(resp);
         expect(data).toBeDefined();
         expect(data.page).toBe(2);
         expect(data.data).toBeDefined();
@@ -129,18 +130,18 @@ describe('HttpService', () => {
     });
 });
 
-interface ListUsersResponse {
+type ListUsersResponse = {
     page: number;
     per_page: number;
     total: number;
     total_pages: number;
     data: User[];
-}
+};
 
-interface User {
+type User = {
     id: number;
     email: string;
     first_name: string;
     last_name: string;
     avatar: string;
-}
+};

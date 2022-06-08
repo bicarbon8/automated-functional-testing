@@ -1,13 +1,14 @@
-import { Action, Clazz, Func, rand } from "../../src";
+import { Action, Class, Func, JsonObject, Merge, rand } from "../../src";
 
 describe('custom-types', () => {
-    describe('Clazz<T>', () => {
+    describe('Class<T>', () => {
         it('can create object from type', async () => {
             let sample: FooSampleClass = get(FooSampleClass);
 
             expect(sample).toBeDefined();
             expect(sample.foo).toBe('foo');
             expect(sample.bar(1)).toBe(1);
+            expect(sample.constructor.name).toEqual('FooSampleClass');
         });
 
         it('can create object from type with arguments', async () => {
@@ -52,9 +53,50 @@ describe('custom-types', () => {
             expect(bool(true)).toBeUndefined();
         });
     });
+
+    describe('JsonKey', () => {
+        it('can use a number for a JSON object key', () => {
+            const sym1 = 12;
+            const sym2 = 15;
+            const obj: JsonObject = {
+                [sym1]: 'bar',
+                [sym2]: 'baz'
+            };
+
+            expect<string>(obj[sym1] as string).toEqual('bar');
+            expect<string>(obj[sym2] as string).toEqual('baz');
+        });
+
+        it('can use a string for a JSON object key', () => {
+            const sym1 = 'foo';
+            const sym2 = 'faz';
+            const obj: JsonObject = {
+                [sym1]: 'bar',
+                [sym2]: 'baz'
+            };
+
+            expect<string>(obj[sym1] as string).toEqual('bar');
+            expect<string>(obj[sym2] as string).toEqual('baz');
+        });
+    });
+
+    describe('Merge<T1, T2, T3, T4, T5, T6>', () => {
+        it('can create a merged type from two types', () => {
+            type Foo = { foo: string; };
+            type Bar = { bar: boolean; };
+
+            type FooBar = Merge<Foo, Bar>;
+
+            const foobar: FooBar = {} as FooBar;
+            foobar.foo = 'foo';
+            foobar.bar = true;
+            expect(foobar.foo).toBeTruthy();
+            expect(foobar.bar).toBeTruthy();
+        });
+    });
 });
 
-var get = function<T>(type: Clazz<T>, ...args: any[]): T {
+var get = function<T>(type: Class<T>, ...args: any[]): T {
     return new type(...args);
 };
 

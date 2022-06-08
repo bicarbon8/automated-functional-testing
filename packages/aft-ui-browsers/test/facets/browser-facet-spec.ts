@@ -1,6 +1,6 @@
 import { By, WebDriver, WebElement, Session } from "selenium-webdriver";
 import { LogManager, rand } from "aft-core";
-import { BrowserSession, BrowserFacet } from "../../src";
+import { BrowserSession, BrowserFacet, BrowserFacetOptions } from "../../src";
 
 describe('BrowserFacet', () => {
     beforeEach(() => {
@@ -30,7 +30,7 @@ describe('BrowserFacet', () => {
             driver: driver, 
             logMgr: new LogManager({logName: 'can auto-refresh from WebDriver on Error in getRoot'})
         });
-        let facet: BrowserFacet = await session.getFacet(BrowserFacet, {
+        let facet: BrowserFacet = await session.getFacet<BrowserFacet, BrowserFacetOptions>(BrowserFacet, {
             locator: By.css('div.fake'),
             maxWaitMs: 4000
         });

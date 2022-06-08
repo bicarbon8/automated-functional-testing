@@ -5,7 +5,6 @@
        "request": "launch",
        "name": "Run",
        "program": "${workspaceRoot}/node_modules/mocha/bin/mocha",
-       "protocol": "inspector",
        "args": [
            "**/aft-examples/dist/**/*-spec.js",
            "--timeout", "300s"

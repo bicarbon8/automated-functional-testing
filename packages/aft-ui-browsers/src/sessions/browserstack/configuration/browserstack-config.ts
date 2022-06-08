@@ -1,25 +1,24 @@
-import { OptionsManager } from 'aft-core';
+import { buildinfo, cfgmgr, convert, IConfigProvider, IHasConfig, optmgr } from 'aft-core';
 
-export class BrowserStackConfigOptions {
-    user: string;
-    key: string;
+export type BrowserStackConfigOptions = {
+    user?: string;
+    key?: string;
     resolution?: string;
     debug?: boolean;
     local?: boolean;
     localIdentifier?: string;
-    apiUrl?: string;
-
-    _optMgr?: OptionsManager;
-}
+    buildName?: string;
+};
 
 /**
- * reads configuration from either the passed in {BrowserStackConfigOptions}
- * or the `aftconfig.json` file under a heading of `browserstackconfig` like:
+ * reads configuration from either the passed in `BrowserStackConfigOptions`
+ * or the `aftconfig.json` file under a heading of `BrowserStackConfig` like:
  * ```json
  * {
- *   "browserstackconfig": {
+ *   "BrowserStackConfig": {
  *     "user": "your-username@your-company.com",
  *     "key": "your-access-key-for-browserstack",
+ *     "app": "bs://f7c874f21852ba57957a3fdc33f47514288c4ba4",
  *     "debug": true,
  *     "local": false,
  *     "localIdentifier": "123456"
@@ -27,69 +26,89 @@ export class BrowserStackConfigOptions {
  * }
  * ```
  */
-export class BrowserStackConfig {
-    private _apiUrl: string;
+export class BrowserStackConfig implements IHasConfig<BrowserStackConfigOptions> {
+    private readonly _config: IConfigProvider<BrowserStackConfigOptions>
+    
     private _user: string;
     private _key: string;
     private _resolution: string;
     private _debug: boolean;
     private _local: boolean;
     private _localIdentifier: string;
-    
-    private _optMgr: OptionsManager;
+    private _buildName: string;
 
     constructor(options?: BrowserStackConfigOptions) {
-        this._optMgr = options?._optMgr || new OptionsManager(this.constructor.name.toLowerCase(), options);
-    }
-    
-    async apiUrl(): Promise<string> {
-        if (!this._apiUrl) {
-            this._apiUrl = await this._optMgr.get('apiUrl', 'https://api.browserstack.com/automate/');
-        }
-        return this._apiUrl;
+        this._config = cfgmgr.get(this.constructor.name, optmgr.process(options));
     }
 
+    async config<K extends keyof BrowserStackConfigOptions, V extends BrowserStackConfigOptions[K]>(key: K, defaultVal?: V): Promise<V> {
+        return this._config.get<K, V>(key, defaultVal);
+    }
+    
     async user(): Promise<string> {
         if (!this._user) {
-            this._user = await this._optMgr.get('user');
+            this._user = await this.config('user');
         }
         return this._user;
     }
 
     async key(): Promise<string> {
         if (!this._key) {
-            this._key = await this._optMgr.get('key');
+            this._key = await this.config('key');
         }
         return this._key;
     }
 
     async resolution(): Promise<string> {
         if (!this._resolution) {
-            this._resolution = await this._optMgr.get('resolution');
+            this._resolution = await this.config('resolution');
         }
         return this._resolution;
     }
 
     async debug(): Promise<boolean> {
         if (this._debug === undefined) {
-            this._debug = await this._optMgr.get('debug', false);
+            this._debug = await this.config('debug', false);
         }
         return this._debug;
     }
 
     async local(): Promise<boolean> {
         if (this._local === undefined) {
-            this._local = await this._optMgr.get('local', false);
+            this._local = await this.config('local', false);
         }
         return this._local;
     }
 
     async localIdentifier(): Promise<string> {
         if (!this._localIdentifier) {
-            this._localIdentifier = await this._optMgr.get('localIdentifier');
+            this._localIdentifier = await this.config('localIdentifier');
         }
         return this._localIdentifier;
     }
+
+    async buildName(): Promise<string> {
+        if (!this._buildName) {
+            this._buildName = await this.config('buildName', await buildinfo.get());
+        }
+        return this._buildName;
+    }
 }
 
+/**
+ * reads configuration from either the passed in `BrowserStackConfigOptions`
+ * or the `aftconfig.json` file under a heading of `BrowserStackConfig` like:
+ * ```json
+ * {
+ *   "BrowserStackConfig": {
+ *     "user": "your-username@your-company.com",
+ *     "key": "your-access-key-for-browserstack",
+ *     "app": "bs://f7c874f21852ba57957a3fdc33f47514288c4ba4",
+ *     "debug": true,
+ *     "local": false,
+ *     "localIdentifier": "123456"
+ *   }
+ * }
+ * ```
+ */
 export const browserstackconfig = new BrowserStackConfig();

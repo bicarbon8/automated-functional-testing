@@ -1,12 +1,9 @@
-import { PluginManager, PluginManagerOptions } from "../plugin-manager";
-import { ProcessingResult } from "../../helpers/processing-result";
 import { LogManager } from "../logging/log-manager";
-import { ITestCase } from "./itest-case";
-import { TestCasePlugin, TestCasePluginOptions } from "./test-case-plugin";
+import { TestCase } from "./test-case";
+import { TestCasePlugin } from "./test-case-plugin";
+import { PluginManagerWithLogging, PluginManagerWithLoggingOptions } from "../plugin-manager-with-logging";
 
-export interface TestCaseManagerOptions extends TestCasePluginOptions, PluginManagerOptions {
-    logMgr?: LogManager;
-}
+export type TestCaseManagerOptions = PluginManagerWithLoggingOptions;
 
 /**
  * loads and provides an interface between any `ITestCasePlugin`
@@ -21,42 +18,53 @@ export interface TestCaseManagerOptions extends TestCasePluginOptions, PluginMan
  * }
  * ```
  */
-export class TestCaseManager extends PluginManager<TestCasePlugin, TestCasePluginOptions> {
-    readonly logMgr: LogManager;
-
-    constructor(options?: TestCaseManagerOptions) {
-        super(options);
-        this.logMgr = options?.logMgr || new LogManager({logName: this.optionsMgr.key});
-    }
-
-    async getTestCase(testId: string): Promise<ITestCase> {
-        return await this.getFirstEnabledPlugin()
-        .then(async (plugin) => {
-            return await plugin?.getTestCase(testId) || null;
-        }).catch(async (err) => {
-            await this.logMgr.trace(err);
+export class TestCaseManager extends PluginManagerWithLogging<TestCasePlugin<any>, TestCaseManagerOptions> {
+    async getTestCase(testId: string): Promise<TestCase> {
+        let testcase: TestCase = await this.first()
+        .then((p: TestCasePlugin<any>) => p?.getTestCase(testId)
+            .catch(async (err) => {
+                await this.logMgr()
+                .then((l: LogManager) => l.warn(`error calling '${p?.constructor.name || 'unknown'}.getTestCase(${testId}) due to: ${err}`));
+                return null;
+            }))
+        .catch(async (err) => {
+            await this.logMgr()
+            .then((l: LogManager) => l.warn(err));
             return null;
         });
+        return testcase;
     }
 
-    async findTestCases(searchTerm: string): Promise<ITestCase[]> {
-        return await this.getFirstEnabledPlugin()
-        .then(async (plugin) => {
-            return await plugin?.findTestCases(searchTerm) || [];
-        }).catch(async (err) => {
-            await this.logMgr.trace(err);
-            return null;
-        })
-    }
-
-    async shouldRun(testId: string): Promise<ProcessingResult> {
-        return await this.getFirstEnabledPlugin()
-        .then(async (handler) => {
-            return await handler?.shouldRun(testId) || {success: true, message: `no TestCasePlugin in use so run all tests`};
-        }).catch(async (err) => {
-            await this.logMgr.trace(err);
-            return {success: true, message: `${err} - so run all tests`};
+    async findTestCases(searchTerm: string): Promise<TestCase[]> {
+        let testcases: TestCase[] = await this.first()
+        .then((p: TestCasePlugin<any>) => p?.findTestCases(searchTerm)
+            .catch(async (err) => {
+                await this.logMgr()
+                .then((l: LogManager) => l.warn(`error calling '${p?.constructor.name || 'unknown'}.findTestCases(${searchTerm}) due to: ${err}`));
+                return [];
+            }))
+        .catch(async (err) => {
+            await this.logMgr()
+            .then((l: LogManager) => l.warn(err));
+            return [];
         });
+        return testcases || [];
+    }
+
+    async shouldRun(testId: string): Promise<boolean> {
+        let shouldrun: boolean = await this.first()
+        .then((p: TestCasePlugin<any>) => p?.shouldRun(testId)
+            .catch(async (err) => {
+                await this.logMgr()
+                .then((l: LogManager) => l.warn(`error calling '${p?.constructor.name || 'unknown'}.shouldRun(${testId}) due to: ${err}`));
+                return false;
+            }))
+        .catch(async (err) => {
+            await this.logMgr()
+            .then((l: LogManager) => l.warn(err));
+            return false;
+        });
+        return shouldrun || true;
     }
 }
 

@@ -12,7 +12,7 @@ the `aft-web-services` package supports all standard HTTP methods like `GET`, `P
 let response: HttpResponse = await httpService.performRequest({url: 'https://reqres.in/api/users?page=2'});
 
 // deserialise a JSON or XML response into an object
-let respObj: ListUsersResponse = response.dataAs<ListUsersResponse>();
+let respObj: ListUsersResponse = httpData.as<ListUsersResponse>(response);
 ```
 
 ### POST
@@ -26,14 +26,14 @@ let response: HttpResponse = await httpService.performRequest({
 });
 
 // deserialise a JSON or XML response into an object
-let respObj: CreateUserResponse = response.dataAs<CreateUserResponse>();
+let respObj: CreateUserResponse = httpData.as<CreateUserResponse>(response);
 ```
 
 ## Advantages
-- using this package automatically logs the request and response details using the `aft-core.TestLog`
+- using this package automatically logs the request and response details using a `aft-core.LogManager` that can be passed in as part of the `HttpRequest` to maintain the same `logName` within a single test
 - the `aft-web-services` classes rely on asynchronous promises meaning no worrying about callbacks
 - built-in support for redirects (HTTP Status Code 302) and http or https requests
-- XML and JSON response data can be easily deserialised to objects using the `HttpResponse.dataAs` function
+- XML and JSON response data can be easily deserialised to objects using the `httpData.as<T>(response: HttpResponse)` function
 
 ### NOTE:
 XML to object deserialisation will use the following rules:

@@ -1,53 +1,66 @@
 import { WebDriver, Builder, Capabilities } from "selenium-webdriver";
-import { SessionGeneratorPlugin, SessionGeneratorPluginOptions } from "aft-ui";
-import { BrowserSession, BrowserSessionOptions } from "./browser-session";
+import { UiPlatform, UiSessionGeneratorPlugin, UiSessionGeneratorPluginOptions } from "aft-ui";
+import { BrowserSessionOptions } from "./browser-session";
+import { Merge } from "aft-core";
 
-export interface BrowserSessionGeneratorOptions extends SessionGeneratorPluginOptions {
+export type BrowserSessionGeneratorPluginOptions = Merge<UiSessionGeneratorPluginOptions, {
     url?: string;
-    capabilities?: {};
-}
+    additionalCapabilities?: object;
+    implicitTimeout?: number;
+}>;
 
-export abstract class BrowserSessionGeneratorPlugin extends SessionGeneratorPlugin {
+/**
+ * abstract class to be extended by any Browser Session Generator Plugins to be
+ * loaded by the `BrowserSessionGeneratorManager`. accepts options of the following:
+ * ```json
+ * {
+ *     "url": "http://url.to/selenium/grid",
+ *     "uiplatform": "android_11_firefox_75_Google Pixel XL",
+ *     "additionalCapabilities": {
+ *         "someKey": "someValue"
+ *     },
+ *     "implicitTimeout": 3000
+ * }
+ * ```
+ */
+export abstract class BrowserSessionGeneratorPlugin<T extends BrowserSessionGeneratorPluginOptions> extends UiSessionGeneratorPlugin<T> {
     private _url: string;
-    private _caps: Capabilities;
+    private _caps: object;
+    private _timeout: number;
 
-    constructor(options?: BrowserSessionGeneratorOptions) {
-        super(options);
-    }
+    abstract getCapabilities(options?: BrowserSessionOptions): Promise<Capabilities>;
 
-    async getUrl(): Promise<string> {
+    get url(): string {
         if (!this._url) {
-            this._url = await this.optionsMgr.get('url');
+            this._url = this.option('url');
         }
         return this._url;
     }
-
-    async getCapabilities(options?: BrowserSessionOptions): Promise<Capabilities> {
+    get additionalCapabilities(): object {
         if (!this._caps) {
-            let c: {} = await this.optionsMgr.get<{}>('capabilities', {});
-            this._caps = new Capabilities(c);
+            this._caps = this.option('additionalCapabilities', {});
         }
         return this._caps;
     }
-
-    abstract override newSession(options?: BrowserSessionOptions): Promise<BrowserSession>;
-
+    get implicitTimeout(): number {
+        if (!this._timeout) {
+            this._timeout = this.option('implicitTimeout', 1000);
+        }
+        return this._timeout;
+    }
     protected async createDriver(options?: BrowserSessionOptions): Promise<WebDriver> {
         if (!options?.driver) {
-            if (await this.enabled()) {
-                try {
-                    let url: string = await this.getUrl();
-                    let caps: Capabilities = await this.getCapabilities(options);
-                    let driver: WebDriver = await new Builder()
-                        .usingServer(url)
-                        .withCapabilities(caps)
-                        .build();
-                    await driver.manage().setTimeouts({implicit: 1000});
-                    await driver.manage().window().maximize();
-                    return driver;
-                } catch (e) {
-                    return Promise.reject(e);
-                }
+            try {
+                const caps: Capabilities = await this.getCapabilities(options);
+                const driver: WebDriver = await new Builder()
+                    .usingServer(this.url)
+                    .withCapabilities(caps)
+                    .build();
+                await driver.manage().setTimeouts({implicit: this.implicitTimeout});
+                await driver.manage().window().maximize();
+                return driver;
+            } catch (e) {
+                return Promise.reject(e);
             }
         }
         return options?.driver;

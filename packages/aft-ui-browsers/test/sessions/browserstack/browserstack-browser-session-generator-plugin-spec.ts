@@ -1,31 +1,34 @@
 import { By, Capabilities } from 'selenium-webdriver';
 import { using, LogManager, rand, buildinfo } from "aft-core";
-import { TestPlatform } from "aft-ui";
-import { BrowserStackBrowserSessionGeneratorPlugin, BrowserStackBrowserSessionGeneratorPluginOptions, BrowserFacet, BrowserSession } from "../../../src";
+import { UiPlatform } from "aft-ui";
+import { BrowserStackBrowserSessionGeneratorPlugin, BrowserStackBrowserSessionGeneratorPluginOptions, BrowserFacet, BrowserSession, BrowserFacetOptions, BrowserStackConfig } from "../../../src";
 
 describe('BrowserStackBrowserSessionGeneratorPlugin', () => {
     it('can generate capabilities from the passed in SessionOptions', async () => {
-        let platform: TestPlatform = new TestPlatform({
+        let platform: UiPlatform = new UiPlatform({
             os: 'os-' + rand.getString(10),
             osVersion: 'osVersion-' + rand.getString(2, false, true),
             browser: 'browser-' + rand.getString(15),
             browserVersion: 'browserVersion-' + rand.getString(2, false, true),
             deviceName: 'deviceName-' + rand.getString(22)
         });
-        let opts: BrowserStackBrowserSessionGeneratorPluginOptions = {
+        const config: BrowserStackConfig = new BrowserStackConfig({
             user: rand.getString(10, true, false, false, false),
             key: rand.getString(12, true, true, false, false),
-            platform: platform.toString(),
             resolution: rand.getString(4, false, true) + 'x' + rand.getString(4, false, true),
-            local: true,
+            local: true
+        });
+        let opts: BrowserStackBrowserSessionGeneratorPluginOptions = {
+            config: config,
+            uiplatform: platform.toString(),
             logMgr: new LogManager({logName: 'can generate capabilities from the passed in SessionOptions'})
         };
         let session: BrowserStackBrowserSessionGeneratorPlugin = new BrowserStackBrowserSessionGeneratorPlugin(opts);
 
         let capabilities: Capabilities = await session.getCapabilities();
 
-        expect(capabilities.get('browserstack.user')).toEqual(opts.user);
-        expect(capabilities.get('browserstack.key')).toEqual(opts.key);
+        expect(capabilities.get('browserstack.user')).toEqual(await config.user());
+        expect(capabilities.get('browserstack.key')).toEqual(await config.key());
         expect(capabilities.get('os')).toEqual(platform.os);
         expect(capabilities.get('os_version')).toEqual(platform.osVersion);
         expect(capabilities.get('browserName')).toEqual(platform.browser);
@@ -34,7 +37,7 @@ describe('BrowserStackBrowserSessionGeneratorPlugin', () => {
         expect(capabilities.get('realMobile')).toEqual('true');
         expect(capabilities.get('browserstack.local')).toEqual(true);
         expect(capabilities.get('build')).toEqual(await buildinfo.get());
-        expect(capabilities.get('name')).toEqual(await opts.logMgr.logName());
+        expect(capabilities.get('name')).toEqual(opts.logMgr.logName);
     });
     
     /**
@@ -46,12 +49,15 @@ describe('BrowserStackBrowserSessionGeneratorPlugin', () => {
      * - browserstack_accesskey
      */
     xit('can create a session in BrowserStack', async () => {
-        let plugin: BrowserStackBrowserSessionGeneratorPlugin = new BrowserStackBrowserSessionGeneratorPlugin({
+        const config: BrowserStackConfig = new BrowserStackConfig({
             user: 'your-user',
-            key: 'your-key',
-            platform: 'windows_10_chrome'
+            key: 'your-key'
         });
-        await using (await plugin.newSession(), async (session: BrowserSession) => {
+        let plugin: BrowserStackBrowserSessionGeneratorPlugin = new BrowserStackBrowserSessionGeneratorPlugin({
+            config: config,
+            uiplatform: 'windows_10_chrome'
+        });
+        await using (await plugin.newUiSession(), async (session: BrowserSession) => {
             let expectedUrl: string = 'https://the-internet.herokuapp.com/login';
             await session.goTo(expectedUrl);
 
@@ -59,10 +65,10 @@ describe('BrowserStackBrowserSessionGeneratorPlugin', () => {
 
             expect(actualUrl).toEqual(expectedUrl);
 
-            let facet: BrowserFacet = await session.getFacet(BrowserFacet, {locator: By.css('button.radius')});
+            let facet: BrowserFacet = await session.getFacet<BrowserFacet, BrowserFacetOptions>(BrowserFacet, {locator: By.css('button.radius')});
 
             expect(facet).toBeDefined();
-            expect(await facet.getRoot().then(async (r) => await r.getText())).toEqual('Login');
+            expect(await facet.getRoot().then(r => r.getText())).toEqual('Login');
         });
     }, 300000);
 });

@@ -1,19 +1,19 @@
-import { BuildInfoPlugin, BuildInfoPluginOptions, rand } from "../../../src";
+import { BuildInfoPlugin, BuildInfoPluginOptions, Merge, rand } from "../../../src";
 
-export class MockBuildInfoPlugin extends BuildInfoPlugin {
-    constructor(options?: BuildInfoPluginOptions) {
-        super(options);
+export type MockBuildInfoPluginOptions = Merge<BuildInfoPluginOptions, {
+    buildName?: string;
+    buildNumber?: string;
+    buildNumberMin?: number;
+    buildNumberMax?: number;
+}>;
+
+export class MockBuildInfoPlugin<T extends MockBuildInfoPluginOptions> extends BuildInfoPlugin<T> {
+    override async buildName(): Promise<string> {
+        return this.option('buildName', `MockBuildName-${rand.getInt(0, 99)}`);
     }
-    async onLoad(): Promise<void> {
-        /* do nothing */
-    }
-    override async getBuildName(): Promise<string> {
-        return `MockBuildName-${rand.getInt(0, 99)}`;
-    }
-    override async getBuildNumber(): Promise<string> {
-        return `MockBuildNumber-${rand.getInt(100, 999)}`;
-    }
-    async dispose(error?: Error): Promise<void> {
-        /* do nothing */
+    override async buildNumber(): Promise<string> {
+        const min = this.option('buildNumberMin', 100);
+        const max = this.option('buildNumberMax', 999);
+        return this.option('buildNumber', `MockBuildNumber-${rand.getInt(min, max)}`);
     }
 }

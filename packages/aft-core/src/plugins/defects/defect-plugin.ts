@@ -1,15 +1,9 @@
 import { Plugin, PluginOptions } from "../plugin";
-import { IDefect } from "./idefect";
+import { Defect } from "./defect";
 
-export interface DefectPluginOptions extends PluginOptions {
-    
-}
+export type DefectPluginOptions = PluginOptions;
 
-export abstract class DefectPlugin extends Plugin<DefectPluginOptions> {
-    constructor(options?: DefectPluginOptions) {
-        super(options);
-    }
-    
-    abstract getDefect(defectId: string): Promise<IDefect>;
-    abstract findDefects(searchTerm: string): Promise<IDefect[]>;
+export abstract class DefectPlugin<T extends DefectPluginOptions> extends Plugin<T> {
+    abstract getDefect(defectId: string): Promise<Defect>;
+    abstract findDefects(searchTerm: string): Promise<Defect[]>;
 }

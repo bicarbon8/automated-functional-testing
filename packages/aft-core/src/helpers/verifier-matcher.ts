@@ -5,10 +5,7 @@ export interface VerifierMatcher {
     failureString(): string;
 }
 
-/**
- * use {equaling(expected)} instead
- */
-export class Equaling implements VerifierMatcher {
+class Equaling implements VerifierMatcher {
     readonly expected: any;
     private _actual: any;
     constructor(expected: any) {
@@ -35,10 +32,7 @@ export const equaling = (expected: any): Equaling => {
     return new Equaling(expected);
 };
 
-/**
- * use {exactly(expected)} instead
- */
-export class Exactly implements VerifierMatcher {
+class Exactly implements VerifierMatcher {
     readonly expected: any;
     private _actual: any;
     constructor(expected: any) {
@@ -65,10 +59,7 @@ export const exactly = (expected: any): Exactly => {
     return new Exactly(expected);
 };
 
-/**
- * use {between(min, max)} instead
- */
-export class NumberBetween implements VerifierMatcher {
+class NumberBetween implements VerifierMatcher {
     private readonly _min: number;
     private readonly _max: number;
     readonly expected: string;
@@ -104,10 +95,7 @@ export const between = (minimum: number, maximum: number): NumberBetween => {
     return new NumberBetween(minimum, maximum);
 };
 
-/**
- * use {containing(expected)} instead
- */
-export class ValueContaining implements VerifierMatcher {
+class ValueContaining implements VerifierMatcher {
     readonly expected: any;
     private _actual: string | Array<any> | Set<any> | Map<any, any>;
     constructor(expected: any) {
@@ -153,10 +141,7 @@ export const containing = (expected: any): ValueContaining => {
     return new ValueContaining(expected);
 };
 
-/**
- * use {havingValue()} instead
- */
-export class HavingValue implements VerifierMatcher {
+class HavingValue implements VerifierMatcher {
     readonly expected: string = 'value other than null or undefined';
     private _actual: any;
     setActual(actual: any): HavingValue {
@@ -179,10 +164,7 @@ export const havingValue = (): HavingValue => {
     return new HavingValue();
 }
 
-/**
- * use {greaterThan(expected)} instead
- */
-export class GreaterThan implements VerifierMatcher {
+class GreaterThan implements VerifierMatcher {
     readonly expected: number;
     private _actual: number;
     constructor(expected: number) {
@@ -209,10 +191,7 @@ export const greaterThan = (expected: number): GreaterThan => {
     return new GreaterThan(expected);
 }
 
-/**
- * use {lessThan(expected)} instead
- */
-export class LessThan implements VerifierMatcher {
+class LessThan implements VerifierMatcher {
     readonly expected: number;
     private _actual: number;
     constructor(expected: number) {
@@ -239,10 +218,7 @@ export const lessThan = (expected: number): LessThan => {
     return new LessThan(expected);
 }
 
-/**
- * use {not(VerifierMatcher)} instead
- */
-export class Negate implements VerifierMatcher {
+class Negate implements VerifierMatcher {
     readonly expected: VerifierMatcher;
     constructor(expected: VerifierMatcher) {
         this.expected = expected;

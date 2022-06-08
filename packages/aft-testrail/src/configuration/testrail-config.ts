@@ -1,23 +1,21 @@
-import { OptionsManager } from 'aft-core';
+import { cfgmgr, IConfigProvider, FileSystemMap, IHasConfig, optmgr } from 'aft-core';
 
-export class TestRailConfigOptions {
-    url: string;
-    user: string;
-    accesskey: string;
+export type TestRailConfigOptions = {
+    url?: string;
+    user?: string;
+    accesskey?: string;
     projectid?: number;
     suiteids?: number[];
     planid?: number;
     cacheDurationMs?: number;
-
-    _optMgr?: OptionsManager;
 }
 
 /**
- * reads configuration from either the passed in {TestRailConfigOptions}
+ * reads configuration from either the passed in `TestRailConfigOptions`
  * or the `aftconfig.json` file under a heading of `testrailconfig` like:
  * ```json
  * {
- *   "testrailconfig": {
+ *   "TestRailConfig": {
  *     "url": "https://your-instance-of.testrail.io",
  *     "user": "your-username@your-company.com",
  *     "accesskey": "your-access-key-for-testrail",
@@ -28,9 +26,12 @@ export class TestRailConfigOptions {
  * }
  * ```
  * NOTE:
- * `projectid` and `suiteids` are used if no `planid` is specified
+ * - `projectid` and `suiteids` are only used if no `planid` is specified
+ * - if 'TestRailLoggingPlugin` is in use and no `planid` is specified a new
+ * TestRail plan will be created and the value stored in a shared file for access
+ * by other processes and subsequent test executions
  */
-export class TestRailConfig {
+export class TestRailConfig implements IHasConfig<TestRailConfigOptions> {
     private _url: string;
     private _user: string;
     private _accessKey: string;
@@ -39,63 +40,73 @@ export class TestRailConfig {
     private _planId: number;
     private _cacheDuration: number;
     
-    private _optMgr: OptionsManager;
+    private readonly _shared: FileSystemMap<string, number>;
+
+    private readonly _config: IConfigProvider<TestRailConfigOptions>;
 
     constructor(options?: TestRailConfigOptions) {
-        this._optMgr = options?._optMgr || new OptionsManager(this.constructor.name.toLowerCase(), options);
+        options = options || {} as TestRailConfigOptions;
+        this._config = cfgmgr.get<TestRailConfigOptions>(this.constructor.name, optmgr.process(options));
+        this._shared = new FileSystemMap<string, number>(this.constructor.name);
     }
     
-    async getUrl(): Promise<string> {
+    config<K extends keyof TestRailConfigOptions, V extends TestRailConfigOptions[K]>(key: K, defaultVal?: V): Promise<V> {
+        return this._config.get(key, defaultVal);
+    }
+    
+    async url(): Promise<string> {
         if (!this._url) {
-            this._url = await this._optMgr.get('url');
+            this._url = await this.config('url');
         }
         return this._url;
     }
 
-    async getUser(): Promise<string> {
+    async user(): Promise<string> {
         if (!this._user) {
-            this._user = await this._optMgr.get('user');
+            this._user = await this.config('user');
         }
         return this._user;
     }
 
-    async getAccessKey(): Promise<string> {
+    async accessKey(): Promise<string> {
         if (!this._accessKey) {
-            this._accessKey = await this._optMgr.get('accesskey');
+            this._accessKey = await this.config('accesskey');
         }
         return this._accessKey;
     }
 
-    async getProjectId(): Promise<number> {
+    async projectId(): Promise<number> {
         if (this._projectId === undefined) {
-            this._projectId = await this._optMgr.get('projectid', -1);
+            this._projectId = await this.config('projectid', -1);
         }
         return this._projectId;
     }
 
-    async getSuiteIds(): Promise<number[]> {
+    async suiteIds(): Promise<number[]> {
         if (this._suiteIds === undefined) {
-            this._suiteIds = await this._optMgr.get('suiteids', []);
+            this._suiteIds = await this.config('suiteids', []);
         }
         return this._suiteIds;
     }
 
-    async getPlanId(): Promise<number> {
+    async planId(): Promise<number> {
         if (this._planId === undefined) {
-            this._planId = await this._optMgr.get('planid', -1);
+            this._planId = this._shared.get('planid') || await this.config('planid', -1);
         }
         return this._planId;
     }
 
-    async getCacheDuration(): Promise<number> {
-        if (this._cacheDuration === undefined) {
-            this._cacheDuration = await this._optMgr.get('cacheDurationMs', 300000);
-        }
-        return this._cacheDuration;
+    setPlanId(id: number): this {
+        this._shared.set('planid', id);
+        this._planId = id;
+        return this;
     }
 
-    async setPlanId(id: number): Promise<void> {
-        this._planId = id;
+    async cacheDuration(): Promise<number> {
+        if (this._cacheDuration === undefined) {
+            this._cacheDuration = await this.config('cacheDurationMs', 300000);
+        }
+        return this._cacheDuration;
     }
 }
 

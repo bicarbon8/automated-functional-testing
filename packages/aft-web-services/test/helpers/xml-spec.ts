@@ -20,26 +20,26 @@ describe('XML', () => {
     });
 });
 
-interface Sample {
+type Sample = {
     xml: SampleXml;
-}
+};
 
-interface SampleXml {
+type SampleXml = {
     image: SampleXmlImage;
     hr: SampleXmlHr;
     span: SampleXmlSpan;
-}
+};
 
-interface SampleXmlImage {
+type SampleXmlImage = {
     '@src': string;
     keyValue: string;
-}
+};
 
-interface SampleXmlHr {
+type SampleXmlHr = {
 
-}
+};
 
-interface SampleXmlSpan {
+type SampleXmlSpan = {
     "@style": string;
     keyValue: string;
-}
+};

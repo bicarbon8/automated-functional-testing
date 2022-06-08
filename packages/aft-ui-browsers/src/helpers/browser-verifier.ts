@@ -9,7 +9,7 @@ export class BrowserVerifier extends Verifier {
     protected _sessionOptions: BrowserSessionOptions;
 
     /**
-     * a {BrowserSessionGeneratorManager} instance used to generate new
+     * a `BrowserSessionGeneratorManager` instance used to generate new
      * Browser sessions
      */
     get sessionGeneratorManager(): BrowserSessionGeneratorManager {
@@ -20,7 +20,7 @@ export class BrowserVerifier extends Verifier {
     }
 
     /**
-     * after a new {BrowserSession} is created, this holds the instance
+     * after a new `BrowserSession` is created, this holds the instance
      * so it can be referenced from within the executing `assertion`
      */
     get session(): BrowserSession {
@@ -28,8 +28,8 @@ export class BrowserVerifier extends Verifier {
     }
 
     /**
-     * the {BrowserSessionOptions} that will be used when creating a 
-     * new {BrowserSession}
+     * the `BrowserSessionOptions` that will be used when creating a 
+     * new `BrowserSession`
      */
     get sessionOptions(): BrowserSessionOptions {
         if (!this._sessionOptions) {
@@ -39,12 +39,12 @@ export class BrowserVerifier extends Verifier {
     }
 
     /**
-     * allows for specifying custom {BrowserSessionOptions} to be used when creating
-     * a new {BrowserSession} prior to executing the `assertion`.
-     * NOTE: if not set then only the {BrowserVerifier.logMgr} will be included in
-     * the {BrowserSessionOptions}
-     * @param options the {BrowserSessionOptions} to be used to create a new {BrowserSession}
-     * @returns this {BrowserVerifier} instance
+     * allows for specifying custom `BrowserSessionOptions` to be used when creating
+     * a new `BrowserSession` prior to executing the `assertion`.
+     * NOTE: if not set then only the `BrowserVerifier.logMgr` will be included in
+     * the `BrowserSessionOptions`
+     * @param options the `BrowserSessionOptions` to be used to create a new `BrowserSession`
+     * @returns this `BrowserVerifier` instance
      */
     withBrowserSessionOptions(options: BrowserSessionOptions): this {
         this._sessionOptions = options;
@@ -52,13 +52,12 @@ export class BrowserVerifier extends Verifier {
     }
 
     /**
-     * allows for passing in an instance of {BrowserSessionGeneratorManager} to be
-     * used in locating a {AbstractBrowserSessionGeneratorPlugin} instance to use in 
-     * generating a {BrowserSession}.
-     * NOTE: if not set then the global {BrowserSessionGeneratorManager.instance()}
-     * will be used
-     * @param sessionMgr a {BrowserSessionGeneratorManager} to be used instead of the Global instance
-     * @returns this {BrowserVerifier} instance
+     * allows for passing in an instance of `BrowserSessionGeneratorManager` to be
+     * used in locating a `BrowserSessionGeneratorPlugin` instance to use in 
+     * generating a `BrowserSession`.
+     * NOTE: if not set then the global const `browserSessionGeneratorMgr` will be used
+     * @param sessionMgr a `BrowserSessionGeneratorManager` to be used instead of the Global instance
+     * @returns this `BrowserVerifier` instance
      */
     withBrowserSessionGeneratorManager(sessionMgr: BrowserSessionGeneratorManager): this {
         this._sessionMgr = sessionMgr;
@@ -68,7 +67,7 @@ export class BrowserVerifier extends Verifier {
     protected override async _resolveAssertion(): Promise<void> {
         let opts: BrowserSessionOptions = this.sessionOptions;
         opts.logMgr = opts.logMgr || this.logMgr;
-        await using(await this.sessionGeneratorManager.newSession(opts), async (session) => {
+        await using(await this.sessionGeneratorManager.newUiSession(opts), async (session) => {
             this._session = session;
             await super._resolveAssertion();
         });
@@ -76,7 +75,7 @@ export class BrowserVerifier extends Verifier {
 }
 
 /**
- * creates a new {BrowserVerifier} instace to be used for executing some Functional
+ * creates a new `BrowserVerifier` instace to be used for executing some Functional
  * Test Assertion.
  * ex:
  * ```
@@ -87,8 +86,8 @@ export class BrowserVerifier extends Verifier {
  * .and.withTestId('C1234')
  * .returns('expected value');
  * ```
- * @param assertion the {Func<BrowserVerifier, any>} function to be executed by this {BrowserVerifier}
- * @returns a new {BrowserVerifier} instance
+ * @param assertion the {Func<BrowserVerifier, any>} function to be executed by this `BrowserVerifier`
+ * @returns a new `BrowserVerifier` instance
  */
 export const verifyWithBrowser = (assertion: Func<BrowserVerifier, any>): BrowserVerifier => {
     return new BrowserVerifier().verify(assertion);

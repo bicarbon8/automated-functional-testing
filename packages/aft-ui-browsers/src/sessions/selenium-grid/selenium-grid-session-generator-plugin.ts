@@ -1,25 +1,19 @@
-import { BrowserSessionGeneratorPlugin, BrowserSessionGeneratorOptions } from "../browser-session-generator-plugin";
-import { TestPlatform } from "aft-ui";
+import { BrowserSessionGeneratorPlugin, BrowserSessionGeneratorPluginOptions } from "../browser-session-generator-plugin";
+import { UiPlatform } from "aft-ui";
 import { Capabilities } from "selenium-webdriver";
 import { BrowserSession, BrowserSessionOptions } from "../browser-session";
 
-export class SeleniumGridSessionGeneratorPlugin extends BrowserSessionGeneratorPlugin {
-    constructor(options?: BrowserSessionGeneratorOptions) {
-        super(options);
-    }
-    override async onLoad(): Promise<void> {
-        /* do nothing */
-    }
-    override async newSession(options?: BrowserSessionOptions): Promise<BrowserSession> {
-        return new BrowserSession({
-            driver: options?.driver || await this.createDriver(options),
-            logMgr: options?.logMgr || this.logMgr,
-            platform: options?.platform || await this.getPlatform().then(p => p.toString())
-        });
+export class SeleniumGridSessionGeneratorPlugin extends BrowserSessionGeneratorPlugin<BrowserSessionGeneratorPluginOptions> {
+    override async newUiSession(options?: BrowserSessionOptions): Promise<BrowserSession> {
+        options = options || {};
+        options.logMgr = options.logMgr || this.logMgr;
+        options.uiplatform = options.uiplatform || this.uiplatform.toString();
+        options.driver = options.driver || await this.createDriver(options);
+        return new BrowserSession(options);
     }
     override async getCapabilities(options?: BrowserSessionOptions): Promise<Capabilities> {
         let capabilities: Capabilities = new Capabilities();
-        let platform: TestPlatform = await this.getPlatform();
+        let platform: UiPlatform = this.uiplatform;
         let osVersion = '';
         if (platform.osVersion) {
             osVersion = ' ' + platform.osVersion;
@@ -31,11 +25,8 @@ export class SeleniumGridSessionGeneratorPlugin extends BrowserSessionGeneratorP
         capabilities.set('platform', `${platform.os}${osVersion}`);
         capabilities.set('browserName', `${platform.browser}${browserVersion}`);
         // overwrite the above with passed in capabilities if any
-        let superCaps: Capabilities = await super.getCapabilities();
-        capabilities = capabilities.merge(superCaps);
+        const optCaps: Capabilities = new Capabilities(this.additionalCapabilities);
+        capabilities = capabilities.merge(optCaps);
         return capabilities;
-    }
-    override async dispose(error?: Error): Promise<void> {
-        /* do nothing */
     }
 }

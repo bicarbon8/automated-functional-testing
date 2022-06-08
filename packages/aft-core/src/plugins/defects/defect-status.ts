@@ -1,4 +1,1 @@
-export enum DefectStatus {
-    open,
-    closed
-}
+export type DefectStatus = 'open' | 'closed';

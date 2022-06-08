@@ -1,55 +1,60 @@
-import { TestPlatform } from "aft-ui";
+import { UiPlatform } from "aft-ui";
 import { MobileAppSessionGeneratorPlugin, MobileAppSessionGeneratorPluginOptions } from "../mobile-app-session-generator-plugin";
 import { MobileAppSessionOptions } from "../mobile-app-session";
 import { RemoteOptions } from "webdriverio";
 import { BrowserStackAppAutomateApi } from "./app-automate/browserstack-app-automate-api";
-import { BrowserStackConfig, BrowserStackConfigOptions } from "./configuration/browserstack-config";
-import { UploadRequest } from "./app-automate/upload-request";
+import { browserstackconfig, BrowserStackConfig, BrowserStackConfigOptions } from "./configuration/browserstack-config";
 import { BrowserStackMobileAppSession } from "./browserstack-mobile-app-session";
+import { UploadRequest } from "./app-automate/app-automate-api-custom-types";
+import { Merge } from "aft-core";
 
-export interface BrowserStackMobileAppSessionGeneratorPluginOptions extends MobileAppSessionGeneratorPluginOptions, BrowserStackConfigOptions {
-    _config?: BrowserStackConfig;
-    _api?: BrowserStackAppAutomateApi;
-}
+export type BrowserStackMobileAppSessionGeneratorPluginOptions = Merge<MobileAppSessionGeneratorPluginOptions, BrowserStackConfigOptions, {
+    config?: BrowserStackConfig;
+    api?: BrowserStackAppAutomateApi;
+}>;
 
-export class BrowserStackMobileAppSessionGeneratorPlugin extends MobileAppSessionGeneratorPlugin {
-    private _cfg: BrowserStackConfig;
+export class BrowserStackMobileAppSessionGeneratorPlugin extends MobileAppSessionGeneratorPlugin<BrowserStackMobileAppSessionGeneratorPluginOptions> {
+    private _config: BrowserStackConfig;
     private _api: BrowserStackAppAutomateApi;
 
-    constructor(options?: BrowserStackMobileAppSessionGeneratorPluginOptions) {
-        super(options);
-        this._cfg = options?._config || new BrowserStackConfig(options as BrowserStackConfigOptions);
-        this._api = options?._api || new BrowserStackAppAutomateApi({_config: this._cfg});
+    override async newUiSession(options?: MobileAppSessionOptions): Promise<BrowserStackMobileAppSession> {
+        options = options || {};
+        options.logMgr = options.logMgr || this.logMgr;
+        options.uiplatform = options.uiplatform || this.uiplatform.toString();
+        options.app = options.app || this.app;
+        options.driver = options.driver || await this.createDriver(options);
+        return new BrowserStackMobileAppSession(options);
     }
 
-    override async onLoad(): Promise<void> {
-        /* do nothing */
+    get config(): BrowserStackConfig {
+        if (!this._config) {
+            this._config = this.option('config', browserstackconfig);
+        }
+        return this._config;
     }
 
-    override async newSession(options?: MobileAppSessionOptions): Promise<BrowserStackMobileAppSession> {
-        return new BrowserStackMobileAppSession({
-            driver: options?.driver || await this.createDriver(options),
-            logMgr: options?.logMgr || this.logMgr,
-            platform: options?.platform || await this.getPlatform().then(p => p.toString()),
-            app: options?.app || await this.app()
-        });
+    get api(): BrowserStackAppAutomateApi {
+        if (!this._api) {
+            this._api = this.option('api') || new BrowserStackAppAutomateApi({config: this.config});
+        }
+        return this._api;
     }
 
     override async getRemoteOptions(options?: MobileAppSessionOptions): Promise<RemoteOptions> {
         let remOpts: RemoteOptions = await super.getRemoteOptions(options);
-        remOpts.user = remOpts.user || await this._cfg.user();
-        remOpts.key = remOpts.key || await this._cfg.key();
+        remOpts.user = remOpts.user || await this.config.user();
+        remOpts.key = remOpts.key || await this.config.key();
         remOpts.capabilities = remOpts.capabilities || {};
-        let platform: TestPlatform = (options?.platform) ? TestPlatform.parse(options.platform) : await this.getPlatform();
+        let platform: UiPlatform = (options?.uiplatform) ? UiPlatform.parse(options.uiplatform) : this.uiplatform;
         remOpts.capabilities['os'] = remOpts.capabilities['os'] || platform.os;
         remOpts.capabilities['os_version'] = remOpts.capabilities['os_version'] || platform.osVersion;
         remOpts.capabilities['device'] = remOpts.capabilities['device'] || platform.deviceName;
         remOpts.capabilities['realMobile'] = true;
-        remOpts.capabilities['browserstack.debug'] = remOpts.capabilities['browserstack.debug'] || await this._cfg.debug();
-        remOpts.capabilities['build'] = remOpts.capabilities['build'] || await this._cfg.buildName();
-        remOpts.capabilities['name'] = remOpts.capabilities['name'] || await options?.logMgr?.logName() || await this.logMgr.logName();
-        remOpts.capabilities['browserstack.local'] = remOpts.capabilities['browserstack.local'] || await this._cfg.local();
-        remOpts.capabilities['browserstack.localIdentifier'] = remOpts.capabilities['browserstack.localIdentifier'] || await this._cfg.localIdentifier();
+        remOpts.capabilities['browserstack.debug'] = remOpts.capabilities['browserstack.debug'] || await this.config.debug();
+        remOpts.capabilities['build'] = remOpts.capabilities['build'] || await this.config.buildName();
+        remOpts.capabilities['name'] = remOpts.capabilities['name'] || options?.logMgr?.logName || this.logMgr.logName;
+        remOpts.capabilities['browserstack.local'] = remOpts.capabilities['browserstack.local'] || await this.config.local();
+        remOpts.capabilities['browserstack.localIdentifier'] = remOpts.capabilities['browserstack.localIdentifier'] || await this.config.localIdentifier();
         return remOpts;
     }
 
@@ -58,10 +63,10 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends MobileAppSessio
         try {
             switch (command) {
                 case 'upload':
-                    resp = await this._api.uploadApp(data as UploadRequest);
+                    resp = await this.api.uploadApp(data as UploadRequest);
                     break;
                 case 'getApps':
-                    resp = await this._api.getApps();
+                    resp = await this.api.getApps();
                     break;
                 default:
                     resp = { error: `unknown command of '${command}' sent to BrowserStackMobileAppSessionGeneratorPlugin.sendCommand` };
@@ -71,9 +76,5 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends MobileAppSessio
             return Promise.reject(e);
         }
         return resp;
-    }
-
-    override async dispose(error?: Error): Promise<void> {
-        /* do nothing */
     }
 }

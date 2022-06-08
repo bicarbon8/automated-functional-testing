@@ -82,44 +82,47 @@ verify(() => {throw new Error('failure');}) // AFT will report as 'failed'
 the primary benefit of using AFT comes from the plugins and the `Verifier`. Because logging using AFT's `LogManager` will also send to any registered logging plugins, it is easy to create logging plugins that send to any external system such as TestRail or to log results to Elasticsearch. Additionally, before running any _assertion_ passed to a `verify(assertion)` function, AFT will confirm if the _assertion_ should actually be run based on the results of queries to any supplied `TestCasePlugin` implementations and a subsequent queries to any supplied `DefectPlugin` implementations. 
 
 ### Logging Plugins
-`aft-core` provides a `LoggingPlugin` abstract class which can be extended to create custom loggers which are then loaded by adding their filenames to the `pluginNames` array under the `logmanager` section of your `aftconfig.json`
+`aft-core` provides a `LoggingPlugin` abstract class which can be extended to create custom loggers which are then loaded by adding their filenames to the `plugins` array under the `logmanager` section of your `aftconfig.json`
 ```json
 {
-    "logmanager": {
-        "pluginNames": [
-            "testrail-logging-plugin"
-        ],
-        "level": "info"
+    "LogManager": {
+        "plugins": [
+            {
+                "name": "testrail-logging-plugin",
+                "searchDirectory": "../node_modules",
+                "options": {
+                    "level": "info",
+                    "enabled": false
+                }
+            },
+            "html-logging-plugin"
+        ]
     }
 }
 ```
-> NOTE: you can optionally add a `searchDir` field under the `logmanager` configuration to specify a root directory to use when searching for logging plugin implementations
+> NOTE: you can either specify a `string` containing the plugin filename or an `object` containing the `name`, `searchDirectory` and `options` fields within the `plugins` array configuration to specify a root directory to use when searching for logging plugin implementations
 
 ### Test Case Plugin
 the purpose of a `TestCasePlugin` implementation is to provide execution control over any expectations by way of supplied _Test IDs_. to specify an implementation of the plugin to load you can add the following to your `aftconfig.json` (where plugins `testrail-test-case-plugin.js` is contained within the test execution directory or a subdirectory of it):
 ```json
 {
-    "testcasemanager": {
-        "pluginNames": ["testrail-test-case-plugin"]
+    "TestCaseManager": {
+        "plugins": ["testrail-test-case-plugin"]
     }
 }
 ```
 > NOTE: if no plugin is specified then external Test Case Management integration will be disabled and _assertions_ will be executed without checking their status before execution
 
-> NOTE: you can optionally add a `searchDir` field under the `testcasemanager` to specify a root directory to use when searching for test case plugin implementations
-
 ### Defect Plugin
 the purpose of a `DefectPlugin` implementation is to provide execution control over any expectations by way of supplied _Test IDs_ referenced in an external ticket tracking system like Bugzilla or Jira. to specify an implementation of the plugin to load you can add the following to your `aftconfig.json` (where plugins `defect-plugin.js` is contained within the test execution directory or a subdirectory of it):
 ```json
 {
-    "defectmanager": {
-        "pluginNames": ["defect-plugin"]
+    "DefectManager": {
+        "plugins": ["defect-plugin"]
     }
 }
 ```
 > NOTE: if no plugin is specified then external Defect Management integration will be disabled and _assertions_ will be executed without checking their status before execution, however if a Defect Management plugin is specified, the execution of any _assertions_ passed into a `verify(assertion)` function will be halted if any non-closed defects are found when searching for defects that contain reference to the values passed in via `withTestId(caseId)` or via direct reference to defect using `withKnownDefectId(defectId)`
-
-> NOTE: you can optionally add a `searchDir` field under the `defectmanager` to specify a root directory to use when searching for defect plugin implementations
 
 ## Example Test Project
 - [`aft-examples`](./packages/aft-examples/README.md) - a demonstration of how to develop UI and REST based functional test automation using AFT is located under `./packages/aft-examples`
@@ -135,3 +138,5 @@ the purpose of a `DefectPlugin` implementation is to provide execution control o
 - when you are happy with your changes, submit a Pull Request back to the _main_ branch at https://github.com/bicarbon8/automated-functional-testing
 
 > NOTE: all changes require unit tests and these tests are expected to pass when run via `yarn test`
+
+> NOTE: check for any circular dependencies using `yarn run dpdm -T --warning false **/index.ts`

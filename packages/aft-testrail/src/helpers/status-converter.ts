@@ -1,44 +1,52 @@
 import { TestStatus } from 'aft-core';
 
-/**
- * converts to and from the TestRail `status_id` and the
- * AFT `TestStatus` enum
- */
-export class StatusConverter {
+class StatusConverter {
+    /**
+     * converts from AFT `TestStatus` to TestRail API status number
+     * @param status an AFT `TestStatus` enum to be converted
+     * @returns a TestRail API status number
+     */
     toTestRailStatus(status: TestStatus): number {
         switch (status) {
-            case TestStatus.Skipped:
+            case 'Skipped':
                 return 9;
-            case TestStatus.Untested:
+            case 'Untested':
                 return 3;
-            case TestStatus.Blocked:
+            case 'Blocked':
                 return 2;
-            case TestStatus.Passed:
+            case 'Passed':
                 return 1;
-            case TestStatus.Failed:
-            case TestStatus.Retest:
+            case 'Failed':
+            case 'Retest':
             default:
                 return 4;
         }
     }
 
+    /**
+     * converts from TestRail API status number to an AFT `TestStatus` enum
+     * @param trStatus a TestRail API status number to be converted
+     * @returns an AFT `TestStatus` enum
+     */
     fromTestRailStatus(trStatus: number): TestStatus {
         switch (trStatus) {
             case 1:
-                return TestStatus.Passed;
+                return 'Passed';
             case 2:
-                return TestStatus.Blocked;
+                return 'Blocked';
             case 3:
-                return TestStatus.Untested;
+                return 'Untested';
             case 5:
-                return TestStatus.Failed;
+                return 'Failed';
             case 4:
             default:
-                return TestStatus.Retest;
+                return 'Retest';
         }
     }
 }
 
-export module StatusConverter {
-    export const instance: StatusConverter = new StatusConverter();
-}
+/**
+ * converts to and from the TestRail `status_id` and the
+ * AFT `TestStatus` enum
+ */
+export const statusConverter = new StatusConverter();

@@ -1,16 +1,14 @@
 import { buildinfo, BuildInfoManager } from "../plugins/build-info/build-info-manager";
 import { DefectManager, defects } from "../plugins/defects/defect-manager";
-import { DefectStatus } from "../plugins/defects/defect-status";
-import { IDefect } from "../plugins/defects/idefect";
+import { Defect } from "../plugins/defects/defect";
 import { LogManager } from "../plugins/logging/log-manager";
-import { ITestResult } from "../plugins/test-cases/itest-result";
+import { TestResult } from "../plugins/test-cases/test-result";
 import { TestCaseManager, testcases } from "../plugins/test-cases/test-case-manager";
 import { TestStatus } from "../plugins/test-cases/test-status";
-import { convert } from "./converter";
-import { Func } from "./custom-types";
-import { ProcessingResult } from "./processing-result";
-import { rand } from "./random-generator";
-import { Equaling, VerifierMatcher } from "./verifier-matcher";
+import { convert } from "./convert";
+import { Func, ProcessingResult } from "./custom-types";
+import { rand } from "./rand";
+import { equaling, VerifierMatcher } from "./verifier-matcher";
 
 export class Verifier implements PromiseLike<void> {
     protected _assertion: Func<Verifier, any>;
@@ -29,27 +27,47 @@ export class Verifier implements PromiseLike<void> {
         this._startTime = new Date().getTime();
         this._tests = new Set<string>();
         this._defects = new Set<string>();
-        this._testMgr = testcases;
-        this._defectMgr = defects;
-        this._buildMgr = buildinfo;
     }
     
     /**
-     * a {LogManager} that uses either the {withDescription}
-     * or a list of {withTestId} or a uuid as the `logName` depending
+     * a `LogManager` that uses either the `withDescription`
+     * or a list of `withTestId` or a uuid as the `logName` depending
      * on which is available and where `description` is preferred most
      */
     get logMgr(): LogManager {
+        let logName: string;
+        if (this._description) {
+            logName = this._description;
+        } else if (this._tests.size > 0) {
+            logName = Array.from(this._tests).join('_');
+        } else {
+            logName = this.constructor.name;
+        }
         if (!this._logMgr) {
-            if (this._description) {
-                this._logMgr = new LogManager({logName: this._description});
-            } else if (this._tests.size > 0) {
-                return new LogManager({logName: Array.from(this._tests).join('_')});
-            } else {
-                return new LogManager();
-            }
+            this._logMgr = new LogManager({logName: logName});
         }
         return this._logMgr;
+    }
+
+    get testMgr(): TestCaseManager {
+        if (!this._testMgr) {
+            this._testMgr = testcases;
+        }
+        return this._testMgr;
+    }
+
+    get defectMgr(): DefectManager {
+        if (!this._defectMgr) {
+            this._defectMgr = defects;
+        }
+        return this._defectMgr;
+    }
+
+    get buildMgr(): BuildInfoManager {
+        if (!this._buildMgr) {
+            this._buildMgr = buildinfo;
+        }
+        return this._buildMgr;
     }
 
     async then<TResult1 = Verifier, TResult2 = never>(onfulfilled?: (value: void) => TResult1 | PromiseLike<TResult1>, onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2> {
@@ -61,21 +79,19 @@ export class Verifier implements PromiseLike<void> {
         if (!this._innerPromise) {
             this._innerPromise = new Promise(async (resolve, reject) => {
                 try {
-                    let tcShould: ProcessingResult = await this._shouldRun_tests(...Array.from(this._tests));
-                    if (tcShould.success) {
-                        let dShould: ProcessingResult = await this._shouldRun_defects(...Array.from(this._defects));
-                        if (dShould.success) {
-                            await this._resolveAssertion();
-                            await this._logResult(TestStatus.Passed);
-                        } else {
-                            await this._logResult(TestStatus.Skipped, dShould.message);
-                        }
+                    const shouldRun: Array<ProcessingResult> = await Promise.all([
+                        this._shouldRun_tests(...Array.from(this._tests)),
+                        this._shouldRun_defects(...Array.from(this._defects))
+                    ]);
+                    if (shouldRun.map(pr => pr.success).reduce((prev, cur) => prev && cur)) {
+                        await this._resolveAssertion();
+                        await this._logResult('Passed');
                     } else {
-                        await this._logResult(TestStatus.Skipped, tcShould.message);
+                        await this._logResult('Skipped', shouldRun.filter(pr => !pr.success).map(pr => pr.message).join('; '));
                     }
                     resolve();
                 } catch(e) {
-                    await this._logResult(TestStatus.Failed, e);
+                    await this._logResult('Failed', e);
                     reject(e);
                 }
             });
@@ -100,8 +116,8 @@ export class Verifier implements PromiseLike<void> {
     }
 
     /**
-     * the starting point for setting up a {Verifier} execution. Generally it is preferred
-     * to use the {verify(...)} `const` instead of creating individual {Verifier} instances.
+     * the starting point for setting up a `Verifier` execution. Generally it is preferred
+     * to use the `verify(...)` `const` instead of creating individual `Verifier` instances.
      * ex:
      * ```
      * await verify(async (v: Verifier) => {
@@ -112,8 +128,8 @@ export class Verifier implements PromiseLike<void> {
      * .and.withTestId('C1234')
      * .returns('expected value');
      * ```
-     * @param assertion the {Func<Verifier, any>} function to be executed by this {Verifier}
-     * @returns this {Verifier} instance
+     * @param assertion the `Func<Verifier, any>` function to be executed by this `Verifier`
+     * @returns this `Verifier` instance
      */
     verify(assertion: Func<Verifier, any>): this {
         this._assertion = assertion;
@@ -122,9 +138,9 @@ export class Verifier implements PromiseLike<void> {
 
     /**
      * allows for setting the `description` to be used as the `logName` in any
-     * logging output from this {Verifier}
-     * @param description the description of this {Verifier}
-     * @returns this {Verifier} instance
+     * logging output from this `Verifier`
+     * @param description the description of this `Verifier`
+     * @returns this `Verifier` instance
      */
     withDescription(description: string): this {
         this._description = description;
@@ -139,7 +155,7 @@ export class Verifier implements PromiseLike<void> {
      * the `assertion` will not be run.
      * NOTE: multiple `testId` values can be chained together
      * @param testId a test identifier for your connected {AbstractTestCasePlugin}
-     * @returns this {Verifier} instance
+     * @returns this `Verifier` instance
      */
     withTestId(testId: string): this {
         if (testId) {
@@ -151,8 +167,8 @@ export class Verifier implements PromiseLike<void> {
     /**
      * allows for setting a `defectId` to be checked before executing the `assertion`.
      * if the referenced `defectId` is _open_ then the `assertion` will not be run.
-     * @param defectId a defect identifier for your connected {AbstractDefectPlugin}
-     * @returns this {Verifier} instance
+     * @param defectId a defect identifier for your connected `DefectPlugin`
+     * @returns this `Verifier` instance
      */
     withKnownDefectId(defectId: string): this {
         if (defectId) {
@@ -162,27 +178,27 @@ export class Verifier implements PromiseLike<void> {
     }
 
     /**
-     * allows for specifying either the expected return value or a {VerifierMatcher}
-     * to be used to compare the return value using the {VerifierMatcher.compare()}
+     * allows for specifying either the expected return value or a `VerifierMatcher`
+     * to be used to compare the return value using the `VerifierMatcher.compare()`
      * function. if not set then only exceptions will cause a `failed` result on
      * the executed `assertion`
-     * @param result the expected result or a {VerifierMatcher} implementation
-     * @returns this {Verifier} instance
+     * @param result the expected result or a `VerifierMatcher` implementation
+     * @returns this `Verifier` instance
      */
     returns(result: any | VerifierMatcher): this {
         if (result['compare'] && result['setActual'] && result['failureString']) {
             this._matcher = result;
         } else {
-            this._matcher = new Equaling(result);
+            this._matcher = equaling(result);
         }
         return this;
     }
 
     /**
-     * allows for using a specific {LogManager} instance. if not
-     * set then one will be created for use by this {Verifier}
-     * @param logMgr a {LogManager} instance
-     * @returns this {Verifier} instance
+     * allows for using a specific `LogManager` instance. if not
+     * set then one will be created for use by this `Verifier`
+     * @param logMgr a `LogManager` instance
+     * @returns this `Verifier` instance
      */
     withLogManager(logMgr: LogManager): this {
         this._logMgr = logMgr;
@@ -193,7 +209,7 @@ export class Verifier implements PromiseLike<void> {
      * allows for using a specific {TestCaseManager} instance. if not
      * set then the global {TestCaseManager.instance()} will be used
      * @param testMgr a {TestCaseManager} instance
-     * @returns this {Verifier} instance
+     * @returns this `Verifier` instance
      */
     withTestCaseManager(testMgr: TestCaseManager): this {
         this._testMgr = testMgr;
@@ -204,7 +220,7 @@ export class Verifier implements PromiseLike<void> {
      * allows for using a specific {DefectManager} instance. if not
      * set then the global {DefectManager.instance()} will be used
      * @param defectMgr a {DefectManager} instance
-     * @returns this {Verifier} instance
+     * @returns this `Verifier` instance
      */
     withDefectManager(defectMgr: DefectManager): this {
         this._defectMgr = defectMgr;
@@ -215,7 +231,7 @@ export class Verifier implements PromiseLike<void> {
      * allows for using a specific {BuildInfoManager} instance. if not
      * set then the global {BuildInfoManager.instance()} will be used
      * @param buildMgr a {BuildInfoManager} instance
-     * @returns this {Verifier} instance
+     * @returns this `Verifier` instance
      */
     withBuildInfoManager(buildMgr: BuildInfoManager): this {
         this._buildMgr = buildMgr;
@@ -223,32 +239,37 @@ export class Verifier implements PromiseLike<void> {
     }
 
     protected async _shouldRun_tests(...tests: string[]): Promise<ProcessingResult> {
-        let tcResults: ProcessingResult[] = [];
+        const shouldRunTests = new Array<string>();
+        const shouldNotRunTests = new Array<string>();
         if (tests?.length) {
             for (var i=0; i<tests.length; i++) {
                 let testId: string = tests[i];
-                let result: ProcessingResult = await this._testMgr.shouldRun(testId);
-                tcResults.push(result);
-                if (result.success) {
-                    let defects: IDefect[] = await this._defectMgr.findDefects(testId) || [];
-                    for (var j=0; j<defects.length; j++) {
-                        let d: IDefect = defects[j];
-                        if (d?.status == DefectStatus.open) {
-                            return {success: false, message: `TestId: '${testId}' has open defect '${d.id}' so test should not be run.`};
-                        }
+                let result: boolean = await this.testMgr.shouldRun(testId);
+                if (result === true) {
+                    let defects: Array<Defect> = await this.defectMgr.findDefects(testId) || new Array<Defect>();
+                    if (defects.some((d: Defect) => d?.status == 'open')) {
+                        let openDefects: string = defects
+                            .filter((d: Defect) => d.status == 'open')
+                            .map((d: Defect) => d.id)
+                            .join(', ');
+                        shouldNotRunTests.push(testId);
+                        return {
+                            success: false, 
+                            message: `the testId ${testId} has one or more open defects so test should not be run: [${openDefects}]`
+                        };
+                    } else {
+                        shouldRunTests.push(testId);
                     }
+                } else {
+                    shouldNotRunTests.push(testId);
                 }
             }
-            let shouldRun: boolean = false;
-            for (var i=0; i<tcResults.length; i++) {
-                let tcRes: ProcessingResult = tcResults[i];
-                shouldRun = shouldRun || tcRes.success;
-            }
+            let shouldRun: boolean = shouldRunTests.length > 0;
             if (!shouldRun) {
-                return {success: false, message: tcResults.map((r) => r.message || '').join('; ')};
+                return {success: false, message: `none of the supplied tests should be run: [${tests.join(', ')}]`};
             }
         }
-        return {success: true};
+        return {success: true, message: 'returning the test IDs, as an array, that should be run', obj: shouldRunTests};
     }
 
     protected async _shouldRun_defects(...defects: string[]): Promise<ProcessingResult> {
@@ -256,8 +277,8 @@ export class Verifier implements PromiseLike<void> {
         if (defects?.length) {
             for (var i=0; i<defects.length; i++) {
                 let defectId: string = defects[i];
-                let defect: IDefect = await this._defectMgr.getDefect(defectId);
-                if (defect?.status == DefectStatus.open) {
+                let defect: Defect = await this._defectMgr.getDefect(defectId);
+                if (defect?.status == 'open') {
                     return {success: false, message: `Defect: '${defectId}' is open so test should not be run.`};
                 }
             }
@@ -272,78 +293,79 @@ export class Verifier implements PromiseLike<void> {
      * expectation
      */
     protected async _logResult(status: TestStatus, message?: string): Promise<void> {
-        status = status || TestStatus.Untested;
-        if (this._tests.size) {
-            this._tests.forEach(async (testId: string) => {
-                if (message) {
-                    await this._logMessage(status, `${testId} - ${message}`);
-                } else {
-                    await this._logMessage(status, testId);
-                }
-            });
-        } else {
-            await this._logMessage(status, message);
-        }
-
-        let results: ITestResult[] = await this._generateTestResults(status, message, ...Array.from(this._tests.values()));
-        for (var i=0; i<results.length; i++) {
-            let result: ITestResult = results[i];
-            try {
-                await this.logMgr.logResult(result);
-            } catch (e) {
-                await this.logMgr.warn(`unable to log test result for test '${result.testId || result.resultId}' due to: ${e}`);
+        try {
+            status = status || 'Untested';
+            if (this._tests.size) {
+                this._tests.forEach(async (testId: string) => {
+                    if (message) {
+                        await this._logMessage(status, `${testId} - ${message}`);
+                    } else {
+                        await this._logMessage(status, testId);
+                    }
+                });
+            } else {
+                await this._logMessage(status, message);
             }
-        }
 
-        await this.logMgr.dispose();
+            let results: TestResult[] = await this._generateTestResults(status, message, ...Array.from(this._tests.values()));
+            for (var i=0; i<results.length; i++) {
+                let result: TestResult = results[i];
+                try {
+                    await this.logMgr.logResult(result);
+                } catch (e) {
+                    await this.logMgr.warn(`unable to log test result for test '${result.testId || result.resultId}' due to: ${e}`);
+                }
+            }
+        } finally {
+            await this.logMgr.dispose();
+        }
     }
 
     protected async _logMessage(status: TestStatus, message?: string): Promise<void> {
         message = message || '';
         switch (status) {
-            case TestStatus.Blocked:
-            case TestStatus.Retest:
-            case TestStatus.Skipped:
-            case TestStatus.Untested:
+            case 'Blocked':
+            case 'Retest':
+            case 'Skipped':
+            case 'Untested':
                 await this.logMgr.warn(message);
                 break;
-            case TestStatus.Failed:
+            case 'Failed':
                 await this.logMgr.fail(message);
                 break;
-            case TestStatus.Passed:
+            case 'Passed':
             default:
                 await this.logMgr.pass(message);
                 break;
         }
     }
 
-    protected async _generateTestResults(status: TestStatus, logMessage: string, ...testIds: string[]): Promise<ITestResult[]> {
-        let results: ITestResult[] = [];
+    protected async _generateTestResults(status: TestStatus, logMessage: string, ...testIds: string[]): Promise<TestResult[]> {
+        let results: TestResult[] = [];
         if (testIds.length > 0) {
             for (var i=0; i<testIds.length; i++) {
                 let testId: string = testIds[i];
-                let result: ITestResult = await this._generateTestResult(status, logMessage, testId);
+                let result: TestResult = await this._generateTestResult(status, logMessage, testId);
                 results.push(result);
             }
         } else {
-            let result: ITestResult = await this._generateTestResult(status, logMessage);
+            let result: TestResult = await this._generateTestResult(status, logMessage);
             results.push(result);
         }
         return results;
     }
 
-    protected async _generateTestResult(status: TestStatus, logMessage: string, testId?: string): Promise<ITestResult> {
-        let result: ITestResult = {
+    protected async _generateTestResult(status: TestStatus, logMessage: string, testId?: string): Promise<TestResult> {
+        let result: TestResult = {
             testId: testId,
-            created: new Date(),
+            created: Date.now(),
             resultId: rand.guid,
             resultMessage: logMessage,
             status: status,
             metadata: {
                 durationMs: convert.toElapsedMs(this._startTime),
-                statusStr: TestStatus[status],
-                buildName: await this._buildMgr.getBuildName() || 'unknown',
-                buildNumber: await this._buildMgr.getBuildNumber() || 'unknown'
+                buildName: await this.buildMgr.buildName() || 'unknown',
+                buildNumber: await this.buildMgr.buildNumber() || 'unknown'
             }
         };
         return result;
@@ -351,7 +373,7 @@ export class Verifier implements PromiseLike<void> {
 }
 
 /**
- * creates a new {Verifier} instace to be used for executing some Functional
+ * creates a new `Verifier` instace to be used for executing some Functional
  * Test Assertion.
  * ex:
  * ```
@@ -363,8 +385,8 @@ export class Verifier implements PromiseLike<void> {
  * .and.withTestId('C1234')
  * .returns('expected value');
  * ```
- * @param assertion the {Func<Verifier, any>} function to be executed by this {Verifier}
- * @returns a new {Verifier} instance
+ * @param assertion the {Func<Verifier, any>} function to be executed by this `Verifier`
+ * @returns a new `Verifier` instance
  */
 export const verify = (assertion: Func<Verifier, any>): Verifier => {
     return new Verifier().verify(assertion);

@@ -6,7 +6,9 @@ export class HerokuMessagesWidget extends BrowserFacet {
      * this Facet sets a static locator instead of using a passed
      * in value on the constructor
      */
-    override readonly locator: Locator = By.id('flash-messages');
+    override get locator(): Locator {
+        return By.id('flash-messages');
+    }
 
     private async message(): Promise<WebElement> {
         let elements: WebElement[] = await this.getElements({ locator: By.id('flash') });
@@ -25,8 +27,8 @@ export class HerokuMessagesWidget extends BrowserFacet {
     async getMessage(): Promise<string> {
         if (await this.hasMessage()) {
             return await this.message()
-            .then(async (message) => {
-                return await message.getText();
+            .then(message => {
+                return message.getText();
             }).catch((err) => {
                 return null;
             });

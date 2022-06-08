@@ -1,68 +1,78 @@
-import { Clazz, wait } from "aft-core";
-import { AbstractFacet, IElementOptions, IFacetOptions } from "aft-ui";
-import { Locator, WebElement } from "selenium-webdriver";
+import { Class, Merge, wait } from "aft-core";
+import { UiFacet, UiElementOptions, UiFacetOptions } from "aft-ui";
+import { By, Locator, WebElement } from "selenium-webdriver";
 import { BrowserSession } from "../sessions/browser-session";
 
-export interface WebElementOptions extends IElementOptions {
+export type WebElementOptions = Merge<UiElementOptions, {
     locator: Locator;
-}
+}>;
 
-export interface BrowserFacetOptions extends IFacetOptions {
+export type BrowserFacetOptions = Merge<UiFacetOptions, {
     locator?: Locator;
     session?: BrowserSession;
     parent?: BrowserFacet;
-}
+}>;
 
-export class BrowserFacet extends AbstractFacet {
-    override readonly locator: Locator;
-    override readonly session: BrowserSession;
-    override readonly parent: BrowserFacet;
+export class BrowserFacet extends UiFacet<BrowserFacetOptions> {
+    override get locator(): Locator {
+        return super.locator as Locator;
+    }
+    
+    override get session(): BrowserSession {
+        return super.session as BrowserSession;
+    }
+    
+    override get parent(): BrowserFacet {
+        return super.parent as BrowserFacet;
+    }
 
-    async getElements(options: WebElementOptions): Promise<WebElement[]> {
+    override async getElements(options: WebElementOptions): Promise<WebElement[]> {
         let elements: WebElement[]
         await wait.untilTrue(async () => {
-            elements = await this.getRoot().then(async (r) => await r.findElements(options.locator));
+            elements = await this.getRoot().then(r => r.findElements(options.locator));
             return elements.length > 0;
         }, options.maxWaitMs || 0);
         return elements;
     }
 
-    async getElement(options: WebElementOptions): Promise<WebElement> {
+    override async getElement(options: WebElementOptions): Promise<WebElement> {
         let element: WebElement;
         await wait.untilTrue(async () => {
             element = await this.getRoot()
-                .then(async r => await r.findElement(options.locator));
+                .then(r => r.findElement(options.locator));
             return !!element;
         }, options.maxWaitMs || 0);
         return element;
     }
     
-    async getFacet<T extends AbstractFacet>(facetType: Clazz<T>, options?: BrowserFacetOptions): Promise<T> {
-        options = options || {};
+    override async getFacet<T extends UiFacet<BrowserFacetOptions>>(facetType: Class<T>, options?: BrowserFacetOptions): Promise<T> {
+        options = options || {} as BrowserFacetOptions;
         options.parent = options.parent || this;
         options.session = options.session || this.session;
         options.logMgr = options.logMgr || this.logMgr;
-        options.maxWaitMs = (options.maxWaitMs === undefined) ? this.maxWaitMs : options.maxWaitMs;
-        let facet: T = new facetType(options);
+        const facet: T = new facetType(options);
         return facet;
     }
     
-    async getRoot(): Promise<WebElement>  {
+    override async getRoot(): Promise<WebElement>  {
         let el: WebElement;
+        const index = this.index;
+        const loc = this.locator;
+        const maxWait = this.maxWaitMs;
         await wait.untilTrue(async () => {
             if (this.parent) {
                 let els: WebElement[] = await this.parent.getRoot()
-                    .then(async r => await r.findElements(this.locator));
-                el = els[this.index];
+                    .then(r => r.findElements(loc));
+                el = els[index];
             } else {
-                let els: WebElement[] = await this.session.driver.findElements(this.locator);
-                el = els[this.index];
+                let els: WebElement[] = await this.session.driver.findElements(loc);
+                el = els[index];
             }
             if (el) {
                 return true;
             }
             return false;
-        }, this.maxWaitMs);
+        }, maxWait);
         return el;
     }
 }

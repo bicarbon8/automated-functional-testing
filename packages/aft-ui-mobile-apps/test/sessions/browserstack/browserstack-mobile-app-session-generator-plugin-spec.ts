@@ -1,11 +1,11 @@
 import { using, LogManager, rand } from "aft-core";
-import { TestPlatform } from "aft-ui";
-import { BrowserStackAppAutomateApi, BrowserStackConfig, BrowserStackMobileAppSessionGeneratorPlugin, BrowserStackMobileAppSessionGeneratorPluginOptions, MobileAppFacet, MobileAppSession, UploadRequest, UploadResponse } from "../../../src";
+import { UiPlatform } from "aft-ui";
+import { BrowserStackAppAutomateApi, BrowserStackConfig, BrowserStackMobileAppSessionGeneratorPlugin, BrowserStackMobileAppSessionGeneratorPluginOptions, MobileAppFacet, MobileAppFacetOptions, MobileAppSession, UploadRequest, UploadResponse } from "../../../src";
 import { RemoteOptions } from "webdriverio";
 
 describe('BrowserStackMobileAppSessionGeneratorPlugin', () => {
     it('can generate RemoteOptions from the passed in Options', async () => {
-        let platform: TestPlatform = new TestPlatform({
+        let platform: UiPlatform = new UiPlatform({
             os: `os-${rand.getString(10)}`,
             osVersion: `osVersion-${rand.getString(2, false, true)}`,
             browser: `browser-${rand.getString(15)}`,
@@ -19,12 +19,12 @@ describe('BrowserStackMobileAppSessionGeneratorPlugin', () => {
             localIdentifier: `localId-${rand.getString(15)}`
         });
         let opts: BrowserStackMobileAppSessionGeneratorPluginOptions = {
-            platform: platform.toString(),
+            uiplatform: platform.toString(),
             remoteOptions: {
                 capabilities: {"app": `app-${rand.getString(10)}`}
             },
             logMgr: new LogManager({logName: 'can generate RemoteOptions from the passed in Options'}),
-            _config: cfg
+            config: cfg
         };
         let plugin: BrowserStackMobileAppSessionGeneratorPlugin = new BrowserStackMobileAppSessionGeneratorPlugin(opts);
 
@@ -41,12 +41,12 @@ describe('BrowserStackMobileAppSessionGeneratorPlugin', () => {
         expect(remOpts.capabilities['browserstack.local']).toEqual(true);
         expect(remOpts.capabilities['browserstack.localIdentifier']).toEqual(await cfg.localIdentifier());
         expect(remOpts.capabilities['build']).toEqual(await cfg.buildName());
-        expect(remOpts.capabilities['name']).toEqual(await opts.logMgr.logName());
+        expect(remOpts.capabilities['name']).toEqual(opts.logMgr.logName);
         expect(remOpts.capabilities['app']).toEqual(remOpts.capabilities['app']);
     });
 
     it('can upload a mobile application using sendCommand', async () => {
-        let platform: TestPlatform = new TestPlatform({
+        let platform: UiPlatform = new UiPlatform({
             os: 'os-' + rand.getString(10),
             osVersion: 'osVersion-' + rand.getString(2, false, true),
             browser: 'browser-' + rand.getString(15),
@@ -67,10 +67,10 @@ describe('BrowserStackMobileAppSessionGeneratorPlugin', () => {
             } as UploadResponse)
         });
         let opts: BrowserStackMobileAppSessionGeneratorPluginOptions = {
-            platform: platform.toString(),
+            uiplatform: platform.toString(),
             logMgr: new LogManager({logName: 'can upload a mobile application using sendCommand'}),
-            _config: cfg,
-            _api: mockApi
+            config: cfg,
+            api: mockApi
         };
         let plugin: BrowserStackMobileAppSessionGeneratorPlugin = new BrowserStackMobileAppSessionGeneratorPlugin(opts);
         let response: any = await plugin.sendCommand('upload', {
@@ -99,14 +99,14 @@ describe('BrowserStackMobileAppSessionGeneratorPlugin', () => {
             key: 'your-key'
         });
         let plugin: BrowserStackMobileAppSessionGeneratorPlugin = new BrowserStackMobileAppSessionGeneratorPlugin({
-            _config: cfg,
-            platform: 'android_11_+_+_Google Pixel 5'
+            config: cfg,
+            uiplatform: 'android_11_+_+_Google Pixel 5'
         });
-        await using (await plugin.newSession(), async (session: MobileAppSession) => {
-            let facet: MobileAppFacet = await session.getFacet(MobileAppFacet, {locator: 'button.radius'});
+        await using (await plugin.newUiSession(), async (session: MobileAppSession) => {
+            let facet = await session.getFacet<MobileAppFacet, MobileAppFacetOptions>(MobileAppFacet, {locator: 'button.radius'});
 
             expect(facet).toBeDefined();
-            expect(await facet.getRoot().then(async (r) => await r.getText())).toEqual('Login');
+            expect(await facet.getRoot().then(r => r.getText())).toEqual('Login');
         });
     }, 300000);
 });

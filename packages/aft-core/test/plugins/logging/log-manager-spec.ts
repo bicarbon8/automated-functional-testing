@@ -1,5 +1,4 @@
-import { LoggingPluginStore } from "./logging-plugin-store";
-import { ITestResult, LoggingPlugin, LogLevel, LogManager, LogManagerOptions, rand, TestStatus } from "../../../src";
+import { TestResult, LogManager, rand, LogMessageData, pluginloader } from "../../../src";
 import { MockLoggingPlugin } from "./mock-logging-plugin";
 
 const consoleLog = console.log;
@@ -8,23 +7,28 @@ describe('LogManager', () => {
         console.log = function(){};
     });
 
+    beforeEach(() => {
+        pluginloader.clear();
+    });
+
     afterAll(() => {
         console.log = consoleLog;
     });
 
     it('will send logs to any registered LoggingPlugin implementations', async () => {
-        const lps: LoggingPluginStore = {
-            logs: [],
-            results: []
-        };
-        let opts: LogManagerOptions = {
-            logName: 'will send logs to any registered LoggingPlugin implementations',
-            pluginNames: ['mock-logging-plugin'],
+        const logName = 'will send logs to any registered LoggingPlugin implementations';
+        const logMgr: LogManager = new LogManager({
+            logName: logName,
             level: 'trace',
-            lps: lps
-        } as LogManagerOptions;
-        let logMgr: LogManager = new LogManager(opts);
-
+            plugins: ['mock-logging-plugin']
+        });
+        const plugin = await logMgr.first();
+        const logs = new Array<LogMessageData>();
+        const logSpy = spyOn(plugin, 'log').and.callFake((message: LogMessageData) => {
+            logs.push(message);
+            return Promise.resolve();
+        });
+        const resultSpy = spyOn(plugin, 'logResult').and.callThrough();
         let messages: string[] = [];
 
         for (var i=0; i<5; i++) {
@@ -38,103 +42,152 @@ describe('LogManager', () => {
             await logMgr.pass(message);
             await logMgr.fail(message);
             await logMgr.error(message);
-            await logMgr.log(LogLevel.none, message);
+            await logMgr.log('none', message);
         }
-        expect(lps.logs.length).toEqual(5 * 9);
-        expect(lps.results.length).toEqual(0);
-        expect(lps.logs[0].message).toEqual(messages[0]);
-        expect(lps.logs[lps.logs.length - 1].message).toEqual(messages[messages.length - 1]);
+        expect(logSpy).toHaveBeenCalledTimes(5 * 9);
+        expect(resultSpy).not.toHaveBeenCalled();
+        expect(logs[0].message).toEqual(messages[0]);
+        expect(logs[logs.length - 1].message).toEqual(messages[messages.length - 1]);
     });
 
-    it('sets the same logName on any loaded LoggingPlugin implementations', async () => {
-        const lps: LoggingPluginStore = {
-            logs: [],
-            results: []
-        };
-        const opts: LogManagerOptions = {
-            logName: rand.getString(rand.getInt(10, 20)),
-            pluginNames: ['mock-logging-plugin'],
-            lps: lps
-        } as LogManagerOptions;
-        const logMgr: LogManager = new LogManager(opts);
-        const plugin: LoggingPlugin = await logMgr.getFirstEnabledPlugin();
-
-        expect(await plugin.logName()).toEqual(await logMgr.logName());
-    });
-
-    it('will not output if level set to LoggingLevel.none', async () => {
-        const opts: LogManagerOptions = {
-            logName: 'will not output if level set to LoggingLevel.none',
-            level: 'none'
-        };
-        const logMgr: LogManager = new LogManager(opts);
+    it('will not output if level set to LogLevel of none', async () => {
+        const logName = 'will not output if level set to LogLevel of none';
+        const logMgr: LogManager = new LogManager({
+            logName: logName,
+            level: 'none',
+            plugins: []
+        });
         const consoleSpy = spyOn(console, 'log').and.callThrough();
 
         await logMgr.error('fake error');
-        await logMgr.log(LogLevel.none, 'will not be logged');
+        await logMgr.log('none', 'will not be logged');
 
         expect(consoleSpy).not.toHaveBeenCalled();
     });
 
-    it('will send cloned TestResult to any registered LoggingPlugin implementations', async () => {
-        const lps: LoggingPluginStore = {
-            logs: [],
-            results: []
-        };
-        let opts: LogManagerOptions = {
-            logName: 'will send cloned TestResult to any registered LoggingPlugin implementations',
-            pluginNames: ['mock-logging-plugin'],
-            lps: lps
-        } as LogManagerOptions;
-        let logMgr: LogManager = new LogManager(opts);
+    it('will send cloned LogMessageData to any registered LoggingPlugin implementations', async () => {
+        const logName = 'will send cloned LogMessageData to any registered LoggingPlugin implementations';
+        const logMgr: LogManager = new LogManager({
+            logName: logName,
+            plugins: ['mock-logging-plugin']
+        });
+        const plugin = await logMgr.first() as MockLoggingPlugin;
+        const logs: LogMessageData[] = [];
+        const logSpy = spyOn(plugin, 'log').and.callFake((message: LogMessageData): Promise<void> => {
+            logs.push(message);
+            return Promise.resolve();
+        })
+        const expected: string = rand.getString(25, true, true, true, true);
+        await logMgr.log('trace', expected);
 
-        let result: ITestResult = {
+        expect(logSpy).toHaveBeenCalledTimes(1);
+        expect(logs[0].message).toBe(expected);
+    });
+
+    it('will send cloned TestResult to any registered LoggingPlugin implementations', async () => {
+        const logName = 'will send cloned TestResult to any registered LoggingPlugin implementations';
+        const logMgr: LogManager = new LogManager({
+            logName: logName,
+            plugins: ['mock-logging-plugin']
+        });
+        const plugin = await logMgr.first();
+        const logSpy = spyOn(plugin, 'log').and.callThrough();
+        const results = new Array<TestResult>();
+        const names = new Array<string>();
+        const resultSpy = spyOn(plugin, 'logResult').and.callFake((logName: string, result: TestResult) => {
+            names.push(logName);
+            results.push(result);
+            return Promise.resolve();
+        });
+        let result: TestResult = {
             testId: 'C' + rand.getInt(1000, 999999),
-            created: new Date(),
+            created: Date.now(),
             resultId: rand.guid,
-            status: TestStatus.Untested,
+            status: 'Untested',
             resultMessage: rand.getString(100)
         };
 
         await logMgr.logResult(result);
 
-        expect(lps.logs.length).toEqual(0);
-        expect(lps.results.length).toEqual(1);
-        expect(lps.results[0]).not.toBe(result);
-        expect(lps.results[0].testId).toEqual(result.testId);
-        expect(lps.results[0].created).toEqual(result.created);
+        expect(logSpy).not.toHaveBeenCalled();
+        expect(resultSpy).toHaveBeenCalledTimes(1);
+        expect(names[0]).toEqual(logName);
+        expect(results.length).toEqual(1);
+        expect(results[0]).not.toBe(result);
+        expect(results[0].testId).toEqual(result.testId);
+        expect(results[0].created).toEqual(result.created);
     });
 
     it('calls LoggingPlugin.dispose on LogManager.dispose', async () => {
-        const lps: LoggingPluginStore = {
-            logs: [],
-            results: []
-        };
-        let opts: LogManagerOptions = {
-            logName: 'calls LoggingPlugin.dispose on LogManager.dispose',
-            pluginNames: ['mock-logging-plugin'],
-            lps: lps
-        } as LogManagerOptions;
-        let logMgr: LogManager = new LogManager(opts);
-
+        const logName = 'calls LoggingPlugin.dispose on LogManager.dispose';
+        const logMgr: LogManager = new LogManager({
+            logName: logName,
+            plugins: ['mock-logging-plugin']
+        });
+        const plugin = await logMgr.first();
+        const errors = new Array<LogMessageData>();
+        const names = new Array<string>();
+        const disposeSpy = spyOn(plugin, 'dispose').and.callFake((logName: string, message: LogMessageData) => {
+            names.push(logName);
+            errors.push(message);
+            return Promise.resolve();
+        });
         await logMgr.info(rand.getString(18));
 
-        expect(lps.disposed).toBeFalsy();
+        expect(disposeSpy).not.toHaveBeenCalled();
 
-        await logMgr.dispose();
+        const expectedErr = new Error(rand.getString(10, false, false, false, true));
+        await logMgr.dispose(expectedErr);
 
-        expect(lps.disposed).toEqual(true);
+        expect(disposeSpy).toHaveBeenCalledTimes(1);
+        expect(names[0]).toEqual(logName);
+        expect(errors[0].message).toEqual(expectedErr.message);
     });
 
     it('handles exceptions thrown by loaded plugins', async () => {
-        const opts: LogManagerOptions = {
-            logName: 'handles exceptions thrown by loaded plugins',
-            pluginNames: ['throws-logging-plugin']
-        };
-        const logMgr: LogManager = new LogManager(opts);
+        const logName = 'handles exceptions thrown by loaded plugins';
+        const logMgr: LogManager = new LogManager({
+            logName: logName,
+            plugins: ['throws-logging-plugin']
+        });
 
-        expect(async () => { await logMgr.log(LogLevel.error, rand.guid); }).withContext('log').not.toThrow();
-        expect(async () => { await logMgr.logResult({created: new Date(), resultId: rand.guid, status: TestStatus.Passed}); }).withContext('logResult').not.toThrow();
-        expect(async () => { await logMgr.dispose(); }).withContext('dispose').not.toThrow();
+        expect((await logMgr.first()).constructor.name).toEqual('ThrowsLoggingPlugin');
+        expect(async () => await logMgr.log('error', rand.guid)).withContext('log').not.toThrow();
+        expect(async () => await logMgr.logResult({created: Date.now(), resultId: rand.guid, status: 'Passed'})).withContext('logResult').not.toThrow();
+        expect(async () => await logMgr.dispose()).withContext('dispose').not.toThrow();
+    });
+
+    it('passes manager LogLevel to plugins if not set in PluginConfig', async () => {
+        const logName = 'passes manager LogLevel to plugins if not set in PluginConfig';
+        const logMgr: LogManager = new LogManager({
+            logName: logName,
+            level: 'error',
+            plugins: ['mock-logging-plugin']
+        });
+
+        const plugin = await logMgr.first();
+
+        expect(plugin.level).toEqual(logMgr.option('level'));
+        expect(plugin.enabled).toBe(true);
+    });
+
+    it('allows setting config for plugins in their PluginConfig', async () => {
+        const logName = 'passes manager LogLevel to plugins if not set in PluginConfig';
+        const logMgr: LogManager = new LogManager({
+            logName: logName,
+            level: 'error',
+            plugins: [{
+                name: 'mock-logging-plugin', 
+                options: {
+                    level: 'trace', 
+                    enabled: false
+                }
+            }]
+        });
+
+        const plugin = (await logMgr.plugins())[0];
+
+        expect(plugin.level).toEqual('trace');
+        expect(plugin.enabled).toBe(false);
     });
 });

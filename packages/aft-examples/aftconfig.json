@@ -1,65 +1,70 @@
 {
-    "logmanager": {
+    "LogManager": {
         "level": "info",
-        "pluginNames": [
-            "testrail-logging-plugin",
-            "kinesis-logging-plugin",
-            "html-logging-plugin"
-        ],
-        "searchDir": "../"
+        "plugins": [{
+            "name": "testrail-logging-plugin",
+            "searchDirectory": "../",
+            "options": {
+                "level": "warn",
+                "enabled": false
+            }
+        },{
+            "name": "kinesis-logging-plugin",
+            "searchDirectory": "../",
+            "options": {
+                "level": "trace",
+                "batch": true,
+                "batchSize": 10,
+                "enabled": false
+            }
+        },{
+            "name": "html-logging-plugin",
+            "searchDirectory": "../",
+            "options": {
+                "level": "warn"
+            }
+        }]
     },
-    "testcasemanager": {
-        "pluginNames": ["testrail-test-case-plugin"],
-        "searchDir": "../"
+    "TestCaseManager": {
+        "plugins": [{
+            "name": "testrail-test-case-plugin",
+            "searchDirectory": "../",
+            "options": {
+                "enabled": false
+            }
+        }]
     },
-    "testrailconfig": {
+    "TestRailConfig": {
         "url": "%testrail_url%",
         "user": "%testrail_user%",
         "access_key": "%testrail_pass%",
         "project_id": 3,
         "suite_ids": [744]
     },
-    "testrailloggingplugin": {
-        "enabled": false,
-        "level": "warn"
-    },
-    "testrailtestcaseplugin": {
-        "enabled": false
-    },
-    "kinesisconfig": {
-        "accessKeyId": "%AWS_ACCESS_KEY_ID%",
-        "secretAccessKey": "%AWS_SECRET_ACCESS_KEY%",
-        "sessionToken": "%AWS_SESSION_TOKEN%",
-        "authenticationType": "config"
-    },
-    "kinesisloggingplugin": {
-        "enabled": false,
-        "level": "trace"
-    },
-    "htmlloggingplugin": {
-        "enabled": true,
-        "level": "info"
-    },
-    "browserstackconfig": {
+    "BrowserStackConfig": {
         "user": "%browserstack_user%",
         "key": "%browserstack_key%",
         "debug": true
     },
-    "browsersessiongeneratormanager": {
-        "pluginNames": ["browserstack-browser-session-generator-plugin"],
-        "searchDir": "../"
+    "BrowserSessionGeneratorManager": {
+        "plugins": [{
+            "name": "browserstack-browser-session-generator-plugin",
+            "searchDirectory": "../",
+            "options": {
+                "uiplatform": "windows_10_chrome"
+            }
+        }]
     },
-    "browserstackbrowsersessiongeneratorplugin": {
-        "platform": "windows_10_chrome"
-    },
-    "mobileappsessiongeneratormanager": {
-        "pluginNames": ["browserstack-mobile-app-session-generator-plugin"],
-        "searchDir": "../"
-    },
-    "browserstackmobileappsessiongeneratorplugin": {
-        "platform": "android_11_+_+_Google Pixel 5",
-        "remoteOptions": {
-            "logLevel": "silent"
-        }
+    "MobileAppSessionGeneratorManager": {
+        "plugins": [{
+            "name": "browserstack-mobile-app-session-generator-plugin",
+            "searchDirectory": "../",
+            "options": {
+                "uiplatform": "android_11_+_+_Google Pixel 5",
+                "remoteOptions": {
+                    "logLevel": "silent"
+                }
+            }
+        }]
     }
 }

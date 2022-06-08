@@ -6,7 +6,9 @@ export class HerokuContentWidget extends BrowserFacet {
      * this Facet sets a static locator instead of using a passed
      * in value on the constructor
      */
-    override readonly locator: Locator = By.id('content');
+    override get locator(): Locator {
+        return By.id('content');
+    }
 
     private async usernameInput(): Promise<WebElement> {
         return await this.getElement({ locator: By.id("username") });

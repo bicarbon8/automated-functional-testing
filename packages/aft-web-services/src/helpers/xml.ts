@@ -1,3 +1,4 @@
+import { JsonObject } from "aft-core";
 import { ICanHaveKeyValue } from "./ican-have-key-value";
 
 export module XML {
@@ -9,7 +10,7 @@ export module XML {
         return sValue;
     }
       
-    export function toObject<T>(oXMLParent: Document | Element | DocumentFragment): T {
+    export function toObject<T extends JsonObject>(oXMLParent: Document | Element | DocumentFragment): T {
         var vResult: ICanHaveKeyValue = {}, nLength: number = 0, sCollectedTxt: string = "";
         let oXMLParentElement: Element = oXMLParent as Element;
         if (oXMLParentElement?.hasAttributes && oXMLParentElement?.attributes && oXMLParentElement?.hasAttributes()) {

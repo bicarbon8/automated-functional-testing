@@ -1,47 +1,35 @@
-import { Plugin, PluginOptions } from "./plugin";
-import { pluginloader } from "./plugin-loader";
-import { OptionsManager } from "../configuration/options-manager";
+import { Plugin } from "./plugin";
+import { PluginConfig, pluginloader } from "./plugin-loader";
+import { IConfigProvider } from "../configuration/i-config-provider";
+import { cfgmgr } from "../configuration/config-manager";
+import { IHasConfig } from "../configuration/i-has-config";
+import { IHasOptions } from "../configuration/i-has-options";
 
-/**
- * base interface that must be implemented by {options} objects
- * passed to the constructor of {PluginManager} implementations
- */
-export interface PluginManagerOptions {
-    /**
-     * Required either in `aftconfig.json` file section for the Plugin Manager
-     * or to be passed in directly to the Plugin Manager's constructor
-     */
-    pluginNames?: string[];
-    /**
-     * [OPTIONAL] a directory to start searching for Plugins from
-     */
-    searchDir?: string;
-    /**
-     * [OPTIONAL] if none specified a new {OptionsManager} will be created
-     * in the constructor to manage options from either `aftconfig.json` or
-     * via the passed in values
-     */
-    _optMgr?: OptionsManager;
+export type PluginManagerOptions = {
+    plugins?: Array<string | PluginConfig>;
 }
 
 /**
  * base class for use by classes that load in and manage plugins.
- * the `PluginManager` instances should specify their
- * plugin names to be loaded in the passed in `options` object
- * or in the `aftconfig.json` file under a section whose name
+ * `PluginManager` instances should specify their plugin names and
+ * location in the passed in `options` object or in the 
+ * `aftconfig.json` file under a section whose name
  * exactly matches the `PluginManager` instance's class name in all
  * lowercase.
  * 
+ * ex: `PluginInstance`
+ * ```typescript
+ * export type PluginInstanceOptions = Union<PluginOptions, { foo?: string; bar?: boolean; }>;
+ * export class PluginInstance extends Plugin<PluginInstanceOptions> {
+ *     constructor(options?: PluginInstanceOptions) {
+ *         super(options);
+ *     }
+ * }
+ * ```
  * ex: `PluginManagerInstance`
  * ```typescript
- * export interface PluginInstanceOptions extends PluginOptions {
- *     foo?: string;
- *     bar?: boolean;
- * }
- * export interface PluginManagerInstanceOptions extends PluginManagerOptions, PluginInstanceOptions {
- * 
- * }
- * export class PluginManagerInstance extends PluginManager<SomePluginInstance, PluginInstanceOptions> {
+ * export type PluginManagerInstanceOptions = Union<PluginManagerOptions, PluginInstanceOptions>;
+ * export class PluginManagerInstance extends PluginManager<PluginInstance, PluginInstanceOptions> {
  *     constructor(options?: PluginManagerInstanceOptions) {
  *         super(options);
  *     }
@@ -50,15 +38,14 @@ export interface PluginManagerOptions {
  * ex: `aftconfig.json`
  * ```json
  * {
- *   "managerinstance": {
+ *   "PluginManagerInstance": {
  *     ...
- *     "pluginNames": [
- *       "some-custom-plugin",
- *       "/full/path/to/other/plugin"
+ *     "plugins": [
+ *       {name: "some-custom-plugin", enabled: false, searchDirectory: "/full/path/to/search"},
+ *       "some-other-plugin",
+ *       {name: "a-third-plugin", searchDirectory: "../../relative-path-to-search", options: {"foo": "option used by plugin instance"}}
  *     ],
- *     "searchDirRoot": "./directory/to/search/for/plugins/from"
- *     "foo": "specify 'foo' for loaded plugin instances",
- *     "bar": false
+ *     "bar": "configurataion used by PluginManagerInstance"
  *     ...
  *   }
  * }
@@ -66,83 +53,77 @@ export interface PluginManagerOptions {
  * NOTE: the `PluginManagerInstance` will load plugins listed in the `pluginNames` array
  * and pass them any additional `options` specified (in this case the values for `foo` and `bar`)
  */
-export class PluginManager<T extends Plugin<Topts>, Topts extends PluginOptions> {
-    private _plugins: Map<string, T>;
-    private _opts: Topts;
+export abstract class PluginManager<T extends Plugin<any>, Tc extends PluginManagerOptions> implements IHasConfig<Tc>, IHasOptions<Tc> {
+    private _plugins: T[];
+    private readonly _config: IConfigProvider<Tc>;
+    private readonly _options: Tc;
 
-    private _pluginNames: string[];
-    private _searchDir: string;
-
-    readonly optionsMgr: OptionsManager;
-
-    constructor(options?: Topts) {
-        this._opts = options;
-        this.optionsMgr = this._opts?._optMgr || new OptionsManager(this.constructor.name.toLowerCase(), this._opts);
+    /**
+     * allows for specifying optional configuration for the `PluginManager` that will take
+     * precedence over other forms of configuration as long as the `cfgmgr` is not overridden
+     * @param options an object defining configuration to be used by this `PluginManager` instance
+     */
+    constructor(options?: Tc) {
+        this._options = options || {} as Tc;
+        this._config = cfgmgr.get(this.constructor.name, options);
     }
 
-    async getPluginNames(): Promise<string[]> {
-        if (!this._pluginNames) {
-            this._pluginNames = await this.optionsMgr.get('pluginNames', []);
-        }
-        return this._pluginNames;
+    async config<K extends keyof Tc, V extends Tc[K]>(key: K, defaultVal?: V): Promise<V> {
+        return this._config.get(key, defaultVal);
     }
 
-    async getSearchDir(): Promise<string> {
-        if (!this._searchDir) {
-            this._searchDir = await this.optionsMgr.get('searchDir');
-        }
-        return this._searchDir;
+    option<K extends keyof Tc, V extends Tc[K]>(key: K, defaultVal?: V): V {
+        const result: V = this._options[key] as V;
+        return (result === undefined) ? defaultVal : result;
     }
 
-    async getFirstEnabledPlugin(): Promise<T> {
-        const plugins: T[] = await this.getEnabledPlugins();
-        if (plugins?.length) {
-            return plugins[0];
-        }
-        return Promise.reject(`${this.constructor.name}: unable to find enabled plugin in: [${await this.getPluginNames().then(n => n.join(','))}]`);
+    async pluginConfigs(): Promise<Array<string | PluginConfig>> {
+        return this.config('plugins', []);
     }
-
-    async getEnabledPlugins(): Promise<T[]> {
-        const enabled: T[] = [];
-        const plugins: T[] = await this.getPlugins();
-        if (plugins?.length) {
-            for (var i=0; i<plugins.length; i++) {
-                let p: T = plugins[i];
-                if (await p.enabled()) {
-                    enabled.push(p);
-                }
-            }
+    
+    /**
+     * returns the array of loaded plugin instances
+     */
+    async plugins(): Promise<T[]> {
+        if (!this._plugins) {
+            this._plugins = await this.load();
         }
-        return enabled;
+        return this._plugins || [];
     }
 
     /**
-     * loads and caches the plugins specified either in the options passed
-     * to the class constructor or within `aftconfig.json` section under a
-     * property of `pluginNames` accepting an array of strings containing paths
-     * to the plugin to be loaded. if no plugin is specified then nothing will
-     * be loaded and `undefined` is returned
+     * returns the first loaded plugin instance
      */
-    async getPlugins(): Promise<T[]> {
-        if (!this._plugins) {
-            this._plugins = await this._loadPlugins();
-        }
-        return Array.from(this._plugins.values());
+    async first(): Promise<T> {
+        const enabled = await this.enabled();
+        return (enabled?.length > 0) ? enabled[0] : null;
     }
 
-    private async _loadPlugins(): Promise<Map<string, T>> {
-        const plugins = new Map<string, T>();
-        const pNames: string[] = await this.getPluginNames();
-        const searchRoot: string = await this.getSearchDir();
-        if (pNames?.length) {
-            for (var i=0; i<pNames.length; i++) {
-                let name: string = pNames[i];
-                await pluginloader.load<T>(name, searchRoot, this._opts)
-                .then((p) => {
-                    plugins.set(p.constructor.name, p);
-                });
-            }
-        }
-        return plugins;
+    async enabled(): Promise<T[]> {
+        const plugins = await this.plugins();
+        return plugins.filter((p: T) => p.enabled);
+    }
+
+    /**
+     * attempts to find the first plugin who's class name matches a specified string
+     * @param ctorName the class name of the plugin
+     * @returns the first plugin who's class name matched the passed in `ctorName` (both lowercase)
+     */
+    async named(ctorName: string): Promise<T> {
+        return await this.plugins()
+        .then((plugins: T[]) => plugins
+            .filter((p: T) => p?.constructor.name.toLowerCase() === ctorName?.toLowerCase()))
+        .catch((err) => null);
+    }
+
+    /**
+     * instantiates new plugins and caches them for use at `plugins`
+     * 
+     * NOTE: this does not destroy previous instances, but removes them
+     * from the internal array and replaces them with the new instances
+     */
+    async load(): Promise<T[]> {
+        const pluginConfigs = await this.pluginConfigs();
+        return pluginloader.load<T>(pluginConfigs) || [];
     }
 }

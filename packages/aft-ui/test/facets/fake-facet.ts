@@ -1,69 +1,72 @@
 import { FakeWebElement } from "./fake-web-element";
-import { Clazz, wait } from "aft-core";
-import { AbstractFacet, IElementOptions, IFacetOptions } from "../../src";
+import { Class, Merge, wait } from "aft-core";
+import { UiElementOptions, UiFacet, UiFacetOptions } from "../../src";
 import { FakeLocator } from "./fake-locator";
 import { FakeSession } from "../sessions/fake-session";
 
-export interface FakeElementOptions extends IElementOptions {
+export type FakeElementOptions = Merge<UiElementOptions, {
     locator: FakeLocator;
-}
+}>;
 
-export interface FakeFacetOptions extends IFacetOptions {
-    locator?: FakeLocator;
-    session?: FakeSession;
+export type FakeFacetOptions = Merge<UiFacetOptions, {
     parent?: FakeFacet;
-}
+    session?: FakeSession;
+    locator?: FakeLocator;
+}>;
 
-export class FakeFacet extends AbstractFacet {
-    override readonly locator: FakeLocator;
-    override readonly session: FakeSession;
-    override readonly parent: FakeFacet;
-    constructor(options?: FakeFacetOptions) {
-        super(options);
+export class FakeFacet extends UiFacet<FakeFacetOptions> {
+    override get parent(): FakeFacet {
+        return super.parent as FakeFacet;
     }
-    async getRoot(): Promise<FakeWebElement> {
+    override get locator(): FakeLocator {
+        return super.locator as FakeLocator;
+    }
+    override get session(): FakeSession {
+        return super.session as FakeSession;
+    }
+    override async getRoot(): Promise<FakeWebElement> {
         let r: FakeWebElement;
+        const maxWait = this.maxWaitMs;
+        const loc = this.locator;
+        const index = this.index;
         await wait.untilTrue(async () => {
             if (this.parent) {
                 r = await this.parent.getRoot()
-                    .then(async p => await p.findElements(this.locator)[this.index]);
+                    .then(p => p.findElements(loc)[index]);
             } else {
-                r = await this.session.driver.findElements(this.locator)[this.index];
+                r = await this.session.driver.findElements(loc)[index];
             }
             return true;
-        }, this.maxWaitMs);
+        }, maxWait);
         return r;
     }
-
-    async getElements(options: FakeElementOptions): Promise<FakeWebElement[]> {
+    override async getElements(options: FakeElementOptions): Promise<FakeWebElement[]> {
         let elements: FakeWebElement[];
         let duration: number = (options.maxWaitMs === undefined) ? this.maxWaitMs : options.maxWaitMs;
         await wait.untilTrue(async () => {
             elements = await this.getRoot()
-                .then(async r => await r.findElements(options.locator));
+                .then(r => r.findElements(options.locator));
             return elements.length > 0;
         }, duration);
         return elements;
     }
-
-    async getElement(options: FakeElementOptions): Promise<FakeWebElement> {
+    override async getElement(options: FakeElementOptions): Promise<FakeWebElement> {
         let element: FakeWebElement;
         let duration: number = (options.maxWaitMs === undefined) ? this.maxWaitMs : options.maxWaitMs;
         await wait.untilTrue(async () => {
             element = await this.getRoot()
-                .then(async r => await r.findElement(options.locator));
+                .then(r => r.findElement(options.locator));
             return !!element;
         }, duration);
         return element;
     }
-
-    async getFacet<T extends AbstractFacet>(facetType: Clazz<T>, options?: FakeFacetOptions): Promise<T> {
-        options = options || {};
+    override async getFacet<F extends UiFacet<FakeFacetOptions>>(facetType: Class<F>, options?: FakeFacetOptions): Promise<F> {
+        options = options || {} as FakeFacetOptions;
+        options.index = options.index || 0;
+        options.logMgr = options.logMgr || this.logMgr;
         options.parent = options.parent || this;
         options.session = options.session || this.session;
-        options.logMgr = options.logMgr || this.logMgr;
-        options.maxWaitMs = (options.maxWaitMs === undefined) ? this.maxWaitMs : options.maxWaitMs;
-        let facet: T = new facetType(options);
+        let facet: F = new facetType(options);
         return facet;
     }
 }

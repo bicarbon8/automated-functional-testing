@@ -1,5 +1,5 @@
 {
-    "logmanager": {
+    "LogManager": {
         "level": "none",
         "pluginNames": []
     }

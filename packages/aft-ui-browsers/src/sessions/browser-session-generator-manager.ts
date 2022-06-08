@@ -1,22 +1,58 @@
-import { SessionGeneratorManager, SessionGeneratorManagerOptions } from "aft-ui";
+import { UiSessionGeneratorManager, UiSessionGeneratorManagerOptions } from "aft-ui";
 import { BrowserSession, BrowserSessionOptions } from "./browser-session";
 import { BrowserSessionGeneratorPlugin } from "./browser-session-generator-plugin";
 
-export interface BrowserSessionGeneratorManagerOptions extends SessionGeneratorManagerOptions {
+export type BrowserSessionGeneratorManagerOptions = UiSessionGeneratorManagerOptions
 
-}
-
-export class BrowserSessionGeneratorManager extends SessionGeneratorManager<BrowserSessionGeneratorPlugin, BrowserSessionGeneratorManagerOptions> {
-    constructor(options?: BrowserSessionGeneratorManagerOptions) {
-        super(options);
-    }
-
-    async newSession(options?: BrowserSessionOptions): Promise<BrowserSession> {
-        return await this.getFirstEnabledPlugin()
-        .then((plugin) => {
-            return plugin.newSession(options);
+/**
+ * responsible for loading in any referenced `BrowserSessionGeneratorPlugin` implementations
+ * from the `aftconfig.json` file under the following section:
+ * ```json
+ * {
+ *   "BrowserSessionGeneratorManager": {
+ *     "plugins": [{
+ *       "name": "browserstack-browser-session-generator-plugin",
+ *       "uiplatform": "android_11_chrome_99_Google Pixel XL",
+ *       "capabilities": {
+ *         "key": "value"
+ *       }
+ *     }]
+ *   }
+ * }
+ * ```
+ */
+export class BrowserSessionGeneratorManager extends UiSessionGeneratorManager<BrowserSessionGeneratorPlugin<any>, BrowserSessionGeneratorManagerOptions> {
+    override async newUiSession(options?: BrowserSessionOptions): Promise<BrowserSession> {
+        return await this.first()
+        .then(f => f.newUiSession(options)
+            .catch(async (err) => {
+                const l = await this.logMgr();
+                await l.warn(`error calling '${f.constructor.name}.newUiSession(...)' due to: ${err}`);
+                return null;
+            }))
+        .catch(async (err) => {
+            const l = await this.logMgr();
+            await l.warn(`error calling 'plugin.newUiSession(...)' due to: ${err}`);
+            return null;
         });
     }
 }
 
+/**
+ * responsible for loading in any referenced `BrowserSessionGeneratorPlugin` implementations
+ * from the `aftconfig.json` file under the following section:
+ * ```json
+ * {
+ *   "BrowserSessionGeneratorManager": {
+ *     "plugins": [{
+ *       "name": "browserstack-browser-session-generator-plugin",
+ *       "uiplatform": "android_11_chrome_99_Google Pixel XL",
+ *       "capabilities": {
+ *         "key": "value"
+ *       }
+ *     }]
+ *   }
+ * }
+ * ```
+ */
 export const browserSessionGeneratorMgr = new BrowserSessionGeneratorManager();

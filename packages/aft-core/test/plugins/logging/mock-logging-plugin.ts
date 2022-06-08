@@ -1,41 +1,17 @@
-import { LoggingPluginStore } from "./logging-plugin-store";
-import { LogMessage } from "./log-message";
-import { LoggingPlugin, LoggingPluginOptions, ITestResult, LogLevel } from "../../../src";
+import { LoggingPlugin, TestResult, LogMessageData, Merge, LoggingPluginOptions } from "../../../src";
 
-export class MockLoggingPlugin extends LoggingPlugin {
-    private _lps: LoggingPluginStore;
-    
-    constructor(options?: LoggingPluginOptions) {
-        super(options);
-    }
+export type MockLoggingPluginOptions = Merge<LoggingPluginOptions, {
+    mockConfigKey: string;
+}>;
 
-    async lps(): Promise<LoggingPluginStore> {
-        if (!this._lps) {
-            this._lps = await this.optionsMgr.get<LoggingPluginStore>('lps', {logs: [], results: []});
-        }
-        return this._lps;
+export class MockLoggingPlugin extends LoggingPlugin<MockLoggingPluginOptions> {
+    override async log(message: LogMessageData): Promise<void> {
+        return Promise.resolve();
     }
-    async onLoad(): Promise<void> {
-        const lps = await this.lps();
-        lps.onLoad = true;
-        const lvl = await this.level();
-        lps.lvl = lvl;
+    override async logResult(name: string, result: TestResult): Promise<void> {
+        return Promise.resolve();
     }
-    async log(level: LogLevel, message: string): Promise<void> {
-        const lps = await this.lps();
-        if (!lps.logs?.length) {
-            lps.logs = [];
-        }
-        lps.logs.push(new LogMessage(level, message));
-    }
-    async logResult(result: ITestResult): Promise<void> {
-        const lps = await this.lps();
-        if (!lps.results?.length) {
-            lps.results = [];
-        }
-        lps.results.push(result);
-    }
-    async dispose(error?: Error): Promise<void> {
-        await this.lps().then((lps: LoggingPluginStore) => { lps.disposed = true; });
+    override async dispose(name: string, error?: Error): Promise<void> {
+        return Promise.resolve();
     }
 }
