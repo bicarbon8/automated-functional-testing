@@ -30,7 +30,7 @@ describe('TestRailLoggingPlugin', () => {
         const opts: TestRailLoggingPluginOptions = {
             level: 'info',
             maxLogCharacters: 250,
-            testrailCfg: new TestRailConfig({
+            config: new TestRailConfig({
                 url: 'https://127.0.0.1/', 
                 user: 'fake@fake.fake', 
                 accesskey: 'fake-key'
@@ -50,7 +50,7 @@ describe('TestRailLoggingPlugin', () => {
         const opts: TestRailLoggingPluginOptions = {
             level: 'info',
             maxLogCharacters: 250,
-            testrailCfg: new TestRailConfig({
+            config: new TestRailConfig({
                 url: 'https://127.0.0.1/', 
                 user: 'fake@fake.fake', 
                 accesskey: 'fake-key'
@@ -73,14 +73,14 @@ describe('TestRailLoggingPlugin', () => {
     it('converts a Failed result to Retry', async () => {
         const opts: TestRailLoggingPluginOptions = {
             level: 'info',
-            testrailCfg: new TestRailConfig({
+            config: new TestRailConfig({
                 url: 'https://127.0.0.1/', 
                 user: 'fake@fake.fake', 
                 accesskey: 'fake-key'
             })
         };
-        opts.testrailApi = new TestRailApi(opts.testrailCfg);
-        spyOn(opts.testrailApi, 'addResult').and.callFake(async (caseId: string, planId: number, request: TestRailResultRequest): Promise<TestRailResult[]> => {
+        opts.api = new TestRailApi(opts.config);
+        spyOn(opts.api, 'addResult').and.callFake(async (caseId: string, planId: number, request: TestRailResultRequest): Promise<TestRailResult[]> => {
             TestStore.caseId = caseId;
             TestStore.request = request;
             TestStore.planId = planId;
@@ -97,7 +97,7 @@ describe('TestRailLoggingPlugin', () => {
         };
         await plugin.logResult('converts a Failed result to Retry', result);
 
-        expect(opts.testrailApi.addResult).toHaveBeenCalledTimes(1);
+        expect(opts.api.addResult).toHaveBeenCalledTimes(1);
         expect(TestStore.request.status_id).toEqual(4); // 4 is Retest
         expect(TestStore.caseId).toEqual(result.testId);
         expect(TestStore.planId).toBeDefined();
@@ -106,7 +106,7 @@ describe('TestRailLoggingPlugin', () => {
     it('creates a new TestRail plan in a shared FileSystemMap if none exists', async () => {
         const opts: TestRailLoggingPluginOptions = {
             level: 'info',
-            testrailCfg: new TestRailConfig({
+            config: new TestRailConfig({
                 url: 'https://127.0.0.1/', 
                 user: 'fake@fake.fake', 
                 accesskey: 'fake-key',
@@ -114,12 +114,12 @@ describe('TestRailLoggingPlugin', () => {
                 suiteids: [12, 15]
             })
         };
-        opts.testrailApi = new TestRailApi(opts.testrailCfg);
+        opts.api = new TestRailApi(opts.config);
         const planId: number = rand.getInt(1000, 10000);
-        spyOn(opts.testrailApi, 'createPlan').and.callFake(async (projectId: number, suiteIds: number[], name?: string): Promise<TestRailPlan> => {
+        spyOn(opts.api, 'createPlan').and.callFake(async (projectId: number, suiteIds: number[], name?: string): Promise<TestRailPlan> => {
             return {id: planId};
         });
-        spyOn(opts.testrailApi, 'getTestByCaseId').and.callFake(async (caseId: string, planId: number): Promise<TestRailTest> => {
+        spyOn(opts.api, 'getTestByCaseId').and.callFake(async (caseId: string, planId: number): Promise<TestRailTest> => {
             return {
                 id: rand.getInt(1000, 10000)
             };
@@ -135,7 +135,7 @@ describe('TestRailLoggingPlugin', () => {
         };
         await plugin.logResult('creates a new TestRail plan in a shared FileSystemMap if none exists', result);
 
-        expect(opts.testrailApi.createPlan).toHaveBeenCalledTimes(1);
+        expect(opts.api.createPlan).toHaveBeenCalledTimes(1);
         const sharedCacheFile: string = path.join(process.cwd(), 'FileSystemMap', 'TestRailConfig.json');
         expect(fs.existsSync(sharedCacheFile)).toBeTrue();
     });
@@ -161,7 +161,7 @@ describe('TestRailLoggingPlugin', () => {
      */
     xit('sends actual TestResult to TestRail', async () => {
         const opts: TestRailLoggingPluginOptions = {
-            testrailCfg: new TestRailConfig({
+            config: new TestRailConfig({
                 url: '%testrail_url%', 
                 user: '%testrail_user%', 
                 accesskey: '%testrail_pass%',

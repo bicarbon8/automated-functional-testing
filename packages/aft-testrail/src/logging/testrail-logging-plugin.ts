@@ -1,4 +1,4 @@
-import { LoggingPlugin, LogLevel, TestResult, ellide, ExpiringFileLock, fileio, LogMessageData, Merge, LoggingPluginOptions, IConfigProvider } from "aft-core";
+import { LoggingPlugin, LogLevel, TestResult, ellide, ExpiringFileLock, fileio, LogMessageData, Merge, LoggingPluginOptions } from "aft-core";
 import { TestRailApi } from "../api/testrail-api";
 import { TestRailPlan, TestRailResultRequest } from "../api/testrail-custom-types";
 import { TestRailConfig, trconfig } from "../configuration/testrail-config";
@@ -6,12 +6,14 @@ import { statusConverter } from "../helpers/status-converter";
 
 export type TestRailLoggingPluginOptions = Merge<LoggingPluginOptions, {
     maxLogCharacters?: number;
-    testrailCfg?: TestRailConfig;
-    testrailApi?: TestRailApi;
+
+    config?: TestRailConfig;
+    api?: TestRailApi;
 }>;
 
 /**
- * NOTE: this plugin accepts the following options
+ * NOTE: this plugin can accept the following options from the `LogManager` via
+ * `aftconfig.json`
  * ```json
  * {
  *     "level": "warn",
@@ -30,16 +32,16 @@ export class TestRailLoggingPlugin extends LoggingPlugin<TestRailLoggingPluginOp
         this._logs = '';
     }
 
-    get trConfig(): TestRailConfig {
+    get config(): TestRailConfig {
         if (!this._trConfig) {
-            this._trConfig = this.option('testrailCfg') || trconfig;
+            this._trConfig = this.option('config') || trconfig;
         }
         return this._trConfig;
     }
 
     get api(): TestRailApi {
         if (!this._api) {
-            this._api = this.option('testrailApi') || new TestRailApi(this.trConfig);
+            this._api = this.option('api') || new TestRailApi(this.config);
         }
         return this._api;
     }
@@ -62,7 +64,7 @@ export class TestRailLoggingPlugin extends LoggingPlugin<TestRailLoggingPluginOp
         if (result) {
             await this._createTestPlanIfNone();
             const trResult: TestRailResultRequest = await this._getTestRailResultForExternalResult(result);
-            const planId = await this.trConfig.planId();
+            const planId = await this.config.planId();
             await this.api.addResult(result.testId, planId, trResult);
         }
     }
@@ -96,12 +98,12 @@ export class TestRailLoggingPlugin extends LoggingPlugin<TestRailLoggingPluginOp
         const lock: ExpiringFileLock = fileio.getExpiringFileLock(this.constructor.name, 60000, 60000);
         try {
             // create new Test Plan if one doesn't already exist
-            const planId: number = await this.trConfig.planId();
+            const planId: number = await this.config.planId();
             if (planId <= 0) {
-                let projectId: number = await this.trConfig.projectId();
-                let suiteIds: number[] = await this.trConfig.suiteIds();
+                let projectId: number = await this.config.projectId();
+                let suiteIds: number[] = await this.config.suiteIds();
                 let plan: TestRailPlan = await this.api.createPlan(projectId, suiteIds);
-                this.trConfig.setPlanId(plan.id); // sets value in FileSystemMap that is read by `this.trConfig.planId()`
+                this.config.setPlanId(plan.id); // sets value in FileSystemMap that is read by `this.trConfig.planId()`
             }
         } finally {
             lock.unlock();

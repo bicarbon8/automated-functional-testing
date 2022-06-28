@@ -16,14 +16,14 @@ describe('TestRailTestCasePlugin', () => {
 
     it('can lookup a test case in an existing plan by case id', async () => {
         const opts: TestRailTestCasePluginOptions = {
-            testrailCfg: new TestRailConfig({
+            config: new TestRailConfig({
                 url: 'http://127.0.0.1',
                 user: 'fake@fake.fake',
                 accesskey: 'fake_key',
                 planid: 1234
             })
         };
-        opts.testrailApi = new TestRailApi(opts.testrailCfg);
+        opts.api = new TestRailApi(opts.config);
         let expected: TestRailTest = {
             id: 1,
             case_id: 1234,
@@ -32,7 +32,7 @@ describe('TestRailTestCasePlugin', () => {
             run_id: 2,
             status_id: statusConverter.toTestRailStatus('Passed')
         };
-        spyOn(opts.testrailApi, 'getTestsInRuns').and.returnValue(Promise.resolve([expected]));
+        spyOn(opts.api, 'getTestsInRuns').and.returnValue(Promise.resolve([expected]));
         const plugin: TestRailTestCasePlugin = new TestRailTestCasePlugin(opts);
         
         const actual: TestCase = await plugin.getTestCase('C1234');
@@ -41,12 +41,12 @@ describe('TestRailTestCasePlugin', () => {
         expect(actual.id).toBe('1');
         expect(actual.status).toBe(statusConverter.fromTestRailStatus(expected.status_id));
         expect(actual.title).toBe(expected.title);
-        expect(opts.testrailApi.getTestsInRuns).toHaveBeenCalledTimes(1);
+        expect(opts.api.getTestsInRuns).toHaveBeenCalledTimes(1);
     });
 
     it('can lookup a test case in a supplied project and suite by case id', async () => {
         const opts: TestRailTestCasePluginOptions = {
-            testrailCfg: new TestRailConfig({
+            config: new TestRailConfig({
                 url: 'http://127.0.0.1',
                 user: 'fake@fake.fake',
                 accesskey: 'fake_key',
@@ -54,7 +54,7 @@ describe('TestRailTestCasePlugin', () => {
                 suiteids: [12, 15]
             })
         };
-        opts.testrailApi = new TestRailApi(opts.testrailCfg);
+        opts.api = new TestRailApi(opts.config);
         let expected: TestRailCase = {
             id: 1234,
             priority_id: 2,
@@ -62,7 +62,7 @@ describe('TestRailTestCasePlugin', () => {
             suite_id: 1122,
             created_on: Date.now()
         } as TestRailCase;
-        spyOn(opts.testrailApi, 'getCasesInSuites').and.returnValue(Promise.resolve([expected]));
+        spyOn(opts.api, 'getCasesInSuites').and.returnValue(Promise.resolve([expected]));
         let plugin: TestRailTestCasePlugin = new TestRailTestCasePlugin(opts);
         
         let actual: TestCase = await plugin.getTestCase('C1234');
@@ -72,7 +72,7 @@ describe('TestRailTestCasePlugin', () => {
         expect(actual.status.valueOf()).toBe('Untested');
         expect(actual.title).toBe(expected.title);
         expect(actual.created).toEqual(expected.created_on);
-        expect(opts.testrailApi.getCasesInSuites).toHaveBeenCalledTimes(1);
+        expect(opts.api.getCasesInSuites).toHaveBeenCalledTimes(1);
     });
 
     it('can be loaded by the testcasemanager', async () => {

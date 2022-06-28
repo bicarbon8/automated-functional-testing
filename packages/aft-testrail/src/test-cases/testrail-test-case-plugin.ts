@@ -5,14 +5,14 @@ import { TestRailConfig, trconfig } from '../configuration/testrail-config';
 import { statusConverter } from '../helpers/status-converter';
 
 export type TestRailTestCasePluginOptions = Merge<TestCasePluginOptions, {
-    testrailCfg?: TestRailConfig;
-    testrailApi?: TestRailApi;
+    config?: TestRailConfig;
+    api?: TestRailApi;
     logMgr?: LogManager;
 }>;
 
 /**
  * NOTE: this plugin has no configuration options as they are
- * all retrieved from `TestRailConfig` under the `testrailconfig`
+ * all retrieved from `TestRailConfig` under the `TestRailConfig`
  * section of your `aftconfig.json` file
  */
 export class TestRailTestCasePlugin extends TestCasePlugin<TestRailTestCasePluginOptions> {
@@ -20,16 +20,16 @@ export class TestRailTestCasePlugin extends TestCasePlugin<TestRailTestCasePlugi
     private _api: TestRailApi;
     private _logMgr: LogManager;
 
-    get trConfig(): TestRailConfig {
+    get config(): TestRailConfig {
         if (!this._trConfig) {
-            this._trConfig = this.option('testrailCfg') || trconfig;
+            this._trConfig = this.option('config') || trconfig;
         }
         return this._trConfig;
     }
 
     get api(): TestRailApi {
         if (!this._api) {
-            this._api = this.option('testrailApi') || new TestRailApi(this.trConfig);
+            this._api = this.option('api') || new TestRailApi(this.config);
         }
         return this._api;
     }
@@ -45,7 +45,7 @@ export class TestRailTestCasePlugin extends TestCasePlugin<TestRailTestCasePlugi
         if (caseId && caseId.startsWith('C')) {
             caseId = caseId.replace('C', '');
         }
-        let planId: number = await this.trConfig.planId();
+        let planId: number = await this.config.planId();
         let searchTerm: string = `case_id=${caseId}`;
         if (planId <= 0) {
             searchTerm = `id=${caseId}`;
@@ -100,7 +100,7 @@ export class TestRailTestCasePlugin extends TestCasePlugin<TestRailTestCasePlugi
     }
 
     private async _findTestsByField(field: string, val: string): Promise<TestCase[]> {
-        let planId: number = await this.trConfig.planId();
+        let planId: number = await this.config.planId();
         let tests: TestCase[] = [];
         if (planId > 0) {
             // look for test in plan
@@ -118,8 +118,8 @@ export class TestRailTestCasePlugin extends TestCasePlugin<TestRailTestCasePlugi
             }
         } else {
             // look for case in suites
-            let projectId: number = await this.trConfig.projectId();
-            let suiteIds: number[] = await this.trConfig.suiteIds();
+            let projectId: number = await this.config.projectId();
+            let suiteIds: number[] = await this.config.suiteIds();
             let trCases: TestRailCase[] = await this.api.getCasesInSuites(projectId, suiteIds);
             for (var i=0; i<trCases.length; i++) {
                 let trCase: TestRailCase = trCases[i];
