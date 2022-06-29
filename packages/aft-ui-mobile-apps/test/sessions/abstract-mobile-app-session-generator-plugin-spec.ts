@@ -23,19 +23,13 @@ describe('AbstractMobileAppGridSessionGeneratorPlugin', () => {
     });
 });
 
-class FakeMobileAppSessionGeneratorPlugin extends MobileAppSessionGeneratorPlugin {
-    constructor(options?: MobileAppSessionGeneratorPluginOptions) {
-        super(options);
-    }
-    async onLoad(): Promise<void> {
-        /* do nothing */
-    }
-    async newSession(options?: MobileAppSessionOptions): Promise<MobileAppSession> {
+class FakeMobileAppSessionGeneratorPlugin extends MobileAppSessionGeneratorPlugin<MobileAppSessionGeneratorPluginOptions> {
+    async newUiSession(options?: MobileAppSessionOptions): Promise<MobileAppSession> {
         return new MobileAppSession({
             driver: options?.driver || await this.createDriver(options),
             logMgr: options?.logMgr || this.logMgr,
-            platform: options?.platform || await this.getPlatform().then(p => p.toString()),
-            app: options?.app || await this.app()
+            uiplatform: options?.uiplatform || this.uiplatform.toString(),
+            app: options?.app || this.app
         });
     }
     async dispose(error?: Error): Promise<void> {

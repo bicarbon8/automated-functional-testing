@@ -1,4 +1,4 @@
-import { convert } from "../../src/helpers/converter";
+import { convert } from "../../src/helpers/convert";
 import { wait } from "../../src/helpers/wait";
 
 describe('Wait', () => {

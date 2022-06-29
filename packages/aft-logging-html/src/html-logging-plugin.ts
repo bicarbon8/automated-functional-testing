@@ -1,114 +1,105 @@
 import * as path from "path";
-import { LoggingPlugin, LoggingPluginOptions, ITestResult, LogLevel, TestStatus } from "aft-core";
-import { HtmlResult, HtmlTestResult, HtmlFileManager, htmlFileMgr } from "./html-file-manager";
+import { LoggingPlugin, LogLevel, TestResult, fileio, ExpiringFileLock, FileSystemMap, LogMessageData, Merge, LoggingPluginOptions } from "aft-core";
+import { HtmlTestResult } from "./html-test-result";
+import { HtmlResult } from "./html-result";
+import { htmlTemplate } from "./templates/html-template";
 
-export interface HtmlLoggingPluginOptions extends LoggingPluginOptions {
+export type HtmlLoggingPluginOptions = Merge<LoggingPluginOptions, {
     fileName?: string;
     outputDir?: string;
     maxLogLines?: number;
+}>;
 
-    _htmlFileMgr?: HtmlFileManager;
-}
-
-export class HtmlLoggingPlugin extends LoggingPlugin {
-    private _htmlFileMgr: HtmlFileManager;
-    private _logs: string[];
-    private _results: HtmlTestResult[];
-    private _fullPathAndFile: string;
-    private _fileName: string;
-    private _outputDir: string;
-    private _maxLogLines: number;
+export class HtmlLoggingPlugin extends LoggingPlugin<HtmlLoggingPluginOptions> {
+    private readonly _logs: string[];
+    private readonly _testResults: HtmlTestResult[];
+    private readonly _fsMap: FileSystemMap<string, HtmlResult>;
     
     constructor(options?: HtmlLoggingPluginOptions) {
         super(options);
-        this._htmlFileMgr = options?._htmlFileMgr || htmlFileMgr;
         this._logs = [];
-        this._results = [];
+        this._testResults = [];
+        this._fsMap = new FileSystemMap<string, HtmlResult>('htmlSharedResults');
     }
 
-    async fileName(): Promise<string> {
-        if (!this._fileName) {
-            this._fileName = await this.optionsMgr?.get('fileName', 'testresults.html');
+    get fileName(): string {
+        return this.option('fileName', 'testresults.html');
+    }
+
+    get outputDir(): string {
+        let dir: string = this.option('outputDir', process.cwd());
+        if (!path.isAbsolute(dir)) {
+            dir = path.join(process.cwd(), dir);
         }
-        return this._fileName;
+        return dir;
     }
 
-    async outputDir(): Promise<string> {
-        if (!this._outputDir) {
-            let dir: string = await this.optionsMgr?.get('outputDir', process.cwd());
-            if (path.isAbsolute(dir)) {
-                this._outputDir = dir;
-            } else {
-                this._outputDir = path.join(process.cwd(), dir);
-            }
+    get fullPathAndFile(): string {
+        let fullPathAndFile: string;
+        let filePath: string = this.outputDir;
+        let fileName: string = this.fileName;
+        if (filePath && fileName) {
+            fullPathAndFile = path.join(filePath, fileName);
+        } else {
+            fullPathAndFile = path.join(process.cwd(), 'testresults.html');
         }
-        return this._outputDir;
+        return fullPathAndFile;
     }
 
-    async fullPathAndFile(): Promise<string> {
-        if (this._fullPathAndFile === undefined) {
-            let filePath: string = await this.outputDir();
-            let fileName: string = await this.fileName();
-            if (filePath && fileName) {
-                this._fullPathAndFile = path.join(filePath, fileName);
-            }
-        }
-        return this._fullPathAndFile;
+    get maxLogLines(): number {
+        return this.option('maxLogLines', 5);
     }
 
-    async maxLogLines(): Promise<number> {
-        if (this._maxLogLines === undefined) {
-            this._maxLogLines = await this.optionsMgr.get('maxLogLines', 5);
-        }
-        return this._maxLogLines;
-    }
-
-    async onLoad(): Promise<void> {
-        /* do nothing */
-    }
-
-    async log(level: LogLevel, message: string): Promise<void> {
-        if (await this.enabled()) {
-            let expectedLevel: LogLevel = await this.level();
-            if (level.value >= expectedLevel.value && level.value != LogLevel.none.value) {
-                this._logs.push(`${level.name} - ${message}`);
-                let max: number = await this.maxLogLines();
-                while (this._logs.length > max) {
-                    this._logs.shift();
-                    this._logs[0] = `...<br />${this._logs[0]}`;
-                }
+    override async log(data: LogMessageData): Promise<void> {
+        let expectedLevel: LogLevel = this.level;
+        if (LogLevel.toValue(data.level) >= LogLevel.toValue(expectedLevel) && data.level != 'none') {
+            this._logs.push(`${data.level} - ${data.message}`);
+            let max: number = this.maxLogLines;
+            while (this._logs.length > max) {
+                this._logs.shift();
+                this._logs[0] = `...<br />${this._logs[0]}`;
             }
         }
     }
 
-    async logResult(result: ITestResult): Promise<void> {
-        if (await this.enabled()) {
-            let htmlTestResult: HtmlTestResult = {
-                testId: result.testId,
-                status: TestStatus[result.status],
-                logs: this.getLogs()
-            }
-            this._results.push(htmlTestResult);
+    override async logResult(logName: string, result: TestResult): Promise<void> {
+        let htmlTestResult: HtmlTestResult = {
+            testId: result.testId,
+            status: result.status,
+            logs: this.logs
         }
+        this._testResults.push(htmlTestResult);
     }
 
-    getLogs(): string[] {
+    get logs(): string[] {
         return this._logs;
     }
 
-    async getResult(): Promise<HtmlResult> {
-        let name: string = await this.logName();
-        return {
-            description: name,
-            tests: this._results
+    override async dispose(logName: string, error?: Error): Promise<void> {
+        const result: HtmlResult = {
+            description: logName,
+            tests: this._testResults
         };
+        this._updateSharedCache(result);
+        const results: HtmlResult[] = this._readFromSharedCache();
+        await this._regenerateHtmlFile(results);
     }
 
-    async dispose(error?: Error): Promise<void> {
-        if (await this.enabled()) {
-            let result: HtmlResult = await this.getResult();
-            let outputPath: string = await this.fullPathAndFile();
-            await this._htmlFileMgr.addResult(result, outputPath);
+    private async _regenerateHtmlFile(results: HtmlResult[]): Promise<void> {
+        const fullPathAndFile = this.fullPathAndFile;
+        const lock: ExpiringFileLock = fileio.getExpiringFileLock(fullPathAndFile, 30000, 10000);
+        try {
+            fileio.write(fullPathAndFile, htmlTemplate.emit(...results));
+        } finally {
+            lock.unlock();
         }
+    }
+
+    private _updateSharedCache(result: HtmlResult): void {
+        this._fsMap.set(result.description, result);
+    }
+
+    private _readFromSharedCache(): HtmlResult[] {
+        return Array.from(this._fsMap.values());
     }
 }

@@ -1,25 +1,23 @@
-import { HttpRequest, HttpResponse, httpService } from "aft-web-services";
-import { convert, wait } from "aft-core";
-import { TestRailCase } from "./testrail-case";
-import { TestRailCache } from "./testrail-cache";
-import { TestRailTest } from "./testrail-test";
-import { TestRailRun } from "./testrail-run";
-import { TestRailResultRequest } from "./testrail-result-request";
-import { TestRailResultResponse } from "./testrail-result-response";
-import { TestRailPlan } from "./testrail-plan";
-import { ICanHaveError } from "./ican-have-error";
-import { AddPlanRequest } from "./add-plan-request";
-import { TestRailPlanEntry } from "./testrail-plan-entry";
+import { httpData, HttpRequest, HttpResponse, httpService } from "aft-web-services";
+import { CacheMap, convert, JsonObject, wait } from "aft-core";
 import { TestRailConfig, trconfig } from "../configuration/testrail-config";
-import { TestRailResult } from "./testrail-result";
-import { TestRailGetCasesResponse } from "./testrail-getcases-response";
-import { TestRailGetTestsResponse } from "./testrail-gettests-response";
+import { AddPlanRequest, ICanHaveError, TestRailCase, TestRailGetCasesResponse, TestRailGetTestsResponse, TestRailPlan, TestRailPlanEntry, TestRailResult, TestRailResultRequest, TestRailResultResponse, TestRailRun, TestRailTest } from "./testrail-custom-types";
 
 export class TestRailApi {
-    private _config: TestRailConfig;
+    private _cache: CacheMap<string, any>;
+    
+    private readonly _config: TestRailConfig;
     
     constructor(config?: TestRailConfig) {
         this._config = config || trconfig;
+    }
+
+    async cache(): Promise<CacheMap<string, any>> {
+        if (!this._cache) {
+            const duration: number = await trconfig.cacheDuration();
+            this._cache = new CacheMap<string, any>(duration, true, this.constructor.name);
+        }
+        return this._cache;
     }
 
     /**
@@ -74,8 +72,8 @@ export class TestRailApi {
      * tests, which are in a test run, these cannot have a result
      */
     async getCasesInSuites(projectId: number, suiteIds: number[]): Promise<TestRailCase[]> {
-        let allCases: TestRailCase[] = [];
-        let path: string = `/api/v2/get_cases/${projectId}&suite_id=`;
+        const allCases: TestRailCase[] = [];
+        const path: string = `/api/v2/get_cases/${projectId}&suite_id=`;
         for (var i=0; i<suiteIds.length; i++) {
             let res: TestRailGetCasesResponse = await this._get<TestRailGetCasesResponse>(path + suiteIds[i], true);
             if (res?.cases?.length) {
@@ -101,8 +99,8 @@ export class TestRailApi {
      * @param runIds the ids of each run in a designated `plan_id`
      */
     async getTestsInRuns(runIds: number[]): Promise<TestRailTest[]> {
-        let allTests: TestRailTest[] = [];
-        let path: string = '/api/v2/get_tests/';
+        const allTests: TestRailTest[] = [];
+        const path: string = '/api/v2/get_tests/';
 
         for (var i=0; i<runIds.length; i++) {
             let res: TestRailGetTestsResponse = await this._get<TestRailGetTestsResponse>(path + runIds[i], true);
@@ -177,26 +175,27 @@ export class TestRailApi {
         return plan;
     }
 
-    private async _get<T>(path: string, cacheResponse: boolean): Promise<T> {
+    private async _get<T extends JsonObject>(path: string, cacheResponse: boolean): Promise<T> {
         let apiUrl: string = await this._getApiUrl();
         let request: HttpRequest = {
             url: `${apiUrl}${path}`,
             method: 'GET',
             headers: {}
         };
-        let data: T = await TestRailCache.instance.get<T>(request.url);
+        const cache = await this.cache();
+        let data: T = cache.get(request.url);
         if (!data) {
             let response: HttpResponse = await this._performRequestWithRateLimitHandling(request);
-            data = response.dataAs<T>();
+            data = httpData.as<T>(response);
             if (cacheResponse && response.statusCode >= 200 && response.statusCode <= 299) {
-                await TestRailCache.instance.set(request.url, data);
+                cache.set(request.url, data);
             }
         }
 
         return data;
     }
 
-    private async _post<T>(path: string, data: string): Promise<T> {
+    private async _post<T extends JsonObject>(path: string, data: string): Promise<T> {
         let apiUrl: string = await this._getApiUrl();
         let request: HttpRequest = {
             url: `${apiUrl}${path}`,
@@ -207,11 +206,11 @@ export class TestRailApi {
 
         let response: HttpResponse = await this._performRequestWithRateLimitHandling(request);
 
-        return response.dataAs<T>();
+        return httpData.as<T>(response);
     }
 
     private async _getApiUrl(): Promise<string> {
-        let url = await this._config.getUrl();
+        let url = await this._config.url();
         if (url && !url.endsWith('/')) {
             url += '/';
         }
@@ -229,7 +228,7 @@ export class TestRailApi {
             response = await httpService.performRequest(request);
             let err: ICanHaveError;
             try {
-                err = response.dataAs<ICanHaveError>();
+                err = httpData.as<ICanHaveError>(response);
             } catch (e) {
                 /* ignore */
             }
@@ -247,8 +246,8 @@ export class TestRailApi {
     }
 
     private async _getAuth(): Promise<string> {
-        let username: string = await this._config.getUser();
-        let accessKey: string = await this._config.getAccessKey();
+        let username: string = await this._config.user();
+        let accessKey: string = await this._config.accessKey();
         return convert.toBase64Encoded(`${username}:${accessKey}`);
     }
 }

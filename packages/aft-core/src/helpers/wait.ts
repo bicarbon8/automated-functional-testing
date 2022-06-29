@@ -1,15 +1,8 @@
-import { LogManager } from "../plugins/logging/log-manager";
 import { TestException } from "../plugins/test-cases/test-exception";
-import { convert } from "./converter";
+import { convert } from "./convert";
 import { Func } from "./custom-types";
 
 class Wait {
-    private readonly _logMgr: LogManager;
-
-    constructor() {
-        this._logMgr = new LogManager({pluginNames: []});
-    }
-
     /**
      * function will execute an asynchronous action and await a result repeating execution every 1 millisecond until a 
      * result of 'true' is returned or the 'msDuration' specified has elapsed. If the action never returns 'true' and 
@@ -32,8 +25,8 @@ class Wait {
                 err = e as Error;
                 if (onFailAction) {
                     await Promise.resolve(onFailAction())
-                    .catch(async (err) => {
-                        await this._logMgr.warn(`wait.forCondition onFailAction threw: ${TestException.short(err)}`);
+                    .catch((err) => {
+                        /* ignore */
                     });
                 }
             }

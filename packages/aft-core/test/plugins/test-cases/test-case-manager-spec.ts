@@ -2,12 +2,26 @@ import { TestCasePlugin, TestCaseManager } from "../../../src";
 
 describe('TestCaseManager', () => {
     it('can load a specified TestCasePlugin', async () => {
-        let tcpm: TestCaseManager = new TestCaseManager({pluginNames: ['mock-test-case-plugin']});
-        let actual: TestCasePlugin[] = await tcpm.getPlugins();
+        let tcm: TestCaseManager = new TestCaseManager({
+            plugins: ['mock-test-case-plugin']
+        });
+        let actual = await tcm.plugins();
 
         expect(actual).toBeDefined();
-        expect(actual.length).toBeGreaterThan(0);
-        expect(await actual[0].enabled()).toBeTruthy();
-        expect(actual[0].optionsMgr.key).withContext('plugin should be instance of MockTestCasePlugin').toEqual('mocktestcaseplugin');
+        expect(actual.length).withContext('plugins array length').toBe(1);
+        expect(actual[0]).toBeDefined();
+        expect(actual[0].constructor.name).withContext('plugin should be instance of MockTestCasePlugin').toEqual('MockTestCasePlugin');
+    });
+
+    describe('shouldRun', () => {
+        it('returns true if no plugins found or loaded', async () => {
+            let tcm = new TestCaseManager();
+            const plugins = await tcm.plugins();
+            expect(plugins.length).toBe(0);
+
+            const actual: boolean = await tcm.shouldRun('C1234');
+
+            expect(actual).toBe(true);
+        });
     });
 });

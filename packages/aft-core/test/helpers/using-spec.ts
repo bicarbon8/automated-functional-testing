@@ -1,4 +1,4 @@
-import { IDisposable, using } from "../../src";
+import { Disposable, using } from "../../src";
 
 describe('using', () => {
     it('calls dispose function on completion', async () => {
@@ -46,7 +46,7 @@ describe('using', () => {
     });
 });
 
-class UsingExample implements IDisposable {
+class UsingExample implements Disposable {
     err: Error;
     count: number = 0;
     async dispose(error?: Error): Promise<void> {

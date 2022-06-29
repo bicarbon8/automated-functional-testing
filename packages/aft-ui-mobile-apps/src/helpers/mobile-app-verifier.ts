@@ -9,7 +9,7 @@ export class MobileAppVerifier extends Verifier {
     protected _sessionOptions: MobileAppSessionOptions;
 
     /**
-     * a {MobileAppSessionGeneratorManager} instance used to generate new
+     * a `MobileAppSessionGeneratorManager` instance used to generate new
      * Mobile App sessions
      */
     get sessionGeneratorManager(): MobileAppSessionGeneratorManager {
@@ -20,7 +20,7 @@ export class MobileAppVerifier extends Verifier {
     }
 
     /**
-     * after a new {MobileAppSession} is created, this holds the instance
+     * after a new `MobileAppSession` is created, this holds the instance
      * so it can be referenced from within the executing `assertion`
      */
     get session(): MobileAppSession {
@@ -28,12 +28,12 @@ export class MobileAppVerifier extends Verifier {
     }
 
     /**
-     * allows for specifying custom {MobileAppSessionOptions} to be used when creating
-     * a new {MobileAppSession} prior to executing the `assertion`.
-     * NOTE: if not set then only the {MobileAppVerifier.logMgr} will be included in
-     * the {MobileAppSessionOptions}
-     * @param options the {MobileAppSessionOptions} to be used to create a new {MobileAppSession}
-     * @returns this {MobileAppVerifier} instance
+     * allows for specifying custom `MobileAppSessionOptions` to be used when creating
+     * a new `MobileAppSession` prior to executing the `assertion`.
+     * NOTE: if not set then only the `MobileAppVerifier.logMgr` will be included in
+     * the `MobileAppSessionOptions`
+     * @param options the `MobileAppSessionOptions` to be used to create a new `MobileAppSession`
+     * @returns this `MobileAppVerifier` instance
      */
     withMobileAppSessionOptions(options: MobileAppSessionOptions): this {
         this._sessionOptions = options;
@@ -41,13 +41,13 @@ export class MobileAppVerifier extends Verifier {
     }
 
     /**
-     * allows for passing in an instance of {MobileAppSessionGeneratorManager} to be
+     * allows for passing in an instance of `MobileAppSessionGeneratorManager` to be
      * used in locating a {AbstractMobileAppSessionGeneratorPlugin} instance to use in 
-     * generating a {MobileAppSession}.
-     * NOTE: if not set then the global {MobileAppSessionGeneratorManager.instance()}
+     * generating a `MobileAppSession`.
+     * NOTE: if not set then the global const `mobileAppSessionGeneratorMgr`
      * will be used
-     * @param sessionMgr a {MobileAppSessionGeneratorManager} to be used instead of the Global instance
-     * @returns this {MobileAppVerifier} instance
+     * @param sessionMgr a `MobileAppSessionGeneratorManager` to be used instead of the Global instance
+     * @returns this `MobileAppVerifier` instance
      */
     withMobileAppSessionGeneratorManager(sessionMgr: MobileAppSessionGeneratorManager): this {
         this._sessionMgr = sessionMgr;
@@ -55,8 +55,8 @@ export class MobileAppVerifier extends Verifier {
     }
 
     /**
-     * the {MobileAppSessionOptions} that will be used when creating a 
-     * new {MobileAppSession}
+     * the `MobileAppSessionOptions` that will be used when creating a 
+     * new `MobileAppSession`
      */
     get sessionOptions(): MobileAppSessionOptions {
         if (!this._sessionOptions) {
@@ -68,7 +68,7 @@ export class MobileAppVerifier extends Verifier {
     protected override async _resolveAssertion(): Promise<void> {
         let opts: MobileAppSessionOptions = this.sessionOptions;
         opts.logMgr = opts.logMgr || this.logMgr;
-        await using(await this.sessionGeneratorManager.newSession(opts), async (session) => {
+        await using(await this.sessionGeneratorManager.newUiSession(opts), async (session) => {
             this._session = session;
             await super._resolveAssertion();
         });
@@ -76,7 +76,7 @@ export class MobileAppVerifier extends Verifier {
 }
 
 /**
- * creates a new {MobileAppVerifier} instace to be used for executing some Functional
+ * creates a new `MobileAppVerifier` instace to be used for executing some Functional
  * Test Assertion.
  * ex:
  * ```
@@ -87,8 +87,8 @@ export class MobileAppVerifier extends Verifier {
  * .and.withTestId('C1234')
  * .returns('expected value');
  * ```
- * @param assertion the {Func<MobileAppVerifier, any>} function to be executed by this {MobileAppVerifier}
- * @returns a new {MobileAppVerifier} instance
+ * @param assertion the `Func<MobileAppVerifier, any>` function to be executed by this `MobileAppVerifier`
+ * @returns a new `MobileAppVerifier` instance
  */
 export const verifyWithMobileApp = (assertion: Func<MobileAppVerifier, any>): MobileAppVerifier => {
     let v: MobileAppVerifier = new MobileAppVerifier();

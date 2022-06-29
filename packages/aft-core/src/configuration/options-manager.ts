@@ -1,68 +1,102 @@
-import { aftconfig } from "./aftconfig-manager";
-
-/**
- * **WARNING**
- * 
- * DO NOT USE FOR COMPLEX CLASSES! ONLY SIMPLE JSON OBJECTS
- * SUPPORTED
- * 
- * manages the retrieval of options from either a passed in JSON
- * object or, if not found there, by looking in the `aftconfig.json` section
- * specified by the `key` passed to the constructor followed by any
- * specified `keys` passed to the `get` function. For example, given a
- * key of `myspecialkey` and object of:
- * ```json
- * {
- *   "foo": "this is 'foo'",
- *   "bar": true,
- *   "baz": {
- *     "foo": "this is 'baz.foo'"
- *   }
- * }
- * ```
- * then calling `get('baz.foo')` would return `"this is 'baz.foo'"` and
- * calling `get('baz.bar')` would look in the `aftconfig.json` file because
- * the value does not exist in the above JSON object and if it contained
- * the following:
- * ```json
- * {
- *   ...
- *   "myspecialkey": {
- *     "baz": {
- *       "bar": "this is 'myspecialkey.baz.bar'"
- *     }
- *   }
- *   ...
- * }
- * ```
- * would then return `"this is 'myspecialkey.baz.bar'"`, otherwise `null`
- */
-export class OptionsManager {
-    readonly key: string;
-
-    private _options: Record<string, any>;
-
-    constructor(key: string, options?: Record<string, any>) {
-        this.key = key;
-        this._options = options || {};
+class OptionsManager {
+    /**
+     * iterates through the values of any properties on the passed
+     * in `object` and if they are a string, attempts to extract
+     * environment variables from them and / or convert them into
+     * an object. For example:
+     * ```typescript
+     * const options = {
+     *     "foo": "%some_env_var_key%",
+     *     "bar": "[10, true, 'baz']"
+     * }
+     * const updated = optmgr.process(options);
+     * ```
+     * with an environment variable of `some_env_var_key` set to `"24"`.
+     * 
+     * would result in the following object being returned:
+     * ```typescript
+     * {
+     *     "foo": 24,
+     *     "bar": [10, true, "baz"]
+     * }
+     * ```
+     * @param options an object to be processed
+     * @returns the processed object
+     */
+    process<T extends object>(options: T): T {
+        let result: T;
+        if (options) {
+            const keys = Object.keys(options);
+            for (var i=0; i<keys.length; i++) {
+                let key = keys[i];
+                let val = options[key];
+                if (typeof val === 'string') {
+                    val = this._processEnvVars(val);
+                    val = this._processJson(val);
+                } else if (typeof val === 'object') {
+                    val = this.process(val);
+                }
+                options[key] = val;
+            }
+            result = options;
+        }
+        return result;
     }
 
     /**
-     * function will lookup a value from the optional options passed to the class
-     * and if not found will then check for the same in the `aftconfig.json` under
-     * the configuration key specified in the constructor plus the passed in `keys`
-     * @param keys the lookup keys to be used to retrieve a value
-     * @param defaultVal a default value to return in the case that no value is found
+     * attempts to read a value from the Process Environment Variables
+     * if the passed in `str` is wrapped by a `%` at the beginning and
+     * end like `%some_variable_key%`
+     * @param str input string that may contain an environment key
+     * @returns an object of the specified type or undefined
      */
-    async get<Tval>(keys?: string, defaultVal?: Tval): Promise<Tval> {
-        if (keys) {
-            let val: Tval = aftconfig.getFrom<Tval>(this._options, keys);
-            if (val === undefined) {
-                val = await aftconfig.get<Tval>(`${this.key}.${keys}`, defaultVal);
-            }
-            return val;
-        } 
-        let val: Tval = await aftconfig.get<Tval>(`${this.key}`, defaultVal);
-        return {...val, ...this._options} as Tval;
+    private _processEnvVars(str: string): string {
+        let result: string = str;
+        const matchResults = str.match(/^%(.*)%$/);
+        if (matchResults && matchResults.length > 0) {
+            let envValStr: string = process.env[matchResults[1]];
+            result = envValStr || str;
+        }
+        return result;
+    }
+
+    /**
+     * attempts to call `JSON.parse` on the passed in `str` and returns
+     * the resulting value or the original `str` if an error occurs
+     * @param str input string that may be parsable by `JSON.parse`
+     * @returns the result of calling `JSON.parse` or the original `str`
+     */
+    private _processJson(str: string): string | object {
+        let result: string | object;
+        try {
+            result = JSON.parse(str);
+        } catch (e) {
+            result = str;
+        }
+        return result;
     }
 }
+
+/**
+ * iterates through the values of any properties on the passed
+ * in `object` and if they are a string, attempts to extract
+ * environment variables from them and / or convert them into
+ * an object. For example:
+ * ```typescript
+ * const options = {
+ *     "foo": "%some_env_var_key%",
+ *     "bar": "[10, true, 'baz']"
+ * }
+ * const updated = optmgr.process(options);
+ * ```
+ * with an environment variable of `some_env_var_key` set to `"24"`.
+ * 
+ * would result in the following object being returned:
+ * ```typescript
+ * {
+ *     "foo": 24,
+ *     "bar": [10, true, "baz"]
+ * }
+ * ```
+ */
+export const optmgr = new OptionsManager();

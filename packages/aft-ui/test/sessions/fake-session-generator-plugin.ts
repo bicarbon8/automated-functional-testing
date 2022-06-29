@@ -1,34 +1,18 @@
-import { SessionGeneratorPlugin, SessionGeneratorPluginOptions } from "../../src";
+import { UiSession, UiSessionGeneratorPlugin, UiSessionGeneratorPluginOptions } from "../../src";
 import { FakeDriver } from "./fake-driver";
 import { FakeSession, FakeSessionOptions } from "./fake-session";
-import { testdata } from "./test-data-helper";
 
-export interface FakeSessionGeneratorPluginOptions extends SessionGeneratorPluginOptions {
+export type FakeSessionGeneratorPluginOptions = UiSessionGeneratorPluginOptions;
 
-}
-
-export class FakeSessionGeneratorPlugin extends SessionGeneratorPlugin {
-    constructor(options?: FakeSessionGeneratorPluginOptions) {
-        super(options);
-        testdata.set('constructor', options);
+export class FakeSessionGeneratorPlugin extends UiSessionGeneratorPlugin<FakeSessionGeneratorPluginOptions> {
+    async getDriver(): Promise<FakeDriver> {
+        return new FakeDriver();
     }
-    async onLoad(): Promise<void> {
-        testdata.set('onload', true);
-    }
-    async newSession(options?: FakeSessionOptions): Promise<FakeSession> {
-        testdata.set('newsession', options);
-        return await this.enabled().then((enabled) => {
-            if (enabled) {
-                let session: FakeSession = new FakeSession({
-                    driver: options?.driver || new FakeDriver(),
-                    logMgr: options?.logMgr || this.logMgr
-                });
-                return session;
-            }
-            return null;
-        });
-    }
-    async dispose(error?: Error): Promise<void> {
-        testdata.set('dispose', error || true);
+    
+    override async newUiSession(options?: FakeSessionOptions): Promise<FakeSession> {
+        options = options || {} as FakeSessionOptions;
+        options.logMgr = options.logMgr || this.logMgr;
+        options.driver = options.driver || await this.getDriver();
+        return new FakeSession(options);
     }
 }

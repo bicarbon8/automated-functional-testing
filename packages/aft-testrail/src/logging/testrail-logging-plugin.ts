@@ -1,82 +1,75 @@
-import { LoggingPlugin, LogLevel, ITestResult, EllipsisLocation, ellide, LoggingPluginOptions } from "aft-core";
+import { LoggingPlugin, LogLevel, TestResult, ellide, ExpiringFileLock, fileio, LogMessageData, Merge, LoggingPluginOptions } from "aft-core";
 import { TestRailApi } from "../api/testrail-api";
-import { TestRailResultRequest } from "../api/testrail-result-request";
-import { TestRailPlan } from "../api/testrail-plan";
+import { TestRailPlan, TestRailResultRequest } from "../api/testrail-custom-types";
 import { TestRailConfig, trconfig } from "../configuration/testrail-config";
-import { StatusConverter } from "../helpers/status-converter";
+import { statusConverter } from "../helpers/status-converter";
 
-export interface TestRailLoggingPluginOptions extends LoggingPluginOptions {
+export type TestRailLoggingPluginOptions = Merge<LoggingPluginOptions, {
     maxLogCharacters?: number;
 
-    _config?: TestRailConfig;
-    _client?: TestRailApi;
-}
+    config?: TestRailConfig;
+    api?: TestRailApi;
+}>;
 
 /**
- * NOTE: this plugin references configuration from the `aftconfig.json` file
- * under a name of `testrailloggingplugin`. Ex:
+ * NOTE: this plugin can accept the following options from the `LogManager` via
+ * `aftconfig.json`
  * ```json
  * {
- *   "testrailloggingplugin": {
  *     "level": "warn",
- *     "maxLogCharacters": 300
- *   }
+ *     "maxLogCharacters": 300,
+ *     "enabled": true
  * }
  * ```
  */
-export class TestRailLoggingPlugin extends LoggingPlugin {
+export class TestRailLoggingPlugin extends LoggingPlugin<TestRailLoggingPluginOptions> {
     private _logs: string;
-    private _config: TestRailConfig;
-    private _client: TestRailApi;
-    private _maxLogChars: number;
+    private _trConfig: TestRailConfig;
+    private _api: TestRailApi;
     
     constructor(options?: TestRailLoggingPluginOptions) {
         super(options);
         this._logs = '';
-        
-        this._config = options?._config || trconfig;
-        this._client = options?._client || new TestRailApi(this._config);
     }
 
-    async onLoad(): Promise<void> {
-        // create new Test Plan if one doesn't already exist
-        if (await this.enabled() && (await this._config.getPlanId() <= 0)) {
-            let projectId: number = await this._config.getProjectId();
-            let suiteIds: number[] = await this._config.getSuiteIds();
-            let plan: TestRailPlan = await this._client.createPlan(projectId, suiteIds);
-            this._config.setPlanId(plan.id);
+    get config(): TestRailConfig {
+        if (!this._trConfig) {
+            this._trConfig = this.option('config') || trconfig;
         }
+        return this._trConfig;
     }
 
-    async getMaxLogCharacters(): Promise<number> {
-        if (this._maxLogChars === undefined) {
-            this._maxLogChars = await this.optionsMgr.get('maxLogCharacters', 250);
+    get api(): TestRailApi {
+        if (!this._api) {
+            this._api = this.option('api') || new TestRailApi(this.config);
         }
-        return this._maxLogChars;
+        return this._api;
     }
 
-    async log(level: LogLevel, message: string): Promise<void> {
-        if (await this.enabled()) {
-            let l: LogLevel = await this.level();
-            if (level.value >= l.value) {
-                if (this._logs.length > 0) {
-                    this._logs += '\n'; // separate new logs from previous
-                }
-                this._logs += message;
-                this._logs = ellide(this._logs, await this.getMaxLogCharacters(), EllipsisLocation.beginning);
+    get maxLogCharacters(): number {
+        return this.option('maxLogCharacters', 250);
+    }
+
+    override async log(data: LogMessageData): Promise<void> {
+        if (LogLevel.toValue(data.level) >= LogLevel.toValue(this.level) && data.level != 'none') {
+            if (this._logs.length > 0) {
+                this._logs += '\n'; // separate new logs from previous
             }
+            this._logs += data.message;
+            this._logs = ellide(this._logs, this.maxLogCharacters, 'beginning');
         }
     }
     
-    async logResult(result: ITestResult): Promise<void> {
-        if (await this.enabled() && result) {
-            let planId: number = await this._config.getPlanId();
-            let trResult: TestRailResultRequest = await this._getTestRailResultForExternalResult(result);
-            await this._client.addResult(result.testId, planId, trResult);
+    override async logResult(logName: string, result: TestResult): Promise<void> {
+        if (result) {
+            await this._createTestPlanIfNone();
+            const trResult: TestRailResultRequest = await this._getTestRailResultForExternalResult(result);
+            const planId = await this.config.planId();
+            await this.api.addResult(result.testId, planId, trResult);
         }
     }
 
-    async dispose(error?: Error): Promise<void> {
+    override async dispose(logName: string, error?: Error): Promise<void> {
         /* do nothing */
     }
 
@@ -84,20 +77,36 @@ export class TestRailLoggingPlugin extends LoggingPlugin {
         return this._logs;
     }
 
-    private async _getTestRailResultForExternalResult(result: ITestResult): Promise<TestRailResultRequest> {
-        let maxChars: number = await this.getMaxLogCharacters();
+    private async _getTestRailResultForExternalResult(result: TestResult): Promise<TestRailResultRequest> {
+        let maxChars: number = this.maxLogCharacters;
         let elapsed: number = 0;
         if (result.metadata) {
             let millis: number = result.metadata['durationMs'] || 0;
             elapsed = Math.floor(millis / 60000); // elapsed is in minutes
         }
         let trResult: TestRailResultRequest = {
-            comment: ellide(`${this._getLogs()}\n${result.resultMessage}`, maxChars, EllipsisLocation.beginning),
+            comment: ellide(`${this._getLogs()}\n${result.resultMessage}`, maxChars, 'beginning'),
             defects: result.defects?.join(','),
             elapsed: elapsed.toString(),
-            status_id: StatusConverter.instance.toTestRailStatus(result.status)
+            status_id: statusConverter.toTestRailStatus(result.status)
         };
 
         return trResult;
+    }
+
+    private async _createTestPlanIfNone(): Promise<void> {
+        const lock: ExpiringFileLock = fileio.getExpiringFileLock(this.constructor.name, 60000, 60000);
+        try {
+            // create new Test Plan if one doesn't already exist
+            const planId: number = await this.config.planId();
+            if (planId <= 0) {
+                let projectId: number = await this.config.projectId();
+                let suiteIds: number[] = await this.config.suiteIds();
+                let plan: TestRailPlan = await this.api.createPlan(projectId, suiteIds);
+                this.config.setPlanId(plan.id); // sets value in FileSystemMap that is read by `this.trConfig.planId()`
+            }
+        } finally {
+            lock.unlock();
+        }
     }
 }

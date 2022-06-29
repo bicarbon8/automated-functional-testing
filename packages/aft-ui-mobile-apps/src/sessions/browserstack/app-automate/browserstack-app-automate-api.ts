@@ -1,28 +1,37 @@
-import { convert } from "aft-core";
-import { HttpService, HttpResponse, httpService } from "aft-web-services";
+import { convert, IHasOptions, optmgr } from "aft-core";
+import { HttpResponse, httpService, httpData } from "aft-web-services";
 import * as fs from "fs";
 import * as FormData from "form-data";
 import { browserstackconfig, BrowserStackConfig } from "../configuration/browserstack-config";
-import { UploadRequest } from "./upload-request";
-import { UploadResponse } from "./upload-response";
-import { BrowserStackMobileApp, RecentGroupAppsResponse } from "./recent-group-apps-response";
-import { SetSessionStatusRequest } from "./set-session-status-request";
+import { BrowserStackMobileApp, RecentGroupAppsResponse, SetSessionStatusRequest, UploadRequest, UploadResponse } from "./app-automate-api-custom-types";
 
-export interface BrowserStackAppAutomateApiOptions {
-    _config: BrowserStackConfig;
-    _httpSvc?: HttpService;
-}
+export type BrowserStackAppAutomateApiOptions = {
+    config: BrowserStackConfig;
+};
 
-export class BrowserStackAppAutomateApi {
-    private _cfg: BrowserStackConfig;
-    private _httpSvc: HttpService;
-
+export class BrowserStackAppAutomateApi implements IHasOptions<BrowserStackAppAutomateApiOptions> {
+    private _options: BrowserStackAppAutomateApiOptions;
+    private _config: BrowserStackConfig;
+    
     constructor(options?: BrowserStackAppAutomateApiOptions) {
-        this._cfg = options?._config || browserstackconfig;
-        this._httpSvc = options?._httpSvc || httpService;
+        options = options || {} as BrowserStackAppAutomateApiOptions;
+        this._options = optmgr.process(options);
+    }
+
+    option<K extends keyof BrowserStackAppAutomateApiOptions, V extends BrowserStackAppAutomateApiOptions[K]>(key: K, defaultVal?: V): V {
+        const response: V = this._options[key] as V;
+        return (response === undefined) ? defaultVal : response;
+    }
+
+    get config(): BrowserStackConfig {
+        if (!this._config) {
+            this._config = this.option('config', browserstackconfig);
+        }
+        return this._config;
     }
     
     async uploadApp(data: UploadRequest): Promise<UploadResponse> {
+        const url = await this.config.appApiUrl();
         if(!fs.existsSync(data.file)) {
             return Promise.reject(`file could not be found at: ${data.file}`);
         }
@@ -31,41 +40,43 @@ export class BrowserStackAppAutomateApi {
         if (data.custom_id) {
             formData.append('custom_id', data.custom_id);
         }
-        let bsResp: HttpResponse = await this._httpSvc.performRequest({
-            url: `${await this._cfg.appApiUrl()}upload`,
+        let bsResp: HttpResponse = await httpService.performRequest({
+            url: `${url}upload`,
             method: 'POST',
             headers: {"Authorization": await this._getAuthHeader()},
             multipart: true,
             postData: formData
         });
         if (bsResp && bsResp.statusCode == 200) {
-            return bsResp.dataAs<UploadResponse>();
+            return httpData.as<UploadResponse>(bsResp);
         }
         return Promise.reject(`unable to upload file '${data.file} to BrowserStack due to: ${bsResp?.data}`);
     }
 
     async getApps(): Promise<RecentGroupAppsResponse> {
-        let bsResp: HttpResponse = await this._httpSvc.performRequest({
-            url: `${await this._cfg.appApiUrl()}recent_group_apps`,
+        const url = await this.config.appApiUrl();
+        let bsResp: HttpResponse = await httpService.performRequest({
+            url: `${url}recent_group_apps`,
             method: 'GET',
             headers: {"Authorization": await this._getAuthHeader()}
         });
         if (bsResp && bsResp.statusCode == 200) {
-            return {apps: bsResp.dataAs<BrowserStackMobileApp[]>()};
+            return {apps: httpData.as<BrowserStackMobileApp[]>(bsResp)};
         }
         return Promise.reject(`unable to get list of mobile apps from BrowserStack due to: ${bsResp?.data}`);
     }
 
     async setSessionStatus(data: SetSessionStatusRequest): Promise<void> {
+        const url = await this.config.appApiUrl();
         let urlPath: string = `sessions/${data.sessionId}.json`;
         let pdata: {} = {
             status: data.status,
             reason: data.message
         };
-        var resp: HttpResponse = await this._httpSvc.performRequest({
+        var resp: HttpResponse = await httpService.performRequest({
             method: 'PUT',
             headers: {"Authorization": await this._getAuthHeader()},
-            url: `${await this._cfg.appApiUrl()}${urlPath}`, 
+            url: `${url}${urlPath}`, 
             postData: JSON.stringify(pdata)
         });
         if (resp.statusCode != 200) {
@@ -74,8 +85,8 @@ export class BrowserStackAppAutomateApi {
     }
 
     private async _getAuthHeader(): Promise<string> {
-        let user: string = await this._cfg.user();
-        let key: string = await this._cfg.key();
+        let user: string = await this.config.user();
+        let key: string = await this.config.key();
         return `Basic ${convert.toBase64Encoded(`${user}:${key}`)}`;
     }
 }

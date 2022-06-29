@@ -1,20 +1,13 @@
-import { LoggingPlugin, LoggingPluginOptions, ITestResult, LogLevel } from "../../../src";
+import { LoggingPlugin, TestResult, LogMessageData, LoggingPluginOptions } from "../../../src";
 
-export class ThrowsLoggingPlugin extends LoggingPlugin {
-    constructor(options?: LoggingPluginOptions) {
-        super(options);
-    }
-
-    async onLoad(): Promise<void> {
-        /* do nothing */
-    }
-    async log(level: LogLevel, message: string): Promise<void> {
+export class ThrowsLoggingPlugin extends LoggingPlugin<LoggingPluginOptions> {
+    override async log(messageData: LogMessageData): Promise<void> {
         throw 'log exception';
     }
-    async logResult(result: ITestResult): Promise<void> {
+    override async logResult(name: string, result: TestResult): Promise<void> {
         throw 'logResult exception';
     }
-    async dispose(error?: Error): Promise<void> {
+    override async dispose(name: string, error?: Error): Promise<void> {
         throw 'dispose exception';
     }
 }

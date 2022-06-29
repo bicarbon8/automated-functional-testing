@@ -1,26 +1,22 @@
-import { SessionGeneratorPlugin, SessionGeneratorPluginOptions } from "aft-ui";
+import { UiSessionGeneratorPlugin, UiSessionGeneratorPluginOptions } from "aft-ui";
 import { MobileAppSession, MobileAppSessionOptions } from "./mobile-app-session";
 import { Browser, remote, RemoteOptions } from "webdriverio";
+import { Merge } from "aft-core";
 
-export interface MobileAppSessionGeneratorPluginOptions extends SessionGeneratorPluginOptions, MobileAppSessionOptions {
-    
-}
+export type MobileAppSessionGeneratorPluginOptions = Merge<UiSessionGeneratorPluginOptions, {
+    remoteOptions?: object;
+    app?: string;
+}>;
 
-export abstract class MobileAppSessionGeneratorPlugin extends SessionGeneratorPlugin {
+export abstract class MobileAppSessionGeneratorPlugin<T extends MobileAppSessionGeneratorPluginOptions> extends UiSessionGeneratorPlugin<T> {
     private _app: string;
-    
-    constructor(options?: MobileAppSessionGeneratorPluginOptions) {
-        super(options);
-    }
 
     async getRemoteOptions(options?: MobileAppSessionOptions): Promise<RemoteOptions> {
-        let remOpts: RemoteOptions = await this.optionsMgr.get<RemoteOptions>('remoteOptions', {} as RemoteOptions);
+        let remOpts: RemoteOptions = this.option('remoteOptions', {}) as RemoteOptions;
         if (options?.remoteOptions) {
-            for (var key in options.remoteOptions) {
-                remOpts[key] = options.remoteOptions[key];
-            }
+            remOpts = {...remOpts, ...options.remoteOptions}
         }
-        let app: string = options?.app || await this.app();
+        let app: string = options?.app || this.app;
         if (app) {
             remOpts.capabilities = remOpts.capabilities || {};
             remOpts.capabilities['app'] = app;
@@ -28,25 +24,23 @@ export abstract class MobileAppSessionGeneratorPlugin extends SessionGeneratorPl
         return remOpts;
     }
 
-    async app(): Promise<string> {
+    get app(): string {
         if (!this._app) {
-            this._app = await this.optionsMgr.get('app');
+            this._app = this.option('app');
         }
         return this._app;
     }
 
-    abstract override newSession(options?: MobileAppSessionOptions): Promise<MobileAppSession>;
+    abstract override newUiSession(options?: MobileAppSessionOptions): Promise<MobileAppSession>;
     
     async createDriver(options?: MobileAppSessionOptions): Promise<Browser<'async'>> {
         if (!options?.driver) {
-            if (await this.enabled()) {
-                try {
-                    let remOpts: RemoteOptions = await this.getRemoteOptions(options);
-                    let driver: Browser<'async'> = await remote(remOpts);
-                    return driver;
-                } catch (e) {
-                    return Promise.reject(e);
-                }
+            try {
+                let remOpts: RemoteOptions = await this.getRemoteOptions(options);
+                let driver: Browser<'async'> = await remote(remOpts);
+                return driver;
+            } catch (e) {
+                return Promise.reject(e);
             }
         }
         return options?.driver;

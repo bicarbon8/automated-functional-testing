@@ -1,4 +1,4 @@
-import { HtmlResult } from "../html-file-manager";
+import { HtmlResult } from "../html-result";
 
 class HtmlTemplate {
     private _template: string = `

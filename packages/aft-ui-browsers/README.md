@@ -1,11 +1,11 @@
 # AFT-UI-Browsers
-Automated Functional Testing (AFT) package providing Selenium-based `BrowserFacet extends AbstractFacet` Plugins and BrowserStack, Sauce Labs and Selenium Grid `ISession` Plugins extending the `aft-ui` package. This enables testing using BrowserStack, Sauce Labs or a Local Selenium Grid for any Browser application tests.
+Automated Functional Testing (AFT) package providing Selenium-based `BrowserFacet extends UUiFacet` Plugins and BrowserStack, Sauce Labs and Selenium Grid `UiSession` Plugins extending the `aft-ui` package. This enables testing using BrowserStack, Sauce Labs or a Local Selenium Grid for any Browser application tests.
 
 ## Installation
 `> npm i aft-ui-browsers`
 
 ## Page Object Model (POM)
-the POM is a standard design pattern used in UI and layout testing. AFT-UI supports this model via _Sessions_ and _Facets_ where the _Session_ is an object extending from `ISession` and is responsible for managing the UI container (browser, mobile view, etc.)and the _Facet_ is an object extending from `AbstractFacet` and is responsible for managing logical collections of sub-facets and elements in the UI. For example:
+the POM is a standard design pattern used in UI and layout testing. AFT-UI supports this model via _Sessions_ and _Facets_ where the _Session_ is an object extending from `UiSession` and is responsible for managing the UI container (browser, mobile view, etc.)and the _Facet_ is an object extending from `UUiFacet` and is responsible for managing logical collections of sub-facets and elements in the UI. For example:
 ![aft-ui-pom](aft-ui-pom.png)
 The above would use a POM design like:
 
@@ -91,17 +91,17 @@ export class HerokuContentFacet extends BrowserFacet {
     private async passwordInput(): Promise<WebElement> {
         return await this.getElement({locator: By.id("password")});
     }
-    private async loginButton(): Promise<IFacet> {
+    private async loginButton(): Promise<UiFacet> {
         return await this.getElement({locator: By.css("button.radius")});
     }
     /* action functions */
     async login(user: string, pass: string): Promise<void> {
-        await this.usernameInput().then(async (input) => await input.sendKeys(user));
-        await this.passwordInput().then(async (input) => await input.sendKeys(pass));
+        await this.usernameInput().then(input => input.sendKeys(user));
+        await this.passwordInput().then(input => input.sendKeys(pass));
         return await this.clickLoginButton();
     }
     async clickLoginButton(): Promise<void> {
-        await this.loginButton().then(async (button) => await button.click());
+        await this.loginButton().then(button => button.click());
     }
 }
 ```
@@ -152,15 +152,35 @@ await verifyWithBrowser(async (bv: BrowserVerifier) => {
 ## aftconfig.json keys and values supported by aft-ui-selenium package
 ```
 {
-    "browsersessiongeneratormanager": {
-        "pluginNames": [
-            "browserstack-browser-session-generator-plugin",
-            "sauce-labs-browser-session-generator-plugin",
-            "selenium-grid-session-generator-plugin"
-        ],
-        "searchDir": "../"
+    "BrowserSessionGeneratorManager": {
+        "plugins": [
+            {
+                "name": "browserstack-browser-session-generator-plugin",
+                "options": {
+                    "uiplatform": "android_11_chrome_99_Google Pixel XL"
+                }
+            },
+            {
+                "name": "sauce-labs-browser-session-generator-plugin",
+                "options": {
+                    "enabled": false,
+                    "uiplatform": "ios_10_safari_80_iPhone 11"
+                }
+            },
+            {
+                "name": "selenium-grid-session-generator-plugin",
+                "options": {
+                    "enabled": false,
+                    "url": "http://127.0.0.1:4444/wd/hub",
+                    "uiplatform": "windows_10_chrome",
+                    "additionalCapabilities": {
+                        "your-custom-key": "your-custom-value"
+                    }
+                }
+            }
+        ]
     },
-    "browserstackconfig": {
+    "BrowserStackConfig": {
         "user": "%browserstack_user%",
         "key": "%browserstack_key%",
         "debug": true,
@@ -168,52 +188,29 @@ await verifyWithBrowser(async (bv: BrowserVerifier) => {
         "local": false,
         "localIdentifier": "abcdefg"
     },
-    "browserstackbrowsersessiongeneratorplugin": {
-        "enabled": true,
-        "platform": "windows_10_chrome"
-    },
-    "saucelabsconfig": {
+    "SauceLabsConfig": {
         "username": "%saucelabs_username%",
         "accessKey": "%saucelabs_accesskey%",
         "resolution": "1024x768",
         "tunnel": false,
         "tunnelId": "abcdefgh"
-    },
-    "saucelabsbrowsersessiongeneratorplugin": {
-        "enabled": true,
-        "platform": "windows_10_chrome"
-    },
-    "seleniumgridsessiongeneratorplugin": {
-        "enabled": true,
-        "url": "http://127.0.0.1:4444/wd/hub",
-        "platform": "windows_10_chrome",
-        "capabilities": {
-            "your-custom-key": "your-custom-value"
-        }
     }
 }
 ```
-- **browserstackconfig** - only required if referencing `browserstack-browser-session-generator-plugin` in the `pluginNames` array of the `browsersessiongeneratormanager` section of your `aftconfig.json` file
+- **BrowserStackConfig** - only required if referencing `browserstack-browser-session-generator-plugin` in the `plugins` array of the `browsersessiongeneratormanager` section of your `aftconfig.json` file
   - **user** - [REQUIRED] the BrowserStack username for the account to be used
   - **key** - [REQUIRED] the BrowserStack accesskey for the account to be used
   - **resolution** - a `string` containing a valid resolution for your BrowserStack session like: `1024x768` _(defaults to no value so BrowserStack will choose)_
   - **local** - a `boolean` value indicating if sessions should connect via an already running BrowserStack _Local_ VPN _(defaults to false)_
   - **localIdentifier** - a `string` containing the BrowserStack _Local_ `localIdentifier` to use when connecting to a _Local_ VPN instance. only required if **local** is set to `true` and your _Local_ VPN instance is using a `localIdentifier`
-- **browserstackbrowsersessiongeneratorplugin** - only required if referencing `browserstack-browser-session-generator-plugin` in the `pluginNames` array of the `browsersessiongeneratormanager` section of your `aftconfig.json` file
-  - **platform** - a `TestPlatform` string used to define what OS and Browser combination is to be generated
-  - **url** - an alternative url for BrowserStack's grid hub _(defaults to `https://hub-cloud.browserstack.com/wd/hub/` if not specified)_
-  - **capabilities** - an `object` containing keys and values to be used when creating your BrowserStack Session. this can be used to override default capabilities or to add additional ones _(defaults to none)_
-- **saucelabsconfig** - only required if referencing `sauce-labs-browser-session-generator-plugin` in the `pluginNames` array of the `browsersessiongeneratormanager` section of your `aftconfig.json` file
+- **SauceLabsConfig** - only required if referencing `sauce-labs-browser-session-generator-plugin` in the `plugins` array of the `browsersessiongeneratormanager` section of your `aftconfig.json` file
   - **username** - [REQUIRED] the Sauce Labs username for the account to be used
   - **accesskey** - [REQUIRED] the Sauce Labs accesskey for the account to be used
   - **resolution** - a `string` containing a valid resolution for your Sauce Labs session like: `1024x768` _(defaults to no value so Sauce Labs will choose)_
   - **tunnel** - a `boolean` value indicating if sessions should connect via an already running Sauce Labs tunnel VPN _(defaults to false)_
   - **tunnelId** - a `string` containing the Sauce Labs `tunnelIdentifier` to use when connecting to a tunnel VPN instance. only required if **tunnel** is set to `true` and your tunnel VPN instance is using a `tunnelIdentifier`
-- **saucelabsbrowsersessiongeneratorplugin** - only required if referencing `sauce-labs-browser-session-generator-plugin` in the `pluginNames` array of the `browsersessiongeneratormanager` section of your `aftconfig.json` file
-  - **platform** - a `TestPlatform` string used to define what OS and Browser combination is to be generated
-  - **url** - an alternative url for Sauce Labs' grid hub _(defaults to `https://ondemand.us-east-1.saucelabs.com/wd/hub/` if not specified)_
-  - **capabilities** - an `object` containing keys and values to be used when creating your Sauce Labs Session. this can be used to override default capabilities or to add additional ones _(defaults to none)_
-- **seleniumgridsessiongeneratorplugin** - only required if referencing `selenium-grid-session-generator-plugin` in the `pluginNames` array of the `browsersessiongeneratormanager` section of your `aftconfig.json` file
-  - **platform** - a `TestPlatform` string used to define what OS and Browser combination is to be generated
-  - **url** - [REQUIRED] the url of your running Selenium Grid instance
-  - **capabilities** - an `object` containing keys and values to be used when creating your Browser Session
+- `browserstack-browser-session-generator-plugin` | `sauce-labs-browser-session-generator-plugin` | `selenium-grid-session-generator-plugin`
+  - **options**
+    - **uiplatform** - a `UiPlatform` string used to define what OS and Browser combination is to be generated
+    - **url** - an alternative url for the grid hub _(only the Selenium Grid plugin requires this value)_
+    - **capabilities** - an `object` containing keys and values to be used when creating your BrowserStack Session. this can be used to override default capabilities or to add additional ones _(defaults to none)_

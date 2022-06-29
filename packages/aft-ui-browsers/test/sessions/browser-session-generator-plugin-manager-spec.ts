@@ -1,11 +1,11 @@
-import { BrowserSessionGeneratorPlugin, BrowserSessionGeneratorManager, BrowserStackBrowserSessionGeneratorPlugin, SauceLabsBrowserSessionGeneratorPlugin, SeleniumGridSessionGeneratorPlugin } from "../../src";
+import { BrowserSessionGeneratorManager } from "../../src/sessions/browser-session-generator-manager";
 
 describe('BrowserSessionGeneratorManager', () => {
     it('can load the BrowserStackBrowserSessionGeneratorPlugin', async () => {
         let mgr: BrowserSessionGeneratorManager = new BrowserSessionGeneratorManager({
-            pluginNames: ['browserstack-browser-session-generator-plugin']
+            plugins: ['browserstack-browser-session-generator-plugin']
         });
-        let plugin: BrowserSessionGeneratorPlugin = await mgr.getFirstEnabledPlugin();
+        let plugin = await mgr.first();
 
         expect(plugin).toBeDefined();
         expect(plugin.constructor.name).toEqual('BrowserStackBrowserSessionGeneratorPlugin');
@@ -13,9 +13,9 @@ describe('BrowserSessionGeneratorManager', () => {
 
     it('can load the SauceLabsBrowserSessionGeneratorPlugin', async () => {
         let mgr: BrowserSessionGeneratorManager = new BrowserSessionGeneratorManager({
-            pluginNames: ['sauce-labs-browser-session-generator-plugin']
+            plugins: ['sauce-labs-browser-session-generator-plugin']
         });
-        let plugin: BrowserSessionGeneratorPlugin = await mgr.getFirstEnabledPlugin();
+        let plugin = await mgr.first();
 
         expect(plugin).toBeDefined();
         expect(plugin.constructor.name).toEqual('SauceLabsBrowserSessionGeneratorPlugin');
@@ -23,9 +23,9 @@ describe('BrowserSessionGeneratorManager', () => {
 
     it('can load the SeleniumGridSessionGeneratorPlugin', async () => {
         let mgr: BrowserSessionGeneratorManager = new BrowserSessionGeneratorManager({
-            pluginNames: ['selenium-grid-session-generator-plugin']
+            plugins: ['selenium-grid-session-generator-plugin']
         });
-        let plugin: BrowserSessionGeneratorPlugin = await mgr.getFirstEnabledPlugin();
+        let plugin = await mgr.first();
 
         expect(plugin).toBeDefined();
         expect(plugin.constructor.name).toEqual('SeleniumGridSessionGeneratorPlugin');

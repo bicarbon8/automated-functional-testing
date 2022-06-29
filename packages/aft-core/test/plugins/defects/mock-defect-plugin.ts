@@ -1,46 +1,37 @@
-import { DefectStatus, IDefect, DefectPlugin, rand, DefectPluginOptions } from "../../../src";
+import { DefectStatus, Defect, DefectPlugin, rand, DefectPluginOptions } from "../../../src";
 
-export class MockDefectPlugin extends DefectPlugin {
-    constructor(options?: DefectPluginOptions) {
-        super(options);
-    }
-    async onLoad(): Promise<void> {
-        /* do nothing */
-    }
-    async getDefect(defectId: string): Promise<IDefect> {
+export class MockDefectPlugin extends DefectPlugin<DefectPluginOptions> {
+    override async getDefect(defectId: string): Promise<Defect> {
         return {
             id: defectId, 
             title: rand.getString(17),
             description: rand.getString(150),
-            status: rand.getEnum(DefectStatus)
-        } as IDefect;
+            status: rand.getFrom<DefectStatus>('open', 'closed')
+        } as Defect;
     }
-    async findDefects(searchTerm: string): Promise<IDefect[]> {
+    override async findDefects(searchTerm: string): Promise<Defect[]> {
         switch (searchTerm) {
             case 'C1234':
-                let d1: IDefect = await this.getDefect('AUTO-123');
-                d1.status = DefectStatus.open;
+                let d1: Defect = await this.getDefect('AUTO-123');
+                d1.status = 'open';
                 return [d1];
             case 'C2345':
-                let d2: IDefect = await this.getDefect('AUTO-234');
-                d2.status = DefectStatus.closed;
+                let d2: Defect = await this.getDefect('AUTO-234');
+                d2.status = 'closed';
                 return [d2];
             default: 
-                let defects: IDefect[] = [];
+                let defects: Defect[] = [];
                 let randomCount: number = rand.getInt(1, 5);
                 for (var i=0; i<randomCount; i++) {
-                    let defect: IDefect = {
+                    let defect: Defect = {
                         id: rand.getString(5),
                         title: rand.getString(17),
                         description: rand.getString(150),
-                        status: rand.getEnum(DefectStatus)
-                    } as IDefect;
+                        status: rand.getFrom<DefectStatus>('open', 'closed')
+                    } as Defect;
                     defects.push(defect);
                 }
                 return defects;
         }
-    }
-    async dispose(error?: Error): Promise<void> {
-        /* do nothing */
     }
 }

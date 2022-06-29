@@ -2,7 +2,9 @@ import { MobileAppFacet } from "aft-ui-mobile-apps";
 import { Element, ElementArray } from "webdriverio";
 
 export class WikipediaView extends MobileAppFacet {
-    override readonly locator: string = '//*';
+    override get locator(): string {
+        return '//*';
+    }
 
     private _searchButton = async (): Promise<Element<'async'>> => await this.getElement({locator: "~Search Wikipedia", maxWaitMs: 10000});
     private _searchInput = async (): Promise<Element<'async'>> => await this.session.driver.$('android=new UiSelector().resourceId("org.wikipedia.alpha:id/search_src_text")');
@@ -10,14 +12,14 @@ export class WikipediaView extends MobileAppFacet {
 
     async searchFor(term: string): Promise<string[]> {
         await this.logMgr.info("tapping on 'SearchButton'");
-        await this._searchButton().then(async b => await b.click());
+        await this._searchButton().then(b => b.click());
         await this.sendTextToSearch(term);
         return await this.getResults();
     }
 
     async sendTextToSearch(text: string): Promise<void> {
         await this.logMgr.info(`setting 'SearchInput' to '${text}'...`);
-        await this._searchInput().then(async i => await i.addValue(text));
+        await this._searchInput().then(i => i.addValue(text));
     }
 
     async getResults(): Promise<string[]> {

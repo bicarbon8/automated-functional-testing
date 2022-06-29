@@ -1,45 +1,32 @@
-import { OptionsManager } from "../configuration/options-manager";
-import { IDisposable } from "../helpers/idisposable";
+import { IHasOptions } from "../configuration/i-has-options";
+import { optmgr } from "../configuration/options-manager";
 
-/**
- * a base options object that must be implemented by any
- * Plugin implementation's constructor options
- */
-export interface PluginOptions {
-    /**
-     * [OPTIONAL] if not provided, will default to value in `aftconfig.json` or `true`
-     */
+export type PluginOptions = {
     enabled?: boolean;
-    /**
-     * [OPTIONAL] if not provided a new {OptionsManager} will be created
-     */
-    _optMgr?: OptionsManager;
 }
 
 /**
- * base class to be extended by any Plugin implementation.
- * 
- * NOTE:
- * * the `onLoad` function is called automatically after the plugin instance is created
- * * the `dispose` function is only called if the plugin is used within a `using` block
- * ```
- * await using(createPluginInstance(), (plugin) => {
- *     plugin.doStuff();
- * }); // `plugin.dispose` is called here
- * ```
+ * interface to be implemented by any Plugin implementation
  */
-export abstract class Plugin<T extends PluginOptions> implements IDisposable {
+export abstract class Plugin<T extends PluginOptions> implements IHasOptions<T> {
+    private readonly _opts: T;
+
     private _enabled: boolean;
-    readonly optionsMgr: OptionsManager;
+
     constructor(options?: T) {
-        this.optionsMgr = new OptionsManager(this.constructor.name.toLowerCase(), options);
+        options = options || {} as T;
+        this._opts = optmgr.process(options);
     }
-    async enabled(): Promise<boolean> {
+
+    option<K extends keyof T, V extends T[K]>(key: K, defaultVal?: V): V {
+        const result: V = this._opts[key] as V;
+        return (result === undefined) ? defaultVal : result;
+    }
+
+    get enabled(): boolean {
         if (this._enabled == null) {
-            this._enabled = await this.optionsMgr.get('enabled', true);
+            this._enabled = this.option('enabled', true);
         }
         return this._enabled;
     }
-    abstract onLoad(): Promise<void>;
-    abstract dispose(error?: Error): Promise<void>;
 }

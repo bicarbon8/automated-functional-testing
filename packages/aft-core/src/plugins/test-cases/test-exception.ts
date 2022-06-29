@@ -1,4 +1,4 @@
-import { convert } from '../../helpers/converter';
+import { convert } from '../../helpers/convert';
 import { ellide } from '../../helpers/ellide';
 
 /**

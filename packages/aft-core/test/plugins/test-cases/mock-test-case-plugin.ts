@@ -1,48 +1,41 @@
-import { ProcessingResult, rand, TestStatus, ITestCase, TestCasePlugin, TestCasePluginOptions } from "../../../src";
+import { rand, TestStatus, TestCase, TestCasePlugin, TestCasePluginOptions } from "../../../src";
 
-export class MockTestCasePlugin extends TestCasePlugin {
-    constructor(options?: TestCasePluginOptions) {
-        super(options);
-    }
-    async onLoad(): Promise<void> {
-        /* do nothing */
-    }
-    async getTestCase(testId: string): Promise<ITestCase> {
+export type MockTestCasePluginOptions = TestCasePluginOptions;
+
+export class MockTestCasePlugin extends TestCasePlugin<MockTestCasePluginOptions> {
+    override async getTestCase(testId: string): Promise<TestCase> {
         return {
             id: testId,
             title: rand.getString(8),
             description: rand.getString(100),
-            status: rand.getEnum(TestStatus)
-        } as ITestCase;
+            status: rand.getFrom<TestStatus>('Blocked', 'Failed', 'Passed', 'Retest', 'Skipped', 'Untested')
+        } as TestCase;
     }
-    async findTestCases(searchTerm: string): Promise<ITestCase[]> {
-        let cases: ITestCase[] = [];
+    override async findTestCases(searchTerm: string): Promise<TestCase[]> {
+        let cases: TestCase[] = [];
         let resultCount: number = rand.getInt(1, 5);
         for (var i=0; i<resultCount; i++) {
-            let c: ITestCase = {
+            let c: TestCase = {
                 id: 'C' + rand.getInt(100, 999),
                 title: rand.getString(8),
                 description: rand.getString(100),
-                status: rand.getEnum(TestStatus)
-            } as ITestCase;
+                status: rand.getFrom<TestStatus>('Blocked', 'Failed', 'Passed', 'Retest', 'Skipped', 'Untested')
+            } as TestCase;
             cases.push(c);
         }
         return cases;
     }
-    async shouldRun(testId: string): Promise<ProcessingResult> {
+    override async shouldRun(testId: string): Promise<boolean> {
         switch(testId) {
             case 'C1234':
-                let c1: ITestCase = await this.getTestCase(testId);
-                return {obj: c1, message: 'do not run C1234', success: false};
+                let c1: TestCase = await this.getTestCase(testId);
+                return false;
             case 'C2345':
-                let c2: ITestCase = await this.getTestCase(testId);
-                return {obj: c2, success: true};
+                let c2: TestCase = await this.getTestCase(testId);
+                return true;
             default:
-                let c3: ITestCase = await this.getTestCase(testId);
-                return {obj: c3, message: rand.getString(22), success: rand.boolean};
+                let c3: TestCase = await this.getTestCase(testId);
+                return rand.boolean;
         }
-    }
-    async dispose(error?: Error): Promise<void> {
-        /* do nothing */
     }
 }

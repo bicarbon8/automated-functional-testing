@@ -1,5 +1,5 @@
 # AFT-UI-Mobile-Apps
-Automated Functional Testing (AFT) package providing Appium-based `MobileAppFacet extends AbstractFacet` Plugins and BrowserStack, Sauce Labs and Appium Grid `ISession` Plugins extending the `aft-ui` package. This enables testing using BrowserStack's, Sauce Labs's or a Local Selenium Grid for any Mobile Device application tests.
+Automated Functional Testing (AFT) package providing Appium-based `MobileAppFacet extends UiFacet` Plugins and BrowserStack, Sauce Labs and Appium Grid `UiSession` Plugins extending the `aft-ui` package. This enables testing using BrowserStack's, Sauce Labs's or a Local Selenium Grid for any Mobile Device application tests.
 
 ## Installation
 `> npm i aft-ui-mobile-apps`
@@ -16,12 +16,12 @@ export class WikipediaView extends MobileAppFacet {
     private _searchInput = async (): Promise<Element<'async'>> => await this.session.driver.$('android=new UiSelector().resourceId("org.wikipedia.alpha:id/search_src_text")');
     private _searchResults = async (): Promise<ElementArray> => await this.getElements({locator: "android.widget.TextView", maxWaitMs: 10000});
     async searchFor(term: string): Promise<string[]> {
-        await this._searchButton().then(async b => await b.click());
+        await this._searchButton().then(b => b.click());
         await this.sendTextToSearch(term);
         return await this.getResults();
     }
     async sendTextToSearch(text: string): Promise<void> {
-        await this._searchInput().then(async i => await i.addValue(text));
+        await this._searchInput().then(i => i.addValue(text));
     }
     async getResults(): Promise<string[]> {
         let resultsText: string[] = [];
@@ -59,71 +59,66 @@ await verifyWithMobileApp(async (mav: MobileAppVerifier) => {
 ## aftconfig.json keys and values supported by aft-ui-mobile-apps package
 ```
 {
-    "mobileappsessiongeneratormanager": {
-        "pluginNames": [
-            "browserstack-mobile-app-session-generator-plugin",
-            "sauce-labs-mobile-app-session-generator-plugin",
-            "appium-grid-session-generator-plugin"
+    "MobileAppSessionGeneratorManager": {
+        "plugins": [
+            {
+                "name": "browserstack-mobile-app-session-generator-plugin",
+                "options": {
+                    "uiplatform": "android_11_+_+_Google Pixel 5",
+                    "app": "bs://some-identifier-for-your-uploaded-app"
+                }
+            }, {
+                "name": "sauce-labs-mobile-app-session-generator-plugin",
+                "options": {
+                    "uiplatform": "android_10_+_+_Samsung Galaxy S7",
+                    "url": "http://127.0.0.1:4444/wd/hub",
+                    "remoteOptions": {
+                        "capabilities": {
+                            "your-custom-key": "your-custom-value"
+                        }
+                    }
+                }
+            }, {
+                "name": "appium-grid-session-generator-plugin",
+                "options": {
+                    "app": "sauce-storage:your-mobile-app.zip",
+                    "enabled": false
+                }
+            }
         ],
         "searchDir": "../"
     },
-    "browserstackconfig": {
+    "BrowserStackConfig": {
         "user": "%browserstack_user%",
         "key": "%browserstack_key%",
         "debug": true,
         "local": false,
         "localIdentifier": "abcdefg"
     },
-    "browserstackmobileappsessiongeneratorplugin": {
-        "enabled": true,
-        "platform": "android_11_+_+_Google Pixel 5",
-        "app": "bs://some-identifier-for-your-uploaded-app"
-    },
-    "saucelabsconfig": {
+    "SauceLabsConfig": {
         "username": "%saucelabs_username%",
         "accessKey": "%saucelabs_accesskey%",
         "tunnel": false,
         "tunnelId": "abcdefgh"
-    },
-    "saucelabsmobileappsessiongeneratorplugin": {
-        "enabled": true,
-        "platform": "android_4.4_+_+_Samsung Galaxy S5 Device",
-        "app": "sauce-storage:your-mobile-app.zip"
-    },
-    "appiumgridsessiongeneratorplugin": {
-        "enabled": true,
-        "platform": "android_10_+_+_Samsung Galaxy S7",
-        "url": "http://127.0.0.1:4444/wd/hub",
-        "remoteOptions": {
-            "capabilities": {
-                "your-custom-key": "your-custom-value"
-            }
-        }
     }
 }
 ```
-- **browserstackconfig** - only required if referencing `browserstack-mobile-app-session-generator-plugin` in the `pluginNames` array of the `mobileappsessiongeneratormanager` section of your `aftconfig.json` file
+- **BrowserStackConfig** - only required if referencing `browserstack-mobile-app-session-generator-plugin` in the `plugins` array of the {
+    "name": `MobileAppSessionGeneratorManager` section of your `aftconfig.json` file
   - **user** - [REQUIRED] the BrowserStack username for the account to be used
   - **key** - [REQUIRED] the BrowserStack accesskey for the account to be used
   - **debug** - a `boolean` value indicating if the `browserstack.debug` capability should be included
   - **local** - a `boolean` value indicating if sessions should connect via an already running BrowserStack _Local_ VPN _(defaults to false)_
   - **localIdentifier** - a `string` containing the BrowserStack _Local_ `localIdentifier` to use when connecting to a _Local_ VPN instance. only required if **local** is set to `true` and your _Local_ VPN instance is using a `localIdentifier`
-- **browserstackmobileappsessiongeneratorplugin** - only required if referencing `browserstack-mobile-app-session-generator-plugin` in the `pluginNames` array of the `mobileappsessiongeneratormanager` section of your `aftconfig.json` file
-  - **app** - [REQUIRED] the `bs://` path to your mobile application (.apk or .ipa) or the `custom_id` or `sharable_id` used when uploaded
-  - **platform** - a `TestPlatform` string like `android_11_+_+_Google Pixel 5` specifying the OS, OS Version and Device to use
-  - **url** - an alternative url for BrowserStack's grid hub _(defaults to `https://hub-cloud.browserstack.com/wd/hub/` if not specified)_
-  - **remoteOptions** - an `object` containing keys and values to be used when creating your BrowserStack MobileApp Session. this can be used to override default RemoteOptions.capabilities or to add additional ones _(defaults to none)_
-- **saucelabsconfig** - only required if referencing `sauce-labs-mobile-app-session-generator-plugin` in the `pluginNames` array of the `mobileappsessiongeneratormanager` section of your `aftconfig.json` file
+- **SauceLabsConfig** - only required if referencing `sauce-labs-mobile-app-session-generator-plugin` in the `plugins` array of the {
+    "name": `MobileAppSessionGeneratorManager` section of your `aftconfig.json` file
   - **username** - [REQUIRED] the Sauce Labs username for the account to be used
   - **accesskey** - [REQUIRED] the Sauce Labs accesskey for the account to be used
   - **tunnel** - a `boolean` value indicating if sessions should connect via an already running Sauce Labs tunnel VPN _(defaults to false)_
   - **tunnelId** - a `string` containing the Sauce Labs `tunnelIdentifier` to use when connecting to a tunnel VPN instance. only required if **tunnel** is set to `true` and your tunnel VPN instance is using a `tunnelIdentifier`
-- **saucelabsmobileappsessiongeneratorplugin** - only required if referencing `sauce-labs-mobile-app-session-generator-plugin` in the `pluginNames` array of the `mobileappsessiongeneratormanager` section of your `aftconfig.json` file
-  - **app** - [REQUIRED] the path to your mobile application (.apk or .ipa) used when uploaded to Sauce Labs
-  - **platform** - a `TestPlatform` string like `android_11_+_+_Google Pixel 5` specifying the OS, OS Version and Device to use
-  - **url** - an alternative url for Sauce Labs' grid hub _(defaults to `https://ondemand.us-east-1.saucelabs.com/wd/hub/` if not specified)_
-  - **remoteOptions** - an `object` containing keys and values to be used when creating your Sauce Labs MobileApp Session. this can be used to override default RemoteOptions.capabilities or to add additional ones _(defaults to none)_
-- **appiumgridsessiongeneratorplugin** - only required if referencing `appium-grid-session-generator-plugin` in the `pluginNames` array of the `mobileappsessiongeneratormanager` section of your `aftconfig.json` file
-  - **platform** - a `TestPlatform` string like `android_11_+_+_Google Pixel 5` specifying the OS, OS Version and Device to use
-  - **url** - [REQUIRED] the url of your running Selenium Grid instance
-  - **remoteOptions** - an `object` containing keys and values to be used when creating your Appium Grid MobileApp Session with WebDriver.io. this can be used to override default RemoteOptions.capabilities or to add additional ones _(defaults to none)_
+- `sauce-labs-mobile-app-session-generator-plugin` | `browserstack-mobile-app-session-generator-plugin` | `appium-grid-session-generator-plugin`
+  - **options**
+    - **app** - [REQUIRED] the path to your mobile application (.apk or .ipa) used when uploaded to Sauce Labs
+    - **uiplatform** - a `TestPlatform` string like `android_11_+_+_Google Pixel 5` specifying the OS, OS Version and Device to use
+    - **url** - an alternative url for Sauce Labs' grid hub _(only required when using the Appium Grid Plugin)_
+    - **remoteOptions** - an `object` containing keys and values to be used when creating your Sauce Labs MobileApp Session. this can be used to override default RemoteOptions.capabilities or to add additional ones _(defaults to none)_

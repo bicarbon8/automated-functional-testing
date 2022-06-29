@@ -15,7 +15,7 @@ describe('AFT', () => {
         await verify(() => (1 + 1)).returns(2).withDescription('1 plus 1 is 2');
     });
 
-    it('can be used to wrap large blocks of code', async () => {
+    it('can be used to wrap blocks of code', async () => {
         await verify(async (v) => {
             let count: number = 10;
             let result: boolean = true;

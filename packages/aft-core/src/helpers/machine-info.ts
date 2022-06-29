@@ -1,7 +1,11 @@
 import * as os from 'os';
 
-class Machine {
-    async getIp(): Promise<string> {
+/**
+ * class providing IP address, username and hostname of the current
+ * system
+ */
+class MachineInfo {
+    get ip(): string {
         var interfaces = os.networkInterfaces();
         var addresses = [];
         for (var k in interfaces) {
@@ -19,28 +23,27 @@ class Machine {
         }
     }
 
-    async getName(): Promise<string> {
+    get hostname(): string {
         return os.hostname();
     }
 
-    async getUser(): Promise<string> {
-        return os.userInfo().username;
+    get user(): string {
+        return os.userInfo()?.username || 'unknown';
+    }
+
+    /**
+     * returns a `MachineInfoData` object containing the IP, hostname and username
+     * of the current system
+     */
+    get data(): MachineInfoData {
+        return {ip: this.ip, hostname: this.hostname, user: this.user};
     }
 }
 
-export interface MachineInfoData {
+export type MachineInfoData = {
     ip?: string;
-    name?: string;
+    hostname?: string;
     user?: string;
-}
+};
 
-export module MachineInfo {
-    const _machine: Machine = new Machine();
-    export async function get(): Promise<MachineInfoData> {
-        return {
-            ip: await _machine.getIp(),
-            name: await _machine.getName(),
-            user: await _machine.getUser()
-        };
-    }
-}
+export const machineInfo = new MachineInfo();

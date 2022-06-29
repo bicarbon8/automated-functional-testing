@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as FormData from "form-data";
 import { between, greaterThan, havingValue, Verifier, verify } from "aft-core";
-import { HttpResponse, httpService } from 'aft-web-services';
+import { httpData, HttpResponse, httpService } from 'aft-web-services';
 import { expect } from "chai";
 import { ListUsersResponse } from "./response-objects/list-users-response";
 
@@ -32,7 +32,7 @@ describe('REST Request', () => {
 
             await verify(async (tw) => {
                 await tw.logMgr.step('confirm can deserialise response.data into typed object...');
-                let obj: ListUsersResponse = response.dataAs<ListUsersResponse>();
+                let obj: ListUsersResponse = httpData.as<ListUsersResponse>(response);
                 expect(obj).to.exist;
                 await tw.logMgr.info('confirmed can deserialise response.data into typed object.');
                 await tw.logMgr.step('confirm object data property contains more than one result...');

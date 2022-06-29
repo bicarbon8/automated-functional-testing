@@ -1,19 +1,23 @@
-import { TestRailLoggingPlugin } from "../../src/logging/testrail-logging-plugin";
-import { rand, LogLevel, EllipsisLocation, ITestResult, TestStatus, ellide } from "aft-core";
+import * as fs from "fs";
+import * as path from "path";
+import { TestRailLoggingPlugin, TestRailLoggingPluginOptions } from "../../src/logging/testrail-logging-plugin";
+import { rand, TestResult, ellide, LogManager } from "aft-core";
 import { TestRailApi } from "../../src/api/testrail-api";
-import { TestRailResultRequest } from "../../src/api/testrail-result-request";
-import { TestRailResultResponse } from "../../src/api/testrail-result-response";
 import { TestRailConfig } from "../../src/configuration/testrail-config";
-import { HttpResponse, httpService } from "aft-web-services";
-import { TestRailResult } from "../../src/api/testrail-result";
+import { httpService } from "aft-web-services";
+import { TestRailPlan, TestRailResult, TestRailResultRequest, TestRailTest } from "../../src/api/testrail-custom-types";
 
 describe('TestRailLoggingPlugin', () => {
     beforeEach(() => {
-        spyOn(httpService, 'performRequest').and.returnValue(Promise.resolve(new HttpResponse({
+        spyOn(httpService, 'performRequest').and.returnValue(Promise.resolve({
             headers: {'content-type': 'application/json'},
             statusCode: 200,
             data: '{}'
-        })));
+        }));
+        const cachePath: string = path.join(process.cwd(), 'FileSystemMap');
+        if (fs.existsSync(cachePath)) {
+            fs.rmSync(cachePath, {recursive: true, force: true});
+        }
     });
     
     afterEach(() => {
@@ -23,104 +27,129 @@ describe('TestRailLoggingPlugin', () => {
     });
 
     it('keeps the last 250 characters logged', async () => {
-        let config: TestRailConfig = new TestRailConfig({
-            url: 'https://127.0.0.1/', 
-            user: 'fake@fake.fake', 
-            accesskey: 'fake-key'
-        });
-        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin({
-            _config: config, 
-            level: 'info', 
-            enabled: true,
-            maxLogCharacters: 250
-        });
-        await plugin.onLoad();
+        const opts: TestRailLoggingPluginOptions = {
+            level: 'info',
+            maxLogCharacters: 250,
+            config: new TestRailConfig({
+                url: 'https://127.0.0.1/', 
+                user: 'fake@fake.fake', 
+                accesskey: 'fake-key'
+            })
+        };
+        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(opts);
         let getLogsSpy = spyOn<any>(plugin, '_getLogs').and.callThrough();
 
         let expected: string = rand.getString(250, true, true);
-        await plugin.log(LogLevel.info, expected);
+        await plugin.log({level: 'info', message: expected, name: 'keeps the last 250 characters logged'});
 
         let actual: string = getLogsSpy.call(plugin);
         expect(actual).toEqual(expected);
     });
 
     it('logging over 250 characters is ellided from beginning of string', async () => {
-        let config: TestRailConfig = new TestRailConfig({
-            url: 'https://127.0.0.1/', 
-            user: 'fake@fake.fake', 
-            accesskey: 'fake-key'
-        });
-        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin({
-            _config: config, 
-            level: 'info', 
-            enabled: true,
-            maxLogCharacters: 250
-        });
-        await plugin.onLoad();
+        const opts: TestRailLoggingPluginOptions = {
+            level: 'info',
+            maxLogCharacters: 250,
+            config: new TestRailConfig({
+                url: 'https://127.0.0.1/', 
+                user: 'fake@fake.fake', 
+                accesskey: 'fake-key'
+            })
+        };
+        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(opts);
         let getLogsSpy = spyOn<any>(plugin, '_getLogs').and.callThrough();
         
         let notExpected: string = rand.getString(200, true, true);
         let expected: string = rand.getString(250, true, true);
         
-        await plugin.log(LogLevel.info, notExpected);
-        await plugin.log(LogLevel.info, expected);
+        const logName = rand.getString(60);
+        await plugin.log({level: 'info', message: notExpected, name: logName});
+        await plugin.log({level: 'info', message: expected, name: logName});
 
         let actual: string = getLogsSpy.call(plugin);
-        expect(actual).toEqual(ellide(`${notExpected}${expected}`, 250, EllipsisLocation.beginning));
+        expect(actual).toEqual(ellide(`${notExpected}${expected}`, 250, 'beginning'));
     });
 
     it('converts a Failed result to Retry', async () => {
-        let config: TestRailConfig = new TestRailConfig({
-            url: 'https://127.0.0.1/', 
-            user: 'fake@fake.fake', 
-            accesskey: 'fake-key'
-        });
-        let mockClient: TestRailApi = new TestRailApi(config);
-        spyOn(mockClient, 'addResult').and.callFake(async (caseId: string, planId: number, request: TestRailResultRequest): Promise<TestRailResult[]> => {
+        const opts: TestRailLoggingPluginOptions = {
+            level: 'info',
+            config: new TestRailConfig({
+                url: 'https://127.0.0.1/', 
+                user: 'fake@fake.fake', 
+                accesskey: 'fake-key'
+            })
+        };
+        opts.api = new TestRailApi(opts.config);
+        spyOn(opts.api, 'addResult').and.callFake(async (caseId: string, planId: number, request: TestRailResultRequest): Promise<TestRailResult[]> => {
             TestStore.caseId = caseId;
             TestStore.request = request;
             TestStore.planId = planId;
             return [];
         });
-        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin({_config: config, _client: mockClient, level: 'info', enabled: true});
-        await plugin.onLoad();
+        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(opts);
         
-        let result: ITestResult = {
+        let result: TestResult = {
             testId: 'C' + rand.getInt(99, 999),
-            status: TestStatus.Failed,
+            status: 'Failed',
             resultId: rand.guid,
-            created: new Date(),
+            created: Date.now(),
             metadata: {"durationMs": 1000}
         };
-        await plugin.logResult(result);
+        await plugin.logResult('converts a Failed result to Retry', result);
 
-        expect(mockClient.addResult).toHaveBeenCalledTimes(1);
+        expect(opts.api.addResult).toHaveBeenCalledTimes(1);
         expect(TestStore.request.status_id).toEqual(4); // 4 is Retest
         expect(TestStore.caseId).toEqual(result.testId);
         expect(TestStore.planId).toBeDefined();
     });
 
-    it('will not send a result if write not enabled', async () => {
-        let config: TestRailConfig = new TestRailConfig({
-            url: 'fake.url',
-            user: 'fake-user@fake.url',
-            accesskey: 'fake-access-key'
+    it('creates a new TestRail plan in a shared FileSystemMap if none exists', async () => {
+        const opts: TestRailLoggingPluginOptions = {
+            level: 'info',
+            config: new TestRailConfig({
+                url: 'https://127.0.0.1/', 
+                user: 'fake@fake.fake', 
+                accesskey: 'fake-key',
+                projectid: 3,
+                suiteids: [12, 15]
+            })
+        };
+        opts.api = new TestRailApi(opts.config);
+        const planId: number = rand.getInt(1000, 10000);
+        spyOn(opts.api, 'createPlan').and.callFake(async (projectId: number, suiteIds: number[], name?: string): Promise<TestRailPlan> => {
+            return {id: planId};
         });
-        let mockClient: TestRailApi = new TestRailApi(config);
-        spyOn(mockClient, 'addResult');
-        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin({_config: config, _client: mockClient, enabled: false});
-        await plugin.onLoad();
+        spyOn(opts.api, 'getTestByCaseId').and.callFake(async (caseId: string, planId: number): Promise<TestRailTest> => {
+            return {
+                id: rand.getInt(1000, 10000)
+            };
+        });
+        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(opts);
         
-        let result: ITestResult = {
+        let result: TestResult = {
             testId: 'C' + rand.getInt(99, 999),
-            status: TestStatus.Failed,
+            status: 'Failed',
             resultId: rand.guid,
-            created: new Date(),
+            created: Date.now(),
             metadata: {"durationMs": 1000}
         };
-        await plugin.logResult(result);
+        await plugin.logResult('creates a new TestRail plan in a shared FileSystemMap if none exists', result);
 
-        expect(mockClient.addResult).not.toHaveBeenCalled();
+        expect(opts.api.createPlan).toHaveBeenCalledTimes(1);
+        const sharedCacheFile: string = path.join(process.cwd(), 'FileSystemMap', 'TestRailConfig.json');
+        expect(fs.existsSync(sharedCacheFile)).toBeTrue();
+    });
+
+    it('can be loaded by the LogManager', async () => {
+        const conf = {
+            logName: 'can be loaded by the LogManager',
+            plugins: ['testrail-logging-plugin']
+        };
+        let mgr: LogManager = new LogManager(conf);
+        let plugin = await mgr.first();
+
+        expect(plugin).toBeDefined();
+        expect(plugin.constructor.name).toEqual('TestRailLoggingPlugin');
     });
 
     /**
@@ -131,28 +160,31 @@ describe('TestRailLoggingPlugin', () => {
      * `suite_ids` and `ITestResult.testId` should be updated to value values
      */
     xit('sends actual TestResult to TestRail', async () => {
-        let config: TestRailConfig = new TestRailConfig({
-            url: '%testrail_url%', 
-            user: '%testrail_user%', 
-            accesskey: '%testrail_pass%',
-            projectid: 3,
-            suiteids: [1219]
-        });
-        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin({_config: config, level: 'trace', enabled: true});
-        await plugin.onLoad();
+        const opts: TestRailLoggingPluginOptions = {
+            config: new TestRailConfig({
+                url: '%testrail_url%', 
+                user: '%testrail_user%', 
+                accesskey: '%testrail_pass%',
+                projectid: 3,
+                suiteids: [1219]
+            }),
+            level: 'trace'
+        };
+        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(opts);
         
-        await plugin.log(LogLevel.error, rand.getString(100));
+        const logName = 'sends actual TestResult to TestRail';
+        await plugin.log({level: 'error', message: rand.getString(100), name: logName});
         
-        let testResult: ITestResult = {
+        let testResult: TestResult = {
             testId: 'C4663085', // must be an existing TestRail Case ID
-            status: TestStatus.Failed,
+            status: 'Failed',
             resultMessage: rand.getString(100),
-            created: new Date(),
+            created: Date.now(),
             resultId: rand.guid,
             metadata: {"durationMs": 300000}
         };
 
-        await plugin.logResult(testResult);
+        await plugin.logResult(logName, testResult);
     }, 300000);
 });
 

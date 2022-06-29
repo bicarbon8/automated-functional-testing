@@ -1,3 +1,3 @@
-export interface ICanHaveKeyValue {
+export type ICanHaveKeyValue = {
     keyValue?: string;
-}
+};

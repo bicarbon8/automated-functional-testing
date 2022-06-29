@@ -1,40 +1,40 @@
-import { TestPlatform } from "aft-ui";
-import { BrowserSessionGeneratorPlugin, BrowserSessionGeneratorOptions } from "../browser-session-generator-plugin";
+import { UiPlatform } from "aft-ui";
+import { BrowserSessionGeneratorPlugin, BrowserSessionGeneratorPluginOptions } from "../browser-session-generator-plugin";
 import { Capabilities } from "selenium-webdriver";
 import { BrowserSessionOptions } from "../browser-session";
 import { SauceLabsBrowserSession } from "./sauce-labs-browser-session";
-import { SauceLabsConfig, SauceLabsConfigOptions } from "./configuration/sauce-labs-config";
-import { buildinfo } from "aft-core";
+import { buildinfo, Merge } from "aft-core";
+import { saucelabsconfig, SauceLabsConfig } from "./configuration/sauce-labs-config";
 
-export interface SauceLabsBrowserSessionGeneratorPluginOptions extends BrowserSessionGeneratorOptions, Partial<SauceLabsConfigOptions> {
-    _config?: SauceLabsConfig;
-}
+export type SauceLabsBrowserSessionGeneratorPluginOptions = Merge<BrowserSessionGeneratorPluginOptions, {
+    config?: SauceLabsConfig;
+}>;
 
-export class SauceLabsBrowserSessionGeneratorPlugin extends BrowserSessionGeneratorPlugin {
-    private _cfg: SauceLabsConfig;
+export class SauceLabsBrowserSessionGeneratorPlugin extends BrowserSessionGeneratorPlugin<SauceLabsBrowserSessionGeneratorPluginOptions> {
+    private _config: SauceLabsConfig;
 
-    constructor(options?: SauceLabsBrowserSessionGeneratorPluginOptions) {
-        options = options || {} as SauceLabsBrowserSessionGeneratorPluginOptions;
-        options.url = options.url || 'https://ondemand.us-east-1.saucelabs.com/wd/hub/';
-        super(options);
-        this._cfg = options?._config || new SauceLabsConfig(options as SauceLabsConfigOptions);
+    override get url(): string {
+        return super.url || 'https://ondemand.us-east-1.saucelabs.com/wd/hub/';
+    }
+    
+    get config(): SauceLabsConfig {
+        if (!this._config) {
+            this._config = this.option('config', saucelabsconfig);
+        }
+        return this._config;
     }
 
-    override async onLoad(): Promise<void> {
-        /* do nothing */
-    }
-
-    override async newSession(options?: BrowserSessionOptions): Promise<SauceLabsBrowserSession> {
-        return new SauceLabsBrowserSession({
-            driver: options?.driver || await this.createDriver(options),
-            logMgr: options?.logMgr || this.logMgr,
-            platform: options?.platform || await this.getPlatform().then(p => p.toString())
-        });
+    override async newUiSession(options?: BrowserSessionOptions): Promise<SauceLabsBrowserSession> {
+        options = options || {};
+        options.logMgr = options.logMgr || this.logMgr;
+        options.uiplatform = options.uiplatform || this.uiplatform.toString();
+        options.driver = options.driver || await this.createDriver(options);
+        return new SauceLabsBrowserSession(options);
     }
 
     override async getCapabilities(options?: BrowserSessionOptions): Promise<Capabilities> {
         let capabilities: Capabilities = new Capabilities();
-        let platform: TestPlatform = await this.getPlatform();
+        const platform: UiPlatform = this.uiplatform;
         if (platform.deviceName) {
             capabilities.set('platformName', platform.os);
             capabilities.set('platformVersion', platform.osVersion);
@@ -55,30 +55,26 @@ export class SauceLabsBrowserSessionGeneratorPlugin extends BrowserSessionGenera
             capabilities.set('deviceName', platform.deviceName);
         }
         capabilities.set('sauce:options', {
-            'username': await this._cfg.username(),
-            'accessKey': await this._cfg.accessKey(),
+            'username': await this.config.username(),
+            'accessKey': await this.config.accessKey(),
             'build': await buildinfo.get(),
-            'name': await options?.logMgr?.logName() || await this.logMgr.logName()
+            'name': options?.logMgr?.logName || this.logMgr.logName
         });
-        let resolution: string = await this._cfg.resolution();
+        let resolution: string = await this.config.resolution();
         if (resolution) {
             let opts: object = capabilities.get('sauce:options');
             opts['screenResolution'] = resolution;
             capabilities.set('sauce:options', opts);
         }
-        let tunnel: boolean = await this._cfg.tunnel();
+        let tunnel: boolean = await this.config.tunnel();
         if (tunnel) {
             let opts: {} = capabilities.get('sauce:options');
-            opts['tunnelIdentifier'] = await this._cfg.tunnelId();
+            opts['tunnelIdentifier'] = await this.config.tunnelId();
             capabilities.set('sauce:options', opts);
         }
         // overwrite the above with passed in capabilities if any
-        let superCaps: Capabilities = await super.getCapabilities();
-        capabilities = capabilities.merge(superCaps);
+        const optCaps: Capabilities = new Capabilities(this.additionalCapabilities);
+        capabilities = capabilities.merge(optCaps);
         return capabilities;
-    }
-
-    override async dispose(error?: Error): Promise<void> {
-        /* do nothing */
     }
 }

@@ -1,41 +1,50 @@
 # AFT-TestRail
 provides TestRail result logging as well as test execution filtering for users of `aft-core` by implementing plugins for the `AbstractLoggingPlugin` and `AbstractTestCasePlugin` plugin base classes.
 
-## ILoggingPlugin
-the `TestRailLoggingPlugin` extends from `AbstractLoggingPlugin` in `aft-core`. if enabled, this plugin will log test results to test cases in a TestRail Plan (if no plan is specified a new one is created in the `onLoad` function of the plugin). it can be enabled by including the following in your `aftconfig.json` file:
+## TestRailLoggingPlugin
+the `TestRailLoggingPlugin` extends from `LoggingPlugin` in `aft-core`. if enabled, this plugin will log test results to test cases in a TestRail Plan (if no plan is specified a new one is created the first time one is attempted to be accessed by the plugin). it can be enabled by including the following in your `aftconfig.json` file:
 ```json
 {
-    "logmanager": {
-        "pluginNames": [
-            "testrail-logging-plugin"
+    "LogManager": {
+        "level": "info",
+        "plugins": [
+            {
+                "name": "testrail-logging-plugin",
+                "options": {
+                    "enabled": true,
+                    "level": "error",
+                    "maxLogCharacters": 100
+                }
+            }
         ]
     },
-    "testrailconfig": {
+    "TestRailConfig": {
         "url": "https://your.testrail.instance/",
         "user": "valid.user@testrail.instance",
         "accesskey": "your_access_key",
         "planid": 12345
-    },
-    "testrailloggingplugin": {
-        "level": "warn",
-        "maxLogCharacters": 100
     }
 }
 ```
-**testrailloggingplugin**:
-- **level** - [OPTIONAL] `string` value of `none`, `error`, `warn`, `step`, `info`, `debug`, or `trace` _(defaults to `none`)_
+**PluginConfig**:
+- **level** - [OPTIONAL] `string` value of `none`, `error`, `warn`, `step`, `info`, `debug`, or `trace` _(defaults to value set on `LogManager`)_
 - **maxLogCharacters** - [OPTIONAL] `number` for the maximum number of additional log characters to send to TestRail when logging a `TestResult` _(defaults to 250)_
 
-## ITestCaseHandlerPlugin
-the `TestRailTestCasePlugin` extends from `AbstractTestCasePlugin` interface in `aft-core`. if enabled this plugin will lookup the status of TestRail tests based on their case ID from the set of IDs passed in to a `Verifier.withTestId` function. it can be enabled by including the following in your `aftconfig.json` file:
+## TestRailTestCasePlugin
+the `TestRailTestCasePlugin` extends from `TestCasePlugin` interface in `aft-core`. if enabled this plugin will lookup the status of TestRail tests based on their case ID from the set of IDs passed in to a `Verifier.withTestId` function. it can be enabled by including the following in your `aftconfig.json` file:
 ```json
 {
-    "testcasemanager": {
+    "TestCaseManager": {
         "pluginNames": [
-            "testrail-test-case-plugin"
+            {
+                "name": "testrail-test-case-plugin",
+                "options": {
+                    "enabled": true
+                }
+            }
         ]
     },
-    "testrailconfig": {
+    "TestRailConfig": {
         "url": "https://your.testrail.instance/",
         "user": "valid.user@testrail.instance",
         "accesskey": "your_access_key",
@@ -69,7 +78,7 @@ to submit results to or filter test execution based on existence and status of t
 ## Usage
 you can submit results directly by calling the `aft-core.LogManager.logResult(result: TestResult)` function or results will automatically be submitted if using the `aft-core.verify(assertion)` with valid `testCases` specified in the `options` object. 
 
-> NOTE: sending a `TestResult` with a `TestStatus` of `Failed` will be converted to a status of `Retest` before submitting to TestRail**
+> NOTE: sending a `TestResult` with a `TestStatus` of `Failed` will be converted to a status of `Retest` before submitting to TestRail
 
 ### via `aft-core.LogManager`:
 ```typescript
@@ -87,6 +96,8 @@ await logMgr.logResult({
  * following execution because expectation fails
  */
 await verify(() => (1 + 1)).returns(3) 
-.withTestId('C3190').and.withTestId('C2217763').and.withTestId('C3131')
+.withTestId('C3190')
+.and.withTestId('C2217763')
+.and.withTestId('C3131')
 .and.withDescription('expected to fail because 1+1 != 3');
 ```

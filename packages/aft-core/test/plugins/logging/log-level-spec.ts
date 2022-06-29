@@ -1,4 +1,4 @@
-import { LogLevel, LogManager, LogManagerOptions } from "../../../src";
+import { LogLevel } from "../../../src";
 
 const consoleLog = console.log;
 
@@ -11,40 +11,26 @@ describe('LogLevel', () => {
         console.log = consoleLog;
     });
 
-    it('can be extended', async () => {
-        const fancy: LogLevel = new LogLevel('fancy', 7);
-        const opts: LogManagerOptions = {
-            logName: 'LogLevel can be extended',
-            pluginNames: [],
-            level: 'trace'
-        };
-        const logMgr: LogManager = new LogManager(opts);
-        const consoleSpy = spyOn(console, 'log').and.callThrough();
-
-        await logMgr.log(fancy, 'fancy message');
-
-        expect(consoleSpy).toHaveBeenCalledTimes(1);
-    });
-
     const testData = [
-        {in: 'trace', ex: LogLevel.trace},
-        {in: 'debug', ex: LogLevel.debug},
-        {in: 'info', ex: LogLevel.info},
-        {in: 'step', ex: LogLevel.step},
-        {in: 'warn', ex: LogLevel.warn},
-        {in: 'pass', ex: LogLevel.pass},
-        {in: 'fail', ex: LogLevel.fail},
-        {in: 'error', ex: LogLevel.error},
-        {in: 'none', ex: LogLevel.none}
+        {in: 'trace', val: 0, is: true},
+        {in: 'debug', val: 1, is: true},
+        {in: 'info', val: 2, is: true},
+        {in: 'step', val: 3, is: true},
+        {in: 'warn', val: 4, is: true},
+        {in: 'pass', val: 5, is: true},
+        {in: 'fail', val: 6, is: true},
+        {in: 'error', val: 7, is: true},
+        {in: 'none', val: 8, is: true},
+        {in: 'foo', val: 8, is: false},
+        {in: null, val: 8, is: false}
     ];
     for (var i=0; i<testData.length; i++) {
         let data = testData[i];
-        it(`can parse expected string: ${data.in}`, () => {
-            const actual: LogLevel = LogLevel.parse(data.in);
+        it(`can parse string into LogLevel: ${data.in}`, () => {
+            const actual: number = LogLevel.toValue(data.in);
 
-            expect(actual.logString).withContext('logString').toEqual(data.ex.logString);
-            expect(actual.name).withContext('name').toEqual(data.ex.name);
-            expect(actual.value).withContext('value').toEqual(data.ex.value);
+            expect(actual).withContext('number').toEqual(data.val);
+            expect(LogLevel.isType(data.in)).withContext('isType').toBe(data.is);
         });
     }
 });
