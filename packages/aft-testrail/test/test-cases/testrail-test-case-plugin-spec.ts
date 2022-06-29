@@ -23,7 +23,7 @@ describe('TestRailTestCasePlugin', () => {
                 planid: 1234
             })
         };
-        opts.api = new TestRailApi(opts.config);
+        opts.api = new TestRailApi({config: opts.config});
         let expected: TestRailTest = {
             id: 1,
             case_id: 1234,
@@ -54,7 +54,7 @@ describe('TestRailTestCasePlugin', () => {
                 suiteids: [12, 15]
             })
         };
-        opts.api = new TestRailApi(opts.config);
+        opts.api = new TestRailApi({config: opts.config});
         let expected: TestRailCase = {
             id: 1234,
             priority_id: 2,

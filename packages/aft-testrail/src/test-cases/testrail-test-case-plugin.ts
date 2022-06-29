@@ -29,7 +29,7 @@ export class TestRailTestCasePlugin extends TestCasePlugin<TestRailTestCasePlugi
 
     get api(): TestRailApi {
         if (!this._api) {
-            this._api = this.option('api') || new TestRailApi(this.config);
+            this._api = this.option('api') || new TestRailApi({config: this.config});
         }
         return this._api;
     }

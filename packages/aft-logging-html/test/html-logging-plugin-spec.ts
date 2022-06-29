@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { LoggingPlugin, LogManager, rand, TestResult, LogManagerOptions } from "aft-core";
+import { LogManager, rand, TestResult, LogManagerOptions } from "aft-core";
 import { HtmlLoggingPlugin, HtmlLoggingPluginOptions } from "../src";
 import { HtmlResult } from "../src/html-result";
 
@@ -23,7 +23,7 @@ describe('HtmlLoggingPlugin', () => {
             await plugin.log({level: 'info', message: rand.getString(100), name: logName});
         }
 
-        let actual: string[] = plugin.logs;
+        let actual: string[] = plugin.logs(logName);
         expect(actual.length).toBe(14);
     });
 
@@ -38,13 +38,13 @@ describe('HtmlLoggingPlugin', () => {
             await plugin.log({level: 'info', message: rand.getString(100), name: logName});
         }
 
-        let actual: string[] = plugin.logs;
+        let actual: string[] = plugin.logs(logName);
         expect(actual.length).toBe(3);
         expect(actual[0]).not.toContain('...');
 
         await plugin.log({level: 'info', message: rand.getString(100), name: logName});
 
-        actual = plugin.logs;
+        actual = plugin.logs(logName);
         expect(actual.length).toBe(3);
         expect(actual[0]).toContain('...');
     });
@@ -66,7 +66,7 @@ describe('HtmlLoggingPlugin', () => {
         await plugin.log({level: 'fail', message: 'level fail', name: logName});
         await plugin.log({level: 'error', message: 'level error', name: logName});
 
-        let actual: string[] = plugin.logs;
+        let actual: string[] = plugin.logs(logName);
         expect(actual.length).toBe(5);
         expect(actual).not.toContain('level none');
         expect(actual).not.toContain('level trace');

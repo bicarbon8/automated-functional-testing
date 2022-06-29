@@ -11,14 +11,14 @@ export type HtmlLoggingPluginOptions = Merge<LoggingPluginOptions, {
 }>;
 
 export class HtmlLoggingPlugin extends LoggingPlugin<HtmlLoggingPluginOptions> {
-    private readonly _logs: string[];
-    private readonly _testResults: HtmlTestResult[];
+    private readonly _logs: Map<string, Array<string>>;
+    private readonly _testResults: Map<string, Array<HtmlTestResult>>;
     private readonly _fsMap: FileSystemMap<string, HtmlResult>;
     
     constructor(options?: HtmlLoggingPluginOptions) {
         super(options);
-        this._logs = [];
-        this._testResults = [];
+        this._logs = new Map<string, Array<string>>();
+        this._testResults = new Map<string, Array<HtmlTestResult>>();
         this._fsMap = new FileSystemMap<string, HtmlResult>('htmlSharedResults');
     }
 
@@ -50,15 +50,37 @@ export class HtmlLoggingPlugin extends LoggingPlugin<HtmlLoggingPluginOptions> {
         return this.option('maxLogLines', 5);
     }
 
+    logs(key: string, val?: Array<string>): Array<string> {
+        if (!this._logs.has(key)) {
+            this._logs.set(key, new Array<string>());
+        }
+        if (val) {
+            this._logs.set(key, val);
+        }
+        return this._logs.get(key);
+    }
+
+    testResults(key: string, val?: Array<HtmlTestResult>): Array<HtmlTestResult> {
+        if (!this._testResults.has(key)) {
+            this._testResults.set(key, new Array<HtmlTestResult>());
+        }
+        if (val) {
+            this._testResults.set(key, val);
+        }
+        return this._testResults.get(key);
+    }
+
     override async log(data: LogMessageData): Promise<void> {
         let expectedLevel: LogLevel = this.level;
         if (LogLevel.toValue(data.level) >= LogLevel.toValue(expectedLevel) && data.level != 'none') {
-            this._logs.push(`${data.level} - ${data.message}`);
+            const logs = this.logs(data.name);
+            logs.push(`${data.level} - ${data.message}`);
             let max: number = this.maxLogLines;
-            while (this._logs.length > max) {
-                this._logs.shift();
-                this._logs[0] = `...<br />${this._logs[0]}`;
+            while (logs.length > max) {
+                logs.shift();
+                logs[0] = `...<br />${logs[0]}`;
             }
+            this.logs(data.name, logs);
         }
     }
 
@@ -66,23 +88,23 @@ export class HtmlLoggingPlugin extends LoggingPlugin<HtmlLoggingPluginOptions> {
         let htmlTestResult: HtmlTestResult = {
             testId: result.testId,
             status: result.status,
-            logs: this.logs
+            logs: this.logs(logName)
         }
-        this._testResults.push(htmlTestResult);
-    }
-
-    get logs(): string[] {
-        return this._logs;
+        const testResults = this.testResults(logName);
+        testResults.push(htmlTestResult);
+        this.testResults(logName, testResults);
     }
 
     override async dispose(logName: string, error?: Error): Promise<void> {
         const result: HtmlResult = {
             description: logName,
-            tests: this._testResults
+            tests: this.testResults(logName)
         };
         this._updateSharedCache(result);
         const results: HtmlResult[] = this._readFromSharedCache();
         await this._regenerateHtmlFile(results);
+        this._logs.delete(logName);
+        this._testResults.delete(logName);
     }
 
     private async _regenerateHtmlFile(results: HtmlResult[]): Promise<void> {

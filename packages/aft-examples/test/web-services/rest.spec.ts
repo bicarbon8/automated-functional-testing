@@ -12,7 +12,10 @@ describe('REST Request', () => {
             let response: HttpResponse;
             await verify(async (tw) => {            
                 await tw.logMgr.step('making request...');
-                response = await httpService.performRequest({url: 'https://reqres.in/api/users?page=2'});
+                response = await httpService.performRequest({
+                    url: 'https://reqres.in/api/users?page=2',
+                    logMgr: tw.logMgr
+                });
                 expect(response).to.exist;
                 await tw.logMgr.info('request completed and received status code: ' + response.statusCode);
                 return response.statusCode;
@@ -52,9 +55,9 @@ describe('REST Request', () => {
                 multipart: true,
                 url: 'https://httpbin.org/post',
                 postData: formData,
-                method: 'POST'
+                method: 'POST',
+                logMgr: tw.logMgr
             });
-            await tw.logMgr.info(`received response of ${resp.data}`);
             expect(resp).to.not.be.undefined;
             return resp.data;
         }).withDescription('can make a multipart post')

@@ -37,13 +37,38 @@ describe('TestRailLoggingPlugin', () => {
             })
         };
         let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(opts);
-        let getLogsSpy = spyOn<any>(plugin, '_getLogs').and.callThrough();
 
         let expected: string = rand.getString(250, true, true);
-        await plugin.log({level: 'info', message: expected, name: 'keeps the last 250 characters logged'});
+        const logName = 'keeps the last 250 characters logged';
+        await plugin.log({level: 'info', message: expected, name: logName});
 
-        let actual: string = getLogsSpy.call(plugin);
+        let actual: string = plugin.logs(logName);
         expect(actual).toEqual(expected);
+    });
+
+    it('removes logs for a given logName on call to dispose', async () => {
+        const opts: TestRailLoggingPluginOptions = {
+            level: 'info',
+            maxLogCharacters: 250,
+            config: new TestRailConfig({
+                url: 'https://127.0.0.1/', 
+                user: 'fake@fake.fake', 
+                accesskey: 'fake-key'
+            })
+        };
+        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(opts);
+
+        let expected: string = rand.getString(250, true, true);
+        const logName = rand.getString(15);
+        
+        await plugin.log({level: 'info', message: expected, name: logName});
+
+        let actual: string = plugin.logs(logName);
+        expect(actual).toEqual(expected);
+
+        await plugin.dispose(logName);
+        actual = plugin.logs(logName);
+        expect(actual).toEqual('');
     });
 
     it('logging over 250 characters is ellided from beginning of string', async () => {
@@ -57,8 +82,6 @@ describe('TestRailLoggingPlugin', () => {
             })
         };
         let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(opts);
-        let getLogsSpy = spyOn<any>(plugin, '_getLogs').and.callThrough();
-        
         let notExpected: string = rand.getString(200, true, true);
         let expected: string = rand.getString(250, true, true);
         
@@ -66,7 +89,7 @@ describe('TestRailLoggingPlugin', () => {
         await plugin.log({level: 'info', message: notExpected, name: logName});
         await plugin.log({level: 'info', message: expected, name: logName});
 
-        let actual: string = getLogsSpy.call(plugin);
+        let actual: string = plugin.logs(logName);
         expect(actual).toEqual(ellide(`${notExpected}${expected}`, 250, 'beginning'));
     });
 
@@ -79,7 +102,7 @@ describe('TestRailLoggingPlugin', () => {
                 accesskey: 'fake-key'
             })
         };
-        opts.api = new TestRailApi(opts.config);
+        opts.api = new TestRailApi({config: opts.config});
         spyOn(opts.api, 'addResult').and.callFake(async (caseId: string, planId: number, request: TestRailResultRequest): Promise<TestRailResult[]> => {
             TestStore.caseId = caseId;
             TestStore.request = request;
@@ -114,7 +137,7 @@ describe('TestRailLoggingPlugin', () => {
                 suiteids: [12, 15]
             })
         };
-        opts.api = new TestRailApi(opts.config);
+        opts.api = new TestRailApi({config: opts.config});
         const planId: number = rand.getInt(1000, 10000);
         spyOn(opts.api, 'createPlan').and.callFake(async (projectId: number, suiteIds: number[], name?: string): Promise<TestRailPlan> => {
             return {id: planId};

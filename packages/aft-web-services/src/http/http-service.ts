@@ -11,7 +11,6 @@ export type HttpServiceOptions = {
     defaultAllowRedirect?: boolean;
     defaultPostData?: string;
     defaultMultipart?: boolean;
-    defaultLogMgr?: LogManager;
 };
 
 /**
@@ -50,7 +49,6 @@ export type HttpServiceOptions = {
 export class HttpService implements IHasConfig<HttpServiceOptions>, IHasOptions<HttpServiceOptions> {
     private _config: IConfigProvider<HttpServiceOptions>;
     private _opts: HttpServiceOptions;
-    private _logMgr: LogManager;
 
     constructor(options?: HttpServiceOptions) {
         options = options || {} as HttpServiceOptions;
@@ -67,14 +65,6 @@ export class HttpService implements IHasConfig<HttpServiceOptions>, IHasOptions<
             this._config = cfgmgr.get(this.constructor.name, this._opts);
         }
         return this._config.get(key, defaultVal);
-    }
-    
-    
-    async defaultLogMgr(): Promise<LogManager> {
-        if (!this._logMgr) {
-            this._logMgr = await this.config('defaultLogMgr') || new LogManager({logName: this.constructor.name});
-        }
-        return this._logMgr;
     }
 
     /**
@@ -135,7 +125,6 @@ export class HttpService implements IHasConfig<HttpServiceOptions>, IHasOptions<
         if (req.multipart === undefined) {
             req.multipart = await this.config('defaultMultipart', false);
         }
-        req.logMgr = req.logMgr || await this.defaultLogMgr();
         return req;
     }
 

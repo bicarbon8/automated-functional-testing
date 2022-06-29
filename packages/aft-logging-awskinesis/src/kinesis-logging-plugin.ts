@@ -16,6 +16,11 @@ export type KinesisLoggingPluginOptions = Merge<LoggingPluginOptions, {
     buildInfoMgr?: BuildInfoManager;
 }>;
 
+type CheckAndSendOptions = {
+    override?: boolean;
+    logName: string;
+};
+
 /**
  * NOTE: this plugin accepts the following options:
  * ```json
@@ -40,14 +45,14 @@ export type KinesisLoggingPluginOptions = Merge<LoggingPluginOptions, {
  * - Options: read from passed in `KinesisLoggingPluginOptions`
  */
 export class KinesisLoggingPlugin extends LoggingPlugin<KinesisLoggingPluginOptions> {
-    private readonly _logs: AWS.Firehose.Record[];
+    private readonly _logs: Map<string, AWS.Firehose.Record[]>;
     private readonly _buildInfoMgr: BuildInfoManager;
 
     private _client: AWS.Firehose;
     
     constructor(options?: KinesisLoggingPluginOptions) {
         super(options);
-        this._logs = [];
+        this._logs = new Map<string, AWS.Firehose.Record[]>();
         this._buildInfoMgr = this.option('buildInfoMgr', buildinfo);
         this._client = this.option('client'); // new client created if not passed in
     }
@@ -126,6 +131,16 @@ export class KinesisLoggingPlugin extends LoggingPlugin<KinesisLoggingPluginOpti
         return creds;
     }
 
+    logs(key: string, val?: AWS.Firehose.Record[]): AWS.Firehose.Record[] {
+        if (!this._logs.has(key)) {
+            this._logs.set(key, new Array<AWS.Firehose.Record>());
+        }
+        if (val) {
+            this._logs.set(key, val);
+        }
+        return this._logs.get(key);
+    }
+
     override async log(data: LogMessageData): Promise<void> {
         if (LogLevel.toValue(data.level) >= LogLevel.toValue(this.level) && data.level != 'none') {
             let record: AWS.Firehose.Record = this._createKinesisLogRecord({
@@ -136,8 +151,10 @@ export class KinesisLoggingPlugin extends LoggingPlugin<KinesisLoggingPluginOpti
                 buildName: await this._buildInfoMgr.buildName().catch((err) => 'unknown'),
                 machineInfo: machineInfo.data
             });
-            this._logs.push(record);
-            await this._checkAndSendLogs();
+            const logs = this.logs(data.name);
+            logs.push(record);
+            this.logs(data.name, logs);
+            await this._checkAndSendLogs({logName: data.name});
         }
     }
 
@@ -149,8 +166,10 @@ export class KinesisLoggingPlugin extends LoggingPlugin<KinesisLoggingPluginOpti
             buildName: await this._buildInfoMgr.buildName().catch((err) => 'unknown'),
             machineInfo: machineInfo.data
         });
-        this._logs.push(record);
-        await this._checkAndSendLogs();
+        const logs = this.logs(name);
+        logs.push(record);
+        this.logs(name, logs);
+        await this._checkAndSendLogs({logName: name});
     }
 
     override async dispose(name: string, error?: Error): Promise<void> {
@@ -158,7 +177,8 @@ export class KinesisLoggingPlugin extends LoggingPlugin<KinesisLoggingPluginOpti
             await this.log({name: name, level: 'error', message: TestException.short(error)});
         }
         // ensure all remaining logs are sent
-        await this._checkAndSendLogs({override: true});
+        await this._checkAndSendLogs({override: true, logName: name});
+        this._logs.delete(name);
     }
 
     private _createKinesisLogRecord(logRecord: KinesisLogRecord): AWS.Firehose.Record {
@@ -169,18 +189,20 @@ export class KinesisLoggingPlugin extends LoggingPlugin<KinesisLoggingPluginOpti
         return record;
     }
 
-    private async _checkAndSendLogs(override?: {override: boolean}): Promise<AWS.Firehose.PutRecordBatchOutput | AWS.Firehose.PutRecordOutput> {
+    private async _checkAndSendLogs(options: CheckAndSendOptions): Promise<AWS.Firehose.PutRecordBatchOutput | AWS.Firehose.PutRecordOutput> {
         const batch: boolean = this.batch;
         const batchSize: number = this.batchSize;
-        if (override?.override || !batch || this._logs.length >= batchSize) {
+        const logs = this.logs(options.logName);
+        if (options?.override || !batch || logs.length >= batchSize) {
             let data: AWS.Firehose.PutRecordBatchOutput | AWS.Firehose.PutRecordOutput;
             let deliveryStream: string = this.deliveryStream;
             if (batch) {
-                data = await this._sendBatch(deliveryStream, this._logs);
+                data = await this._sendBatch(deliveryStream, logs);
             } else {
-                data = await this._send(deliveryStream, this._logs[0]);
+                data = await this._send(deliveryStream, logs[0]);
             }
-            this._logs.splice(0, this._logs.length); // empties the array
+            logs.splice(0, logs.length); // empties the array
+            this.logs(options.logName, logs);
             return data;
         }
         return null;

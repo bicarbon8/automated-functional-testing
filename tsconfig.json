@@ -3,6 +3,7 @@
         { "path": "./packages/aft-core" },
         { "path": "./packages/aft-examples" },
         { "path": "./packages/aft-logging-awskinesis" },
+        { "path": "./packages/aft-logging-filesystem" },
         { "path": "./packages/aft-logging-html" },
         { "path": "./packages/aft-testrail" },
         { "path": "./packages/aft-ui" },

@@ -22,9 +22,10 @@ describe('KinesisLoggingPlugin', () => {
             /* do nothing */
         });
 
+        const logName = rand.getString(10);
         for (var i=0; i<20; i++) {
             let logMessage: string = rand.getString(99, true, true);
-            await plugin.log({level: 'warn', message: logMessage, name: rand.getString(10)});
+            await plugin.log({level: 'warn', message: logMessage, name: logName});
         }
 
         expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(20);
@@ -76,19 +77,22 @@ describe('KinesisLoggingPlugin', () => {
             /* do nothing */
         });
 
+        const logName = rand.getString(10);
         for (var i=0; i<9; i++) {
             let logMessage: string = rand.getString(99, true, true);
-            await plugin.log({level: 'warn', message: logMessage, name: rand.getString(10)});
+            await plugin.log({level: 'warn', message: logMessage, name: logName});
         }
 
         expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(9);
         expect(spySendBatch).toHaveBeenCalledTimes(0);
         expect(spySend).toHaveBeenCalledTimes(0);
 
-        await plugin.dispose(rand.getString(10));
+        await plugin.dispose(logName);
 
         expect(spySendBatch).toHaveBeenCalledTimes(1);
         expect(spySend).toHaveBeenCalledTimes(0);
+
+        expect(plugin.logs(logName).length).toBe(0);
     });
 
     it('only sends messages of the appropriate level', async () => {
