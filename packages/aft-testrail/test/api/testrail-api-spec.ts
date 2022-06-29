@@ -38,7 +38,7 @@ describe('TestRailApi', () => {
             accesskey: 'fake_key'
         };
         let config: TestRailConfig = new TestRailConfig(opts);
-        let api: TestRailApi = new TestRailApi(config);
+        let api: TestRailApi = new TestRailApi({config: config});
 
         try {
             await api.addResult('C1234', 1234, {});
@@ -74,7 +74,7 @@ describe('TestRailApi', () => {
             accesskey: 'fake_key'
         };
         let config: TestRailConfig = new TestRailConfig(opts);
-        let api: TestRailApi = new TestRailApi(config);
+        let api: TestRailApi = new TestRailApi({config: config});
         let plan: TestRailPlan = await api.getPlan(123);
 
         expect(plan).toBeDefined();
@@ -108,7 +108,7 @@ describe('TestRailApi', () => {
             accesskey: 'fake_key'
         };
         let config: TestRailConfig = new TestRailConfig(opts);
-        let api: TestRailApi = new TestRailApi(config);
+        let api: TestRailApi = new TestRailApi({config: config});
         let test: any = await api.getPlan(123);
 
         expect(test).not.toBeNull();
@@ -145,7 +145,7 @@ describe('TestRailApi', () => {
             accesskey: 'fake_key'
         };
         let config: TestRailConfig = new TestRailConfig(opts);
-        let api: TestRailApi = new TestRailApi(config);
+        let api: TestRailApi = new TestRailApi({config: config});
         let plan: TestRailPlan = await api.createPlan(1, [2, 3]);
 
         expect(plan).toBeDefined();

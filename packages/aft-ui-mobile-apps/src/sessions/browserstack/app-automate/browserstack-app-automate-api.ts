@@ -1,4 +1,4 @@
-import { convert, IHasOptions, optmgr } from "aft-core";
+import { convert, IHasOptions, LogManager, optmgr } from "aft-core";
 import { HttpResponse, httpService, httpData } from "aft-web-services";
 import * as fs from "fs";
 import * as FormData from "form-data";
@@ -6,12 +6,14 @@ import { browserstackconfig, BrowserStackConfig } from "../configuration/browser
 import { BrowserStackMobileApp, RecentGroupAppsResponse, SetSessionStatusRequest, UploadRequest, UploadResponse } from "./app-automate-api-custom-types";
 
 export type BrowserStackAppAutomateApiOptions = {
-    config: BrowserStackConfig;
+    config?: BrowserStackConfig;
+    logMgr?: LogManager;
 };
 
 export class BrowserStackAppAutomateApi implements IHasOptions<BrowserStackAppAutomateApiOptions> {
     private _options: BrowserStackAppAutomateApiOptions;
     private _config: BrowserStackConfig;
+    private _logMgr: LogManager;
     
     constructor(options?: BrowserStackAppAutomateApiOptions) {
         options = options || {} as BrowserStackAppAutomateApiOptions;
@@ -29,6 +31,13 @@ export class BrowserStackAppAutomateApi implements IHasOptions<BrowserStackAppAu
         }
         return this._config;
     }
+
+    get logMgr(): LogManager {
+        if (!this._logMgr) {
+            this._logMgr = this.option('logMgr') || new LogManager({logName: this.constructor.name});
+        }
+        return this._logMgr;
+    }
     
     async uploadApp(data: UploadRequest): Promise<UploadResponse> {
         const url = await this.config.appApiUrl();
@@ -45,7 +54,8 @@ export class BrowserStackAppAutomateApi implements IHasOptions<BrowserStackAppAu
             method: 'POST',
             headers: {"Authorization": await this._getAuthHeader()},
             multipart: true,
-            postData: formData
+            postData: formData,
+            logMgr: this._logMgr
         });
         if (bsResp && bsResp.statusCode == 200) {
             return httpData.as<UploadResponse>(bsResp);
@@ -58,7 +68,8 @@ export class BrowserStackAppAutomateApi implements IHasOptions<BrowserStackAppAu
         let bsResp: HttpResponse = await httpService.performRequest({
             url: `${url}recent_group_apps`,
             method: 'GET',
-            headers: {"Authorization": await this._getAuthHeader()}
+            headers: {"Authorization": await this._getAuthHeader()},
+            logMgr: this._logMgr
         });
         if (bsResp && bsResp.statusCode == 200) {
             return {apps: httpData.as<BrowserStackMobileApp[]>(bsResp)};
@@ -77,7 +88,8 @@ export class BrowserStackAppAutomateApi implements IHasOptions<BrowserStackAppAu
             method: 'PUT',
             headers: {"Authorization": await this._getAuthHeader()},
             url: `${url}${urlPath}`, 
-            postData: JSON.stringify(pdata)
+            postData: JSON.stringify(pdata),
+            logMgr: this._logMgr
         });
         if (resp.statusCode != 200) {
             return Promise.reject(resp.data);

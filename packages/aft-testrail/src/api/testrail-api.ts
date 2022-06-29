@@ -1,20 +1,38 @@
 import { httpData, HttpRequest, HttpResponse, httpService } from "aft-web-services";
-import { CacheMap, convert, JsonObject, wait } from "aft-core";
+import { CacheMap, convert, IHasOptions, JsonObject, optmgr, wait } from "aft-core";
 import { TestRailConfig, trconfig } from "../configuration/testrail-config";
 import { AddPlanRequest, ICanHaveError, TestRailCase, TestRailGetCasesResponse, TestRailGetTestsResponse, TestRailPlan, TestRailPlanEntry, TestRailResult, TestRailResultRequest, TestRailResultResponse, TestRailRun, TestRailTest } from "./testrail-custom-types";
 
-export class TestRailApi {
+export type TestRailApiOptions = {
+    config?: TestRailConfig;
+};
+
+export class TestRailApi implements IHasOptions<TestRailApiOptions> {
     private _cache: CacheMap<string, any>;
+    private _config: TestRailConfig;
+
+    private readonly _options: TestRailApiOptions;
     
-    private readonly _config: TestRailConfig;
-    
-    constructor(config?: TestRailConfig) {
-        this._config = config || trconfig;
+    constructor(options?: TestRailApiOptions) {
+        options = options || {} as TestRailApiOptions;
+        this._options = optmgr.process(options);
+    }
+
+    option<K extends keyof TestRailApiOptions, V extends TestRailApiOptions[K]>(key: K, defaultVal?: V): V {
+        const result: V = this._options[key] as V;
+        return (result === undefined) ? defaultVal : result;
+    }
+
+    get config(): TestRailConfig {
+        if (!this._config) {
+            this._config = this.option('config', trconfig);
+        }
+        return this._config;
     }
 
     async cache(): Promise<CacheMap<string, any>> {
         if (!this._cache) {
-            const duration: number = await trconfig.cacheDuration();
+            const duration: number = await this.config.cacheDuration();
             this._cache = new CacheMap<string, any>(duration, true, this.constructor.name);
         }
         return this._cache;
@@ -210,7 +228,7 @@ export class TestRailApi {
     }
 
     private async _getApiUrl(): Promise<string> {
-        let url = await this._config.url();
+        let url = await this.config.url();
         if (url && !url.endsWith('/')) {
             url += '/';
         }
@@ -246,8 +264,8 @@ export class TestRailApi {
     }
 
     private async _getAuth(): Promise<string> {
-        let username: string = await this._config.user();
-        let accessKey: string = await this._config.accessKey();
+        let username: string = await this.config.user();
+        let accessKey: string = await this.config.accessKey();
         return convert.toBase64Encoded(`${username}:${accessKey}`);
     }
 }

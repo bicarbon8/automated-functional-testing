@@ -35,7 +35,7 @@ export class BrowserStackMobileAppSessionGeneratorPlugin extends MobileAppSessio
 
     get api(): BrowserStackAppAutomateApi {
         if (!this._api) {
-            this._api = this.option('api') || new BrowserStackAppAutomateApi({config: this.config});
+            this._api = this.option('api') || new BrowserStackAppAutomateApi({config: this.config, logMgr: this.logMgr});
         }
         return this._api;
     }

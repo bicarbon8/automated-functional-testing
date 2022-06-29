@@ -23,13 +23,13 @@ export type TestRailLoggingPluginOptions = Merge<LoggingPluginOptions, {
  * ```
  */
 export class TestRailLoggingPlugin extends LoggingPlugin<TestRailLoggingPluginOptions> {
-    private _logs: string;
+    private _logs: Map<string, string>;
     private _trConfig: TestRailConfig;
     private _api: TestRailApi;
     
     constructor(options?: TestRailLoggingPluginOptions) {
         super(options);
-        this._logs = '';
+        this._logs = new Map<string, string>();
     }
 
     get config(): TestRailConfig {
@@ -41,7 +41,7 @@ export class TestRailLoggingPlugin extends LoggingPlugin<TestRailLoggingPluginOp
 
     get api(): TestRailApi {
         if (!this._api) {
-            this._api = this.option('api') || new TestRailApi(this.config);
+            this._api = this.option('api') || new TestRailApi({config: this.config});
         }
         return this._api;
     }
@@ -50,42 +50,51 @@ export class TestRailLoggingPlugin extends LoggingPlugin<TestRailLoggingPluginOp
         return this.option('maxLogCharacters', 250);
     }
 
+    logs(key: string, val?: string): string {
+        if (!this._logs.has(key)) {
+            this._logs.set(key, '');
+        }
+        if (val) {
+            this._logs.set(key, val);
+        }
+        return this._logs.get(key);
+    }
+
     override async log(data: LogMessageData): Promise<void> {
         if (LogLevel.toValue(data.level) >= LogLevel.toValue(this.level) && data.level != 'none') {
-            if (this._logs.length > 0) {
-                this._logs += '\n'; // separate new logs from previous
+            let logs = this.logs(data.name);
+            if (logs.length > 0) {
+                logs += '\n'; // separate new logs from previous
             }
-            this._logs += data.message;
-            this._logs = ellide(this._logs, this.maxLogCharacters, 'beginning');
+            logs += data.message;
+            logs = ellide(logs, this.maxLogCharacters, 'beginning');
+            this.logs(data.name, logs);
         }
     }
     
     override async logResult(logName: string, result: TestResult): Promise<void> {
         if (result) {
             await this._createTestPlanIfNone();
-            const trResult: TestRailResultRequest = await this._getTestRailResultForExternalResult(result);
+            const trResult: TestRailResultRequest = await this._getTestRailResultForExternalResult(logName, result);
             const planId = await this.config.planId();
             await this.api.addResult(result.testId, planId, trResult);
         }
     }
 
     override async dispose(logName: string, error?: Error): Promise<void> {
-        /* do nothing */
+        this._logs.delete(logName);
     }
 
-    private _getLogs(): string {
-        return this._logs;
-    }
-
-    private async _getTestRailResultForExternalResult(result: TestResult): Promise<TestRailResultRequest> {
+    private async _getTestRailResultForExternalResult(logName: string, result: TestResult): Promise<TestRailResultRequest> {
         let maxChars: number = this.maxLogCharacters;
         let elapsed: number = 0;
         if (result.metadata) {
             let millis: number = result.metadata['durationMs'] || 0;
             elapsed = Math.floor(millis / 60000); // elapsed is in minutes
         }
+        const logs = this.logs(logName);
         let trResult: TestRailResultRequest = {
-            comment: ellide(`${this._getLogs()}\n${result.resultMessage}`, maxChars, 'beginning'),
+            comment: ellide(`${logs}\n${result.resultMessage}`, maxChars, 'beginning'),
             defects: result.defects?.join(','),
             elapsed: elapsed.toString(),
             status_id: statusConverter.toTestRailStatus(result.status)

@@ -33,6 +33,35 @@ class FileIO {
     }
 
     /**
+     * function opens a `utf-8` encoded file (or creates if it doesn't already exist)
+     * and appends the passed in `data` string to it. if the `file` contains 
+     * directories and these directories do not already exist they will be created 
+     * and then the file will be created and appended to
+     * @param file the full path and filename to write to
+     * @param data the contents to append
+     */
+    append(file: string, data: string = ''): void {
+        let fd: number;
+        try {
+            fd = fs.openSync(file, 'a+');
+            fs.appendFileSync(fd, data, {encoding: 'utf-8'});
+            fs.fsyncSync(fd);
+        } catch (e) {
+            const p = path.dirname(file);
+            if (!fs.existsSync(p)) {
+                fs.mkdirSync(p, {recursive: true});
+                this.write(file, data);
+            } else {
+                throw e;
+            }
+        } finally {
+            if (fd) {
+                fs.closeSync(fd);
+            }
+        }
+    }
+
+    /**
      * attempts to parse the contents of a file into a simple JSON object
      * @param file the full path to an existing file
      * @returns the contents of the specified file parsed into a simple object
