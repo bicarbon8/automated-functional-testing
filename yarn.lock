@@ -1812,7 +1812,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aft-core@^8.0.0, aft-core@workspace:packages/aft-core":
+"aft-core@^8.1.0, aft-core@workspace:packages/aft-core":
   version: 0.0.0-use.local
   resolution: "aft-core@workspace:packages/aft-core"
   dependencies:
@@ -1841,12 +1841,12 @@ __metadata:
     "@types/mocha": ^8.2.2
     "@types/node": ^15.0.1
     "@types/selenium-webdriver": ^4.0.12
-    aft-logging-awskinesis: ^8.0.0
-    aft-logging-filesystem: ^1.0.0
-    aft-logging-html: ^8.0.0
-    aft-testrail: ^8.0.0
-    aft-ui-browsers: ^8.0.0
-    aft-ui-mobile-apps: ^8.0.0
+    aft-logging-awskinesis: ^8.1.0
+    aft-logging-filesystem: ^8.1.0
+    aft-logging-html: ^8.1.0
+    aft-testrail: ^8.1.0
+    aft-ui-browsers: ^8.1.0
+    aft-ui-mobile-apps: ^8.1.0
     chai: ^4.3.4
     mocha: ^8.3.2
     nyc: ^15.1.0
@@ -1856,14 +1856,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"aft-logging-awskinesis@^8.0.0, aft-logging-awskinesis@workspace:packages/aft-logging-awskinesis":
+"aft-logging-awskinesis@^8.1.0, aft-logging-awskinesis@workspace:packages/aft-logging-awskinesis":
   version: 0.0.0-use.local
   resolution: "aft-logging-awskinesis@workspace:packages/aft-logging-awskinesis"
   dependencies:
     "@aws-sdk/types": ^3.78.0
     "@types/jasmine": ^3.6.10
     "@types/node": ^15.0.1
-    aft-core: ^8.0.0
+    aft-core: ^8.1.0
     aws-sdk: ^2.1151.0
     jasmine: ^3.7.0
     jasmine-ts: ^0.4.0
@@ -1874,13 +1874,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"aft-logging-filesystem@^1.0.0, aft-logging-filesystem@workspace:packages/aft-logging-filesystem":
+"aft-logging-filesystem@^8.1.0, aft-logging-filesystem@workspace:packages/aft-logging-filesystem":
   version: 0.0.0-use.local
   resolution: "aft-logging-filesystem@workspace:packages/aft-logging-filesystem"
   dependencies:
     "@types/jasmine": ^4.0.3
     "@types/node": ^18.0.0
-    aft-core: ^8.0.0
+    aft-core: ^8.1.0
     date-and-time: ^2.4.0
     jasmine: ^3.7.0
     jasmine-ts: ^0.4.0
@@ -1891,13 +1891,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"aft-logging-html@^8.0.0, aft-logging-html@workspace:packages/aft-logging-html":
+"aft-logging-html@^8.1.0, aft-logging-html@workspace:packages/aft-logging-html":
   version: 0.0.0-use.local
   resolution: "aft-logging-html@workspace:packages/aft-logging-html"
   dependencies:
     "@types/jasmine": ^3.6.10
     "@types/node": ^15.0.1
-    aft-core: ^8.0.0
+    aft-core: ^8.1.0
     jasmine: ^3.7.0
     jasmine-ts: ^0.4.0
     nyc: ^15.1.0
@@ -1907,13 +1907,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"aft-testrail@^8.0.0, aft-testrail@workspace:packages/aft-testrail":
+"aft-testrail@^8.1.0, aft-testrail@workspace:packages/aft-testrail":
   version: 0.0.0-use.local
   resolution: "aft-testrail@workspace:packages/aft-testrail"
   dependencies:
     "@types/jasmine": ^3.6.10
     "@types/node": ^15.0.1
-    aft-web-services: ^8.0.0
+    aft-web-services: ^8.1.0
     jasmine: ^3.7.0
     jasmine-ts: ^0.4.0
     nyc: ^15.1.0
@@ -1923,14 +1923,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"aft-ui-browsers@^8.0.0, aft-ui-browsers@workspace:packages/aft-ui-browsers":
+"aft-ui-browsers@^8.1.0, aft-ui-browsers@workspace:packages/aft-ui-browsers":
   version: 0.0.0-use.local
   resolution: "aft-ui-browsers@workspace:packages/aft-ui-browsers"
   dependencies:
     "@types/jasmine": ^3.6.10
     "@types/node": ^15.0.1
     "@types/selenium-webdriver": ^4.0.12
-    aft-ui: ^8.0.0
+    aft-ui: ^8.1.0
     jasmine: ^3.7.0
     jasmine-ts: ^0.4.0
     nyc: ^15.1.0
@@ -1941,14 +1941,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"aft-ui-mobile-apps@^8.0.0, aft-ui-mobile-apps@workspace:packages/aft-ui-mobile-apps":
+"aft-ui-mobile-apps@^8.1.0, aft-ui-mobile-apps@workspace:packages/aft-ui-mobile-apps":
   version: 0.0.0-use.local
   resolution: "aft-ui-mobile-apps@workspace:packages/aft-ui-mobile-apps"
   dependencies:
     "@types/jasmine": ^3.6.10
     "@types/node": ^15.0.1
-    aft-ui: ^8.0.0
-    aft-web-services: ^8.0.0
+    aft-ui: ^8.1.0
+    aft-web-services: ^8.1.0
     jasmine: ^3.7.0
     jasmine-ts: ^0.4.0
     nyc: ^15.1.0
@@ -1959,13 +1959,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"aft-ui@^8.0.0, aft-ui@workspace:packages/aft-ui":
+"aft-ui@^8.1.0, aft-ui@workspace:packages/aft-ui":
   version: 0.0.0-use.local
   resolution: "aft-ui@workspace:packages/aft-ui"
   dependencies:
     "@types/jasmine": ^3.6.10
     "@types/node": ^15.0.1
-    aft-core: ^8.0.0
+    aft-core: ^8.1.0
     jasmine: ^3.7.0
     jasmine-ts: ^0.4.0
     nyc: ^15.1.0
@@ -1975,14 +1975,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"aft-web-services@^8.0.0, aft-web-services@workspace:packages/aft-web-services":
+"aft-web-services@^8.1.0, aft-web-services@workspace:packages/aft-web-services":
   version: 0.0.0-use.local
   resolution: "aft-web-services@workspace:packages/aft-web-services"
   dependencies:
     "@types/jasmine": ^3.6.10
     "@types/node": ^15.0.1
     "@types/xmldom": ^0.1.30
-    aft-core: ^8.0.0
+    aft-core: ^8.1.0
     form-data: ^4.0.0
     jasmine: ^3.7.0
     jasmine-ts: ^0.4.0
