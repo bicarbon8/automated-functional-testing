@@ -26,7 +26,7 @@ describe('BrowserFacet', () => {
             'getSession': Promise.resolve(sesh)
         });
         spyOn(driver, 'findElements').and.returnValues(Promise.reject('no element'), Promise.resolve([element]));
-        let session: BrowserSession = new BrowserSession({
+        let session: BrowserSession<any> = new BrowserSession<any>({
             driver: driver, 
             logMgr: new LogManager({logName: 'can auto-refresh from WebDriver on Error in getRoot'})
         });

@@ -60,46 +60,41 @@ await verifyWithMobileApp(async (mav: MobileAppVerifier) => {
 ```
 {
     "MobileAppSessionGeneratorManager": {
-        "plugins": [
-            {
-                "name": "browserstack-mobile-app-session-generator-plugin",
-                "options": {
-                    "uiplatform": "android_11_+_+_Google Pixel 5",
-                    "app": "bs://some-identifier-for-your-uploaded-app"
-                }
-            }, {
-                "name": "sauce-labs-mobile-app-session-generator-plugin",
-                "options": {
-                    "uiplatform": "android_10_+_+_Samsung Galaxy S7",
-                    "url": "http://127.0.0.1:4444/wd/hub",
-                    "remoteOptions": {
-                        "capabilities": {
-                            "your-custom-key": "your-custom-value"
-                        }
-                    }
-                }
-            }, {
-                "name": "appium-grid-session-generator-plugin",
-                "options": {
-                    "app": "sauce-storage:your-mobile-app.zip",
-                    "enabled": false
-                }
+        "uiplatform": "android_11_+_+_Google Pixel 5",
+        "plugins": [{
+            "name": "browserstack-mobile-app-session-generator-plugin",
+            "searchDirectory": "../node_modules",
+            "options": {
+                "app": "bs://some-identifier-for-your-uploaded-app",
+                "user": "%browserstack_user%",
+                "key": "%browserstack_key%",
+                "debug": true,
+                "local": false,
+                "localIdentifier": "abcdefg"
             }
-        ],
-        "searchDir": "../"
-    },
-    "BrowserStackConfig": {
-        "user": "%browserstack_user%",
-        "key": "%browserstack_key%",
-        "debug": true,
-        "local": false,
-        "localIdentifier": "abcdefg"
-    },
-    "SauceLabsConfig": {
-        "username": "%saucelabs_username%",
-        "accessKey": "%saucelabs_accesskey%",
-        "tunnel": false,
-        "tunnelId": "abcdefgh"
+        }, {
+            "name": "sauce-labs-mobile-app-session-generator-plugin",
+            "searchDirectory": "../node_modules",
+            "options": {
+                "uiplatform": "android_10_+_+_Samsung Galaxy S7",
+                "remoteOptions": {
+                    "capabilities": {
+                        "your-custom-key": "your-custom-value"
+                    }
+                },
+                "username": "%saucelabs_username%",
+                "accessKey": "%saucelabs_accesskey%",
+                "tunnel": false,
+                "tunnelIdentifier": "abcdefgh"
+            }
+        }, {
+            "name": "appium-grid-session-generator-plugin",
+            "options": {
+                "url": "http://127.0.0.1:4444/wd/hub",
+                "app": "sauce-storage:your-mobile-app.zip",
+                "enabled": false
+            }
+        }]
     }
 }
 ```
@@ -119,6 +114,6 @@ await verifyWithMobileApp(async (mav: MobileAppVerifier) => {
 - `sauce-labs-mobile-app-session-generator-plugin` | `browserstack-mobile-app-session-generator-plugin` | `appium-grid-session-generator-plugin`
   - **options**
     - **app** - [REQUIRED] the path to your mobile application (.apk or .ipa) used when uploaded to Sauce Labs
-    - **uiplatform** - a `TestPlatform` string like `android_11_+_+_Google Pixel 5` specifying the OS, OS Version and Device to use
+    - **uiplatform** - a `TestPlatform` string like `android_11_+_+_Google Pixel 5` specifying the OS, OS Version and Device to use _(defaults to value set in `MobileAppSessionGenerator.uiplatform`)_
     - **url** - an alternative url for Sauce Labs' grid hub _(only required when using the Appium Grid Plugin)_
     - **remoteOptions** - an `object` containing keys and values to be used when creating your Sauce Labs MobileApp Session. this can be used to override default RemoteOptions.capabilities or to add additional ones _(defaults to none)_

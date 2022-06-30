@@ -9,7 +9,7 @@ export type WebElementOptions = Merge<UiElementOptions, {
 
 export type BrowserFacetOptions = Merge<UiFacetOptions, {
     locator?: Locator;
-    session?: BrowserSession;
+    session?: BrowserSession<any>;
     parent?: BrowserFacet;
 }>;
 
@@ -18,8 +18,8 @@ export class BrowserFacet extends UiFacet<BrowserFacetOptions> {
         return super.locator as Locator;
     }
     
-    override get session(): BrowserSession {
-        return super.session as BrowserSession;
+    override get session(): BrowserSession<any> {
+        return super.session as BrowserSession<any>;
     }
     
     override get parent(): BrowserFacet {

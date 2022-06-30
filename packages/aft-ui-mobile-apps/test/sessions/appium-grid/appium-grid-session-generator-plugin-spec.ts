@@ -14,7 +14,7 @@ describe('AppiumGridSessionGeneratorPlugin', () => {
         let plugin: AppiumGridSessionGeneratorPlugin = new AppiumGridSessionGeneratorPlugin({
             uiplatform: platform.toString()
         });
-        let remOpts: RemoteOptions = await plugin.getRemoteOptions();
+        let remOpts: RemoteOptions = await plugin.generateRemoteOptions();
 
         expect(remOpts.capabilities['platform']).toEqual(`${platform.os} ${platform.osVersion}`);
         expect(remOpts.capabilities['browserName']).not.toBeDefined();

@@ -43,7 +43,7 @@ export class UiPlatform {
         let browser: string;
         let browserVer: string;
         let devName: string;
-
+        
         if (input) {
             let parts: string[] = input.split('_');
             if (parts.length > 0) {

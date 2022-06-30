@@ -11,9 +11,10 @@ export type MobileAppSessionGeneratorPluginOptions = Merge<UiSessionGeneratorPlu
 export abstract class MobileAppSessionGeneratorPlugin<T extends MobileAppSessionGeneratorPluginOptions> extends UiSessionGeneratorPlugin<T> {
     private _app: string;
 
-    async getRemoteOptions(options?: MobileAppSessionOptions): Promise<RemoteOptions> {
+    async generateRemoteOptions(options?: MobileAppSessionOptions): Promise<RemoteOptions> {
+        options = options || {};
         let remOpts: RemoteOptions = this.option('remoteOptions', {}) as RemoteOptions;
-        if (options?.remoteOptions) {
+        if (options.remoteOptions) {
             remOpts = {...remOpts, ...options.remoteOptions}
         }
         let app: string = options?.app || this.app;
@@ -31,19 +32,18 @@ export abstract class MobileAppSessionGeneratorPlugin<T extends MobileAppSession
         return this._app;
     }
 
-    abstract override newUiSession(options?: MobileAppSessionOptions): Promise<MobileAppSession>;
+    abstract override newUiSession(options?: MobileAppSessionOptions): Promise<MobileAppSession<any>>;
     
-    async createDriver(options?: MobileAppSessionOptions): Promise<Browser<'async'>> {
-        if (!options?.driver) {
+    async createDriver(remoteOptions: RemoteOptions): Promise<Browser<'async'>> {
+        if (remoteOptions) {
             try {
-                let remOpts: RemoteOptions = await this.getRemoteOptions(options);
-                let driver: Browser<'async'> = await remote(remOpts);
+                let driver: Browser<'async'> = await remote(remoteOptions);
                 return driver;
             } catch (e) {
                 return Promise.reject(e);
             }
         }
-        return options?.driver;
+        return null;
     }
 
     abstract sendCommand(command: string, data?: any): Promise<any>;

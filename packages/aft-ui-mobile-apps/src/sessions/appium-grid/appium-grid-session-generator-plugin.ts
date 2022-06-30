@@ -6,18 +6,20 @@ import { RemoteOptions } from "webdriverio";
 export type AppiumGridSessionGeneratorPluginOptions = MobileAppSessionGeneratorPluginOptions;
 
 export class AppiumGridSessionGeneratorPlugin extends MobileAppSessionGeneratorPlugin<AppiumGridSessionGeneratorPluginOptions> {
-    override async newUiSession(options?: MobileAppSessionOptions): Promise<MobileAppSession> {
+    override async newUiSession(options?: MobileAppSessionOptions): Promise<MobileAppSession<any>> {
+        const remopts = await this.generateRemoteOptions(options);
+        options.driver = options.driver || await this.createDriver(remopts);
+        return new MobileAppSession<any>(options);
+    }
+    override async generateRemoteOptions(options?: MobileAppSessionOptions): Promise<RemoteOptions> {
         options = options || {};
         options.logMgr = options.logMgr || this.logMgr;
         options.uiplatform = options.uiplatform || this.uiplatform.toString();
         options.app = options.app || this.app;
-        options.driver = options.driver || await this.createDriver(options);
-        return new MobileAppSession(options);
-    }
-    override async getRemoteOptions(options?: MobileAppSessionOptions): Promise<RemoteOptions> {
-        let remOpts: RemoteOptions = await super.getRemoteOptions(options);
+
+        let remOpts: RemoteOptions = await super.generateRemoteOptions(options);
         remOpts.capabilities = {};
-        let platform: UiPlatform = (options?.uiplatform) ? UiPlatform.parse(options.uiplatform) : this.uiplatform;
+        let platform: UiPlatform = UiPlatform.parse(options.uiplatform);
         let osVersion = '';
         if (platform.osVersion) {
             osVersion = ' ' + platform.osVersion;

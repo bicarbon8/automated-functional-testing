@@ -1,10 +1,11 @@
 import { WebDriver, Builder, Capabilities } from "selenium-webdriver";
-import { UiPlatform, UiSessionGeneratorPlugin, UiSessionGeneratorPluginOptions } from "aft-ui";
+import { UiSessionGeneratorPlugin, UiSessionGeneratorPluginOptions } from "aft-ui";
 import { BrowserSessionOptions } from "./browser-session";
 import { Merge } from "aft-core";
 
 export type BrowserSessionGeneratorPluginOptions = Merge<UiSessionGeneratorPluginOptions, {
     url?: string;
+    resolution?: string;
     additionalCapabilities?: object;
     implicitTimeout?: number;
 }>;
@@ -25,16 +26,21 @@ export type BrowserSessionGeneratorPluginOptions = Merge<UiSessionGeneratorPlugi
  */
 export abstract class BrowserSessionGeneratorPlugin<T extends BrowserSessionGeneratorPluginOptions> extends UiSessionGeneratorPlugin<T> {
     private _url: string;
+    private _resolution: string;
     private _caps: object;
     private _timeout: number;
-
-    abstract getCapabilities(options?: BrowserSessionOptions): Promise<Capabilities>;
 
     get url(): string {
         if (!this._url) {
             this._url = this.option('url');
         }
         return this._url;
+    }
+    get resolution(): string {
+        if (!this._resolution) {
+            this._resolution = this.option('resolution');
+        }
+        return this._resolution;
     }
     get additionalCapabilities(): object {
         if (!this._caps) {
@@ -48,13 +54,21 @@ export abstract class BrowserSessionGeneratorPlugin<T extends BrowserSessionGene
         }
         return this._timeout;
     }
-    protected async createDriver(options?: BrowserSessionOptions): Promise<WebDriver> {
-        if (!options?.driver) {
+
+    abstract generateCapabilities(options?: BrowserSessionOptions): Promise<Capabilities>;
+    
+    /**
+     * expected to be called from within `BrowserSessionGeneratorPlugin` implementations
+     * after configuring their own `Capabilties` within their `newUiSession` function
+     * @param capabilities capabilities to pass to the Remote WebDriver Builder
+     * @returns a new `WebDriver` instance
+     */
+    protected async createDriver(capabilities: Capabilities): Promise<WebDriver> {
+        if (capabilities) {
             try {
-                const caps: Capabilities = await this.getCapabilities(options);
                 const driver: WebDriver = await new Builder()
                     .usingServer(this.url)
-                    .withCapabilities(caps)
+                    .withCapabilities(capabilities)
                     .build();
                 await driver.manage().setTimeouts({implicit: this.implicitTimeout});
                 await driver.manage().window().maximize();
@@ -63,6 +77,6 @@ export abstract class BrowserSessionGeneratorPlugin<T extends BrowserSessionGene
                 return Promise.reject(e);
             }
         }
-        return options?.driver;
+        return null;
     }
 }

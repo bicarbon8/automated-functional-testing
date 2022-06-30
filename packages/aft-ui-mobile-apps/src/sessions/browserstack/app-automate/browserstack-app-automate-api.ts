@@ -2,17 +2,20 @@ import { convert, IHasOptions, LogManager, optmgr } from "aft-core";
 import { HttpResponse, httpService, httpData } from "aft-web-services";
 import * as fs from "fs";
 import * as FormData from "form-data";
-import { browserstackconfig, BrowserStackConfig } from "../configuration/browserstack-config";
 import { BrowserStackMobileApp, RecentGroupAppsResponse, SetSessionStatusRequest, UploadRequest, UploadResponse } from "./app-automate-api-custom-types";
 
 export type BrowserStackAppAutomateApiOptions = {
-    config?: BrowserStackConfig;
+    apiUrl?: string;
+    user?: string;
+    key?: string;
     logMgr?: LogManager;
 };
 
 export class BrowserStackAppAutomateApi implements IHasOptions<BrowserStackAppAutomateApiOptions> {
     private _options: BrowserStackAppAutomateApiOptions;
-    private _config: BrowserStackConfig;
+    private _apiUrl: string;
+    private _user: string;
+    private _key: string;
     private _logMgr: LogManager;
     
     constructor(options?: BrowserStackAppAutomateApiOptions) {
@@ -25,11 +28,25 @@ export class BrowserStackAppAutomateApi implements IHasOptions<BrowserStackAppAu
         return (response === undefined) ? defaultVal : response;
     }
 
-    get config(): BrowserStackConfig {
-        if (!this._config) {
-            this._config = this.option('config', browserstackconfig);
+    get apiUrl(): string {
+        if (!this._apiUrl) {
+            this._apiUrl = this.option('apiUrl', 'https://api.browserstack.com/app-automate/');
         }
-        return this._config;
+        return this._apiUrl;
+    }
+
+    get user(): string {
+        if (!this._user) {
+            this._user = this.option('user');
+        }
+        return this._user;
+    }
+
+    get key(): string {
+        if (!this._key) {
+            this._key = this.option('key');
+        }
+        return this._key;
     }
 
     get logMgr(): LogManager {
@@ -40,7 +57,7 @@ export class BrowserStackAppAutomateApi implements IHasOptions<BrowserStackAppAu
     }
     
     async uploadApp(data: UploadRequest): Promise<UploadResponse> {
-        const url = await this.config.appApiUrl();
+        const url = this.apiUrl;
         if(!fs.existsSync(data.file)) {
             return Promise.reject(`file could not be found at: ${data.file}`);
         }
@@ -64,7 +81,7 @@ export class BrowserStackAppAutomateApi implements IHasOptions<BrowserStackAppAu
     }
 
     async getApps(): Promise<RecentGroupAppsResponse> {
-        const url = await this.config.appApiUrl();
+        const url = this.apiUrl;
         let bsResp: HttpResponse = await httpService.performRequest({
             url: `${url}recent_group_apps`,
             method: 'GET',
@@ -78,7 +95,7 @@ export class BrowserStackAppAutomateApi implements IHasOptions<BrowserStackAppAu
     }
 
     async setSessionStatus(data: SetSessionStatusRequest): Promise<void> {
-        const url = await this.config.appApiUrl();
+        const url = this.apiUrl;
         let urlPath: string = `sessions/${data.sessionId}.json`;
         let pdata: {} = {
             status: data.status,
@@ -97,8 +114,6 @@ export class BrowserStackAppAutomateApi implements IHasOptions<BrowserStackAppAu
     }
 
     private async _getAuthHeader(): Promise<string> {
-        let user: string = await this.config.user();
-        let key: string = await this.config.key();
-        return `Basic ${convert.toBase64Encoded(`${user}:${key}`)}`;
+        return `Basic ${convert.toBase64Encoded(`${this.user}:${this.key}`)}`;
     }
 }

@@ -6,8 +6,8 @@ import { BrowserSessionGeneratorManager } from "../../src/sessions/browser-sessi
 describe('BrowserVerifier', () => {
     it('can create a BrowserSession', async () => {
         let sessionMgr: BrowserSessionGeneratorManager = new BrowserSessionGeneratorManager();
-        spyOn(sessionMgr, 'newUiSession').and.callFake((options?: BrowserSessionOptions): Promise<BrowserSession> => {
-            return Promise.resolve(new BrowserSession(options));
+        spyOn(sessionMgr, 'newUiSession').and.callFake((options?: BrowserSessionOptions): Promise<BrowserSession<any>> => {
+            return Promise.resolve(new BrowserSession<any>(options));
         });
 
         await verifyWithBrowser(async (bv: BrowserVerifier) => {
@@ -20,9 +20,9 @@ describe('BrowserVerifier', () => {
 
     it('can create a BrowserSession using specific BrowserSessionOptions', async () => {
         let sessionMgr: BrowserSessionGeneratorManager = new BrowserSessionGeneratorManager();
-        spyOn(sessionMgr, 'newUiSession').and.callFake((options?: BrowserSessionOptions): Promise<BrowserSession> => {
+        spyOn(sessionMgr, 'newUiSession').and.callFake((options?: BrowserSessionOptions): Promise<BrowserSession<any>> => {
             expect(options.uiplatform).toEqual('windows_8.1_firefox');
-            return Promise.resolve(new BrowserSession(options));
+            return Promise.resolve(new BrowserSession<any>(options));
         });
 
         await verifyWithBrowser((bv: BrowserVerifier) => {
@@ -38,8 +38,8 @@ describe('BrowserVerifier', () => {
 
     it('disposes of BrowserSession on completion', async () => {
         let sessionMgr: BrowserSessionGeneratorManager = new BrowserSessionGeneratorManager();
-        spyOn(sessionMgr, 'newUiSession').and.callFake((options?: BrowserSessionOptions): Promise<BrowserSession> => {
-            return Promise.resolve(new BrowserSession(options));
+        spyOn(sessionMgr, 'newUiSession').and.callFake((options?: BrowserSessionOptions): Promise<BrowserSession<any>> => {
+            return Promise.resolve(new BrowserSession<any>(options));
         });
         let sesh: Session = jasmine.createSpyObj('Session', {
             'getId': rand.guid
@@ -60,8 +60,8 @@ describe('BrowserVerifier', () => {
 
     it('no BrowserSession is created if assertion should not be run', async () => {
         let sessionMgr: BrowserSessionGeneratorManager = new BrowserSessionGeneratorManager();
-        spyOn(sessionMgr, 'newUiSession').and.callFake((options?: BrowserSessionOptions): Promise<BrowserSession> => {
-            return Promise.resolve(new BrowserSession(options));
+        spyOn(sessionMgr, 'newUiSession').and.callFake((options?: BrowserSessionOptions): Promise<BrowserSession<any>> => {
+            return Promise.resolve(new BrowserSession<any>(options));
         });
         let tcMgr: TestCaseManager = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string) => Promise.resolve(false));

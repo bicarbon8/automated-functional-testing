@@ -5,16 +5,16 @@ import { By, Capabilities } from "selenium-webdriver";
 
 describe('SeleniumGridSessionGeneratorPlugin', () => {
     it('can generate capabilities from the passed in options', async () => {
-        let platform: UiPlatform = new UiPlatform({
+        const platform: UiPlatform = new UiPlatform({
             os: 'os-' + rand.getString(10),
             osVersion: 'osVersion-' + rand.getString(2, false, true),
             browser: 'browser-' + rand.getString(15),
             browserVersion: 'browserVersion-' + rand.getString(2, false, true)
         });
-        let plugin: SeleniumGridSessionGeneratorPlugin = new SeleniumGridSessionGeneratorPlugin({
+        const plugin: SeleniumGridSessionGeneratorPlugin = new SeleniumGridSessionGeneratorPlugin({
             uiplatform: platform.toString()
         });
-        let capabilities: Capabilities = await plugin.getCapabilities();
+        const capabilities: Capabilities = await plugin.generateCapabilities();
 
         expect(capabilities.get('platform')).toEqual(`${platform.os} ${platform.osVersion}`);
         expect(capabilities.get('browserName')).toEqual(`${platform.browser} ${platform.browserVersion}`);
@@ -30,7 +30,7 @@ describe('SeleniumGridSessionGeneratorPlugin', () => {
     xit('can create a session on Selenium Grid', async () => {
         let platform: string = 'windows_10_chrome';
         let plugin: SeleniumGridSessionGeneratorPlugin = new SeleniumGridSessionGeneratorPlugin({uiplatform: platform});
-        let session: BrowserSession = await plugin.newUiSession();
+        let session = await plugin.newUiSession();
         
         let expectedUrl: string = 'https://the-internet.herokuapp.com/login';
         await session.goTo(expectedUrl);

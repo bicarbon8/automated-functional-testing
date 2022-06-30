@@ -15,7 +15,7 @@ describe('AbstractMobileAppGridSessionGeneratorPlugin', () => {
             'custom4': `custom4-${rand.getString(10)}`
         };
         let session: FakeMobileAppSessionGeneratorPlugin = new FakeMobileAppSessionGeneratorPlugin({remoteOptions: {capabilities: caps}});
-        let actual: RemoteOptions = await session.getRemoteOptions();
+        let actual: RemoteOptions = await session.generateRemoteOptions();
 
         for (var prop in caps) {
             expect(actual.capabilities[prop]).toEqual(caps[prop]);
@@ -24,9 +24,9 @@ describe('AbstractMobileAppGridSessionGeneratorPlugin', () => {
 });
 
 class FakeMobileAppSessionGeneratorPlugin extends MobileAppSessionGeneratorPlugin<MobileAppSessionGeneratorPluginOptions> {
-    async newUiSession(options?: MobileAppSessionOptions): Promise<MobileAppSession> {
-        return new MobileAppSession({
-            driver: options?.driver || await this.createDriver(options),
+    async newUiSession(options?: MobileAppSessionOptions): Promise<MobileAppSession<any>> {
+        return new MobileAppSession<any>({
+            driver: options?.driver || await this.createDriver({capabilities: {}}),
             logMgr: options?.logMgr || this.logMgr,
             uiplatform: options?.uiplatform || this.uiplatform.toString(),
             app: options?.app || this.app

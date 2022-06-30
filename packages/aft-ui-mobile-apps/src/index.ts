@@ -9,12 +9,10 @@ export {mobileAppSessionGeneratorMgr} from './sessions/mobile-app-session-genera
 /* sessions - BrowserStack */
 export * from './sessions/browserstack/browserstack-mobile-app-session-generator-plugin';
 export * from './sessions/browserstack/browserstack-mobile-app-session';
-export * from './sessions/browserstack/configuration/browserstack-config';
 export * from './sessions/browserstack/app-automate/app-automate-api-custom-types';
 export * from './sessions/browserstack/app-automate/browserstack-app-automate-api';
 /* sessions - Saucelabs */
 export * from './sessions/sauce-labs/sauce-labs-mobile-app-session-generator-plugin';
 export * from './sessions/sauce-labs/sauce-labs-mobile-app-session';
-export * from './sessions/sauce-labs/configuration/sauce-labs-config';
 /* sessions - Appium Grid */
 export * from './sessions/appium-grid/appium-grid-session-generator-plugin';

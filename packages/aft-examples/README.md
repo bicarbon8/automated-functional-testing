@@ -8,109 +8,116 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
 
 ```json
 {
-    "logmanager": {
+    "LogManager": {
         "level": "info",
-        "pluginNames": [
-            "testrail-logging-plugin",
-            "kinesis-logging-plugin",
-            "html-logging-plugin"
-        ],
-        "searchDir": "../"
+        "plugins": [{
+            "name": "testrail-logging-plugin",
+            "searchDirectory": "../",
+            "options": {
+                "level": "warn",
+                "enabled": false
+            }
+        },{
+            "name": "kinesis-logging-plugin",
+            "searchDirectory": "../",
+            "options": {
+                "level": "trace",
+                "batch": true,
+                "batchSize": 10,
+                "enabled": false
+            }
+        },{
+            "name": "html-logging-plugin",
+            "searchDirectory": "../",
+            "options": {
+                "level": "warn"
+            }
+        }, {
+            "name": "filesystem-logging-plugin",
+            "searchDirectory": "../",
+            "options": {
+                "level": "trace"
+            }
+        }]
     },
-    "testcasemanager": {
-        "pluginNames": ["testrail-test-case-plugin"],
-        "searchDir": "../"
+    "TestCaseManager": {
+        "plugins": [{
+            "name": "testrail-test-case-plugin",
+            "searchDirectory": "../",
+            "options": {
+                "enabled": false
+            }
+        }]
     },
-    "testrailconfig": {
+    "TestRailConfig": {
         "url": "%testrail_url%",
         "user": "%testrail_user%",
         "access_key": "%testrail_pass%",
         "project_id": 3,
         "suite_ids": [744]
     },
-    "testrailloggingplugin": {
-        "enabled": false,
-        "level": "warn"
+    "BrowserSessionGeneratorManager": {
+        "uiplatform": "windows_10_chrome",
+        "plugins": [{
+            "name": "browserstack-browser-session-generator-plugin",
+            "searchDirectory": "../",
+            "options": {
+                "user": "%browserstack_user%",
+                "key": "%browserstack_key%",
+                "debug": true
+            }
+        }, {
+            "name": "sauce-labs-browser-session-generator-plugin",
+            "searchDirectory": "../",
+            "options": {
+                "username": "%saucelabs_username%",
+                "accessKey": "%saucelabs_accessKey%"
+            }
+        }]
     },
-    "testrailtestcaseplugin": {
-        "enabled": false
-    },
-    "kinesisconfig": {
-        "accessKeyId": "%AWS_ACCESS_KEY_ID%",
-        "secretAccessKey": "%AWS_SECRET_ACCESS_KEY%",
-        "sessionToken": "%AWS_SESSION_TOKEN%",
-        "authenticationType": "config"
-    },
-    "kinesisloggingplugin": {
-        "enabled": false,
-        "level": "trace"
-    },
-    "htmlloggingplugin": {
-        "enabled": true,
-        "level": "info"
-    },
-    "browserstackconfig": {
-        "user": "%browserstack_user%",
-        "key": "%browserstack_key%",
-        "debug": true
-    },
-    "browsersessiongeneratormanager": {
-        "pluginNames": ["browserstack-browser-session-generator-plugin"],
-        "searchDir": "../"
-    },
-    "browserstackbrowsersessiongeneratorplugin": {
-        "platform": "windows_10_chrome"
-    },
-    "mobileappsessiongeneratormanager": {
-        "pluginNames": ["browserstack-mobile-app-session-generator-plugin"],
-        "searchDir": "../"
-    },
-    "browserstackmobileappsessiongeneratorplugin": {
-        "platform": "android_11_+_+_Google Pixel 5",
-        "remoteOptions": {
-            "logLevel": "silent"
-        }
+    "MobileAppSessionGeneratorManager": {
+        "uiplatform": "android_11_+_+_Google Pixel 5",
+        "plugins": [{
+            "name": "browserstack-mobile-app-session-generator-plugin",
+            "searchDirectory": "../",
+            "options": {
+                "user": "%browserstack_user%",
+                "key": "%browserstack_key%",
+                "debug": true,
+                "remoteOptions": {
+                    "logLevel": "silent"
+                }
+            }
+        }, {
+            "name": "sauce-labs-mobile-app-session-generator-plugin",
+            "searchDirectory": "../",
+            "options": {
+                "username": "%saucelabs_username%",
+                "accessKey": "%saucelabs_accessKey%"
+            }
+        }]
     }
 }
 ```
-- **logmanager** - allows for loading of `LoggingPlugin` implementations
-  - **pluginNames** - `string[]` containing the name of any logging plugins to be loaded
-  - **level** - `string` containing a global override for all logging plugins. valid values can be any of the following: `trace`, `debug`, `info`, `step`, `warn`, `error`
-- **testcasemanager** - allows for loading of `TestCasePlugin` implementations
-  - **pluginNames** - `string[]` containing the name of any test case plugins to be loaded
-- **testrailconfig** - configuration values to use for TestRail integration
+- **LogManager** - allows for loading of `LoggingPlugin` implementations
+  - **plugins** - an `array` of `PluginConfig` objects (objects containing `name: string`, `searchDirectory: string`, and `options: object` properties) containing the options used to locate and instantiate logging plugins
+  - **level** - `string` containing the default `LogLevel` to set for logging plugins if they don't specify a value in their `PluginConfig.options`. valid values can be any of the following: `trace`, `debug`, `info`, `step`, `warn`, `error`
+- **TestCaseManager** - allows for loading of `TestCasePlugin` implementations
+  - **plugins** - an `array` of `PluginConfig` objects (objects containing `name: string`, `searchDirectory: string`, and `options: object` properties) containing the options used to locate and instantiate test case plugins (NOTE: only the first enabled plugin will be used)
+- **TestRailConfig** - configuration values to use for TestRail integration
   - **url** - `string` containing the URL used for accessing your TestRail instance. _NOTE: this is **NOT** the API url, but the URL to access the base instance of TestRail_
   - **user** - `string` containing a valid username for logging in to TestRail
   - **accesskey** - `string` containing your API access key used to access the TestRail API. see [here](https://www.gurock.com/testrail/docs/api/getting-started/accessing) for more info.
   - **projectid** - `number` containing the TestRail project you are referencing in your tests. _NOTE: this is not used if specifying a value for `planid`_
   - **suiteids** - `number[]` containing a list of the TestRail suites you are referencing in your tests. _NOTE: this is not used if specifying a value for `planid`_
   - **planid** - `number` containing the TestRail plan you are referencing in your tests. _NOTE: if not specified and using the `testrail-logging-plugin` a new TestRail plan will be created based on your `projectid` and `suiteids`_
-- **testrailloggingplugin** - configuration specific to the `testrail-logging-plugin`
-  - **enabled** - `boolean` indicating if this plugin is active _(defaults to `true`)_
-  - **level** - `string` used to control how verbose logging is when submitting results to TestRail's API. _NOTE: only valid if **NOT** setting a value for `level` in the `loggingmanager` section
-- **testrailtestcaseplugin** - configuration specific to the `testrail-test-case-plugin`
-  - **enabled** - `boolean` indicating if this plugin is active _(defaults to `true`)_
-- **kinesisconfig** - configuration values to use for AWS authentication with Kinesis Firehose _(used by the `kinesis-logging-plugin`)_
-  - **accessKeyId** - `string` containing your AWS IAM access key ID. _NOTE: only valid if using `authenticationType` of `config`_
-  - **secretAccessKey** - `string` containing your AWS IAM secret access key. _NOTE: only valid if using `authenticationType` of `config`_
-  - **sessionToken** - `string` containing your AWS IAM Temporary session token. _NOTE: only valid if using `authenticationType` of `config` and the credentials are from a temporary token_
-  - **authenticationType** - `string` indicating how the AWS Credentials are to be obtained. can be one of the following _(defaults to `instance`)_:
-    - **config** - indicating the authentication information is contained in the `aftconfig.json` file
-    - **instance** - indicating the authentication information is part of the running AWS EC2 instance on which the tests are being run
-    - **credsFile** - indicating the authentication information is stored in the user's Credentials File
-- **kinesisloggingplugin** - configuration values pertaining to the `kinesis-logging-plugin`
-  - **enabled** - `boolean` indicating if this plugin is active _(defaults to `true`)_
-  - **level** - `string` used to control how verbose logging is when submitting results to the Kinesis Firehose endpoint. _NOTE: only valid if **NOT** setting a value for `level` in the `loggingmanager` section
-- **sessiongeneratormanager** - allows for loading of `SessionGeneratorPlugins` implementations
-  - **pluginNames** - `string[]` containing the name of any session generator plugins to be loaded. _NOTE: only one session generator plugin can be active at a time so only the first enabled plugin will actually be used_
-  - **platform** - `TestPlatform` object containing the `os`, `osVersion`, `browser`, `browserVersion` and `deviceName` to be used for any generated sessions. _NOTE: if specified here, this value overrides `platform` specified under an individual session generator plugin's configuration section_
-- **browserstacksessiongeneratorplugin** - configuration specific to the `browserstack-session-generator-plugin`
-  - **user** - `string` containing a valid BrowserStack user with access to their _Automate_ product
-  - **key** - `string` containing a valid BrowserStack access key for the above user
-  - **platform** - `TestPlatform` object containing the `os`, `osVersion`, `browser`, `browserVersion` and `deviceName` to be used for any generated sessions. _NOTE: only valid if **NOT** already specified in the `sessiongeneratormanager` section
+- **BrowserSessionGeneratorManager** - allows for loading of `BrowserSessionGeneratorPlugin` implementations
+  - **plugins** - an `array` of `PluginConfig` objects (objects containing `name: string`, `searchDirectory: string`, and `options: object` properties) containing the options used to locate and instantiate browser session generator plugins (NOTE: only the first enabled plugin will be used)
+- **MobileAppSessionGeneratorManager** - allows for loading of `MobileAppSessionGeneratorPlugin` implementations
+  - **plugins** - an `array` of `PluginConfig` objects (objects containing `name: string`, `searchDirectory: string`, and `options: object` properties) containing the options used to locate and instantiate browser session generator plugins (NOTE: only the first enabled plugin will be used)
 
 ## Test Execution
-executing the tests using `npm test` should result in the output like the following sent to the console (assuming the `logmanager.level` is set to something like `info` in your `aftconfig.json`):
+executing the tests using `npm test` should result in the output like the following sent to the console (assuming the `LogManager.level` is set to something like `info` in your `aftconfig.json`):
 ```
 14:51:33 - can access websites using AFT and Page Widgets and Facets - STEP  - 1: navigate to LoginPage...
 14:51:35 - can access websites using AFT and Page Widgets and Facets - STEP  - 2: login

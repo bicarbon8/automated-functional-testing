@@ -1,40 +1,83 @@
 import { UiPlatform } from "aft-ui";
 import { BrowserSessionGeneratorPlugin, BrowserSessionGeneratorPluginOptions } from "../browser-session-generator-plugin";
 import { Capabilities } from "selenium-webdriver";
-import { BrowserSessionOptions } from "../browser-session";
-import { BrowserStackBrowserSession } from "./browserstack-browser-session";
+import { BrowserStackBrowserSession, BrowserStackBrowserSessionOptions } from "./browserstack-browser-session";
 import { buildinfo, Merge } from "aft-core";
-import { browserstackconfig, BrowserStackConfig } from "./configuration/browserstack-config";
 
 export type BrowserStackBrowserSessionGeneratorPluginOptions = Merge<BrowserSessionGeneratorPluginOptions, {
-    config?: BrowserStackConfig;
+    user?: string;
+    key?: string;
+    local?: boolean;
+    localIdentifier?: string;
+    debug?: boolean;
 }>;
 
 export class BrowserStackBrowserSessionGeneratorPlugin extends BrowserSessionGeneratorPlugin<BrowserStackBrowserSessionGeneratorPluginOptions> {
-    private _config: BrowserStackConfig;
+    private _user: string;
+    private _key: string;
+    private _local: boolean;
+    private _localIdentifier: string;
+    private _debug: boolean;
+
+    get user(): string {
+        if (!this._user) {
+            this._user = this.option('user');
+        }
+        return this._user;
+    }
+
+    get key(): string {
+        if (!this._key) {
+            this._key = this.option('key');
+        }
+        return this._key;
+    }
+
+    get local(): boolean {
+        if (!this._local) {
+            this._local = this.option('local', false);
+        }
+        return this._local;
+    }
+
+    get localIdentifier(): string {
+        if (!this._localIdentifier) {
+            this._localIdentifier = this.option('localIdentifier');
+        }
+        return this._localIdentifier;
+    }
+
+    get debug(): boolean {
+        if (!this._debug) {
+            this._debug = this.option('debug', false);
+        }
+        return this._debug;
+    }
     
     override get url(): string {
         return super.url || 'https://hub-cloud.browserstack.com/wd/hub/';
     }
 
-    get config(): BrowserStackConfig {
-        if (!this._config) {
-            this._config = this.option('config', browserstackconfig);
-        }
-        return this._config;
-    }
-
-    override async newUiSession(options?: BrowserSessionOptions): Promise<BrowserStackBrowserSession> {
-        options = options || {};
-        options.logMgr = options.logMgr || this.logMgr;
-        options.uiplatform = options.uiplatform || this.uiplatform.toString();
-        options.driver = options.driver || await this.createDriver(options);
+    override async newUiSession(options?: BrowserStackBrowserSessionOptions): Promise<BrowserStackBrowserSession> {
+        const caps: Capabilities = await this.generateCapabilities(options)
+        options.driver = options.driver || await this.createDriver(caps);
         return new BrowserStackBrowserSession(options);
     }
 
-    override async getCapabilities(options?: BrowserSessionOptions): Promise<Capabilities> {
+    override async generateCapabilities(options?: BrowserStackBrowserSessionOptions): Promise<Capabilities> {
+        options = options || {};
+        options.uiplatform = options?.uiplatform || this.uiplatform.toString();
+        options.user = options.user || this.user;
+        options.key = options.key || this.key;
+        options.debug = options.debug || this.debug;
+        options.local = options.local || this.local;
+        options.localIdentifier = options.localIdentifier || this.localIdentifier;
+        options.resolution = options.resolution || this.resolution;
+        options.logMgr = options.logMgr || this.logMgr;
+        options.additionalCapabilities = options.additionalCapabilities || this.additionalCapabilities;
+
         let capabilities: Capabilities = new Capabilities();
-        const platform: UiPlatform = this.uiplatform
+        const platform = UiPlatform.parse(options.uiplatform);
         if (platform.browser) {
             capabilities.set('browserName', platform.browser);
         }
@@ -51,26 +94,23 @@ export class BrowserStackBrowserSessionGeneratorPlugin extends BrowserSessionGen
             capabilities.set('device', platform.deviceName);
             capabilities.set('realMobile', 'true');
         }
-        let resolution: string = await this.config.resolution();
-        if (resolution) {
-            capabilities.set('resolution', resolution);
+        if (options.resolution) {
+            capabilities.set('resolution', options.resolution);
         }
-        capabilities.set('browserstack.user', await this.config.user());
-        capabilities.set('browserstack.key', await this.config.key());
-        capabilities.set('browserstack.debug', await this.config.debug());
+        capabilities.set('browserstack.user', options.user);
+        capabilities.set('browserstack.key', options.key);
+        capabilities.set('browserstack.debug', options.debug);
         capabilities.set('build', await buildinfo.get());
-        capabilities.set('name', options?.logMgr?.logName || this.logMgr.logName);
-        let local: boolean = await this.config.local();
-        if (local) {
+        capabilities.set('name', options.logMgr?.logName);
+        if (options.local) {
             capabilities.set('browserstack.local', true);
-            let localId: string = await this.config.localIdentifier();
-            if (localId) {
-                capabilities.set('browserstack.localIdentifier', localId);
+            if (options.localIdentifier) {
+                capabilities.set('browserstack.localIdentifier', options.localIdentifier);
             }
         }
         // overwrite the above with passed in capabilities if any
-        const optCaps: Capabilities = new Capabilities(this.additionalCapabilities);
-        capabilities = capabilities.merge(optCaps);
+        const addlCaps: Capabilities = new Capabilities(options.additionalCapabilities);
+        capabilities = capabilities.merge(addlCaps);
         return capabilities;
     }
 }

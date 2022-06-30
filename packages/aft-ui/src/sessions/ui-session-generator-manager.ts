@@ -1,8 +1,11 @@
-import { PluginManagerWithLogging, PluginManagerWithLoggingOptions } from "aft-core";
+import { PluginManagerWithLogging, PluginManagerWithLoggingOptions, Merge, PluginConfig } from "aft-core";
+import { UiPlatform } from "../configuration/ui-platform";
 import { UiSession, UiSessionOptions } from "./ui-session";
 import { UiSessionGeneratorPlugin } from "./ui-session-generator-plugin";
 
-export type UiSessionGeneratorManagerOptions = PluginManagerWithLoggingOptions;
+export type UiSessionGeneratorManagerOptions = Merge<PluginManagerWithLoggingOptions, {
+    uiplatform?: string;
+}>;
 
 /**
  * abstract class that should be extended by `PluginManager` instances that manage UI Session Generator Plugins
@@ -15,10 +18,13 @@ export type UiSessionGeneratorManagerOptions = PluginManagerWithLoggingOptions;
  * {
  *   ...
  *   "UiSessionGeneratorManagerInstance": {
+ *     "uiplatform": "mac_11_safari",
  *     "plugins": [{
  *         "name": "some-custom-session-plugin",
  *         "searchDirectory": "../starting/path/to/find/plugin/",
- *         "uiTestPlatform": "windows_10_chrome_87_Google Pixel XL"
+ *         "options": {
+ *             "uiplatform": "windows_10_chrome_87_Google Pixel XL"
+ *         }
  *     }]
  *   }
  *   ...
@@ -26,6 +32,36 @@ export type UiSessionGeneratorManagerOptions = PluginManagerWithLoggingOptions;
  * ```
  */
 export abstract class UiSessionGeneratorManager<T extends UiSessionGeneratorPlugin<any>, Tc extends UiSessionGeneratorManagerOptions> extends PluginManagerWithLogging<T, Tc> {
+    private _uiPlt: UiPlatform;
+
+    async uiplatform(): Promise<UiPlatform> {
+        if (!this._uiPlt) {
+            const pltstr = await this.config('uiplatform', '+_+_+_+_+');
+            this._uiPlt = UiPlatform.parse(pltstr);
+        }
+        return this._uiPlt;
+    }
+
+    override async pluginConfigs(): Promise<Array<string | PluginConfig>> {
+        const configs = await this.config('plugins', []);
+        const updatedConfigs = new Array<PluginConfig>();
+        for (var i=0; i<configs.length; i++) {
+            let maybeStringOrConfig = configs[i];
+            if (maybeStringOrConfig) {
+                let cfg: PluginConfig = {options: {}};
+                if (typeof maybeStringOrConfig === 'string') {
+                    cfg.name = maybeStringOrConfig;
+                } else {
+                    cfg = {...maybeStringOrConfig};
+                }
+                cfg.options = cfg.options || {};
+                cfg.options['uiplatform'] = cfg.options['uiplatform'] || await this.uiplatform().then(p => p?.toString());
+                updatedConfigs.push(cfg);
+            }
+        }
+        return updatedConfigs;
+    }
+    
     /**
      * instantiates a new Session using the 'provider' specified in 
      * configuration

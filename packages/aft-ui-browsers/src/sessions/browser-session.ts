@@ -1,12 +1,41 @@
 import { WebDriver } from "selenium-webdriver";
 import { Class, Merge } from "aft-core";
-import { UiFacet, UiFacetOptions, UiSession, UiSessionOptions } from "aft-ui";
+import { UiFacet, UiFacetOptions, UiPlatform, UiSession, UiSessionOptions } from "aft-ui";
 
 export type BrowserSessionOptions = Merge<UiSessionOptions, {
+    uiplatform?: string;
+    resolution?: string;
+    additionalCapabilities?: object;
     driver?: WebDriver;
 }>;
 
-export class BrowserSession extends UiSession<BrowserSessionOptions> {
+export class BrowserSession<T extends BrowserSessionOptions> extends UiSession<T> {
+    private _uiplatform: UiPlatform;
+    private _resolution: string;
+    private _additionalCapabilities: object;
+
+    get uiplatform(): UiPlatform {
+        if (!this._uiplatform) {
+            const plt = this.option('uiplatform', '+_+_+_+_+');
+            this._uiplatform = UiPlatform.parse(plt);
+        }
+        return this._uiplatform;
+    }
+
+    get resolution(): string {
+        if (!this._resolution) {
+            this._resolution = this.option('resolution');
+        }
+        return this._resolution;
+    }
+
+    get additionalCapabilities(): object {
+        if (!this._additionalCapabilities) {
+            this._additionalCapabilities = this.option('additionalCapabilities', {});
+        }
+        return this._additionalCapabilities;
+    }
+    
     override get driver(): WebDriver {
         return this.option('driver');
     }
@@ -19,7 +48,7 @@ export class BrowserSession extends UiSession<BrowserSessionOptions> {
         return facet;
     }
 
-    async goTo(url: string): Promise<BrowserSession> {
+    async goTo(url: string): Promise<BrowserSession<any>> {
         try {
             await this.driver?.get(url);
         } catch (e) {
@@ -28,7 +57,7 @@ export class BrowserSession extends UiSession<BrowserSessionOptions> {
         return this;
     }
 
-    async refresh(): Promise<BrowserSession> {
+    async refresh(): Promise<BrowserSession<any>> {
         try {
             await this.driver?.navigate().refresh();
         } catch (e) {
@@ -37,7 +66,7 @@ export class BrowserSession extends UiSession<BrowserSessionOptions> {
         return this;
     }
 
-    async resize(width: number, height: number): Promise<BrowserSession> {
+    async resize(width: number, height: number): Promise<BrowserSession<any>> {
         try {
             await this.driver?.manage().window().setSize(width, height);
         } catch (e) {

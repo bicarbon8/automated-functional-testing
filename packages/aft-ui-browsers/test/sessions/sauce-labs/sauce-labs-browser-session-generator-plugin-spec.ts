@@ -1,32 +1,29 @@
 import { By, Capabilities } from 'selenium-webdriver';
 import { using, LogManager, rand, buildinfo } from "aft-core";
 import { UiPlatform } from "aft-ui";
-import { BrowserFacet, BrowserFacetOptions, SauceLabsBrowserSessionGeneratorPlugin, SauceLabsBrowserSessionGeneratorPluginOptions, SauceLabsConfig } from '../../../src';
+import { BrowserFacet, BrowserFacetOptions, SauceLabsBrowserSessionGeneratorPlugin, SauceLabsBrowserSessionGeneratorPluginOptions, SauceLabsBrowserSessionOptions } from '../../../src';
 
 describe('SauceLabsBrowserSessionGeneratorPlugin', () => {
-    it('can generate capabilities from the passed in SessionOptions', async () => {
-        let plt: UiPlatform = new UiPlatform({
+    it('can generate capabilities from the passed in SauceLabsBrowserSessionGeneratorPluginOptions', async () => {
+        const plt: UiPlatform = new UiPlatform({
             os: 'os-' + rand.getString(10),
             osVersion: 'osVersion-' + rand.getString(2, false, true),
             browser: 'browser-' + rand.getString(15),
             browserVersion: 'browserVersion-' + rand.getString(2, false, true),
             deviceName: 'deviceName-' + rand.getString(22)
         });
-        const config: SauceLabsConfig = new SauceLabsConfig({
+        const opts: SauceLabsBrowserSessionGeneratorPluginOptions = {
             username: rand.getString(10, true, false, false, false),
             accessKey: rand.getString(12, true, true, false, false),
             resolution: rand.getString(4, false, true) + 'x' + rand.getString(4, false, true),
             tunnel: true,
-            tunnelId: rand.getString(11, true)
-        });
-        let opts: SauceLabsBrowserSessionGeneratorPluginOptions = {
-            config: config,
+            tunnelIdentifier: rand.getString(11, true),
             uiplatform: plt.toString(),
-            logMgr: new LogManager({logName:'can generate capabilities from the passed in SessionOptions'})
+            logMgr: new LogManager({logName:'can generate capabilities from the passed in SauceLabsBrowserSessionGeneratorPluginOptions'})
         }
-        let session: SauceLabsBrowserSessionGeneratorPlugin = new SauceLabsBrowserSessionGeneratorPlugin(opts);
+        const session: SauceLabsBrowserSessionGeneratorPlugin = new SauceLabsBrowserSessionGeneratorPlugin(opts);
 
-        let caps: Capabilities = await session.getCapabilities();
+        const caps: Capabilities = await session.generateCapabilities();
 
         expect(caps.get('platformName')).toEqual(plt.os);
         expect(caps.get('platformVersion')).toEqual(plt.osVersion);
@@ -37,8 +34,42 @@ describe('SauceLabsBrowserSessionGeneratorPlugin', () => {
         expect(sauceOpts).toBeDefined();
         expect(sauceOpts['build']).toEqual(await buildinfo.get());
         expect(sauceOpts['name']).toEqual(opts.logMgr.logName);
-        expect(sauceOpts['screenResolution']).toEqual(await config.resolution());
-        expect(sauceOpts['tunnelIdentifier']).toEqual(await config.tunnelId());
+        expect(sauceOpts['screenResolution']).toEqual(opts.resolution);
+        expect(sauceOpts['tunnelIdentifier']).toEqual(opts.tunnelIdentifier);
+    });
+
+    it('can generate capabilities from the passed in SauceLabsBrowserSessionOptions', async () => {
+        let session: SauceLabsBrowserSessionGeneratorPlugin = new SauceLabsBrowserSessionGeneratorPlugin();
+        const plt: UiPlatform = new UiPlatform({
+            os: 'os-' + rand.getString(10),
+            osVersion: 'osVersion-' + rand.getString(2, false, true),
+            browser: 'browser-' + rand.getString(15),
+            browserVersion: 'browserVersion-' + rand.getString(2, false, true),
+            deviceName: 'deviceName-' + rand.getString(22)
+        });
+        const opts: SauceLabsBrowserSessionOptions = {
+            username: rand.getString(10, true, false, false, false),
+            accessKey: rand.getString(12, true, true, false, false),
+            resolution: rand.getString(4, false, true) + 'x' + rand.getString(4, false, true),
+            tunnel: true,
+            tunnelIdentifier: rand.getString(11, true),
+            uiplatform: plt.toString(),
+            logMgr: new LogManager({logName:'can generate capabilities from the passed in SauceLabsBrowserSessionOptions'})
+        };
+        
+        const caps: Capabilities = await session.generateCapabilities(opts);
+
+        expect(caps.get('platformName')).toEqual(plt.os);
+        expect(caps.get('platformVersion')).toEqual(plt.osVersion);
+        expect(caps.get('browserName')).toEqual(plt.browser);
+        expect(caps.get('browserVersion')).toEqual(plt.browserVersion);
+        expect(caps.get('deviceName')).toEqual(plt.deviceName);
+        let sauceOpts: object = caps.get('sauce:options');
+        expect(sauceOpts).toBeDefined();
+        expect(sauceOpts['build']).toEqual(await buildinfo.get());
+        expect(sauceOpts['name']).toEqual(opts.logMgr.logName);
+        expect(sauceOpts['screenResolution']).toEqual(opts.resolution);
+        expect(sauceOpts['tunnelIdentifier']).toEqual(opts.tunnelIdentifier);
     });
     
     /**
@@ -50,13 +81,10 @@ describe('SauceLabsBrowserSessionGeneratorPlugin', () => {
      * - sauce_access_key
      */
     xit('can create a session in Sauce Labs', async () => {
-        const config: SauceLabsConfig = new SauceLabsConfig({
-            username: 'fake-username',
-            accessKey: 'fake-accesskey',
-        });
         let plugin: SauceLabsBrowserSessionGeneratorPlugin = new SauceLabsBrowserSessionGeneratorPlugin({
             uiplatform: 'windows_10_chrome',
-            config: config
+            username: '%saucelabs_username%',
+            accessKey: '%saucelabs_accesskey%',
         });
         await using (await plugin.newUiSession(), async (session) => {
             let expectedUrl: string = 'https://the-internet.herokuapp.com/login';

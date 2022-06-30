@@ -153,64 +153,67 @@ await verifyWithBrowser(async (bv: BrowserVerifier) => {
 ```
 {
     "BrowserSessionGeneratorManager": {
-        "plugins": [
-            {
-                "name": "browserstack-browser-session-generator-plugin",
-                "options": {
-                    "uiplatform": "android_11_chrome_99_Google Pixel XL"
-                }
-            },
-            {
-                "name": "sauce-labs-browser-session-generator-plugin",
-                "options": {
-                    "enabled": false,
-                    "uiplatform": "ios_10_safari_80_iPhone 11"
-                }
-            },
-            {
-                "name": "selenium-grid-session-generator-plugin",
-                "options": {
-                    "enabled": false,
-                    "url": "http://127.0.0.1:4444/wd/hub",
-                    "uiplatform": "windows_10_chrome",
-                    "additionalCapabilities": {
-                        "your-custom-key": "your-custom-value"
-                    }
+        "uiplatform": "windows_10_chrome",
+        "plugins": [{
+            "name": "browserstack-browser-session-generator-plugin",
+            "searchDirectory": "../node_modules",
+            "options": {
+                "user": "%browserstack_user%",
+                "key": "%browserstack_key%",
+                "debug": true,
+                "resolution": "640x480",
+                "local": false,
+                "localIdentifier": "abcdefg"
+            }
+        }, {
+            "name": "sauce-labs-browser-session-generator-plugin",
+            "searchDirectory": "../node_modules",
+            "options": {
+                "enabled": false,
+                "uiplatform": "ios_10_safari_80_iPhone 11",
+                "username": "%saucelabs_username%",
+                "accessKey": "%saucelabs_accesskey%",
+                "resolution": "1024x768",
+                "tunnel": false,
+                "tunnelIdentifier": "abcdefgh"
+            }
+        }, {
+            "name": "selenium-grid-session-generator-plugin",
+            "searchDirectory": "../node_modules",
+            "options": {
+                "enabled": false,
+                "url": "http://127.0.0.1:4444/wd/hub",
+                "additionalCapabilities": {
+                    "your-custom-key": "your-custom-value"
                 }
             }
-        ]
-    },
-    "BrowserStackConfig": {
-        "user": "%browserstack_user%",
-        "key": "%browserstack_key%",
-        "debug": true,
-        "resolution": "640x480",
-        "local": false,
-        "localIdentifier": "abcdefg"
-    },
-    "SauceLabsConfig": {
-        "username": "%saucelabs_username%",
-        "accessKey": "%saucelabs_accesskey%",
-        "resolution": "1024x768",
-        "tunnel": false,
-        "tunnelId": "abcdefgh"
+        }]
     }
 }
 ```
-- **BrowserStackConfig** - only required if referencing `browserstack-browser-session-generator-plugin` in the `plugins` array of the `browsersessiongeneratormanager` section of your `aftconfig.json` file
-  - **user** - [REQUIRED] the BrowserStack username for the account to be used
-  - **key** - [REQUIRED] the BrowserStack accesskey for the account to be used
-  - **resolution** - a `string` containing a valid resolution for your BrowserStack session like: `1024x768` _(defaults to no value so BrowserStack will choose)_
-  - **local** - a `boolean` value indicating if sessions should connect via an already running BrowserStack _Local_ VPN _(defaults to false)_
-  - **localIdentifier** - a `string` containing the BrowserStack _Local_ `localIdentifier` to use when connecting to a _Local_ VPN instance. only required if **local** is set to `true` and your _Local_ VPN instance is using a `localIdentifier`
-- **SauceLabsConfig** - only required if referencing `sauce-labs-browser-session-generator-plugin` in the `plugins` array of the `browsersessiongeneratormanager` section of your `aftconfig.json` file
-  - **username** - [REQUIRED] the Sauce Labs username for the account to be used
-  - **accesskey** - [REQUIRED] the Sauce Labs accesskey for the account to be used
-  - **resolution** - a `string` containing a valid resolution for your Sauce Labs session like: `1024x768` _(defaults to no value so Sauce Labs will choose)_
-  - **tunnel** - a `boolean` value indicating if sessions should connect via an already running Sauce Labs tunnel VPN _(defaults to false)_
-  - **tunnelId** - a `string` containing the Sauce Labs `tunnelIdentifier` to use when connecting to a tunnel VPN instance. only required if **tunnel** is set to `true` and your tunnel VPN instance is using a `tunnelIdentifier`
-- `browserstack-browser-session-generator-plugin` | `sauce-labs-browser-session-generator-plugin` | `selenium-grid-session-generator-plugin`
+- **`browserstack-browser-session-generator-plugin`**
   - **options**
-    - **uiplatform** - a `UiPlatform` string used to define what OS and Browser combination is to be generated
+    - **uiplatform** - a `UiPlatform` string used to define what OS and Browser combination is to be generated _(defaults to value specified on `BrowserSessionGeneratorManager.uiplatform`)_
     - **url** - an alternative url for the grid hub _(only the Selenium Grid plugin requires this value)_
-    - **capabilities** - an `object` containing keys and values to be used when creating your BrowserStack Session. this can be used to override default capabilities or to add additional ones _(defaults to none)_
+    - **additionalCapabilities** - an `object` containing keys and values to be used when creating your BrowserStack Session. this can be used to override default capabilities or to add additional ones _(defaults to none)_
+    - **user** - [REQUIRED] the BrowserStack username for the account to be used
+    - **key** - [REQUIRED] the BrowserStack accesskey for the account to be used
+    - **resolution** - a `string` containing a valid resolution for your BrowserStack session like: `1024x768` _(defaults to no value so BrowserStack will choose)_
+    - **local** - a `boolean` value indicating if sessions should connect via an already running BrowserStack _Local_ VPN _(defaults to false)_
+    - **localIdentifier** - a `string` containing the BrowserStack _Local_ `localIdentifier` to use when connecting to a _Local_ VPN instance. only required if **local** is set to `true` and your _Local_ VPN instance is using a `localIdentifier`
+    - **debug** - a `boolean` indicating if debug logging is enabled at BrowserStack _(defaults to `false`)_
+- **`sauce-labs-browser-session-generator-plugin`**
+  - **options**
+    - **uiplatform** - a `UiPlatform` string used to define what OS and Browser combination is to be generated _(defaults to value specified on `BrowserSessionGeneratorManager.uiplatform`)_
+    - **url** - an alternative url for the grid hub _(only the Selenium Grid plugin requires this value)_
+    - **additionalCapabilities** - an `object` containing keys and values to be used when creating your BrowserStack Session. this can be used to override default capabilities or to add additional ones _(defaults to none)_
+    - **username** - [REQUIRED] the Sauce Labs username for the account to be used
+    - **accesskey** - [REQUIRED] the Sauce Labs accesskey for the account to be used
+    - **resolution** - a `string` containing a valid resolution for your Sauce Labs session like: `1024x768` _(defaults to no value so Sauce Labs will choose)_
+    - **tunnel** - a `boolean` value indicating if sessions should connect via an already running Sauce Labs tunnel VPN _(defaults to false)_
+    - **tunnelIdentifier** - a `string` containing the Sauce Labs `tunnelIdentifier` to use when connecting to a tunnel VPN instance. only required if **tunnel** is set to `true` and your tunnel VPN instance is using a `tunnelIdentifier`
+- **`selenium-grid-session-generator-plugin`**
+  - **options**
+    - **uiplatform** - a `UiPlatform` string used to define what OS and Browser combination is to be generated _(defaults to value specified on `BrowserSessionGeneratorManager.uiplatform`)_
+    - **url** - an alternative url for the grid hub _(only the Selenium Grid plugin requires this value)_
+    - **additionalCapabilities** - an `object` containing keys and values to be used when creating your BrowserStack Session. this can be used to override default capabilities or to add additional ones _(defaults to none)_

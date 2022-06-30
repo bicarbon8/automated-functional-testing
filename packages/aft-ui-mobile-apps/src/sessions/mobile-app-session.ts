@@ -18,7 +18,7 @@ export type MobileAppSessionOptions = Merge<UiSessionOptions, {
     remoteOptions?: RemoteOptions;
 }>;
 
-export class MobileAppSession extends UiSession<MobileAppSessionOptions> {
+export class MobileAppSession<T extends MobileAppSessionOptions> extends UiSession<T> {
     private _driver: Browser<'async'>;
 
     get driver(): Browser<'async'> {

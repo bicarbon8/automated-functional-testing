@@ -5,7 +5,7 @@ import { mobileAppSessionGeneratorMgr, MobileAppSessionGeneratorManager } from "
 export class MobileAppVerifier extends Verifier {
     protected override _assertion: Func<MobileAppVerifier, any>;
     protected _sessionMgr: MobileAppSessionGeneratorManager;
-    protected _session: MobileAppSession;
+    protected _session: MobileAppSession<any>;
     protected _sessionOptions: MobileAppSessionOptions;
 
     /**
@@ -23,7 +23,7 @@ export class MobileAppVerifier extends Verifier {
      * after a new `MobileAppSession` is created, this holds the instance
      * so it can be referenced from within the executing `assertion`
      */
-    get session(): MobileAppSession {
+    get session(): MobileAppSession<any> {
         return this._session;
     }
 

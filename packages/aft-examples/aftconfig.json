@@ -47,29 +47,44 @@
         "project_id": 3,
         "suite_ids": [744]
     },
-    "BrowserStackConfig": {
-        "user": "%browserstack_user%",
-        "key": "%browserstack_key%",
-        "debug": true
-    },
     "BrowserSessionGeneratorManager": {
+        "uiplatform": "windows_10_chrome",
         "plugins": [{
             "name": "browserstack-browser-session-generator-plugin",
             "searchDirectory": "../",
             "options": {
-                "uiplatform": "windows_10_chrome"
+                "user": "%browserstack_user%",
+                "key": "%browserstack_key%",
+                "debug": true
+            }
+        }, {
+            "name": "sauce-labs-browser-session-generator-plugin",
+            "searchDirectory": "../",
+            "options": {
+                "username": "%saucelabs_username%",
+                "accessKey": "%saucelabs_accessKey%"
             }
         }]
     },
     "MobileAppSessionGeneratorManager": {
+        "uiplatform": "android_11_+_+_Google Pixel 5",
         "plugins": [{
             "name": "browserstack-mobile-app-session-generator-plugin",
             "searchDirectory": "../",
             "options": {
-                "uiplatform": "android_11_+_+_Google Pixel 5",
+                "user": "%browserstack_user%",
+                "key": "%browserstack_key%",
+                "debug": true,
                 "remoteOptions": {
                     "logLevel": "silent"
                 }
+            }
+        }, {
+            "name": "sauce-labs-mobile-app-session-generator-plugin",
+            "searchDirectory": "../",
+            "options": {
+                "username": "%saucelabs_username%",
+                "accessKey": "%saucelabs_accessKey%"
             }
         }]
     }
