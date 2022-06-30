@@ -211,16 +211,12 @@ export class LogManager extends PluginManager<LoggingPlugin<any>, LogManagerOpti
         for (var i=0; i<configs?.length; i++) {
             let maybeStringOrConfig = configs[i];
             if (maybeStringOrConfig) {
-                let cfg: PluginConfig;
+                let cfg: PluginConfig = {options: {}};
                 if (typeof maybeStringOrConfig === 'string') {
-                    cfg = {
-                        name: maybeStringOrConfig, 
-                        options: {}
-                    };
+                    cfg.name = maybeStringOrConfig;
                 } else {
-                    cfg = maybeStringOrConfig;
+                    cfg = {...maybeStringOrConfig};
                 }
-
                 cfg.options = cfg.options || {};
                 cfg.options['level'] = cfg.options['level'] || await this.level();
                 updatedConfigs.push(cfg);

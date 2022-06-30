@@ -12,9 +12,11 @@ export type BrowserSessionGeneratorManagerOptions = UiSessionGeneratorManagerOpt
  *   "BrowserSessionGeneratorManager": {
  *     "plugins": [{
  *       "name": "browserstack-browser-session-generator-plugin",
- *       "uiplatform": "android_11_chrome_99_Google Pixel XL",
- *       "capabilities": {
- *         "key": "value"
+ *       "options": {
+ *         "uiplatform": "android_11_chrome_99_Google Pixel XL",
+ *         "capabilities": {
+ *           "key": "value"
+ *         }
  *       }
  *     }]
  *   }
@@ -22,7 +24,7 @@ export type BrowserSessionGeneratorManagerOptions = UiSessionGeneratorManagerOpt
  * ```
  */
 export class BrowserSessionGeneratorManager extends UiSessionGeneratorManager<BrowserSessionGeneratorPlugin<any>, BrowserSessionGeneratorManagerOptions> {
-    override async newUiSession(options?: BrowserSessionOptions): Promise<BrowserSession> {
+    override async newUiSession(options?: BrowserSessionOptions): Promise<BrowserSession<any>> {
         return await this.first()
         .then(f => f.newUiSession(options)
             .catch(async (err) => {
@@ -44,11 +46,13 @@ export class BrowserSessionGeneratorManager extends UiSessionGeneratorManager<Br
  * ```json
  * {
  *   "BrowserSessionGeneratorManager": {
+ *     "uiplatform": "android_11_chrome_99_Google Pixel XL",
  *     "plugins": [{
  *       "name": "browserstack-browser-session-generator-plugin",
- *       "uiplatform": "android_11_chrome_99_Google Pixel XL",
- *       "capabilities": {
- *         "key": "value"
+ *       "options": {
+ *         "capabilities": {
+ *           "key": "value"
+ *         }
  *       }
  *     }]
  *   }

@@ -6,8 +6,8 @@ import { MobileAppSessionGeneratorManager } from "../../src/sessions/mobile-app-
 describe('MobileAppVerifier', () => {
     it('can create a MobileAppSession', async () => {
         let sessionMgr: MobileAppSessionGeneratorManager = new MobileAppSessionGeneratorManager({plugins: []});
-        spyOn(sessionMgr, 'newUiSession').and.callFake((options?: MobileAppSessionOptions): Promise<MobileAppSession> => {
-            return Promise.resolve(new MobileAppSession(options));
+        spyOn(sessionMgr, 'newUiSession').and.callFake((options?: MobileAppSessionOptions): Promise<MobileAppSession<any>> => {
+            return Promise.resolve(new MobileAppSession<any>(options));
         });
 
         await verifyWithMobileApp(async (mav: MobileAppVerifier) => {
@@ -20,9 +20,9 @@ describe('MobileAppVerifier', () => {
 
     it('can create a MobileAppSession using specific MobileAppSessionOptions', async () => {
         let sessionMgr: MobileAppSessionGeneratorManager = new MobileAppSessionGeneratorManager({plugins: []});
-        spyOn(sessionMgr, 'newUiSession').and.callFake((options?: MobileAppSessionOptions): Promise<MobileAppSession> => {
+        spyOn(sessionMgr, 'newUiSession').and.callFake((options?: MobileAppSessionOptions): Promise<MobileAppSession<any>> => {
             expect(options.uiplatform).toEqual('android_11_+_+_Google Pixel 5');
-            return Promise.resolve(new MobileAppSession(options));
+            return Promise.resolve(new MobileAppSession<any>(options));
         });
 
         await verifyWithMobileApp((mav: MobileAppVerifier) => {
@@ -37,8 +37,8 @@ describe('MobileAppVerifier', () => {
 
     it('disposes of MobileAppSession on completion', async () => {
         let sessionMgr: MobileAppSessionGeneratorManager = new MobileAppSessionGeneratorManager({plugins: []});
-        spyOn(sessionMgr, 'newUiSession').and.callFake((options?: MobileAppSessionOptions): Promise<MobileAppSession> => {
-            return Promise.resolve(new MobileAppSession(options));
+        spyOn(sessionMgr, 'newUiSession').and.callFake((options?: MobileAppSessionOptions): Promise<MobileAppSession<any>> => {
+            return Promise.resolve(new MobileAppSession<any>(options));
         });
         let driver: Browser<'async'> = jasmine.createSpyObj('Browser<"async">', {
             'deleteSession': Promise.resolve()
@@ -55,8 +55,8 @@ describe('MobileAppVerifier', () => {
 
     it('no MobileAppSession is created if assertion should not be run', async () => {
         let sessionMgr: MobileAppSessionGeneratorManager = new MobileAppSessionGeneratorManager({plugins: []});
-        spyOn(sessionMgr, 'newUiSession').and.callFake((options?: MobileAppSessionOptions): Promise<MobileAppSession> => {
-            return Promise.resolve(new MobileAppSession(options));
+        spyOn(sessionMgr, 'newUiSession').and.callFake((options?: MobileAppSessionOptions): Promise<MobileAppSession<any>> => {
+            return Promise.resolve(new MobileAppSession<any>(options));
         });
         let tcMgr: TestCaseManager = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string) => Promise.resolve(false));

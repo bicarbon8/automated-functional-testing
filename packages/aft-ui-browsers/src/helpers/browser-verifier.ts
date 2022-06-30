@@ -5,7 +5,7 @@ import { BrowserSessionGeneratorManager, browserSessionGeneratorMgr } from "../s
 export class BrowserVerifier extends Verifier {
     protected override _assertion: Func<BrowserVerifier, any>;
     protected _sessionMgr: BrowserSessionGeneratorManager;
-    protected _session: BrowserSession;
+    protected _session: BrowserSession<any>;
     protected _sessionOptions: BrowserSessionOptions;
 
     /**
@@ -23,7 +23,7 @@ export class BrowserVerifier extends Verifier {
      * after a new `BrowserSession` is created, this holds the instance
      * so it can be referenced from within the executing `assertion`
      */
-    get session(): BrowserSession {
+    get session(): BrowserSession<any> {
         return this._session;
     }
 

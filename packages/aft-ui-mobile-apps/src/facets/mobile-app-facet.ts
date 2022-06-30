@@ -9,7 +9,7 @@ export type MobileAppElementOptions = Merge<UiElementOptions, {
 
 export type MobileAppFacetOptions = Merge<UiFacetOptions, {
     locator?: string;
-    session?: MobileAppSession;
+    session?: MobileAppSession<any>;
     parent?: MobileAppFacet;
 }>;
 
@@ -17,8 +17,8 @@ export class MobileAppFacet extends UiFacet<MobileAppFacetOptions> {
     override get locator(): string {
         return super.locator as string;
     }
-    override get session(): MobileAppSession {
-        return super.session as MobileAppSession;
+    override get session(): MobileAppSession<any> {
+        return super.session as MobileAppSession<any>;
     }
     override get parent(): MobileAppFacet {
         return super.parent as MobileAppFacet;

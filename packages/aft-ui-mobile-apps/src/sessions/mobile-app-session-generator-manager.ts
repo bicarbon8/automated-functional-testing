@@ -6,7 +6,7 @@ import { Merge } from "aft-core";
 export type MobileAppSessionGeneratorManagerOptions = Merge<UiSessionGeneratorManagerOptions, MobileAppSessionGeneratorPluginOptions>;
 
 export class MobileAppSessionGeneratorManager extends UiSessionGeneratorManager<MobileAppSessionGeneratorPlugin<any>, MobileAppSessionGeneratorManagerOptions> {
-    async newUiSession(options?: MobileAppSessionOptions): Promise<MobileAppSession> {
+    async newUiSession(options?: MobileAppSessionOptions): Promise<MobileAppSession<any>> {
         return await this.first().then(f => f.newUiSession(options)
             .catch(async (err) => {
                 const l = await this.logMgr();
