@@ -1,4 +1,4 @@
-import { LoggingPlugin, LogLevel, TestResult, machineInfo, BuildInfoManager, buildinfo, LogManager, LogMessageData, TestException, Merge, LoggingPluginOptions } from "aft-core";
+import { LoggingPlugin, LogLevel, TestResult, machineInfo, BuildInfoManager, buildinfo, LogManager, LogMessageData, Err, Merge, LoggingPluginOptions } from "aft-core";
 import * as AWS from "aws-sdk";
 import * as pkg from "../package.json";
 import { KinesisLogRecord } from "./kinesis-log-record";
@@ -174,7 +174,7 @@ export class KinesisLoggingPlugin extends LoggingPlugin<KinesisLoggingPluginOpti
 
     override async dispose(name: string, error?: Error): Promise<void> {
         if (error) {
-            await this.log({name: name, level: 'error', message: TestException.short(error)});
+            await this.log({name: name, level: 'error', message: Err.short(error)});
         }
         // ensure all remaining logs are sent
         await this._checkAndSendLogs({override: true, logName: name});

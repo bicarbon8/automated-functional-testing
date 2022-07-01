@@ -90,6 +90,26 @@ class Convert {
         }
         return {};
     }
+
+    /**
+     * converts the passed in milliseconds to HH:MM:SS.mmm
+     * @param milliseconds the number of milliseconds to convert
+     * @returns a string representing the number of hours, minutes,
+     * seconds and milliseconds elapsed
+     */
+    toHoursMinutesSeconds(milliseconds: number): string {
+        const secondsPerMilli = 1000;
+        const minsPerMilli = 60 * secondsPerMilli;
+        const hoursPerMilli = 60 * minsPerMilli;
+        
+        const hours = Math.floor(milliseconds / hoursPerMilli);
+        milliseconds -= hours * hoursPerMilli;
+        const mins = Math.floor(milliseconds / minsPerMilli);
+        milliseconds -= mins * minsPerMilli;
+        const seconds = Math.floor(milliseconds / secondsPerMilli);
+        milliseconds -= seconds * secondsPerMilli;
+        return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`;
+    }
 }
 
 export const convert = new Convert();

@@ -45,6 +45,7 @@ the `aft-core` package contains several helper and utility classes, interfaces a
 - **rand** - random string, boolean, number and uuid generation
 - **convert** - string manipulation like Base64 encode / decode and replacement
 - **ellide** - string elliding supporting beginning, middle and end ellipsis
+- **Err** - a `module` that can run functions in a `try-catch` with optional logging as well as provide formatted string outputs from `Error` objects
 - **wait** - continually retry some action until success or a maximum time elapses
 - **using** - automatically call the `dispose` function of a class that implements the `IDisposable` interface when done
 - **verify** - a function accepting an `assertion` function that simplifies usage of a `Verifier` within your _Jasmine_ or _Mocha_ tests
@@ -73,7 +74,7 @@ to create your own simple logging plugin that stores all logs until the `dispose
 
 > NOTE: configuration for the below can be added in a object in the `aftconfig.json` named `ondisposeconsolelogger` based on the `key` passed to the `LoggingPlugin` constructor
 ```typescript
-export type OnDisposeConsoleLoggerOptions = Merge<PluginOptions, {
+export type OnDisposeConsoleLoggerOptions = Merge<LoggingPluginOptions, {
     maxLogLines?: number;
 }>;
 export class OnDisposeConsoleLogger extends LoggingPlugin<OnDisposeConsoleLoggerOptions> {
@@ -110,7 +111,7 @@ export class OnDisposeConsoleLogger extends LoggingPlugin<OnDisposeConsoleLogger
             LogManager.toConsole(message);
         });
         if (error) {
-            LogManager.toConsole({name: this.logName, level: 'error', message: TestException.full(error.message)});
+            LogManager.toConsole({name: this.logName, level: 'error', message: Err.full(error.message)});
         }
         LogManager.toConsole({name: this.logName, level: 'info', message: 'OnDisposeConsoleLogger is now disposed!'});
     }

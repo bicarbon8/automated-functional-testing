@@ -322,7 +322,7 @@ export class Verifier implements PromiseLike<void> {
     }
 
     protected async _logMessage(status: TestStatus, message?: string): Promise<void> {
-        message = message || '';
+        message = message || this.logMgr.logName;
         switch (status) {
             case 'Blocked':
             case 'Retest':

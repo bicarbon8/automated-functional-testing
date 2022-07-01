@@ -1,4 +1,4 @@
-import { TestException } from "../plugins/test-cases/test-exception";
+import { Err } from "./err";
 import { convert } from "./convert";
 import { Func } from "./custom-types";
 
@@ -18,13 +18,18 @@ class Wait {
         let err: Error;
 
         do {
-            try {
-                attempts++;
-                result = await Promise.resolve(condition());
-            } catch (e) {
-                err = e as Error;
+            attempts++;
+            result = await Promise.resolve()
+            .then(condition)
+            .catch((e) => {
+                err = e;
+                return false;
+            });
+            
+            if (!result) {
                 if (onFailAction) {
-                    await Promise.resolve(onFailAction())
+                    await Promise.resolve()
+                    .then(onFailAction)
                     .catch((err) => {
                         /* ignore */
                     });
@@ -37,7 +42,7 @@ class Wait {
             return Promise.resolve();
         }
             
-        return Promise.reject(`unable to successfully execute Wait.forCondition(() => {...}) within '${attempts}' attempts due to: ${TestException.short(err)}`);
+        return Promise.reject(`wait.untilTrue(...) exceeded [${convert.toHoursMinutesSeconds(msDuration)}] over '${attempts}' attempts without returning 'true'${(err) ? ` due to: ${Err.short(err)}` : ''}`);
     }
 
     /**

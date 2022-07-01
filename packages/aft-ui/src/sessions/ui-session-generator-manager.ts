@@ -56,6 +56,7 @@ export abstract class UiSessionGeneratorManager<T extends UiSessionGeneratorPlug
                 }
                 cfg.options = cfg.options || {};
                 cfg.options['uiplatform'] = cfg.options['uiplatform'] || await this.uiplatform().then(p => p?.toString());
+                cfg.options['logMgr'] = cfg.options['logMgr'] || await this.logMgr();
                 updatedConfigs.push(cfg);
             }
         }
