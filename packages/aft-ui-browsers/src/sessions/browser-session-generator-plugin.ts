@@ -1,7 +1,7 @@
 import { WebDriver, Builder, Capabilities } from "selenium-webdriver";
 import { UiSessionGeneratorPlugin, UiSessionGeneratorPluginOptions } from "aft-ui";
 import { BrowserSessionOptions } from "./browser-session";
-import { Merge } from "aft-core";
+import { Err, Merge } from "aft-core";
 
 export type BrowserSessionGeneratorPluginOptions = Merge<UiSessionGeneratorPluginOptions, {
     url?: string;
@@ -70,8 +70,8 @@ export abstract class BrowserSessionGeneratorPlugin<T extends BrowserSessionGene
                     .usingServer(this.url)
                     .withCapabilities(capabilities)
                     .build();
-                await driver.manage().setTimeouts({implicit: this.implicitTimeout});
-                await driver.manage().window().maximize();
+                await Err.handle(() => driver.manage().setTimeouts({implicit: this.implicitTimeout}), this.logMgr);
+                await Err.handle(() => driver.manage().window().maximize(), this.logMgr);
                 return driver;
             } catch (e) {
                 return Promise.reject(e);

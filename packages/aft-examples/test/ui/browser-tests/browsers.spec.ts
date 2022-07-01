@@ -54,4 +54,23 @@ describe('Functional Browser Tests using AFT-UI-BROWSERS', () => {
             }).withLogManager(tw.logMgr).and.withTestId('C7890');
         }).withDescription('can recover from StaleElementExceptions automatically');
     });
+
+    const uiplatforms = [
+        'windows_11_firefox',
+        'windows_11_edge_+_+'
+    ];
+    for (var i=0; i<uiplatforms.length; i++) {
+        let uiplatform = uiplatforms[i];
+        it(`can run with multiple uiplatforms: ${uiplatform}`, async () => {
+            await verifyWithBrowser(async (tw: BrowserVerifier) => {
+                let loginPage: HerokuLoginPage = await tw.session.getFacet<HerokuLoginPage, BrowserFacetOptions>(HerokuLoginPage);
+                await loginPage.navigateTo();
+                await loginPage.login("tomsmith", "SuperSecretPassword!");
+                await wait.untilTrue(async () => await loginPage.hasMessage(), 20000);
+                return await loginPage.getMessage();
+            }).withDescription(`can run with multiple uiplatforms: ${uiplatform}`)
+            .and.withBrowserSessionOptions({uiplatform: uiplatform})
+            .returns(containing("You logged into a secure area!"));
+        });
+    }
 });

@@ -1,5 +1,5 @@
 import * as path from "path";
-import { convert, fileio, LoggingPlugin, LoggingPluginOptions, LogLevel, LogMessageData, Merge, TestException, TestResult } from "aft-core";
+import { convert, fileio, LoggingPlugin, LoggingPluginOptions, LogLevel, LogMessageData, Merge, Err, TestResult } from "aft-core";
 import * as date from "date-and-time";
 
 export type FilesystemLoggingPluginOptions = Merge<LoggingPluginOptions, {
@@ -74,7 +74,7 @@ export class FilesystemLoggingPlugin extends LoggingPlugin<FilesystemLoggingPlug
             const data: LogMessageData = {
                 name: logName,
                 level: 'error',
-                message: TestException.full(err)
+                message: Err.full(err)
             };
             this._appendToFile(data);
         }
