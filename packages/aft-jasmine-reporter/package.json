@@ -1,0 +1,45 @@
+{
+  "name": "aft-jasmine-reporter",
+  "version": "1.0.0",
+  "description": "Automated Functional Testing (AFT) Reporter for use with Jasmine Test Framework",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rimraf ./dist && rimraf ./logs && rimraf ./FileSystemMap && rimraf ./testresults.html",
+    "build": "yarn clean && tsc --build",
+    "test": "yarn build && jasmine --config=./jasmine.json --reporter=./dist/src/aft-jasmine-reporter.js",
+    "coverage": "nyc yarn test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bicarbon8/automated-functional-testing.git"
+  },
+  "keywords": [
+    "aft",
+    "functional",
+    "automation",
+    "e2e",
+    "integration",
+    "jasmine",
+    "reporter"
+  ],
+  "author": "Jason Holt Smith <bicarbon8@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bicarbon8/automated-functional-testing/issues"
+  },
+  "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
+  "dependencies": {
+    "aft-core": "workspace:^",
+    "jasmine": "^4.2.1"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^4.0.3",
+    "@types/node": "^18.0.1",
+    "aft-logging-filesystem": "workspace:^",
+    "aft-logging-html": "workspace:^",
+    "nyc": "^15.1.0",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.8.2",
+    "typescript": "^4.7.4"
+  }
+}

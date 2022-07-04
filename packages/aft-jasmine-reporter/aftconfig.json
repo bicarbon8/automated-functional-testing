@@ -1,0 +1,18 @@
+{
+    "LogManager": {
+        "level": "info",
+        "plugins": [{
+            "name": "html-logging-plugin",
+            "searchDirectory": "../",
+            "options": {
+                "level": "warn"
+            }
+        }, {
+            "name": "filesystem-logging-plugin",
+            "searchDirectory": "../",
+            "options": {
+                "level": "trace"
+            }
+        }]
+    }
+}

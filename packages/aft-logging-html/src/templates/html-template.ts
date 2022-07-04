@@ -254,7 +254,7 @@ function addTests(container, tests) {
         testResultSection += \`
         <tr class="\${trClass}" name="\${result.testId}-pstt-results">
             <td class="id">
-                \${result.testId}
+                \${result.testId || 'n/a'}
             </td>
             <td class="status">
                 <span class="badge badge-\${statusClass}">\${result.status}</span>

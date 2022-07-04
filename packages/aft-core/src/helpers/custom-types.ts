@@ -65,7 +65,7 @@ export type JsonValue = JsonKey | boolean | JsonObject | null | undefined;
 export type JsonObject = { [key: JsonKey]: JsonValue; } | Array<JsonValue>;
 
 /**
- * this interface allows for more complex return values
+ * this type allows for more complex return values
  * to be expressed from functions that would normally
  * return a simple boolean
  */

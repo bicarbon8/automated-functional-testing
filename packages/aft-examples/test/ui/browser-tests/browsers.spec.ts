@@ -20,7 +20,7 @@ describe('Functional Browser Tests using AFT-UI-BROWSERS', () => {
             await tw.logMgr.step('get message...');
             return await loginPage.getMessage();
         }).withDescription('can access websites using AFT and Page Widgets and Facets')
-        .and.withTestId('C3456').and.withTestId('C2345').and.withTestId('C1234')
+        .and.withTestIds('C3456').and.withTestIds('C2345').and.withTestIds('C1234')
         .returns(containing("You logged into a secure area!"));
     });
 
@@ -32,30 +32,31 @@ describe('Functional Browser Tests using AFT-UI-BROWSERS', () => {
                 await v.logMgr.step('navigate to LoginPage');
                 await loginPage.navigateTo();
                 return await loginPage.session.driver.getCurrentUrl();
-            }).withLogManager(tw.logMgr).and.withTestId('C4567')
+            }).withLogManager(tw.logMgr).and.withTestIds('C4567')
             .returns(containing('the-internet.herokuapp.com/login'));
             
             await verify(async (v: Verifier) => {
                 await v.logMgr.step('click login button...');
                 await loginPage.content().then(c => c.getLoginButton()).then(button => button.click());
                 await v.logMgr.info('no exception thrown on click');
-            }).withLogManager(tw.logMgr).and.withTestId('C5678');
+            }).withLogManager(tw.logMgr).and.withTestIds('C5678');
 
             await verify(async (v: Verifier) => {
                 await v.logMgr.step('refresh page...');
                 await tw.session.refresh();
                 await v.logMgr.info('page refreshed');
-            }).withLogManager(tw.logMgr).and.withTestId('C6789');
+            }).withLogManager(tw.logMgr).and.withTestIds('C6789');
 
             await verify(async (v: Verifier) => {
                 await tw.logMgr.step('click login button after refresh...');
                 await loginPage.content().then(c => c.getLoginButton()).then(button => button.click());
                 await tw.logMgr.info('no exception thrown on click');
-            }).withLogManager(tw.logMgr).and.withTestId('C7890');
+            }).withLogManager(tw.logMgr).and.withTestIds('C7890');
         }).withDescription('can recover from StaleElementExceptions automatically');
     });
 
     const uiplatforms = [
+        'os x_+_safari',
         'windows_11_firefox',
         'windows_11_edge_+_+'
     ];

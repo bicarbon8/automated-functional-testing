@@ -16,7 +16,10 @@
     "test-mobile-apps": "yarn workspace aft-ui-mobile-apps test",
     "test-web-services": "yarn workspace aft-web-services test",
     "test-html": "yarn workspace aft-logging-html test",
-    "test-examples": "yarn workspace aft-examples test"
+    "test-examples": "yarn workspace aft-examples test",
+    "test-filesystem": "yarn workspace aft-logging-filesystem test",
+    "test-mocha": "yarn workspace aft-mocha-reporter test",
+    "test-jasmine": "yarn workspace aft-jasmine-reporter test"
   },
   "packageManager": "yarn@3.2.0",
   "devDependencies": {

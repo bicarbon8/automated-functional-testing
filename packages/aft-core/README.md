@@ -1,5 +1,5 @@
 # AFT-Core
-the base AFT library providing support for Plugins and some test configuration and helper classes and functions
+the base Automated Functional Testing (AFT) library providing support for Plugins, configuration, and helper classes and functions
 
 ## Installation
 `> npm i aft-core`

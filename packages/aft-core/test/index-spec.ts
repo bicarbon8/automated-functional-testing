@@ -25,7 +25,7 @@ describe('AFT', () => {
                 result = result && !isNaN(i);
             }
             return count;
-        }).withTestId('C1234').and.withTestId('C2345')
+        }).withTestIds('C1234').and.withTestIds('C2345')
         .and.withDescription('some tests require lots of actions')
         .returns(10);
     }, 15000);

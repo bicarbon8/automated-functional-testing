@@ -6,10 +6,12 @@ import { HtmlResult } from "../src/html-result";
 
 describe('HtmlLoggingPlugin', () => {
     beforeEach(() => {
-        let c: string = path.join(process.cwd(), 'FileSystemMap', '_htmlSharedResults.json');
+        let c: string = path.join(process.cwd(), 'FileSystemMap', 'htmlSharedResults.json');
         if (fs.existsSync(c)) {fs.unlinkSync(c);}
-        let d: string = path.join(process.cwd(), 'testresults.html');
+        let d: string = path.join(process.cwd(), 'FileSystemMap', 'htmlSharedLogs.json');
         if (fs.existsSync(d)) {fs.unlinkSync(d);}
+        let e: string = path.join(process.cwd(), 'testresults.html');
+        if (fs.existsSync(e)) {fs.unlinkSync(e);}
     });
     
     it('stores the specified number of log lines', async () => {
@@ -86,23 +88,31 @@ describe('HtmlLoggingPlugin', () => {
         expect(plugin.constructor.name).toEqual('HtmlLoggingPlugin');
     });
 
-    it('only attempts to write to sharedCache and HTML file on call to dispose', async () => {
+    it('only attempts to write to HTML file on call to dispose', async () => {
         const config: HtmlLoggingPluginOptions = {
             outputDir: './',
             fileName: 'testresults.html'
         };
         let plugin: HtmlLoggingPlugin = new HtmlLoggingPlugin(config);
-        const readSpy = spyOn<any>(plugin, '_readFromSharedCache').and.callFake(() => {
-            return [
-                {description: 'Fake Test One', tests: [
-                    {testId: 'C123', status: 'Failed', logs: ['foo', 'bar', 'baz']},
-                    {testId: 'C234', status: 'Passed', logs: []}
-                ]},
-                {description: 'Fake Test Two', tests: [
-                    {testId: 'C345', status: 'Passed', logs: ['foo bar baz']},
-                    {testId: 'C456', status: 'Passed', logs: []}
-                ]}
-            ] as HtmlResult[]
+        const readSpy = spyOn(plugin, 'logs').and.returnValue(['foo', 'bar', 'baz']);
+        const testResults: Map<string, Array<TestResult>> = new Map<string, Array<TestResult>>([
+            ['Fake Test One', [
+                {testId: 'C123', status: 'Failed', resultId: rand.guid, created: Date.now()},
+                {testId: 'C234', status: 'Passed', resultId: rand.guid, created: Date.now()}
+            ]],
+            ["Fake 'Test' Two", [
+                {testId: 'C345', status: 'Passed', resultId: rand.guid, created: Date.now()},
+                {testId: 'C456', status: 'Passed', resultId: rand.guid, created: Date.now()}
+            ]],
+            ["Fake [Test] <Three>", [
+                {status: 'Passed', resultId: rand.guid, created: Date.now()}
+            ]]
+        ]);
+        testResults.forEach(async (val: Array<TestResult>, key: string) => {
+            for (var i=0; i<val.length; i++) {
+                let res: TestResult = val[i];
+                await plugin.logResult(key, res);
+            }
         });
         let actualResults: HtmlResult[];
         const regenSpy = spyOn<any>(plugin, '_regenerateHtmlFile').and.callFake((results: HtmlResult[]) => {
@@ -114,14 +124,12 @@ describe('HtmlLoggingPlugin', () => {
         const expectedResult: TestResult = {testId: 'C567', resultId: rand.guid, status: 'Passed', created: Date.now()};
         await plugin.logResult(logName, expectedResult);
 
-        expect(readSpy).not.toHaveBeenCalled();
         expect(regenSpy).not.toHaveBeenCalled();
 
         await plugin.dispose(logName);
 
-        expect(readSpy).toHaveBeenCalledTimes(1);
         expect(regenSpy).toHaveBeenCalledTimes(1);
-        expect(actualResults).toHaveSize(2);
+        expect(actualResults).toHaveSize(4);
     });
 
     it('can generate HTML result file', async () => {
@@ -130,17 +138,25 @@ describe('HtmlLoggingPlugin', () => {
             fileName: 'testresults.html'
         };
         let plugin: HtmlLoggingPlugin = new HtmlLoggingPlugin(config);
-        const readSpy = spyOn<any>(plugin, '_readFromSharedCache').and.callFake(() => {
-            return [
-                {description: 'Fake Test One', tests: [
-                    {testId: 'C123', status: 'Failed', logs: ['foo', 'bar', 'baz']},
-                    {testId: 'C234', status: 'Passed', logs: []}
-                ]},
-                {description: 'Fake Test Two', tests: [
-                    {testId: 'C345', status: 'Passed', logs: ['foo bar baz']},
-                    {testId: 'C456', status: 'Passed', logs: []}
-                ]}
-            ] as HtmlResult[]
+        const readSpy = spyOn(plugin, 'logs').and.returnValue(['foo', 'bar', 'baz']);
+        const testResults: Map<string, Array<TestResult>> = new Map<string, Array<TestResult>>([
+            ['Fake Test One', [
+                {testId: 'C123', status: 'Failed', resultId: rand.guid, created: Date.now()},
+                {testId: 'C234', status: 'Passed', resultId: rand.guid, created: Date.now()}
+            ]],
+            ["Fake 'Test' Two", [
+                {testId: 'C345', status: 'Passed', resultId: rand.guid, created: Date.now()},
+                {testId: 'C456', status: 'Passed', resultId: rand.guid, created: Date.now()}
+            ]],
+            ["Fake [Test] <Three>", [
+                {status: 'Passed', resultId: rand.guid, created: Date.now()}
+            ]]
+        ]);
+        testResults.forEach(async (val: Array<TestResult>, key: string) => {
+            for (var i=0; i<val.length; i++) {
+                let res: TestResult = val[i];
+                await plugin.logResult(key, res);
+            }
         });
 
         const logName = 'can generate HTML result file';
@@ -148,11 +164,8 @@ describe('HtmlLoggingPlugin', () => {
         const expectedResult: TestResult = {testId: 'C567', resultId: rand.guid, status: 'Passed', created: Date.now()};
         await plugin.logResult(logName, expectedResult);
 
-        expect(readSpy).not.toHaveBeenCalled();
-
         await plugin.dispose(logName);
 
-        expect(readSpy).toHaveBeenCalledTimes(1);
         expect(fs.existsSync(plugin.fullPathAndFile)).toBeTrue();
     });
 });

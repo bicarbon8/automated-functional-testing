@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { TestCase, TestCaseManager } from 'aft-core';
 import { httpService } from 'aft-web-services';
 import { TestRailConfig, TestRailTestCasePlugin, TestRailTestCasePluginOptions } from "../../src";
@@ -12,6 +14,10 @@ describe('TestRailTestCasePlugin', () => {
             statusCode: 200,
             data: '{}'
         }));
+        const file = path.join(process.cwd(), 'FileSystemMap', 'TestRailApi.json');
+        if (fs.existsSync(file)) {
+            fs.unlinkSync(file);
+        }
     });
 
     it('can lookup a test case in an existing plan by case id', async () => {

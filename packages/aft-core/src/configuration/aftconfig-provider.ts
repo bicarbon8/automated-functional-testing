@@ -1,6 +1,5 @@
 import { JsonObject } from "../helpers/custom-types";
 import { fileio } from "../helpers/file-io";
-import { LogManager } from "../plugins/logging/log-manager";
 import { IConfigProvider } from "./i-config-provider";
 import { OptionsProvider } from "./options-provider";
 
@@ -23,7 +22,6 @@ export class AftConfigProvider<T extends object> implements IConfigProvider<T> {
             try {
                 this._aftConfig = fileio.readAs<JsonObject>('aftconfig.json');
             } catch (e) {
-                LogManager.toConsole({name: this.constructor.name, message: e, level: 'warn'});
                 this._aftConfig = {};
             }
         }
