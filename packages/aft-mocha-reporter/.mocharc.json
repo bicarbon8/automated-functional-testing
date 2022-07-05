@@ -1,0 +1,6 @@
+{
+    "reporter": "./dist/src/aft-mocha-reporter.js",
+    "spec": "./**/*.spec.js",
+    "parallel": true,
+    "jobs": 4
+}

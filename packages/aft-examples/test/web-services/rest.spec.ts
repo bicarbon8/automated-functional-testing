@@ -20,7 +20,7 @@ describe('REST Request', () => {
                 await tw.logMgr.info('request completed and received status code: ' + response.statusCode);
                 return response.statusCode;
             }).withLogManager(v.logMgr)
-            .and.withTestId('C2217763')
+            .and.withTestIds('C2217763')
             .returns(between(200, 399));
 
             await verify(async (tw) => {
@@ -30,7 +30,7 @@ describe('REST Request', () => {
                 await tw.logMgr.step('confirm response.data is not null...');
                 return response.data;
             }).withLogManager(v.logMgr)
-            .and.withTestId('C3131')
+            .and.withTestIds('C3131')
             .returns(havingValue());
 
             await verify(async (tw) => {
@@ -41,7 +41,7 @@ describe('REST Request', () => {
                 await tw.logMgr.step('confirm object data property contains more than one result...');
                 return obj.data.length;
             }).withLogManager(v.logMgr)
-            .and.withTestId('C2217764')
+            .and.withTestIds('C2217764')
             .returns(greaterThan(0));
         }).withDescription('can make GET request from JSON REST API');
     });

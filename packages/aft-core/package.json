@@ -1,6 +1,6 @@
 {
   "name": "aft-core",
-  "version": "8.3.0",
+  "version": "8.4.0",
   "description": "Automation Framework for Testing (AFT) package supporting JavaScript unit, integration and functional testing",
   "repository": {
     "type": "git",

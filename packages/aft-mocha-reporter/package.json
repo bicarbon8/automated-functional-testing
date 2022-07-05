@@ -1,13 +1,12 @@
 {
-  "name": "aft-logging-html",
+  "name": "aft-mocha-reporter",
   "version": "8.4.0",
-  "description": "Automated Functional Testing (AFT) package that creates a HTML results file as a Logging Plugin",
-  "main": "./dist/src/index.js",
-  "types": "./dist/src/index.d.ts",
+  "description": "Automated Functional Testing (AFT) Reporter for use with Mocha Test Framework",
+  "main": "index.js",
   "scripts": {
-    "clean": "rimraf ./dist && rimraf ./.nyc_output && rimraf ./coverage",
+    "clean": "rimraf ./dist && rimraf ./logs && rimraf ./FileSystemMap && rimraf ./testresults.html",
     "build": "yarn clean && tsc --build",
-    "test": "jasmine-ts ./test/**/*-spec.ts",
+    "test": "yarn build && mocha",
     "coverage": "nyc yarn test"
   },
   "repository": {
@@ -16,13 +15,12 @@
   },
   "keywords": [
     "aft",
+    "functional",
     "automation",
     "e2e",
-    "unit",
     "integration",
-    "functional",
-    "html",
-    "logging"
+    "mocha",
+    "reporter"
   ],
   "author": "Jason Holt Smith <bicarbon8@gmail.com>",
   "license": "MIT",
@@ -31,16 +29,20 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "devDependencies": {
-    "@types/jasmine": "^3.6.10",
-    "@types/node": "^15.0.1",
-    "jasmine": "^3.7.0",
-    "jasmine-ts": "^0.4.0",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "^18.0.0",
+    "@types/sinon": "^10.0.12",
+    "aft-logging-filesystem": "^8.4.0",
+    "aft-logging-html": "^8.4.0",
+    "chai": "^4.3.6",
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
-    "ts-node": "^10.7.0",
-    "typescript": "^4.3.2"
+    "sinon": "^14.0.0",
+    "ts-node": "^10.8.1",
+    "typescript": "^4.7.4"
   },
   "dependencies": {
-    "aft-core": "^8.4.0"
+    "aft-core": "^8.4.0",
+    "mocha": "^10.0.0"
   }
 }

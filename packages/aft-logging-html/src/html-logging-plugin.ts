@@ -1,5 +1,5 @@
 import * as path from "path";
-import { LoggingPlugin, LogLevel, TestResult, fileio, ExpiringFileLock, FileSystemMap, LogMessageData, Merge, LoggingPluginOptions } from "aft-core";
+import { LoggingPlugin, LogLevel, TestResult, fileio, ExpiringFileLock, FileSystemMap, LogMessageData, Merge, LoggingPluginOptions, convert } from "aft-core";
 import { HtmlTestResult } from "./html-test-result";
 import { HtmlResult } from "./html-result";
 import { htmlTemplate } from "./templates/html-template";
@@ -11,15 +11,13 @@ export type HtmlLoggingPluginOptions = Merge<LoggingPluginOptions, {
 }>;
 
 export class HtmlLoggingPlugin extends LoggingPlugin<HtmlLoggingPluginOptions> {
-    private readonly _logs: Map<string, Array<string>>;
-    private readonly _testResults: Map<string, Array<HtmlTestResult>>;
-    private readonly _fsMap: FileSystemMap<string, HtmlResult>;
+    private readonly _results: FileSystemMap<string, Array<HtmlTestResult>>;
+    private readonly _logs: FileSystemMap<string, Array<string>>;
     
     constructor(options?: HtmlLoggingPluginOptions) {
         super(options);
-        this._logs = new Map<string, Array<string>>();
-        this._testResults = new Map<string, Array<HtmlTestResult>>();
-        this._fsMap = new FileSystemMap<string, HtmlResult>('htmlSharedResults');
+        this._results = new FileSystemMap<string, Array<HtmlTestResult>>('htmlSharedResults');
+        this._logs = new FileSystemMap<string, Array<string>>('htmlSharedLogs')
     }
 
     get fileName(): string {
@@ -61,13 +59,13 @@ export class HtmlLoggingPlugin extends LoggingPlugin<HtmlLoggingPluginOptions> {
     }
 
     testResults(key: string, val?: Array<HtmlTestResult>): Array<HtmlTestResult> {
-        if (!this._testResults.has(key)) {
-            this._testResults.set(key, new Array<HtmlTestResult>());
+        if (!this._results.has(key)) {
+            this._results.set(key, new Array<HtmlTestResult>());
         }
         if (val) {
-            this._testResults.set(key, val);
+            this._results.set(key, val);
         }
-        return this._testResults.get(key);
+        return this._results.get(key);
     }
 
     override async log(data: LogMessageData): Promise<void> {
@@ -90,21 +88,21 @@ export class HtmlLoggingPlugin extends LoggingPlugin<HtmlLoggingPluginOptions> {
             status: result.status,
             logs: this.logs(logName)
         }
-        const testResults = this.testResults(logName);
-        testResults.push(htmlTestResult);
-        this.testResults(logName, testResults);
+        const results: Array<HtmlTestResult> = this.testResults(logName);
+        results.push(htmlTestResult);
+        this.testResults(logName, results);
     }
 
     override async dispose(logName: string, error?: Error): Promise<void> {
-        const result: HtmlResult = {
-            description: logName,
-            tests: this.testResults(logName)
-        };
-        this._updateSharedCache(result);
-        const results: HtmlResult[] = this._readFromSharedCache();
-        await this._regenerateHtmlFile(results);
+        const htmlResults: HtmlResult[] = new Array<HtmlResult>();
+        this._results.forEach((result: Array<HtmlTestResult>, key: string) => {
+            htmlResults.push({
+                description: convert.toSafeString(key),
+                tests: result
+            });
+        });
+        await this._regenerateHtmlFile(htmlResults);
         this._logs.delete(logName);
-        this._testResults.delete(logName);
     }
 
     private async _regenerateHtmlFile(results: HtmlResult[]): Promise<void> {
@@ -115,13 +113,5 @@ export class HtmlLoggingPlugin extends LoggingPlugin<HtmlLoggingPluginOptions> {
         } finally {
             lock.unlock();
         }
-    }
-
-    private _updateSharedCache(result: HtmlResult): void {
-        this._fsMap.set(result.description, result);
-    }
-
-    private _readFromSharedCache(): HtmlResult[] {
-        return Array.from(this._fsMap.values());
     }
 }

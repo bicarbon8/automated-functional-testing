@@ -68,8 +68,8 @@ export class LogManager extends PluginManager<LoggingPlugin<any>, LogManagerOpti
      * - `none` - used when no logging is desired (disables logging)
      */
     async level(): Promise<LogLevel> {
-        let lvl: string = await this.config('level', 'none');
-        return (LogLevel.isType(lvl)) ? lvl as LogLevel : 'none';
+        let lvl: string = await this.config('level', 'info');
+        return (LogLevel.isType(lvl)) ? lvl as LogLevel : 'info';
     }
 
     /**

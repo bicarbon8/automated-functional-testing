@@ -154,12 +154,14 @@ export class Verifier implements PromiseLike<void> {
      * run (as returned by your {AbstractTestCasePlugin.shouldRun(testId)}) then
      * the `assertion` will not be run.
      * NOTE: multiple `testId` values can be chained together
-     * @param testId a test identifier for your connected {AbstractTestCasePlugin}
+     * @param testIds a test identifier for your connected {AbstractTestCasePlugin}
      * @returns this `Verifier` instance
      */
-    withTestId(testId: string): this {
-        if (testId) {
-            this._tests.add(testId);
+    withTestIds(...testIds: string[]): this {
+        if (testIds?.length) {
+            for (var i=0; i<testIds.length; i++) {
+                this._tests.add(testIds[i]);
+            }
         }
         return this;
     }
@@ -167,12 +169,14 @@ export class Verifier implements PromiseLike<void> {
     /**
      * allows for setting a `defectId` to be checked before executing the `assertion`.
      * if the referenced `defectId` is _open_ then the `assertion` will not be run.
-     * @param defectId a defect identifier for your connected `DefectPlugin`
+     * @param defectIds a defect identifier for your connected `DefectPlugin`
      * @returns this `Verifier` instance
      */
-    withKnownDefectId(defectId: string): this {
-        if (defectId) {
-            this._defects.add(defectId);
+    withKnownDefectIds(...defectIds: string[]): this {
+        if (defectIds?.length) {
+            for (var i=0; i<defectIds.length; i++) {
+                this._defects.add(defectIds[i]);
+            }
         }
         return this;
     }
@@ -277,7 +281,7 @@ export class Verifier implements PromiseLike<void> {
         if (defects?.length) {
             for (var i=0; i<defects.length; i++) {
                 let defectId: string = defects[i];
-                let defect: Defect = await this._defectMgr.getDefect(defectId);
+                let defect: Defect = await this.defectMgr.getDefect(defectId);
                 if (defect?.status == 'open') {
                     return {success: false, message: `Defect: '${defectId}' is open so test should not be run.`};
                 }
