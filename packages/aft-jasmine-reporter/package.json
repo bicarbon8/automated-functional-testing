@@ -29,14 +29,14 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-core": "workspace:^",
+    "aft-core": "^8.3.0",
     "jasmine": "^4.2.1"
   },
   "devDependencies": {
     "@types/jasmine": "^4.0.3",
     "@types/node": "^18.0.1",
-    "aft-logging-filesystem": "workspace:^",
-    "aft-logging-html": "workspace:^",
+    "aft-logging-filesystem": "^8.3.0",
+    "aft-logging-html": "^8.3.0",
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
     "ts-node": "^10.8.2",

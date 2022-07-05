@@ -1878,7 +1878,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aft-core@^8.3.0, aft-core@workspace:^, aft-core@workspace:packages/aft-core":
+"aft-core@^8.3.0, aft-core@workspace:packages/aft-core":
   version: 0.0.0-use.local
   resolution: "aft-core@workspace:packages/aft-core"
   dependencies:
@@ -1928,9 +1928,9 @@ __metadata:
   dependencies:
     "@types/jasmine": ^4.0.3
     "@types/node": ^18.0.1
-    aft-core: "workspace:^"
-    aft-logging-filesystem: "workspace:^"
-    aft-logging-html: "workspace:^"
+    aft-core: ^8.3.0
+    aft-logging-filesystem: ^8.3.0
+    aft-logging-html: ^8.3.0
     jasmine: ^4.2.1
     nyc: ^15.1.0
     rimraf: ^3.0.2
@@ -1957,7 +1957,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"aft-logging-filesystem@^8.3.0, aft-logging-filesystem@workspace:^, aft-logging-filesystem@workspace:packages/aft-logging-filesystem":
+"aft-logging-filesystem@^8.3.0, aft-logging-filesystem@workspace:packages/aft-logging-filesystem":
   version: 0.0.0-use.local
   resolution: "aft-logging-filesystem@workspace:packages/aft-logging-filesystem"
   dependencies:
@@ -1974,7 +1974,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"aft-logging-html@^8.3.0, aft-logging-html@workspace:^, aft-logging-html@workspace:packages/aft-logging-html":
+"aft-logging-html@^8.3.0, aft-logging-html@workspace:packages/aft-logging-html":
   version: 0.0.0-use.local
   resolution: "aft-logging-html@workspace:packages/aft-logging-html"
   dependencies:
@@ -1997,9 +1997,9 @@ __metadata:
     "@types/mocha": ^9.1.1
     "@types/node": ^18.0.0
     "@types/sinon": ^10.0.12
-    aft-core: "workspace:^"
-    aft-logging-filesystem: "workspace:^"
-    aft-logging-html: "workspace:^"
+    aft-core: ^8.3.0
+    aft-logging-filesystem: ^8.3.0
+    aft-logging-html: ^8.3.0
     chai: ^4.3.6
     mocha: ^10.0.0
     nyc: ^15.1.0
