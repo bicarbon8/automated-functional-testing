@@ -1,6 +1,6 @@
 {
   "name": "aft-logging-awskinesis",
-  "version": "8.3.0",
+  "version": "8.4.0",
   "description": "Automated Functional Testing (AFT) logging plugin package supporting test reporting to AWS Kinesis Firehose",
   "repository": {
     "type": "git",
@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-core": "^8.3.0",
+    "aft-core": "^8.4.0",
     "aws-sdk": "^2.1151.0"
   },
   "devDependencies": {
