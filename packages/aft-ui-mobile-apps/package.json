@@ -1,6 +1,6 @@
 {
   "name": "aft-ui-mobile-apps",
-  "version": "8.4.0",
+  "version": "8.4.1",
   "description": "Automated Functional Testing (AFT) package supporting UI testing in mobile apps with support for BrowserStack, Sauce Labs and Local Appium",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -33,8 +33,8 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-ui": "^8.4.0",
-    "aft-web-services": "^8.4.0",
+    "aft-ui": "^8.4.1",
+    "aft-web-services": "^8.4.1",
     "webdriverio": "^7.5.7"
   },
   "devDependencies": {
