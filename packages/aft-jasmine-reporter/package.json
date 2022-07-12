@@ -1,6 +1,6 @@
 {
   "name": "aft-jasmine-reporter",
-  "version": "8.4.1",
+  "version": "8.4.2",
   "description": "Automated Functional Testing (AFT) Reporter for use with Jasmine Test Framework",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -30,14 +30,14 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-core": "^8.4.1",
+    "aft-core": "^8.4.2",
     "jasmine": "^4.2.1"
   },
   "devDependencies": {
     "@types/jasmine": "^4.0.3",
     "@types/node": "^18.0.1",
-    "aft-logging-filesystem": "^8.4.1",
-    "aft-logging-html": "^8.4.1",
+    "aft-logging-filesystem": "^8.4.2",
+    "aft-logging-html": "^8.4.2",
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
     "ts-node": "^10.8.2",
