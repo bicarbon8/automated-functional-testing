@@ -30,12 +30,12 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-core": "^8.4.1"
+    "aft-core": "^8.4.1",
+    "date-and-time": "^2.4.0"
   },
   "devDependencies": {
     "@types/jasmine": "^4.0.3",
     "@types/node": "^18.0.0",
-    "date-and-time": "^2.4.0",
     "jasmine": "^3.7.0",
     "jasmine-ts": "^0.4.0",
     "nyc": "^15.1.0",
