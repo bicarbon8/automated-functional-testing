@@ -70,8 +70,14 @@ export abstract class BrowserSessionGeneratorPlugin<T extends BrowserSessionGene
                     .usingServer(this.url)
                     .withCapabilities(capabilities)
                     .build();
-                await Err.handle(() => driver.manage().setTimeouts({implicit: this.implicitTimeout}), this.logMgr);
-                await Err.handle(() => driver.manage().window().maximize(), this.logMgr);
+                await Err.handle(() => driver.manage().setTimeouts({implicit: this.implicitTimeout}), {
+                    logMgr: this.logMgr,
+                    errLevel: 'debug'
+                });
+                await Err.handle(() => driver.manage().window().maximize(), {
+                    logMgr: this.logMgr,
+                    errLevel: 'debug'
+                });
                 return driver;
             } catch (e) {
                 return Promise.reject(e);
