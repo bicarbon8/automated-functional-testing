@@ -3,11 +3,11 @@ import { Func } from "./custom-types";
 class Wait {
     /**
      * function will wait for the specified amount of time
-     * @param msDuration the amount of time to wait before resuming
+     * @param durationMs the amount of time to wait before resuming
      */
-    async forDuration(msDuration: number): Promise<void> {
+    async forDuration(durationMs: number): Promise<void> {
         return new Promise((resolve) => {
-            setTimeout(resolve, msDuration);
+            setTimeout(resolve, durationMs);
         });
     }
 

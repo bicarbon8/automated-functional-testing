@@ -1,4 +1,4 @@
-import { containing, Verifier, verify, wait } from "aft-core";
+import { containing, retry, Verifier, verify, wait } from "aft-core";
 import { verifyWithBrowser, BrowserVerifier, BrowserFacetOptions } from "aft-ui-browsers";
 import { expect } from "chai";
 import { HerokuLoginPage } from "./page-objects/heroku-login-page";
@@ -15,7 +15,7 @@ describe('Functional Browser Tests using AFT-UI-BROWSERS', () => {
             await loginPage.login("tomsmith", "SuperSecretPassword!");
 
             await tw.logMgr.step('wait for message to appear...')
-            await wait.untilTrue(async () => await loginPage.hasMessage(), 20000);
+            await wait.forResult(() => retry.untilTrue(() => loginPage.hasMessage(), 10, 'exponential'), 20000);
             
             await tw.logMgr.step('get message...');
             return await loginPage.getMessage();
@@ -67,7 +67,7 @@ describe('Functional Browser Tests using AFT-UI-BROWSERS', () => {
                 let loginPage: HerokuLoginPage = await tw.session.getFacet<HerokuLoginPage, BrowserFacetOptions>(HerokuLoginPage);
                 await loginPage.navigateTo();
                 await loginPage.login("tomsmith", "SuperSecretPassword!");
-                await wait.untilTrue(async () => await loginPage.hasMessage(), 20000);
+                await wait.forResult(() => retry.untilTrue(() => loginPage.hasMessage(), 10, 'exponential'), 20000);
                 return await loginPage.getMessage();
             }).withDescription(`can run with multiple uiplatforms: ${uiplatform}`)
             .and.withBrowserSessionOptions({uiplatform: uiplatform})

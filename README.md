@@ -130,13 +130,12 @@ the purpose of a `DefectPlugin` implementation is to provide execution control o
 ## Contributing to AFT
 - create a Fork of the repo in GitHub
 - clone the code using `git clone https://github.com/<your-project-area>/automated-functional-testing automated-functional-testing` where `<your-project-area>` is replaced with the location of your Fork
-- install yarn using `npm i yarn -g` _(if you don't already have it installed)_
-- run `yarn install` to install all dependencies
-- run a build to ensure `yarn` understands and caches the project layout using `yarn build`
-  - NOTE: you can build each project individually using `yarn workspace <project-name> build` where `<project-name>` is a value like `aft-core` or `aft-ui`
-- run the tests using `yarn test` or individually using `yarn workspace <project-name> test`
+- run `npm install` to install all dependencies
+- run a build to ensure `npm workspaces` understands and caches the project layout using `npm run build`
+  - NOTE: you can build each project individually using `npm run build --workspace=<project-name>` where `<project-name>` is a value like `aft-core` or `aft-ui`
+- run the tests using `npm run test` or individually using `npm run test --workspace=<project-name>`
 - when you are happy with your changes, submit a Pull Request back to the _main_ branch at https://github.com/bicarbon8/automated-functional-testing
 
-> NOTE: all changes require unit tests and these tests are expected to pass when run via `yarn test`
+> NOTE: all changes require unit tests and these tests are expected to pass when run via `npm run test`
 
-> NOTE: check for any circular dependencies using `yarn run dpdm -T --warning false **/index.ts`
+> NOTE: check for any circular dependencies using `npx dpdm -T --warning false **/index.ts`

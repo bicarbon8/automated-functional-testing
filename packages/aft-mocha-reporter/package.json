@@ -6,9 +6,9 @@
   "types": "./dist/src/index.d.ts",
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./logs && rimraf ./FileSystemMap && rimraf ./testresults.html",
-    "build": "yarn clean && tsc --build",
-    "test": "yarn build && mocha",
-    "coverage": "nyc yarn test"
+    "build": "npm run clean && tsc --build",
+    "test": "npm run build && mocha",
+    "coverage": "nyc npm run test"
   },
   "repository": {
     "type": "git",

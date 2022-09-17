@@ -1,12 +1,7 @@
 import { convert } from "../../src/helpers/convert";
 import { wait } from "../../src/helpers/wait";
-import { retry } from "../../src/helpers/retry";
 
 describe('Wait', () => {
-    beforeEach(() => {
-        TestHelper.reset();
-    });
-
     it('can wait for a less than the maximum duration', async () => {
         let start: number = new Date().getTime();
         
@@ -21,7 +16,8 @@ describe('Wait', () => {
         const start: number = new Date().getTime();
         const result: number = await wait.forResult(() => {
             return new Promise((resolve) => {
-                setTimeout(() => 12, 2000);
+                // called after `wait` duration times out
+                setTimeout(() => resolve(12), 2000);
             });
         }, 500);
 
@@ -30,30 +26,22 @@ describe('Wait', () => {
         expect(elapsed).toBeLessThan(1000);
     });
 
-    it('will return a rejected promise if passed in func throws', async () => {
+    it('allows exceptions in func through', async () => {
         let actualErr: any;
         const result: number = await wait.forResult(() => {throw 'fake error';}, 200)
-            .catch((err) => actualErr = err);
+            .catch((err) => {
+                actualErr = err;
+                return -1;
+            });
 
+        expect(result).toEqual(-1);
         expect(actualErr).toContain('fake error');
     });
 
-    it('can handle exceptions in the failure action on each failed attempt', async () => {
-        let actual: number = 0;
-        await retry.untilTrue(() => {throw new Error('fake error');}, 200, async () => {
-            actual++;
-            await wait.forDuration(50);
-            throw new Error('onFailureAction error');
-        }).catch((err) => {/* do nothing */});
+    it('allows rejected promises through', async () => {
+        const result: number = await wait.forResult(() => Promise.reject('fake rejection'), 200)
+            .catch((err) => -1);
 
-        expect(actual).toBeGreaterThan(1);
+        expect(result).toEqual(-1);
     });
 });
-
-module TestHelper {
-    export var count: number = 0;
-
-    export function reset(): void {
-        count = 0;
-    }
-}

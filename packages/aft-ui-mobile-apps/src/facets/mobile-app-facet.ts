@@ -1,4 +1,4 @@
-import { Class, Merge, wait } from "aft-core";
+import { Class, Merge, retry, wait } from "aft-core";
 import { UiFacet, UiElementOptions, UiFacetOptions } from "aft-ui";
 import { MobileAppSession } from "../sessions/mobile-app-session";
 import { ElementArray, Element } from "webdriverio";
@@ -25,22 +25,16 @@ export class MobileAppFacet extends UiFacet<MobileAppFacetOptions> {
     }
 
     override async getElements(options: MobileAppElementOptions): Promise<ElementArray> {
-        let elements: ElementArray
-        await wait.untilTrue(async () => {
-            elements = await this.getRoot().then(r => r.$$(options.locator));
-            return elements.length > 0;
-        }, options.maxWaitMs || 0);
-        return elements;
+        return wait.forResult(() => retry.untilResult(() => {
+            return this.getRoot().then(r => r.$$(options.locator));
+        }, 100, 'linear'), options.maxWaitMs || 0);
     }
 
     override async getElement(options: MobileAppElementOptions): Promise<Element<'async'>> {
-        let element: Element<'async'>;
-        await wait.untilTrue(async () => {
-            element = await this.getRoot()
+        return wait.forResult(() => retry.untilResult(() => {
+            return this.getRoot()
                 .then(r => r.$(options.locator));
-            return !!element;
-        }, options.maxWaitMs || 0);
-        return element;
+        }, 100, 'linear'), options.maxWaitMs || 0);
     }
     
     override async getFacet<T extends UiFacet<MobileAppFacetOptions>>(facetType: Class<T>, options?: MobileAppFacetOptions): Promise<T> {
@@ -54,21 +48,15 @@ export class MobileAppFacet extends UiFacet<MobileAppFacetOptions> {
     }
     
     override async getRoot(): Promise<Element<'async'>>  {
-        let el: Element<'async'>;
-        await wait.untilTrue(async () => {
+        return wait.forResult(() => retry.untilResult(() => {
             if (this.parent) {
-                let els: ElementArray = await this.parent.getRoot()
-                    .then(r => r.$$(this.locator));
-                el = els[this.index];
+                return this.parent.getRoot()
+                    .then(r => r.$$(this.locator))
+                    .then(els => els[this.index]);
             } else {
-                let els: ElementArray = await this.session.driver.$$(this.locator);
-                el = els[this.index];
+                return this.session.driver.$$(this.locator)
+                    .then(els => els[this.index]);
             }
-            if (el) {
-                return true;
-            }
-            return false;
-        }, this.maxWaitMs);
-        return el;
+        }, 100, 'linear'), this.maxWaitMs);
     }
 }

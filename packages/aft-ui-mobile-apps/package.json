@@ -6,9 +6,9 @@
   "types": "./dist/src/index.d.ts",
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./.nyc_output && rimraf ./coverage",
-    "build": "yarn clean && tsc --build",
+    "build": "npm run clean && tsc --build",
     "test": "jasmine-ts ./test/**/*-spec.ts",
-    "coverage": "nyc yarn test"
+    "coverage": "nyc npm run test"
   },
   "repository": {
     "type": "git",

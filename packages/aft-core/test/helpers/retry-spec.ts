@@ -1,81 +1,73 @@
 import { convert } from "../../src/helpers/convert";
-import { wait } from "../../src/helpers/wait";
 import { retry } from "../../src/helpers/retry";
 
 describe('Retry', () => {
-    beforeEach(() => {
-        TestHelper.reset();
-    });
+    it('can delay by specified number of milliseconds and delay type constant', async () => {
+        const now: number = Date.now();
+        let result: number = 0;
 
-    it('can wait for a less than the maximum duration if action returns true', async () => {
-        let now: number = new Date().getTime();
-        
-        await wait.forResult(() => retry.untilTrue(async () => {
-            // wait 1 ms and return false 2 times, then true
-            await new Promise<void>((resolve) => {
-                setTimeout(resolve, 1);
-            });
-            TestHelper.count += 1;
-            return TestHelper.count > 2;
-        }), 2000);
+        await retry.untilTrue(() => {
+            result += 1;
+            return result > 2;
+        }, 100, 'constant');
 
         let elapsed: number = convert.toElapsedMs(now);
         expect(elapsed).toBeGreaterThan(3);
-        expect(elapsed).toBeLessThan(2000);
-        expect(TestHelper.count).toEqual(3);
+        expect(elapsed).toBeLessThan(500);
+        expect(result).toEqual(3);
     });
     
-    it('will emit a rejected promise if duration is exceeded without returning true', async () => {
-        const now: number = new Date().getTime();
-        let actualErr: any;
-        await retry.untilTrue(async () => {
-            TestHelper.count += 1;
-            return false;
-        }, 200).catch((err) => {
-            actualErr = err;
-        });
+    it('can use a linearly increasing back-off delay', async () => {
+        const now: number = Date.now();
+        let result: number = 0;
+        await retry.untilTrue(() => {
+            result += 1;
+            return result > 9;
+        }, 10, 'linear');
 
         const elapsed: number = convert.toElapsedMs(now);
-        expect(elapsed).toBeGreaterThanOrEqual(200);
+        expect(elapsed).toBeGreaterThan(500);
         expect(elapsed).toBeLessThan(1000);
-        expect(TestHelper.count).toBeGreaterThan(10);
-        expect(actualErr).toEqual(`retry.untilTrue(...) exceeded [${convert.toHoursMinutesSeconds(200)}] over '${TestHelper.count}' attempts without returning 'true'`);
+        expect(result).toEqual(10);
     });
 
-    it('can execute a failure action on each failed attempt', async () => {
+    it('can use an exponentially increasing back-off delay', async () => {
+        const now = Date.now();
         let actual: number = 0;
-        await retry.untilTrue(() => {throw new Error('fake error');}, 200, async () => {
-            actual++;
-            await wait.forDuration(50);
-        }).catch((err) => {/* do nothing */});
+        await retry.untilTrue(() => {
+            actual += 1;
+            return actual > 5;
+        }, 10, 'exponential');
 
-        expect(actual).toBeGreaterThan(1);
+        const elapsed = convert.toElapsedMs(now);
+        expect(elapsed).toBeGreaterThan(600);
+        expect(elapsed).toBeLessThan(1000);
+        expect(actual).toEqual(6);
     });
 
     it('can handle a rejected promise in the passed in func', async () => {
-        let actualErr: any;
-        await retry.untilTrue(() => Promise.reject('fake error'), 200)
-        .catch((err) => actualErr = err);
+        let result = 0;
+        await retry.untilTrue(() => {
+            result += 1;
+            if (result === 1) {
+                return Promise.reject('fake error');
+            }
+            return result > 1;
+        }, 1);
 
-        expect(actualErr).toContain('fake error');
+        expect(result).toEqual(2);
     });
 
     it('can handle exceptions in the failure action on each failed attempt', async () => {
-        let actual: number = 0;
-        await retry.untilTrue(() => {throw new Error('fake error');}, 200, async () => {
-            actual++;
-            await wait.forDuration(50);
-            throw new Error('onFailureAction error');
-        }).catch((err) => {/* do nothing */});
+        let result: number = 0;
+        await retry.untilTrue(() => {
+            result += 1;
+            if (result === 1) {
+                throw new Error('fake error');
+            }
+            return result > 1;
+        }, 200);
 
-        expect(actual).toBeGreaterThan(1);
+        expect(result).toEqual(2);
     });
 });
-
-module TestHelper {
-    export var count: number = 0;
-
-    export function reset(): void {
-        count = 0;
-    }
-}

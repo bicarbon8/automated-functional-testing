@@ -1,4 +1,4 @@
-import { Class, Merge, wait } from "aft-core";
+import { Class, Merge, retry, wait } from "aft-core";
 import { UiFacet, UiElementOptions, UiFacetOptions } from "aft-ui";
 import { By, Locator, WebElement } from "selenium-webdriver";
 import { BrowserSession } from "../sessions/browser-session";
@@ -27,21 +27,18 @@ export class BrowserFacet extends UiFacet<BrowserFacetOptions> {
     }
 
     override async getElements(options: WebElementOptions): Promise<WebElement[]> {
-        let elements: WebElement[]
-        await wait.untilTrue(async () => {
-            elements = await this.getRoot().then(r => r.findElements(options.locator));
-            return elements.length > 0;
-        }, options.maxWaitMs || 0);
+        const elements: WebElement[] = await wait.forResult(() => retry
+            .untilResult(() => this.getRoot()
+                .then(r => r.findElements(options.locator)), 100, 'linear'), 
+                    options.maxWaitMs || 0);
         return elements;
     }
 
     override async getElement(options: WebElementOptions): Promise<WebElement> {
-        let element: WebElement;
-        await wait.untilTrue(async () => {
-            element = await this.getRoot()
-                .then(r => r.findElement(options.locator));
-            return !!element;
-        }, options.maxWaitMs || 0);
+        const element: WebElement = await wait.forResult(() => retry
+            .untilResult(() => this.getRoot()
+                .then(r => r.findElement(options.locator)), 100, 'linear'),
+                    options.maxWaitMs || 0);
         return element;
     }
     
@@ -55,24 +52,18 @@ export class BrowserFacet extends UiFacet<BrowserFacetOptions> {
     }
     
     override async getRoot(): Promise<WebElement>  {
-        let el: WebElement;
         const index = this.index;
         const loc = this.locator;
         const maxWait = this.maxWaitMs;
-        await wait.untilTrue(async () => {
+        return wait.forResult(() => retry.untilResult(() => {
             if (this.parent) {
-                let els: WebElement[] = await this.parent.getRoot()
-                    .then(r => r.findElements(loc));
-                el = els[index];
+                return this.parent.getRoot()
+                    .then(r => r.findElements(loc))
+                    .then(els => els[index]);
             } else {
-                let els: WebElement[] = await this.session.driver.findElements(loc);
-                el = els[index];
+                return this.session.driver.findElements(loc)
+                    .then(els => els[index]);
             }
-            if (el) {
-                return true;
-            }
-            return false;
-        }, maxWait);
-        return el;
+        }, 100, 'linear'), maxWait);
     }
 }
