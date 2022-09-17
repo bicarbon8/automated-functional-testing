@@ -25,16 +25,22 @@ export class MobileAppFacet extends UiFacet<MobileAppFacetOptions> {
     }
 
     override async getElements(options: MobileAppElementOptions): Promise<ElementArray> {
+        const maxWait = options.maxWaitMs ?? this.maxWaitMs;
+        const delay = options.retryDelayMs ?? this.retryDelayMs;
+        const delayType = options.retryDelayBackOff ?? this.retryDelayBackOff;
         return wait.forResult(() => retry.untilResult(() => {
             return this.getRoot().then(r => r.$$(options.locator));
-        }, 100, 'linear'), options.maxWaitMs || 0);
+        }, delay, delayType), maxWait);
     }
 
     override async getElement(options: MobileAppElementOptions): Promise<Element<'async'>> {
+        const maxWait = options.maxWaitMs ?? this.maxWaitMs;
+        const delay = options.retryDelayMs ?? this.retryDelayMs;
+        const delayType = options.retryDelayBackOff ?? this.retryDelayBackOff;
         return wait.forResult(() => retry.untilResult(() => {
             return this.getRoot()
                 .then(r => r.$(options.locator));
-        }, 100, 'linear'), options.maxWaitMs || 0);
+        }, delay, delayType), maxWait);
     }
     
     override async getFacet<T extends UiFacet<MobileAppFacetOptions>>(facetType: Class<T>, options?: MobileAppFacetOptions): Promise<T> {
@@ -42,7 +48,9 @@ export class MobileAppFacet extends UiFacet<MobileAppFacetOptions> {
         options.parent = options.parent || this;
         options.session = options.session || this.session;
         options.logMgr = options.logMgr || this.logMgr;
-        options.maxWaitMs = (options.maxWaitMs === undefined) ? this.maxWaitMs : options.maxWaitMs;
+        options.maxWaitMs = options.maxWaitMs ?? this.maxWaitMs;
+        options.retryDelayMs = options.retryDelayMs ?? this.retryDelayMs;
+        options.retryDelayBackOff = options.retryDelayBackOff ?? this.retryDelayBackOff;
         let facet: T = new facetType(options);
         return facet;
     }
@@ -57,6 +65,6 @@ export class MobileAppFacet extends UiFacet<MobileAppFacetOptions> {
                 return this.session.driver.$$(this.locator)
                     .then(els => els[this.index]);
             }
-        }, 100, 'linear'), this.maxWaitMs);
+        }, this.retryDelayMs, this.retryDelayBackOff), this.maxWaitMs);
     }
 }

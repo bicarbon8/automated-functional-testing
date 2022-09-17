@@ -1,6 +1,6 @@
 import { Class, Merge, retry, wait } from "aft-core";
 import { UiFacet, UiElementOptions, UiFacetOptions } from "aft-ui";
-import { By, Locator, WebElement } from "selenium-webdriver";
+import { Locator, WebElement } from "selenium-webdriver";
 import { BrowserSession } from "../sessions/browser-session";
 
 export type WebElementOptions = Merge<UiElementOptions, {
@@ -27,18 +27,21 @@ export class BrowserFacet extends UiFacet<BrowserFacetOptions> {
     }
 
     override async getElements(options: WebElementOptions): Promise<WebElement[]> {
-        const elements: WebElement[] = await wait.forResult(() => retry
+        const maxWait = options.maxWaitMs ?? this.maxWaitMs;
+        const delay = options.retryDelayMs ?? this.retryDelayMs;
+        const delayType = options.retryDelayBackOff ?? this.retryDelayBackOff;
+        return wait.forResult(() => retry
             .untilResult(() => this.getRoot()
-                .then(r => r.findElements(options.locator)), 100, 'linear'), 
-                    options.maxWaitMs || 0);
-        return elements;
+                .then(r => r.findElements(options.locator)), delay, delayType), maxWait);
     }
 
     override async getElement(options: WebElementOptions): Promise<WebElement> {
+        const maxWait = options.maxWaitMs ?? this.maxWaitMs;
+        const delay = options.retryDelayMs ?? this.retryDelayMs;
+        const delayType = options.retryDelayBackOff ?? this.retryDelayBackOff;
         const element: WebElement = await wait.forResult(() => retry
             .untilResult(() => this.getRoot()
-                .then(r => r.findElement(options.locator)), 100, 'linear'),
-                    options.maxWaitMs || 0);
+                .then(r => r.findElement(options.locator)), delay, delayType), maxWait);
         return element;
     }
     
@@ -47,23 +50,23 @@ export class BrowserFacet extends UiFacet<BrowserFacetOptions> {
         options.parent = options.parent || this;
         options.session = options.session || this.session;
         options.logMgr = options.logMgr || this.logMgr;
+        options.maxWaitMs = options.maxWaitMs ?? this.maxWaitMs;
+        options.retryDelayMs = options.retryDelayMs ?? this.retryDelayMs;
+        options.retryDelayBackOff = options.retryDelayBackOff ?? this.retryDelayBackOff;
         const facet: T = new facetType(options);
         return facet;
     }
     
     override async getRoot(): Promise<WebElement>  {
-        const index = this.index;
-        const loc = this.locator;
-        const maxWait = this.maxWaitMs;
         return wait.forResult(() => retry.untilResult(() => {
             if (this.parent) {
                 return this.parent.getRoot()
-                    .then(r => r.findElements(loc))
-                    .then(els => els[index]);
+                    .then(r => r.findElements(this.locator))
+                    .then(els => els[this.index]);
             } else {
-                return this.session.driver.findElements(loc)
-                    .then(els => els[index]);
+                return this.session.driver.findElements(this.locator)
+                    .then(els => els[this.index]);
             }
-        }, 100, 'linear'), maxWait);
+        }, this.retryDelayMs, this.retryDelayBackOff), this.maxWaitMs);
     }
 }
