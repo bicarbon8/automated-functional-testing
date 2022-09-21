@@ -1,3 +1,4 @@
+import { RetryBackOffType } from "../../src";
 import { convert } from "../../src/helpers/convert";
 import { retry } from "../../src/helpers/retry";
 
@@ -47,7 +48,7 @@ describe('Retry', () => {
 
     it('can handle a rejected promise in the passed in func', async () => {
         let result = 0;
-        await retry.untilTrue(() => {
+        const trueResult = await retry.untilTrue(() => {
             result += 1;
             if (result === 1) {
                 return Promise.reject('fake error');
@@ -56,6 +57,7 @@ describe('Retry', () => {
         }, 1);
 
         expect(result).toEqual(2);
+        expect(trueResult).toBe(true);
     });
 
     it('can handle exceptions in the failure action on each failed attempt', async () => {
@@ -70,4 +72,16 @@ describe('Retry', () => {
 
         expect(result).toEqual(2);
     });
+
+    const data: Array<{start: number, current: number, type: RetryBackOffType, exp: number}> = [
+        {start: 10, current: 10, type: 'constant', exp: 10},
+        {start: 1000, current: 2000, type: 'linear', exp: 3000},
+        {start: 10, current: 1000, type: 'exponential', exp: 2000}
+    ];
+    for (var i=0; i<data.length; i++) {
+        const d = data[i];
+        it(`can calculate the next retry back-off delay for: ${JSON.stringify(d)}`, () => {
+            expect(retry.calculateBackOffDelay(d.start, d.current, d.type)).toEqual(d.exp);
+        });
+    }
 });

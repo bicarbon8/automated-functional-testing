@@ -39,9 +39,14 @@ describe('Wait', () => {
     });
 
     it('allows rejected promises through', async () => {
+        let error: string;
         const result: number = await wait.forResult(() => Promise.reject('fake rejection'), 200)
-            .catch((err) => -1);
+            .catch((err) => {
+                error = err;
+                return -1;
+            });
 
         expect(result).toEqual(-1);
+        expect(error).toContain('fake rejection');
     });
 });

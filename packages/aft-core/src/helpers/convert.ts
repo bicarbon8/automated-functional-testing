@@ -110,6 +110,26 @@ class Convert {
         milliseconds -= seconds * secondsPerMilli;
         return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`;
     }
+
+    /**
+     * converts the passed in seconds to milliseconds
+     * @param seconds the number of seconds
+     * @returns the number of milliseconds in the passed
+     * in `seconds`
+     */
+    secToMillisec(seconds: number): number {
+        return seconds * 1000;
+    }
+
+    /**
+     * converts the passed in minutes to milliseconds
+     * @param minutes the number of minutes
+     * @returns the number of milliseconds in the passed in
+     * `minutes`
+     */
+    minToMillisec(minutes: number): number {
+        return this.secToMillisec(minutes * 60);
+    }
 }
 
 export const convert = new Convert();

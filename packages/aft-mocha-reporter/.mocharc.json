@@ -2,5 +2,6 @@
     "reporter": "./dist/src/aft-mocha-reporter.js",
     "spec": "./**/*.spec.js",
     "parallel": true,
-    "jobs": 4
+    "jobs": 4,
+    "timeout": 10000
 }

@@ -1,6 +1,5 @@
-import { Func } from "./custom-types";
+import { Func, RetryBackOffType } from "./custom-types";
 import { wait } from "./wait";
-import { Delay } from "./delay";
 
 class Retry {
     /**
@@ -11,7 +10,7 @@ class Retry {
      * @param delayMs the number of milliseconds to wait between retries or a 'Delay' object indicating retry falloff
      * @param onFailAction an action to perform on each attempt resulting in failure ('Error' or 'false') of the 'condition'
      */
-    async untilTrue(func: Func<void, boolean | PromiseLike<boolean>>, delayMs: number = 1000, delayType: Delay = 'constant', onFailAction?: Func<void, any>) : Promise<boolean> {
+    async untilTrue(func: Func<void, boolean | PromiseLike<boolean>>, delayMs: number = 1000, delayType: RetryBackOffType = 'constant', onFailAction?: Func<void, any>) : Promise<boolean> {
         const startDelayMs = delayMs;
         let result: boolean;
         let attempts: number = 0;
@@ -36,7 +35,7 @@ class Retry {
                             /* ignore */
                         });
                 }
-                delayMs = Delay.getNext(startDelayMs, delayMs, delayType);
+                delayMs = this.calculateBackOffDelay(startDelayMs, delayMs, delayType);
                 await wait.forDuration(delayMs);
             }
         } while (!result);
@@ -52,7 +51,7 @@ class Retry {
      * @param onFailAction an action to perform on each attempt that either throws an error or returns `null` or `undefined`
      * @returns 
      */
-    async untilResult<T>(func: Func<void, T | PromiseLike<T>>, delayMs: number = 1000, delayType: Delay = 'constant', onFailAction?: Func<void, any>): Promise<T> {
+    async untilResult<T>(func: Func<void, T | PromiseLike<T>>, delayMs: number = 1000, delayType: RetryBackOffType = 'constant', onFailAction?: Func<void, any>): Promise<T> {
         const startDelayMs = delayMs;
         let result: T;
         let attempts: number = 0;
@@ -77,11 +76,23 @@ class Retry {
                             /* ignore */
                         });
                 }
-                delayMs = Delay.getNext(startDelayMs, delayMs, delayType);
+                delayMs = this.calculateBackOffDelay(startDelayMs, delayMs, delayType);
                 await wait.forDuration(delayMs);
             }
         } while (result == null);
         return null;
+    }
+
+    calculateBackOffDelay(startDelayMs: number, currentDelayMs: number, retryType: RetryBackOffType): number {
+        switch (retryType) {
+            case 'linear':
+                return currentDelayMs + startDelayMs;
+            case 'exponential':
+                return currentDelayMs * 2;
+            case 'constant':
+            default:
+                return startDelayMs;
+        }
     }
 }
 

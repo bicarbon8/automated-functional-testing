@@ -12,7 +12,6 @@ export * from './configuration/options-provider';
 export * from './helpers/cache-map';
 export * from './helpers/custom-types';
 export * from './helpers/convert';
-export * from './helpers/delay';
 export * from './helpers/ellide';
 export * from './helpers/err';
 export * from './helpers/expiring-file-lock';
