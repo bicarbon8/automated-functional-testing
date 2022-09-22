@@ -53,7 +53,8 @@ the `aft-core` package contains several helper and utility classes, interfaces a
 - **CacheMap** - a `Map` implementation that stores values with expirations where expired items will not be returned and are pruned from the `Map` automatically. The `CacheMap` can also optionally store its data on the filesystem allowing for other running node processes to read from the same cache data (e.g. sharded parallel testing)
 - **FileSystemMap** - a `Map` implementation that stores its values in a file on the filesystem allowing multiple node processes to share the map data or to persist the data over multiple iterations
 - **fileio** - a constant class providing file system `write`, `readAs<T>` and `getExpiringFileLock` functions to simplify file operations
-- **wait** - constant class providing `wait.untilTrue(...)` and `wait.forDuration(number)` functions to allow for non-thread-locking waits
+- **wait** - constant class providing `wait.forResult<T>(...): Promise<T>`, `wait.forDuration(number)`, and `wait.until(number | Date): Promise<void>` functions to allow for non-thread-locking waits
+- **retry** - constant class providing `retry(retryable): Promise<T>` async function
 - **verifier** - see: [Testing with the Verifier](#testing-with-the-verifier) section below
 
 ## Custom Types

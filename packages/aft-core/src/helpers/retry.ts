@@ -1,89 +1,141 @@
 import { Func, RetryBackOffType } from "./custom-types";
 import { wait } from "./wait";
 
-class Retry {
-    /**
-     * function will execute an asynchronous action and await a result repeating execution every 1 millisecond until a 
-     * result of 'true' is returned or the 'msDuration' specified has elapsed. If the action never returns 'true' and 
-     * the 'msDuration' elapses, an Error will be thrown by way of a Promise.reject
-     * @param func an asynchronous action that should be executed until it returns 'true'
-     * @param delayMs the number of milliseconds to wait between retries or a 'Delay' object indicating retry falloff
-     * @param onFailAction an action to perform on each attempt resulting in failure ('Error' or 'false') of the 'condition'
-     */
-    async untilTrue(func: Func<void, boolean | PromiseLike<boolean>>, delayMs: number = 1000, delayType: RetryBackOffType = 'constant', onFailAction?: Func<void, any>) : Promise<boolean> {
-        const startDelayMs = delayMs;
-        let result: boolean;
-        let attempts: number = 0;
-        let err: Error;
+/**
+ * function will execute a passed in `Func<void, T | PromiseLike<T>>` and await a result, repeating execution at the passed
+ * in `delay` interval (using the specified `backOffType` back-off) until the `condition` succeeds (returns `true`)
+ */
+export class Retry<T> implements PromiseLike<T> {
+    #retryable: Func<void, T | PromiseLike<T>>;
+    #delay: number;
+    #currentDelay: number;
+    #backOffType: RetryBackOffType;
+    #condition: Func<T, boolean | PromiseLike<boolean>>;
+    #maxAttempts: number;
+    #totalAttempts: number;
+    #failAction: Func<void, any>;
+    #err: any;
 
-        do {
-            attempts++;
-            result = await Promise.resolve()
-                .then(func)
-                .catch((e) => {
-                    err = e;
-                    return null;
-                });
-
-            if (result) {
-                return result;
-            } else {
-                if (onFailAction) {
-                    await Promise.resolve()
-                        .then(onFailAction)
-                        .catch((err) => {
-                            /* ignore */
-                        });
-                }
-                delayMs = this.calculateBackOffDelay(startDelayMs, delayMs, delayType);
-                await wait.forDuration(delayMs);
-            }
-        } while (!result);
-        return false;
+    constructor(retryable: Func<void, T | PromiseLike<T>>) {
+        this.#retryable = retryable;
+        this.#delay = 1;
+        this.#currentDelay = this.#delay;
+        this.#backOffType = 'constant';
+        this.#maxAttempts = Infinity;
+        this.#totalAttempts = 0;
+        this.#condition = (result: T) => result != null;
     }
 
-    /**
-     * function will execute a passed in `Func<void, T | PromiseLike<T>>` and await a result, repeating execution at the passed
-     * in `delayMs` interval (using the specified `delayType` back-off) until it returns a non-nullish value
-     * @param func a synchronous or async action that should be executed until it returns a value other than `null` or `undefined`
-     * @param delayMs the number of milliseconds to wait between calls to `func` (defaults to 1 sec)
-     * @param delayType the type of retry back-off to use (defaults to constant)
-     * @param onFailAction an action to perform on each attempt that either throws an error or returns `null` or `undefined`
-     * @returns 
-     */
-    async untilResult<T>(func: Func<void, T | PromiseLike<T>>, delayMs: number = 1000, delayType: RetryBackOffType = 'constant', onFailAction?: Func<void, any>): Promise<T> {
-        const startDelayMs = delayMs;
+    get retryable(): Func<void, T | PromiseLike<T>> {
+        return this.#retryable;
+    }
+
+    get startDelay(): number {
+        return this.#delay;
+    }
+
+    get currentDelay(): number {
+        return this.#currentDelay;
+    }
+
+    get backOffType(): RetryBackOffType {
+        return this.#backOffType;
+    }
+
+    get condition(): Func<T, boolean | PromiseLike<boolean>> {
+        return this.#condition;
+    }
+
+    get maxAttempts(): number {
+        return this.#maxAttempts;
+    }
+
+    get totalAttempts(): number {
+        return this.#totalAttempts;
+    }
+
+    get failAction(): Func<void, any> {
+        return this.#failAction;
+    }
+
+    get lastError(): any {
+        return this.#err;
+    }
+
+    withStartDelayBetweenAttempts(delayMs: number): this {
+        this.#delay = delayMs;
+        return this;
+    }
+
+    withBackOff(backOffType: RetryBackOffType): this {
+        this.#backOffType = backOffType;
+        return this;
+    }
+
+    until(func: Func<T, boolean | PromiseLike<boolean>>): this {
+        this.#condition = func;
+        return this;
+    }
+
+    withMaxAttempts(maxAttempts: number): this {
+        this.#maxAttempts = maxAttempts;
+        return this;
+    }
+
+    withFailAction(func: Func<void, any>): this {
+        this.#failAction = func;
+        return this;
+    }
+
+    async isConditionMet(result: T): Promise<boolean> {
+        return Promise.resolve(this.condition(result));
+    }
+    
+    async then<TResult1, TResult2 = never>(onfulfilled?: (value: T) => TResult1 | PromiseLike<TResult1>, onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2> {
+        return this._getInnerPromise()
+            .then(onfulfilled, onrejected);
+    }
+
+    private async _getInnerPromise(): Promise<T> {
         let result: T;
-        let attempts: number = 0;
-        let err: Error;
-
-        do {
-            attempts++;
+        this.#currentDelay = this.startDelay;
+        let success = false;
+        while (!success && this.#totalAttempts < this.#maxAttempts) {
             result = await Promise.resolve()
-                .then(func)
+                .then(this.retryable)
                 .catch((e) => {
-                    err = e;
+                    this.#err = e;
                     return null;
                 });
 
-            if (result != null) {
-                return result;
-            } else {
-                if (onFailAction) {
+            success = await this.isConditionMet(result);
+            if (!success) {
+                if (this.failAction) {
                     await Promise.resolve()
-                        .then(onFailAction)
-                        .catch((err) => {
+                        .then(this.failAction)
+                        .catch(() => {
                             /* ignore */
                         });
                 }
-                delayMs = this.calculateBackOffDelay(startDelayMs, delayMs, delayType);
-                await wait.forDuration(delayMs);
+                await wait.forDuration(this.currentDelay);
             }
-        } while (result == null);
-        return null;
+            this.#totalAttempts++;
+            this.#currentDelay = Retry.calculateBackOffDelay(this.startDelay, this.currentDelay, this.backOffType);
+        }
+        return result;
     }
+}
 
-    calculateBackOffDelay(startDelayMs: number, currentDelayMs: number, retryType: RetryBackOffType): number {
+export module Retry {
+    /**
+     * calculates the number of milliseconds to delay between retry attempts using a
+     * `RetryBackOffType` to determine if the value should increase and how if so
+     * @param startDelayMs the number of milliseconds delay at the start
+     * @param currentDelayMs the number of milliseconds delay last used
+     * @param retryType the `RetryBackOffType` delay type to use
+     * @returns the number of milliseconds to delay next time
+     */
+    export function calculateBackOffDelay(startDelayMs: number, currentDelayMs: number, retryType: RetryBackOffType): number {
         switch (retryType) {
             case 'linear':
                 return currentDelayMs + startDelayMs;
@@ -96,4 +148,13 @@ class Retry {
     }
 }
 
-export const retry = new Retry();
+/**
+ * generates a new `Retry` instance that runs a given `retryable` until it
+ * successfully passes a `condition`
+ * @param retryable the function to be retried until it passes a default
+ * condition of return value != null or a custom `condition`
+ * @returns a `Retry` instance
+ */
+export const retry = <T>(retryable: Func<void, T | PromiseLike<T>>): Retry<T> => {
+    return new Retry<T>(retryable);
+};

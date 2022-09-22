@@ -28,19 +28,19 @@ export class MobileAppFacet extends UiFacet<MobileAppFacetOptions> {
         const maxWait = options.maxWaitMs ?? this.maxWaitMs;
         const delay = options.retryDelayMs ?? this.retryDelayMs;
         const delayType = options.retryDelayBackOff ?? this.retryDelayBackOff;
-        return wait.forResult(() => retry.untilResult(() => {
+        return wait.forResult(() => retry(() => {
             return this.getRoot().then(r => r.$$(options.locator));
-        }, delay, delayType), maxWait);
+        }).withStartDelayBetweenAttempts(delay).withBackOff(delayType), maxWait);
     }
 
     override async getElement(options: MobileAppElementOptions): Promise<Element<'async'>> {
         const maxWait = options.maxWaitMs ?? this.maxWaitMs;
         const delay = options.retryDelayMs ?? this.retryDelayMs;
         const delayType = options.retryDelayBackOff ?? this.retryDelayBackOff;
-        return wait.forResult(() => retry.untilResult(() => {
+        return wait.forResult(() => retry(() => {
             return this.getRoot()
                 .then(r => r.$(options.locator));
-        }, delay, delayType), maxWait);
+        }).withStartDelayBetweenAttempts(delay).withBackOff(delayType), maxWait);
     }
     
     override async getFacet<T extends UiFacet<MobileAppFacetOptions>>(facetType: Class<T>, options?: MobileAppFacetOptions): Promise<T> {
@@ -56,7 +56,7 @@ export class MobileAppFacet extends UiFacet<MobileAppFacetOptions> {
     }
     
     override async getRoot(): Promise<Element<'async'>>  {
-        return wait.forResult(() => retry.untilResult(() => {
+        return wait.forResult(() => retry(() => {
             if (this.parent) {
                 return this.parent.getRoot()
                     .then(r => r.$$(this.locator))
@@ -65,6 +65,6 @@ export class MobileAppFacet extends UiFacet<MobileAppFacetOptions> {
                 return this.session.driver.$$(this.locator)
                     .then(els => els[this.index]);
             }
-        }, this.retryDelayMs, this.retryDelayBackOff), this.maxWaitMs);
+        }).withStartDelayBetweenAttempts(this.retryDelayMs).withBackOff(this.retryDelayBackOff), this.maxWaitMs);
     }
 }
