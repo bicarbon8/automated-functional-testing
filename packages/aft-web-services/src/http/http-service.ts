@@ -102,15 +102,19 @@ export class HttpService implements IHasConfig<HttpServiceOptions>, IHasOptions<
      * @param req a `HttpResponse` object that specifies details of the request
      */
     async performRequest(req?: HttpRequest): Promise<HttpResponse> {
-        req = await this.setRequestDefaults(req);
-        await req.logMgr?.debug(`issuing '${req.method}' request to '${req.url}' with post body '${req.postData}' and headers '${JSON.stringify(req.headers)}'.`);
-        
-        let message: http.IncomingMessage = await this._request(req);
+        try {
+            req = await this.setRequestDefaults(req);
+            await req.logMgr?.debug(`issuing '${req.method}' request to '${req.url}' with post body '${req.postData}' and headers '${JSON.stringify(req.headers)}'.`);
+            
+            let message: http.IncomingMessage = await this._request(req);
 
-        let resp: HttpResponse = await this._response(message, req);
+            let resp: HttpResponse = await this._response(message, req.allowAutoRedirect);
 
-        await req.logMgr?.debug(`received response of '${resp.data}' and headers '${JSON.stringify(resp.headers)}'.`);
-        return resp;
+            await req.logMgr?.debug(`received response of '${resp.data}' and headers '${JSON.stringify(resp.headers)}'.`);
+            return resp;
+        } catch (e) {
+            return Promise.reject(e);
+        }
     }
 
     private async setRequestDefaults(req?: HttpRequest): Promise<HttpRequest> {
@@ -138,13 +142,17 @@ export class HttpService implements IHasConfig<HttpServiceOptions>, IHasOptions<
                     req = client.request(r.url, {
                         headers: form.getHeaders(r.headers),
                         method: r.method
-                    }, resolve);
-                    form.pipe(req, {end: true});
+                    }, (msg: http.IncomingMessage) => {
+                        resolve(msg);
+                    });
+                    req = form.pipe(req, {end: true});
                 } else {
                     req = client.request(r.url, {
                         headers: r.headers,
                         method: r.method
-                    }, resolve);
+                    }, (msg: http.IncomingMessage) => {
+                        resolve(msg);
+                    });
                     if (r.method == 'POST' || r.method == 'UPDATE' || r.method == 'PUT') {
                         if (r.postData) {
                             req.write(JSON.stringify(r.postData));
@@ -159,11 +167,11 @@ export class HttpService implements IHasConfig<HttpServiceOptions>, IHasOptions<
         return message;
     }
 
-    private async _response(message: http.IncomingMessage, req: HttpRequest): Promise<HttpResponse> {
+    private async _response(message: http.IncomingMessage, allowAutoRedirect: boolean = true): Promise<HttpResponse> {
         message.setEncoding('utf8');
         // handle 302 redirect response if enabled
-        if (message.statusCode == 302 && req.allowAutoRedirect) {
-            let req: HttpRequest = {
+        if (message.statusCode == 302 && allowAutoRedirect) {
+            const req: HttpRequest = {
                 url: message.headers.location,
                 headers: {'Cookie': ''}
             };
@@ -174,10 +182,10 @@ export class HttpService implements IHasConfig<HttpServiceOptions>, IHasOptions<
                     }
                 }
             }
-            let redirectedMessage: http.IncomingMessage = await this._request(req);
-            return await this._response(redirectedMessage, req);
+            const redirectedMessage: http.IncomingMessage = await this._request(req);
+            return await this._response(redirectedMessage, allowAutoRedirect);
         } else {
-            let response: HttpResponse = {
+            const response: HttpResponse = {
                 statusCode: message.statusCode,
                 headers: message.headers
             };

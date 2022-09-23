@@ -23,5 +23,5 @@ export async function using<T extends Disposable>(disposable: T, func: Func<T, v
         err = e;
         return Promise.reject(e);
     })                                // and then dispose with any Error
-    .finally(() => disposable.dispose(err));
+    .finally(() => disposable?.dispose(err));
 }

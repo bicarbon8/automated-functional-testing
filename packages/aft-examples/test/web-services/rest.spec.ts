@@ -12,11 +12,10 @@ describe('REST Request', () => {
             let response: HttpResponse;
             await verify(async (tw) => {            
                 await tw.logMgr.step('making request...');
-                response = await retry(() => httpService.performRequest({
+                response = await httpService.performRequest({
                     url: 'https://reqres.in/api/users?page=2',
                     logMgr: tw.logMgr
-                })).withMaxDuration(30000)
-                .withBackOff('exponential');
+                });
                 expect(response).to.exist;
                 await tw.logMgr.info('request completed and received status code: ' + response.statusCode);
                 return response.statusCode;
@@ -47,18 +46,22 @@ describe('REST Request', () => {
         }).withDescription('can make GET request from JSON REST API');
     });
 
-    it('can make a multipart post', async () => {
+    it.only('can make a multipart post', async () => {
         await verify(async (tw: Verifier) => {
             let formData = new FormData();
             formData.append('file', fs.createReadStream(path.join(process.cwd(), 'LICENSE')));
             await tw.logMgr.step('about to send multipart post...');
-            let resp: HttpResponse = await httpService.performRequest({
+            let resp: HttpResponse = await retry(() => httpService.performRequest({
                 multipart: true,
-                url: 'https://httpbin.org/post',
+                url: 'https://shttpbin.org/post',
                 postData: formData,
                 method: 'POST',
                 logMgr: tw.logMgr
-            });
+            })).until((res: HttpResponse) => res.statusCode >= 200 && res.statusCode < 400)
+            .withStartDelayBetweenAttempts(100)
+            .withBackOff('exponential')
+            .withMaxDuration(30000);
+
             expect(resp).to.not.be.undefined;
             return resp.data;
         }).withDescription('can make a multipart post')

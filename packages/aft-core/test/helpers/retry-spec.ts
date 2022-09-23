@@ -54,7 +54,8 @@ describe('Retry', () => {
         let attempts: number = 0;
         await retry(() => ++attempts)
             .until((res: number) => res > 100)
-            .withMaxAttempts(10);
+            .withMaxAttempts(10)
+            .rejectIfUnsuccessful(false);
 
         expect(attempts).toEqual(10);
         const elapsed = convert.toElapsedMs(now);
@@ -64,15 +65,34 @@ describe('Retry', () => {
     it('can set a maximum duration to run', async () => {
         const now = Date.now();
         let attempts: number = 0;
-        await retry(() => ++attempts)
+        const r = retry(() => ++attempts)
             .until((res: number) => res > Infinity)
             .withStartDelayBetweenAttempts(100)
             .withBackOff('constant')
-            .withMaxDuration(500);
+            .withMaxDuration(500)
+            .rejectIfUnsuccessful(false);
+        await Promise.resolve(r);
 
         const elapsed = convert.toElapsedMs(now);
-        expect(attempts).toEqual(10);
+        expect(attempts).toBeGreaterThan(3);
+        expect(r.totalAttempts).toBeGreaterThan(3);
+        expect(r.totalDuration).toBeGreaterThan(300);
+        expect(r.totalDuration).toBeLessThan(700);
         expect(elapsed).toBeLessThan(1000);
+    });
+
+    it('returns a rejected promise if max duration or attempts is exceeded before success', async () => {
+        let attempts = 0;
+        let errStr: string;
+        const r = retry(() => ++attempts)
+            .until((res: number) => res > Infinity)
+            .withMaxAttempts(100);
+        await Promise.resolve(r).catch((err) => errStr = err);
+
+        expect(errStr).toBeDefined();
+        expect(errStr).toContain('over 100 attempts');
+        expect(r.result).toEqual(100);
+        expect(r.isSuccessful).toBe(false);
     });
 
     it('can handle a rejected promise in the passed in func', async () => {

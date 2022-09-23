@@ -22,7 +22,7 @@ describe('Wait', () => {
         }, 500);
 
         const elapsed: number = convert.toElapsedMs(start);
-        expect(result).toBeNull();
+        expect(result).toBeUndefined();
         expect(elapsed).toBeLessThan(1000);
     });
 
