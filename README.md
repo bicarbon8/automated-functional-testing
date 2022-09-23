@@ -70,8 +70,12 @@ verify(() => {throw new Error('failure');}) // AFT will report as 'failed'
 
 ## Packages (click on name for more info)
 - [`aft-core`](./packages/aft-core/README.md) - base library containing helpers and configuration and plugin managers
+- [`aft-examples`](./packages/aft-examples/README.md) - provides real-world examples of how the AFT libraries can be used in functional tests
+- [`aft-jasmine-reporter`](./packages/aft-jasmine-reporter/README.md) - a Jasmine Reporter Plugin that integrates with AFT to simplify logging and test execution via AFT
 - [`aft-logging-awskinesis`](./packages/aft-logging-awskinesis/README.md) - logging plugin supporting logging to AWS Kinesis Firehose
+- [`aft-logging-filesystem`](./packages/aft-logging-filesystem/README.md) - logging plugin supporting logging to .log files for all log output
 - [`aft-logging-html`](./packages/aft-logging-html/README.md) - logging plugin supporting logging to a HTML results file
+- [`aft-mocha-reporter`](./packages/aft-mocha-reporter/README.md) - provides Mocha Reporter Plugin that integrates with AFT to simplify logging and test execution via AFT
 - [`aft-testrail`](./packages/aft-testrail/README.md) - logging and test case management plugins supporting logging test results and filtering test execution based on TestRail Projects, Suites and Plans
 - [`aft-ui`](./packages/aft-ui/README.md) - base library supporting development of UI testing packages
 - [`aft-ui-browsers`](./packages/aft-ui-browsers/README.md) - adds support for Selenium-based UI testing using BrowserStack, Sauce Labs or your own Selenium Grid
@@ -139,3 +143,5 @@ the purpose of a `DefectPlugin` implementation is to provide execution control o
 > NOTE: all changes require unit tests and these tests are expected to pass when run via `npm run test`
 
 > NOTE: check for any circular dependencies using `npx dpdm -T --warning false **/index.ts`
+
+> NOTE: use `npx lerna version` to automatically update the version of all projects at once (all changes must be committed first)
