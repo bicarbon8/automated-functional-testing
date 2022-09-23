@@ -1,3 +1,4 @@
+import { convert } from "./convert";
 import { Func, RetryBackOffType } from "./custom-types";
 import { wait } from "./wait";
 
@@ -15,6 +16,9 @@ export class Retry<T> implements PromiseLike<T> {
     #totalAttempts: number;
     #failAction: Func<void, any>;
     #err: any;
+    #maxDuration: number;
+    #totalDuration: number;
+    #success: boolean;
 
     constructor(retryable: Func<void, T | PromiseLike<T>>) {
         this.#retryable = retryable;
@@ -24,92 +28,204 @@ export class Retry<T> implements PromiseLike<T> {
         this.#maxAttempts = Infinity;
         this.#totalAttempts = 0;
         this.#condition = (result: T) => result != null;
+        this.#maxDuration = Infinity;
     }
 
+    /**
+     * the `Func<void, T | PromiseLike<T>>` to call until it's return
+     * value passes the `condition`
+     */
     get retryable(): Func<void, T | PromiseLike<T>> {
         return this.#retryable;
     }
 
+    /**
+     * the starting amount to delay between retries (defaults to 1ms).
+     * call `withStartDelayBetweenAttempts(number)` to specify a value
+     */
     get startDelay(): number {
         return this.#delay;
     }
 
+    /**
+     * the millisecond delay amount most recently used (or to be used) between
+     * retry attempts 
+     */
     get currentDelay(): number {
         return this.#currentDelay;
     }
 
+    /**
+     * the `RetryBackOffType` used to determine how the delay between
+     * attempts changes on each subsequent attempt
+     */
     get backOffType(): RetryBackOffType {
         return this.#backOffType;
     }
 
+    /**
+     * a `Func<T, boolean | PromiseLike<boolean>` (function accepting an argument of type `T`
+     * and returning a boolean result) that is used to determine if the `retryable` is successful
+     */
     get condition(): Func<T, boolean | PromiseLike<boolean>> {
         return this.#condition;
     }
 
+    /**
+     * the maximum number of retries to attempt before giving up (defaults to `Infinity`).
+     * call `withMaxAttempts(number)` to specify a value
+     */
     get maxAttempts(): number {
         return this.#maxAttempts;
     }
 
+    /**
+     * the total number of attempts actually executed at the time this is called
+     */
     get totalAttempts(): number {
         return this.#totalAttempts;
     }
 
+    /**
+     * a `Func<void, any>` to call each time the `retryable` does not succeed
+     * (defaults to undefined). call `withFailAction(func)` to specify a value
+     */
     get failAction(): Func<void, any> {
         return this.#failAction;
     }
 
+    /**
+     * the last error returned by the `retryable` (if any)
+     */
     get lastError(): any {
         return this.#err;
     }
 
+    /**
+     * a maximum amount of time to call the `retryable` if it is not successful
+     * (defaults to `Infinity`). call `withMaxDuration(number)` to specify a value
+     */
+    get maxDuration(): number {
+        return this.#maxDuration;
+    }
+
+    /**
+     * the total amount of time spent calling the `retryable` until it succeeded
+     * or reached the maximum duration or number of attempts
+     */
+    get totalDuration(): number {
+        return this.#totalDuration;
+    }
+
+    get isSuccessful(): boolean {
+        return this.#success;
+    }
+
+    /**
+     * allows for specifying a starting number of milliseconds to delay between retry
+     * attempts (defaults to 1ms)
+     * @param delayMs the starting number of milliseconds to delay between attempts
+     * @returns the current `Retry<T>` instance
+     */
     withStartDelayBetweenAttempts(delayMs: number): this {
         this.#delay = delayMs;
         return this;
     }
 
+    /**
+     * allows for specifying a `RetryBackOffType` used to calculate the delay between attempts
+     * (default is `constant` which will continually use the value specified for `startDelay`)
+     * @param backOffType a `RetryBackOffType` used to calculate the delay between attempts
+     * @returns the current `Retry<T>` instance
+     */
     withBackOff(backOffType: RetryBackOffType): this {
         this.#backOffType = backOffType;
         return this;
     }
 
-    until(func: Func<T, boolean | PromiseLike<boolean>>): this {
-        this.#condition = func;
+    /**
+     * allows for specifying a custom `condition` to determine the success of calling
+     * the `retryable` (default is if the `retryable` returns a non-null and non-undefined result)
+     * @param condition a function that accepts an argument of type `T` and returns
+     * a `boolean` result based on a comparison of the argument with an expectation
+     * @returns the current `Retry<T>` instance
+     */
+    until(condition: Func<T, boolean | PromiseLike<boolean>>): this {
+        this.#condition = condition;
         return this;
     }
 
+    /**
+     * allows for specifying a limit to the number of retry attempts
+     * @param maxAttempts the maximum number of times to call the `retryable`
+     * @returns the current `Retry<T>` instance
+     */
     withMaxAttempts(maxAttempts: number): this {
         this.#maxAttempts = maxAttempts;
         return this;
     }
 
+    /**
+     * allows for specifying a function that will be called each time the
+     * `retryable` is called and doesn't succeed (doesn't pass the `condition`)
+     * @param func a function that accepts no arguments and returns anything
+     * @returns the current `Retry<T>` instance
+     */
     withFailAction(func: Func<void, any>): this {
         this.#failAction = func;
         return this;
     }
 
+    /**
+     * allows for specifying the maximum number of milliseconds to wait for
+     * the `retryable` to return a value that passes the `condition` (defaults
+     * to `Infinity`)
+     * @param durationMs the maximum number of milliseconds to wait for the
+     * `retryable` to succeed
+     * @returns the current `Retry<T>` instance
+     */
+    withMaxDuration(durationMs: number): this {
+        this.#maxDuration = durationMs;
+        return this;
+    }
+
+    /**
+     * tests the passed in `result` against the specified `condition` to
+     * determine if it succeeds
+     * @param result a value to test the `condition`
+     * @returns `true` if the `result` successfully passes the `condition`
+     * otherwise `false`
+     */
     async isConditionMet(result: T): Promise<boolean> {
         return Promise.resolve(this.condition(result));
     }
     
     async then<TResult1, TResult2 = never>(onfulfilled?: (value: T) => TResult1 | PromiseLike<TResult1>, onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2> {
-        return this._getInnerPromise()
-            .then(onfulfilled, onrejected);
+        if (this.maxDuration < Infinity) {
+            return wait.forResult(() => this._getInnerPromise(), this.maxDuration)
+                .then(onfulfilled, onrejected);
+        } else {
+            return this._getInnerPromise()
+                .then(onfulfilled, onrejected);
+        }
     }
 
     private async _getInnerPromise(): Promise<T> {
+        const startTime = Date.now();
         let result: T;
         this.#currentDelay = this.startDelay;
-        let success = false;
-        while (!success && this.#totalAttempts < this.#maxAttempts) {
+        this.#success = false;
+        this.#totalDuration = 0;
+        while (!this.isSuccessful && this.totalAttempts < this.maxAttempts && this.totalDuration < this.maxDuration) {
             result = await Promise.resolve()
                 .then(this.retryable)
                 .catch((e) => {
                     this.#err = e;
-                    return null;
+                    return undefined;
                 });
 
-            success = await this.isConditionMet(result);
-            if (!success) {
+            this.#success = await this.isConditionMet(result);
+            if (!this.isSuccessful) {
                 if (this.failAction) {
                     await Promise.resolve()
                         .then(this.failAction)
@@ -121,6 +237,7 @@ export class Retry<T> implements PromiseLike<T> {
             }
             this.#totalAttempts++;
             this.#currentDelay = Retry.calculateBackOffDelay(this.startDelay, this.currentDelay, this.backOffType);
+            this.#totalDuration = convert.toElapsedMs(startTime);
         }
         return result;
     }

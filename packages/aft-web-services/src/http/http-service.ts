@@ -1,4 +1,4 @@
-import { cfgmgr, IConfigProvider, IHasConfig, IHasOptions, LogManager, optmgr } from "aft-core";
+import { cfgmgr, IConfigProvider, IHasConfig, IHasOptions, optmgr } from "aft-core";
 import * as http from 'http';
 import * as https from 'https';
 import * as FormData from "form-data";

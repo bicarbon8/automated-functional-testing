@@ -28,29 +28,35 @@ export class FakeFacet extends UiFacet<FakeFacetOptions> {
         const maxWait = this.maxWaitMs;
         const loc = this.locator;
         const index = this.index;
-        const r: FakeWebElement = await wait.forResult(() => retry(() => {
+        const r: FakeWebElement = await retry(() => {
             if (this.parent) {
                 return this.parent.getRoot()
                     .then(p => p.findElements(loc)[index]);
             }
             return this.session.driver.findElements(loc)[index];
-        }).withStartDelayBetweenAttempts(500).withBackOff('linear'), maxWait);
+        }).withStartDelayBetweenAttempts(500)
+        .withBackOff('linear')
+        .withMaxDuration(maxWait);
         return r;
     }
     override async getElements(options: FakeElementOptions): Promise<FakeWebElement[]> {
         const duration: number = (options.maxWaitMs === undefined) ? this.maxWaitMs : options.maxWaitMs;
-        const elements: FakeWebElement[] = await wait.forResult(() => retry(() => {
+        const elements: FakeWebElement[] = await retry(() => {
             return this.getRoot()
                 .then(r => r.findElements(options.locator));
-        }).withStartDelayBetweenAttempts(500).withBackOff('linear'), duration);
+        }).withStartDelayBetweenAttempts(500)
+        .withBackOff('linear')
+        .withMaxDuration(duration);
         return elements;
     }
     override async getElement(options: FakeElementOptions): Promise<FakeWebElement> {
         const duration: number = (options.maxWaitMs === undefined) ? this.maxWaitMs : options.maxWaitMs;
-        const element: FakeWebElement = await wait.forResult(() => retry(() => {
+        const element: FakeWebElement = await retry(() => {
             return this.getRoot()
                 .then(r => r.findElement(options.locator));
-        }).withStartDelayBetweenAttempts(500).withBackOff('linear'), duration);
+        }).withStartDelayBetweenAttempts(500)
+        .withBackOff('linear')
+        .withMaxDuration(duration);
         return element;
     }
     override async getFacet<F extends UiFacet<FakeFacetOptions>>(facetType: Class<F>, options?: FakeFacetOptions): Promise<F> {

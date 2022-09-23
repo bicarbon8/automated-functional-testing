@@ -15,9 +15,10 @@ describe('Functional Browser Tests using AFT-UI-BROWSERS', () => {
             await loginPage.login("tomsmith", "SuperSecretPassword!");
 
             await tw.logMgr.step('wait for message to appear...')
-            await wait.forResult(() => retry(() => loginPage.hasMessage())
-                .withStartDelayBetweenAttempts(10)
-                .withBackOff('exponential'), 20000);
+            await retry(() => loginPage.hasMessage())
+                .withStartDelayBetweenAttempts(100)
+                .withBackOff('exponential')
+                .withMaxDuration(20000);
             
             await tw.logMgr.step('get message...');
             return await loginPage.getMessage();
@@ -69,9 +70,11 @@ describe('Functional Browser Tests using AFT-UI-BROWSERS', () => {
                 let loginPage: HerokuLoginPage = await tw.session.getFacet<HerokuLoginPage, BrowserFacetOptions>(HerokuLoginPage);
                 await loginPage.navigateTo();
                 await loginPage.login("tomsmith", "SuperSecretPassword!");
-                await wait.forResult(() => retry(() => loginPage.hasMessage())
-                    .withStartDelayBetweenAttempts(10)
-                    .withBackOff('exponential'), 20000);
+                await retry(() => loginPage.hasMessage())
+                    .until((res: boolean) => res)
+                    .withStartDelayBetweenAttempts(100)
+                    .withBackOff('exponential')
+                    .withMaxDuration(20000);
                 return await loginPage.getMessage();
             }).withDescription(`can run with multiple uiplatforms: ${uiplatform}`)
             .and.withBrowserSessionOptions({uiplatform: uiplatform})

@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as FormData from "form-data";
-import { between, greaterThan, havingValue, Verifier, verify } from "aft-core";
+import { between, greaterThan, havingValue, retry, Verifier, verify, wait } from "aft-core";
 import { httpData, HttpResponse, httpService } from 'aft-web-services';
 import { expect } from "chai";
 import { ListUsersResponse } from "./response-objects/list-users-response";
@@ -12,10 +12,11 @@ describe('REST Request', () => {
             let response: HttpResponse;
             await verify(async (tw) => {            
                 await tw.logMgr.step('making request...');
-                response = await httpService.performRequest({
+                response = await retry(() => httpService.performRequest({
                     url: 'https://reqres.in/api/users?page=2',
                     logMgr: tw.logMgr
-                });
+                })).withMaxDuration(30000)
+                .withBackOff('exponential');
                 expect(response).to.exist;
                 await tw.logMgr.info('request completed and received status code: ' + response.statusCode);
                 return response.statusCode;

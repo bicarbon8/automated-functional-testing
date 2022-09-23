@@ -61,6 +61,20 @@ describe('Retry', () => {
         expect(elapsed).toBeLessThan(1000);
     });
 
+    it('can set a maximum duration to run', async () => {
+        const now = Date.now();
+        let attempts: number = 0;
+        await retry(() => ++attempts)
+            .until((res: number) => res > Infinity)
+            .withStartDelayBetweenAttempts(100)
+            .withBackOff('constant')
+            .withMaxDuration(500);
+
+        const elapsed = convert.toElapsedMs(now);
+        expect(attempts).toEqual(10);
+        expect(elapsed).toBeLessThan(1000);
+    });
+
     it('can handle a rejected promise in the passed in func', async () => {
         let result = 0;
         const trueResult = await retry(() => {

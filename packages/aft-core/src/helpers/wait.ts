@@ -15,13 +15,13 @@ class Wait {
      * waits up to the specified `maxDurationMs` for a result from the passed in `func`
      * @param func a synchronous or async function returning a result of type `T`
      * @param maxDurationMs the maximum amount of time to wait (defaults to 30 seconds)
-     * @returns the result of the passed in `func` or `null` if the `maxDurationMs` elapses before `func`
+     * @returns the result of the passed in `func` or `undefined` if the `maxDurationMs` elapses before `func`
      * returns a result
      */
     async forResult<T>(func: Func<void, T | PromiseLike<T>>, maxDurationMs: number = 30000): Promise<T> {
         return await Promise.race([
             Promise.resolve().then(func).catch((err) => Promise.reject(err)),
-            new Promise<T>((resolve) => setTimeout(resolve, maxDurationMs, null))
+            new Promise<T>((resolve) => setTimeout(resolve, maxDurationMs, undefined))
         ]);
     }
 

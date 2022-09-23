@@ -30,20 +30,22 @@ export class BrowserFacet extends UiFacet<BrowserFacetOptions> {
         const maxWait = options.maxWaitMs ?? this.maxWaitMs;
         const delay = options.retryDelayMs ?? this.retryDelayMs;
         const delayType = options.retryDelayBackOff ?? this.retryDelayBackOff;
-        return wait.forResult(() => retry(() => this.getRoot()
+        return retry(() => this.getRoot()
             .then(r => r.findElements(options.locator)))
             .withStartDelayBetweenAttempts(delay)
-            .withBackOff(delayType), maxWait);
+            .withBackOff(delayType)
+            .withMaxDuration(maxWait);
     }
 
     override async getElement(options: WebElementOptions): Promise<WebElement> {
         const maxWait = options.maxWaitMs ?? this.maxWaitMs;
         const delay = options.retryDelayMs ?? this.retryDelayMs;
         const delayType = options.retryDelayBackOff ?? this.retryDelayBackOff;
-        const element: WebElement = await wait.forResult(() => retry(() => this.getRoot()
+        const element: WebElement = await retry(() => this.getRoot()
             .then(r => r.findElement(options.locator)))
             .withStartDelayBetweenAttempts(delay)
-            .withBackOff(delayType), maxWait);
+            .withBackOff(delayType)
+            .withMaxDuration(maxWait);
         return element;
     }
     
@@ -60,7 +62,7 @@ export class BrowserFacet extends UiFacet<BrowserFacetOptions> {
     }
     
     override async getRoot(): Promise<WebElement>  {
-        return wait.forResult(() => retry(() => {
+        return retry(() => {
             if (this.parent) {
                 return this.parent.getRoot()
                     .then(r => r.findElements(this.locator))
@@ -69,6 +71,8 @@ export class BrowserFacet extends UiFacet<BrowserFacetOptions> {
                 return this.session.driver.findElements(this.locator)
                     .then(els => els[this.index]);
             }
-        }).withStartDelayBetweenAttempts(this.retryDelayMs).withBackOff(this.retryDelayBackOff), this.maxWaitMs);
+        }).withStartDelayBetweenAttempts(this.retryDelayMs)
+        .withBackOff(this.retryDelayBackOff)
+        .withMaxDuration(this.maxWaitMs);
     }
 }
