@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as FormData from "form-data";
-import { between, greaterThan, havingValue, lessThan, retry, Verifier, verify } from "aft-core";
+import { greaterThan, havingValue, lessThan, retry, verify } from "aft-core";
 import { httpData, HttpResponse, httpService } from 'aft-web-services';
 import { expect } from "chai";
 import { ListUsersResponse } from "./response-objects/list-users-response";

@@ -33,5 +33,10 @@
 	"remoteUser": "node",
 	"features": {
 		"git": "os-provided"
+	},
+
+	"containerEnv": {
+		"browserstack_user": "${localEnv:browserstack_user}",
+		"browserstack_key": "${localEnv:browserstack_key}"
 	}
 }
