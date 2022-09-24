@@ -46,14 +46,14 @@ describe('REST Request', () => {
         }).withDescription('can make GET request from JSON REST API');
     });
 
-    it.only('can make a multipart post', async () => {
+    it('can make a multipart post', async () => {
         await verify(async (tw: Verifier) => {
             let formData = new FormData();
             formData.append('file', fs.createReadStream(path.join(process.cwd(), 'LICENSE')));
             await tw.logMgr.step('about to send multipart post...');
-            let resp: HttpResponse = await retry(() => httpService.performRequest({
+            const r = retry(() => httpService.performRequest({
                 multipart: true,
-                url: 'https://shttpbin.org/post',
+                url: 'https://httpbin.org/post',
                 postData: formData,
                 method: 'POST',
                 logMgr: tw.logMgr
@@ -62,7 +62,10 @@ describe('REST Request', () => {
             .withBackOff('exponential')
             .withMaxDuration(30000);
 
-            expect(resp).to.not.be.undefined;
+            const resp: HttpResponse = await Promise.resolve(r);
+            if (!r.isSuccessful) {
+                await tw.logMgr.error(r.lastError);
+            }
             return resp.data;
         }).withDescription('can make a multipart post')
         .returns(havingValue());

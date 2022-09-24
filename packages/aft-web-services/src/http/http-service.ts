@@ -106,12 +106,12 @@ export class HttpService implements IHasConfig<HttpServiceOptions>, IHasOptions<
             req = await this.setRequestDefaults(req);
             await req.logMgr?.debug(`issuing '${req.method}' request to '${req.url}' with post body '${req.postData}' and headers '${JSON.stringify(req.headers)}'.`);
             
-            let message: http.IncomingMessage = await this._request(req);
-
-            let resp: HttpResponse = await this._response(message, req.allowAutoRedirect);
-
-            await req.logMgr?.debug(`received response of '${resp.data}' and headers '${JSON.stringify(resp.headers)}'.`);
-            return resp;
+            return this._request(req)
+                .then((message: http.IncomingMessage) => this._response(message, req.allowAutoRedirect))
+                .then(async (resp: HttpResponse) => {
+                    await req.logMgr?.debug(`received response of '${resp.data}' and headers '${JSON.stringify(resp.headers)}'.`)
+                    return resp;
+                });
         } catch (e) {
             return Promise.reject(e);
         }
@@ -142,24 +142,20 @@ export class HttpService implements IHasConfig<HttpServiceOptions>, IHasOptions<
                     req = client.request(r.url, {
                         headers: form.getHeaders(r.headers),
                         method: r.method
-                    }, (msg: http.IncomingMessage) => {
-                        resolve(msg);
                     });
                     req = form.pipe(req, {end: true});
                 } else {
                     req = client.request(r.url, {
                         headers: r.headers,
                         method: r.method
-                    }, (msg: http.IncomingMessage) => {
-                        resolve(msg);
                     });
-                    if (r.method == 'POST' || r.method == 'UPDATE' || r.method == 'PUT') {
-                        if (r.postData) {
-                            req.write(JSON.stringify(r.postData));
-                        }
+                    if (r.postData) {
+                        req.write(JSON.stringify(r.postData));
                     }
                     req.end(); // close the request
                 }
+                req?.on('error', reject);
+                req?.on('response', resolve);
             } catch (e) {
                 reject(e);
             }

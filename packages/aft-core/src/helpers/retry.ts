@@ -215,13 +215,13 @@ export class Retry<T> implements PromiseLike<T> {
     }
 
     /**
-     * allows for specifying `false` if `undefined` should be returned if the `retryable`
+     * allows for specifying `false` if the last result should be returned if the `retryable`
      * cannot successfully pass the `condition` instead of returning a rejected promise
      * @param enable a `boolean` indicating if a rejected promise should be returned
      * if the `retryable` is unable to successfully pass the `condition` within either
      * the maximum number of attempts or duration specified (default is `true`)
      * @returns `true` if a rejected promise is returned on failure or `false` if a
-     * resolved promise of `undefined` should be returned instead
+     * resolved promise of the last result should be returned instead
      */
     rejectIfUnsuccessful(enable: boolean): this {
         this.#reject = enable;
