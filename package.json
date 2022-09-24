@@ -16,7 +16,7 @@
     "test-mobile-apps": "npm run test --workspace=aft-ui-mobile-apps",
     "test-web-services": "npm run test --workspace=aft-web-services",
     "test-html": "npm run test --workspace=aft-logging-html",
-    "test-examples": "npm run test-sync --workspace=aft-examples",
+    "test-examples": "npm run test-e2e --workspace=aft-examples",
     "test-filesystem": "npm run test --workspace=aft-logging-filesystem",
     "test-mocha": "npm run test --workspace=aft-mocha-reporter",
     "test-jasmine": "npm run test --workspace=aft-jasmine-reporter"

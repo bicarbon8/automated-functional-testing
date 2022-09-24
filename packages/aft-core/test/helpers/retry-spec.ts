@@ -95,7 +95,7 @@ describe('Retry', () => {
         expect(r.isSuccessful).toBe(false);
     });
 
-    it('can handle a rejected promise in the passed in func', async () => {
+    it('can handle rejected promises', async () => {
         let result = 0;
         const trueResult = await retry(() => {
             result += 1;
@@ -105,13 +105,14 @@ describe('Retry', () => {
             return result > 1;
         })
         .until((res: boolean) => res)
-        .withStartDelayBetweenAttempts(1);
+        .withStartDelayBetweenAttempts(1)
+        .withFailAction(() => Promise.reject('fake fail action error'));
 
         expect(result).toEqual(2);
         expect(trueResult).toBe(true);
     });
 
-    it('can handle exceptions in the failure action on each failed attempt', async () => {
+    it('can handle exceptions', async () => {
         let result: number = 0;
         await retry(() => {
             result += 1;
@@ -121,7 +122,8 @@ describe('Retry', () => {
             return result > 1;
         })
         .until((res: boolean) => res)
-        .withStartDelayBetweenAttempts(200);
+        .withStartDelayBetweenAttempts(200)
+        .withFailAction(() => {throw new Error('fake fail action error');});
 
         expect(result).toEqual(2);
     });

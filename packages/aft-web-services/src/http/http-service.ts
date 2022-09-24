@@ -104,41 +104,38 @@ export class HttpService implements IHasConfig<HttpServiceOptions>, IHasOptions<
     async performRequest(req?: HttpRequest): Promise<HttpResponse> {
         try {
             req = await this.setRequestDefaults(req);
+
             await req.logMgr?.debug(`issuing '${req.method}' request to '${req.url}' with post body '${req.postData}' and headers '${JSON.stringify(req.headers)}'.`);
             
-            return this._request(req)
-                .then((message: http.IncomingMessage) => this._response(message, req.allowAutoRedirect))
-                .then(async (resp: HttpResponse) => {
-                    await req.logMgr?.debug(`received response of '${resp.data}' and headers '${JSON.stringify(resp.headers)}'.`)
-                    return resp;
-                });
+            const message = await this._request(req);
+            const resp = await this._response(message, req.allowAutoRedirect);
+
+            await req.logMgr?.debug(`received response data of '${resp?.data}' and headers '${JSON.stringify(resp?.headers)}'.`)
+            
+            return resp;
         } catch (e) {
             return Promise.reject(e);
         }
     }
 
     private async setRequestDefaults(req?: HttpRequest): Promise<HttpRequest> {
-        req = req || {} as HttpRequest;
-        req.url = req.url || await this.config('defaultUrl', 'http://127.0.0.1');
-        req.headers = req.headers || await this.config('defaultHeaders', {});
-        req.method = req.method || await this.config<any, HttpMethod>('defaultMethod', 'GET');
-        if (req.allowAutoRedirect === undefined) {
-            req.allowAutoRedirect = await this.config('defaultAllowRedirect', true);
-        }
-        req.postData = req.postData || await this.config('defaultPostData');
-        if (req.multipart === undefined) {
-            req.multipart = await this.config('defaultMultipart', false);
-        }
+        req ??=  {} as HttpRequest;
+        req.url ??= await this.config('defaultUrl', 'http://127.0.0.1');
+        req.headers ??= await this.config('defaultHeaders', {});
+        req.method ??= await this.config<any, HttpMethod>('defaultMethod', 'GET');
+        req.allowAutoRedirect ??= await this.config('defaultAllowRedirect', true);
+        req.postData ??= await this.config('defaultPostData');
+        req.multipart ??= await this.config('defaultMultipart', false);
         return req;
     }
 
     private async _request(r: HttpRequest): Promise<http.IncomingMessage> {
-        let message: http.IncomingMessage = await new Promise<http.IncomingMessage>((resolve, reject) => {
+        return new Promise<http.IncomingMessage>((resolve, reject) => {
             try {
-                let client = (r.url.includes('https://')) ? https : http;
+                const client = (r.url.includes('https://')) ? https : http;
                 let req: http.ClientRequest;
                 if (r.multipart) {
-                    let form: FormData = r.postData as FormData;
+                    const form: FormData = r.postData as FormData;
                     req = client.request(r.url, {
                         headers: form.getHeaders(r.headers),
                         method: r.method
@@ -160,7 +157,6 @@ export class HttpService implements IHasConfig<HttpServiceOptions>, IHasOptions<
                 reject(e);
             }
         });
-        return message;
     }
 
     private async _response(message: http.IncomingMessage, allowAutoRedirect: boolean = true): Promise<HttpResponse> {

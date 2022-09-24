@@ -1,3 +1,4 @@
+import { convert, rand, retry } from "aft-core";
 import * as FormData from "form-data";
 import { httpService, HttpRequest, HttpResponse, httpData } from "../../src";
 import { HttpService } from "../../src/http/http-service";
@@ -110,6 +111,20 @@ describe('HttpService', () => {
         expect(response.statusCode).toEqual(200);
         expect(response.data).toEqual(mockResponse.data);
     });
+
+    it('can handle unreachable URLs', async () => {
+        let svc: HttpService = new HttpService();
+        let request: HttpRequest = {
+            url: `http://${rand.getString(12)}`,
+            method: 'GET'
+        };
+
+        let e: any;
+        const response: HttpResponse = await svc.performRequest(request)
+            .catch((err) => e = err);
+        expect(e).toBeDefined();
+        expect(e.toString()).toContain('getaddrinfo ENOTFOUND');
+    }, 30000);
 
     /**
      * NOTE: only for functional local testing. not to be enabled for committed code
