@@ -123,7 +123,7 @@ describe('HttpService', () => {
         const response: HttpResponse = await svc.performRequest(request)
             .catch((err) => e = err);
         expect(e).toBeDefined();
-        expect(e.toString()).toContain('getaddrinfo ENOTFOUND');
+        expect(e.toString()).toContain('getaddrinfo'); // DNS error
     }, 30000);
 
     /**
