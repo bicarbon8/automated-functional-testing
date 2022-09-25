@@ -2,10 +2,10 @@ import * as fs from "fs";
 import * as path from "path";
 import * as FormData from "form-data";
 import { greaterThan, havingValue, lessThan, retry, verify } from "aft-core";
+import { AftLog, AftTest } from "aft-mocha-reporter";
 import { httpData, HttpResponse, httpService } from 'aft-web-services';
 import { expect } from "chai";
 import { ListUsersResponse } from "./response-objects/list-users-response";
-import { AftLog, AftTest } from "aft-mocha-reporter";
 
 describe('REST Request', () => {
     it('can make GET request from JSON REST API', async function() {

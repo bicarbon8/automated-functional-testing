@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./logs && rimraf ./FileSystemMap && rimraf ./testresults.html",
-    "build": "npm run clean && tsc --build",
+    "build-e2e": "npm run clean && tsc --build",
     "test-e2e": "npm run build && mocha"
   },
   "repository": {
@@ -30,10 +30,10 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
+    "aft-mocha-reporter": "^9.0.0",
     "aft-logging-awskinesis": "^9.0.0",
     "aft-logging-filesystem": "^9.0.0",
     "aft-logging-html": "^9.0.0",
-    "aft-mocha-reporter": "^9.0.0",
     "aft-testrail": "^9.0.0",
     "aft-ui-browsers": "^9.0.0",
     "aft-ui-mobile-apps": "^9.0.0"
@@ -44,7 +44,7 @@
     "@types/node": "^15.0.1",
     "@types/selenium-webdriver": "^4.0.12",
     "chai": "^4.3.4",
-    "mocha": "^8.3.2",
+    "mocha": "^10.0.0",
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
     "ts-mocha": "^10.0.0",
