@@ -21,6 +21,8 @@ jobs:
         id: unittest
         run: npm run test
       - name: Functional Test
+        # only run functional tests on internal PRs
+        if: github.repository == 'bicarbon8/automated-functional-testing'
         id: functionaltest
         run: npm run test-examples
         env:
