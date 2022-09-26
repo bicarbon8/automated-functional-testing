@@ -11,10 +11,14 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '18'
-      - name: Build and Unit Test
-        id: buidtest
+      - name: Install Dependencies
+        id: installdeps
         run: npm ci
+      - name: Build Projects
+        id: buildproj
         run: npm run build
+      - name: Run Unit Tests
+        id: unittest
         run: npm run test
       - name: Functional Test
         id: functionaltest
