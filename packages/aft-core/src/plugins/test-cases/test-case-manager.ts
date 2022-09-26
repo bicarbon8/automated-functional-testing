@@ -6,13 +6,15 @@ import { PluginManagerWithLogging, PluginManagerWithLoggingOptions } from "../pl
 export type TestCaseManagerOptions = PluginManagerWithLoggingOptions;
 
 /**
- * loads and provides an interface between any `ITestCasePlugin`
+ * loads and provides access to a `TestCasePlugin` for use in conditional test execution and filtering.
  * to specify a plugin use the following `aftconfig.json` key:
  * ```
  * {
  *   ...
- *   "testcasemanager": {
- *     "pluginNames": ["plugin-name"]
+ *   "TestCaseManager": {
+ *     "plugins": [
+ *       {"name": "test-case-plugin", "options": {"username": "foo@bar.com", "accesskey": "SuperSecretKey"}}
+ *     ]
  *   }
  *   ...
  * }

@@ -10,6 +10,25 @@ import { Func, ProcessingResult } from "./custom-types";
 import { rand } from "./rand";
 import { equaling, VerifierMatcher } from "./verifier-matcher";
 
+/**
+ * class to be used for executing some Functional Test Assertion after checking with any
+ * `TestCasePlugin` and `DefectPlugin` instances that have been loaded to confirm that the
+ * assertion should be executed based on referenced Test ID(s) or Defect ID(s)
+ * 
+ * Ex:
+ * ```
+ * await verify(async (v: Verifier) => {
+ *   await v.logMgr.info('doing some testing...');
+ *   let feature = new FeatureObj();
+ *   return await feature.returnExpectedValue();
+ * }).withDescription('example usage for Verifier')
+ * .and.withTestIds('C1234') // if TestCasePlugin.shouldRun('C1234') returns `false` the assertion is not run
+ * .and.withKnownDefectIds('AUTO-123') // if DefectPlugin.getDefect('AUTO-123').status === 'open' the assertion is not run
+ * .returns('expected value');
+ * ```
+ * @param assertion the {Func<Verifier, any>} function to be executed by this `Verifier`
+ * @returns a new `Verifier` instance
+ */
 export class Verifier implements PromiseLike<void> {
     protected _assertion: Func<Verifier, any>;
     protected _matcher: VerifierMatcher;
@@ -30,9 +49,10 @@ export class Verifier implements PromiseLike<void> {
     }
     
     /**
-     * a `LogManager` that uses either the `withDescription`
-     * or a list of `withTestId` or a uuid as the `logName` depending
-     * on which is available and where `description` is preferred most
+     * a `LogManager` that uses either the Description
+     * or a list of Test Ids or a `uuid` as the `logName` depending
+     * on which is available (NOTE: description is preferred most and
+     * will be used if other values are also present)
      */
     get logMgr(): LogManager {
         let logName: string;
@@ -379,14 +399,16 @@ export class Verifier implements PromiseLike<void> {
 /**
  * creates a new `Verifier` instace to be used for executing some Functional
  * Test Assertion.
- * ex:
+ * 
+ * Ex:
  * ```
  * await verify(async (v: Verifier) => {
  *   await v.logMgr.info('doing some testing...');
  *   let feature = new FeatureObj();
  *   return await feature.returnExpectedValue();
  * }).withDescription('example usage for Verifier')
- * .and.withTestId('C1234')
+ * .and.withTestIds('C1234') // if TestCasePlugin.shouldRun('C1234') returns `false` the assertion is not run
+ * .and.withKnownDefectIds('AUTO-123') // if DefectPlugin.getDefect('AUTO-123').status === 'open' the assertion is not run
  * .returns('expected value');
  * ```
  * @param assertion the {Func<Verifier, any>} function to be executed by this `Verifier`

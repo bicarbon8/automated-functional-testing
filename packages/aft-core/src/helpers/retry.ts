@@ -284,18 +284,23 @@ export class Retry<T> implements PromiseLike<T> {
         }
         return this.result;
     }
-}
 
-export module Retry {
     /**
      * calculates the number of milliseconds to delay between retry attempts using a
-     * `RetryBackOffType` to determine if the value should increase and how if so
+     * `RetryBackOffType` to determine if the value should increase and how if so.
+     * 
+     * Ex:
+     * ```
+     * Retry.calculateBackOffDelay(10, 200, 'linear'); // returns 210
+     * Retry.calculateBackOffDelay(10, 200, 'exponential'); // returns 400
+     * Retry.calculateBackOffDelay(10, 200, 'constant'); // returns 10
+     * ```
      * @param startDelayMs the number of milliseconds delay at the start
      * @param currentDelayMs the number of milliseconds delay last used
      * @param retryType the `RetryBackOffType` delay type to use
      * @returns the number of milliseconds to delay next time
      */
-    export function calculateBackOffDelay(startDelayMs: number, currentDelayMs: number, retryType: RetryBackOffType): number {
+    static calculateBackOffDelay(startDelayMs: number, currentDelayMs: number, retryType: RetryBackOffType): number {
         switch (retryType) {
             case 'linear':
                 return currentDelayMs + startDelayMs;

@@ -12,6 +12,20 @@ import { ellide, EllipsisLocation } from "./ellide";
  * function is called. if the lock is not immediately available
  * the class will wait up to the `maxWaitDurationMs` before
  * throwing an exception
+ * 
+ * Ex:
+ * ```
+ * const maxWait = 10000; // 10 seconds
+ * const maxHold = 5000; // 5 seconds
+ * // wait a maximum of 10 seconds to aquire lock and then hold
+ * // lock for maximum of 5 seconds or until `unlock` is called
+ * const lock = new ExpiringFileLock('unique_name', maxWait, maxHold);
+ * try {
+ *     // perform action on shared resource...
+ * } finally {
+ *     lock?.unlock();
+ * }
+ * ```
  */
 export class ExpiringFileLock {
     public readonly lockName: string;

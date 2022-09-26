@@ -41,9 +41,8 @@ export type PluginManagerOptions = {
  *   "PluginManagerInstance": {
  *     ...
  *     "plugins": [
- *       {name: "some-custom-plugin", enabled: false, searchDirectory: "/full/path/to/search"},
- *       "some-other-plugin",
- *       {name: "a-third-plugin", searchDirectory: "../../relative-path-to-search", options: {"foo": "option used by plugin instance"}}
+ *       {"name": "some-custom-plugin", "enabled": false, "searchDirectory": "/full/path/to/search"},
+ *       {"name": "a-second-plugin", "searchDirectory": "../../relative-path-to-search", "options": {"foo": "option used by plugin instance"}}
  *     ],
  *     "bar": "configurataion used by PluginManagerInstance"
  *     ...

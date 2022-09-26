@@ -25,6 +25,12 @@ class Equaling implements VerifierMatcher {
 /**
  * used to perform a `a == b` comparison
  * between the `expected` and `actual` result
+ * like: 
+ * ```
+ * await verifier(() => 5).returns(equaling(5)); // succeeds
+ * await verifier(() => undefined).returns(equaling(null)); // succeeds
+ * await verifier(() => true).returns(equaling(false)); // fails
+ * ```
  * @param expected the expected value
  * @returns a new {Equaling} instance
  */
@@ -52,6 +58,12 @@ class Exactly implements VerifierMatcher {
 /**
  * used to perform a `a === b` comparison
  * between the `expected` and `actual` result
+ * like: 
+ * ```
+ * await verifier(() => 5).returns(exactly(5)); // succeeds
+ * await verifier(() => undefined).returns(exactly(null)); // fails
+ * await verifier(() => true).returns(exactly(false)); // fails
+ * ```
  * @param expected the expected value
  * @returns a new {Exactly} instance
  */
@@ -87,6 +99,15 @@ class NumberBetween implements VerifierMatcher {
 /**
  * used to perform a `min <= actual <= max` comparison
  * between the `minimum`, `maximum` and `actual` result
+ * like: 
+ * ```
+ * await verifier(() => 5).returns(between(5, 6)); // succeeds
+ * await verifier(() => 5).returns(between(4, 5)); // succeeds
+ * await verifier(() => 5).returns(between(-5, 10)); // succeeds
+ * await verifier(() => 5).returns(between(0, 4)); // fails
+ * await verifier(() => 5).returns(between(6, 10)); // fails
+ * await verifier(() => null).returns(between(6, 10)); // fails
+ * ```
  * @param minimum the minimum value the `actual` result can be
  * @param maximum the maximum value the `actual` result can be
  * @returns a new {NumberBetween} instance
@@ -134,6 +155,15 @@ class ValueContaining implements VerifierMatcher {
  * used to perform a `[a, b, c] includes b` or `Set([a, b, c]) has b`
  * or `Map([[a, aval], [b, bval]]) has b` comparison
  * between the `expected` and `actual` result
+ * like: 
+ * ```
+ * await verifier(() => 'foobarbaz').returns(containing('bar')); // succeeds
+ * await verifier(() => [1, 2, 3, 4, 5, 6]).returns(containing(5)); // succeeds
+ * await verifier(() => new Set([1, 2, 3, 4, 5, 6]).returns(containing(5)); // succeeds
+ * await verifier(() => new Map([[5, 'five'], [6, 'six']])).returns(containing(5)); // succeeds
+ * await verifier(() => 'foo').returns(containing('oof')); // fails
+ * await verifier(() => new Map([[5, 'five'], [6, 'six']])).returns(containing('five')); // fails
+ * ```
  * @param expected the expected value
  * @returns a new {ValueContaining} instance
  */
@@ -158,6 +188,14 @@ class HavingValue implements VerifierMatcher {
 /**
  * used to perform a `a !== null && a !== undefined` comparison
  * between the where `a` is the `actual` result
+ * like: 
+ * ```
+ * await verifier(() => 'foobarbaz').returns(havingValue()); // succeeds
+ * await verifier(() => false).returns(havingValue()); // succeeds
+ * await verifier(() => 0).returns(havingValue()); // succeeds
+ * await verifier(() => null).returns(havingValue()); // fails
+ * await verifier(() => undefined).returns(havingValue()); // fails
+ * ```
  * @returns a new {HavingValue} instance
  */
 export const havingValue = (): HavingValue => {
@@ -184,6 +222,13 @@ class GreaterThan implements VerifierMatcher {
 /**
  * used to perform a `actual > expected` comparison
  * between the `expected` and `actual` result
+ * like: 
+ * ```
+ * await verifier(() => 5).returns(greaterThan(0)); // succeeds
+ * await verifier(() => 5).returns(greaterThan(4.999)); // succeeds
+ * await verifier(() => 5).returns(greaterThan(5)); // fails
+ * await verifier(() => null).returns(greaterThan(0)); // fails
+ * ```
  * @param expected the expected value
  * @returns a new {GreaterThan} instance
  */
@@ -211,6 +256,13 @@ class LessThan implements VerifierMatcher {
 /**
  * used to perform a `actual < expected` comparison
  * between the `expected` and `actual` result
+ * like: 
+ * ```
+ * await verifier(() => 5).returns(lessThan(10)); // succeeds
+ * await verifier(() => 5).returns(lessThan(5.0001)); // succeeds
+ * await verifier(() => 5).returns(lessThan(5)); // fails
+ * await verifier(() => null).returns(lessThan(10)); // fails
+ * ```
  * @param expected the expected value
  * @returns a new {LessThan} instance
  */
@@ -237,6 +289,13 @@ class Negate implements VerifierMatcher {
 /**
  * used to perform a `not(VerifierMatcher.compare())` comparison
  * between the `expected` and `actual` result
+ * like: 
+ * ```
+ * await verifier(() => 5).returns(not(equaling(10))); // succeeds
+ * await verifier(() => null).returns(not(exactly(undefined))); // succeeds
+ * await verifier(() => [1, 2, 3]).returns(not(containing(5))); // succeeds
+ * await verifier(() => null).returns(not(havingValue())); // succeeds
+ * ```
  * @param expected a {VerifierMatcher} to negate
  * @returns a new {Negate} instance
  */
