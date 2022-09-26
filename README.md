@@ -140,8 +140,12 @@ the purpose of a `DefectPlugin` implementation is to provide execution control o
 - run the tests using `npm run test` or individually using `npm run test --workspace=<project-name>`
 - when you are happy with your changes, submit a Pull Request back to the _main_ branch at https://github.com/bicarbon8/automated-functional-testing
 
-> NOTE: all changes require unit tests and these tests are expected to pass when run via `npm run test`
 
-> NOTE: check for any circular dependencies using `npx dpdm -T --warning false **/index.ts`
+## NOTES
+> all changes require unit tests and these tests are expected to pass when run via `npm run test`
 
-> NOTE: use `npx lerna version` to automatically update the version of all projects at once (all changes must be committed first)
+> check for any circular dependencies using `npx dpdm -T --warning false **/index.ts`
+
+> use `npx lerna version` to automatically update the version of all projects at once (all changes must be committed first)
+
+> generate documentation using `npx typedoc --entryPointStrategy packages ./packages/* --out ./docs`

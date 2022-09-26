@@ -23,7 +23,8 @@
   },
   "devDependencies": {
     "dpdm": "^3.9.0",
-    "lerna": "^5.5.2"
+    "lerna": "^5.5.2",
+    "typedoc": "^0.23.15"
   },
   "private": true
 }
