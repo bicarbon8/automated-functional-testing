@@ -24,5 +24,5 @@ jobs:
         id: functionaltest
         run: npm run test-examples
         env:
-          BROWSERSTACK_USER: ${{ secrets.BROWSERSTACK_USER }}
-          BROWSERSTACK_KEY: ${{ secrets.BROWSERSTACK_KEY }}
+          browserstack_user: ${{ secrets.BROWSERSTACK_USER }}
+          browserstack_key: ${{ secrets.BROWSERSTACK_KEY }}

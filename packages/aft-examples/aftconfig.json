@@ -62,7 +62,8 @@
             "searchDirectory": "../",
             "options": {
                 "username": "%saucelabs_username%",
-                "accessKey": "%saucelabs_accessKey%"
+                "accessKey": "%saucelabs_accessKey%",
+                "enabled": false
             }
         }]
     },
@@ -84,7 +85,8 @@
             "searchDirectory": "../",
             "options": {
                 "username": "%saucelabs_username%",
-                "accessKey": "%saucelabs_accessKey%"
+                "accessKey": "%saucelabs_accessKey%",
+                "enabled": false
             }
         }]
     }
