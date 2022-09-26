@@ -26,7 +26,7 @@ import { equaling, VerifierMatcher } from "./verifier-matcher";
  * .and.withKnownDefectIds('AUTO-123') // if DefectPlugin.getDefect('AUTO-123').status === 'open' the assertion is not run
  * .returns('expected value');
  * ```
- * @param assertion the {Func<Verifier, any>} function to be executed by this `Verifier`
+ * @param assertion the `Func<Verifier, any>` function to be executed by this `Verifier`
  * @returns a new `Verifier` instance
  */
 export class Verifier implements PromiseLike<void> {
@@ -171,10 +171,10 @@ export class Verifier implements PromiseLike<void> {
      * allows for setting a `testId` to be checked before executing the `assertion`
      * and to be reported to from any connected logging plugins that connect to
      * your test case management system. if all the referenced `testId` values should not be
-     * run (as returned by your {AbstractTestCasePlugin.shouldRun(testId)}) then
+     * run (as returned by your `AbstractTestCasePlugin.shouldRun(testId)`) then
      * the `assertion` will not be run.
      * NOTE: multiple `testId` values can be chained together
-     * @param testIds a test identifier for your connected {AbstractTestCasePlugin}
+     * @param testIds a test identifier for your connected `AbstractTestCasePlugin`
      * @returns this `Verifier` instance
      */
     withTestIds(...testIds: string[]): this {
@@ -230,9 +230,9 @@ export class Verifier implements PromiseLike<void> {
     }
 
     /**
-     * allows for using a specific {TestCaseManager} instance. if not
-     * set then the global {TestCaseManager.instance()} will be used
-     * @param testMgr a {TestCaseManager} instance
+     * allows for using a specific `TestCaseManager` instance. if not
+     * set then the global `TestCaseManager.instance()` will be used
+     * @param testMgr a `TestCaseManager` instance
      * @returns this `Verifier` instance
      */
     withTestCaseManager(testMgr: TestCaseManager): this {
@@ -241,9 +241,9 @@ export class Verifier implements PromiseLike<void> {
     }
 
     /**
-     * allows for using a specific {DefectManager} instance. if not
-     * set then the global {DefectManager.instance()} will be used
-     * @param defectMgr a {DefectManager} instance
+     * allows for using a specific `DefectManager` instance. if not
+     * set then the global `DefectManager.instance()` will be used
+     * @param defectMgr a `DefectManager` instance
      * @returns this `Verifier` instance
      */
     withDefectManager(defectMgr: DefectManager): this {
@@ -252,9 +252,9 @@ export class Verifier implements PromiseLike<void> {
     }
 
     /**
-     * allows for using a specific {BuildInfoManager} instance. if not
-     * set then the global {BuildInfoManager.instance()} will be used
-     * @param buildMgr a {BuildInfoManager} instance
+     * allows for using a specific `BuildInfoManager` instance. if not
+     * set then the global `BuildInfoManager.instance()` will be used
+     * @param buildMgr a `BuildInfoManager` instance
      * @returns this `Verifier` instance
      */
     withBuildInfoManager(buildMgr: BuildInfoManager): this {
@@ -311,10 +311,8 @@ export class Verifier implements PromiseLike<void> {
     }
 
     /**
-     * creates `ITestResult` objects for each `testId` and sends these
+     * creates `TestResult` objects for each `testId` and sends these
      * to the `LogManager.logResult` function
-     * @param result an `IProcessingResult` returned from executing the 
-     * expectation
      */
     protected async _logResult(status: TestStatus, message?: string): Promise<void> {
         try {
@@ -411,7 +409,7 @@ export class Verifier implements PromiseLike<void> {
  * .and.withKnownDefectIds('AUTO-123') // if DefectPlugin.getDefect('AUTO-123').status === 'open' the assertion is not run
  * .returns('expected value');
  * ```
- * @param assertion the {Func<Verifier, any>} function to be executed by this `Verifier`
+ * @param assertion the `Func<Verifier, any>` function to be executed by this `Verifier`
  * @returns a new `Verifier` instance
  */
 export const verify = (assertion: Func<Verifier, any>): Verifier => {

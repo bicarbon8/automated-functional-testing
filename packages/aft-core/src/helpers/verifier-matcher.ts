@@ -32,7 +32,7 @@ class Equaling implements VerifierMatcher {
  * await verifier(() => true).returns(equaling(false)); // fails
  * ```
  * @param expected the expected value
- * @returns a new {Equaling} instance
+ * @returns a new `Equaling` instance
  */
 export const equaling = (expected: any): Equaling => {
     return new Equaling(expected);
@@ -65,7 +65,7 @@ class Exactly implements VerifierMatcher {
  * await verifier(() => true).returns(exactly(false)); // fails
  * ```
  * @param expected the expected value
- * @returns a new {Exactly} instance
+ * @returns a new `Exactly` instance
  */
 export const exactly = (expected: any): Exactly => {
     return new Exactly(expected);
@@ -110,7 +110,7 @@ class NumberBetween implements VerifierMatcher {
  * ```
  * @param minimum the minimum value the `actual` result can be
  * @param maximum the maximum value the `actual` result can be
- * @returns a new {NumberBetween} instance
+ * @returns a new `NumberBetween` instance
  */
 export const between = (minimum: number, maximum: number): NumberBetween => {
     return new NumberBetween(minimum, maximum);
@@ -165,7 +165,7 @@ class ValueContaining implements VerifierMatcher {
  * await verifier(() => new Map([[5, 'five'], [6, 'six']])).returns(containing('five')); // fails
  * ```
  * @param expected the expected value
- * @returns a new {ValueContaining} instance
+ * @returns a new `ValueContaining` instance
  */
 export const containing = (expected: any): ValueContaining => {
     return new ValueContaining(expected);
@@ -196,7 +196,7 @@ class HavingValue implements VerifierMatcher {
  * await verifier(() => null).returns(havingValue()); // fails
  * await verifier(() => undefined).returns(havingValue()); // fails
  * ```
- * @returns a new {HavingValue} instance
+ * @returns a new `HavingValue` instance
  */
 export const havingValue = (): HavingValue => {
     return new HavingValue();
@@ -230,7 +230,7 @@ class GreaterThan implements VerifierMatcher {
  * await verifier(() => null).returns(greaterThan(0)); // fails
  * ```
  * @param expected the expected value
- * @returns a new {GreaterThan} instance
+ * @returns a new `GreaterThan` instance
  */
 export const greaterThan = (expected: number): GreaterThan => {
     return new GreaterThan(expected);
@@ -264,7 +264,7 @@ class LessThan implements VerifierMatcher {
  * await verifier(() => null).returns(lessThan(10)); // fails
  * ```
  * @param expected the expected value
- * @returns a new {LessThan} instance
+ * @returns a new `LessThan` instance
  */
 export const lessThan = (expected: number): LessThan => {
     return new LessThan(expected);
@@ -297,7 +297,7 @@ class Negate implements VerifierMatcher {
  * await verifier(() => null).returns(not(havingValue())); // succeeds
  * ```
  * @param expected a {VerifierMatcher} to negate
- * @returns a new {Negate} instance
+ * @returns a new `Negate` instance
  */
 export const not = (expected: VerifierMatcher): Negate => {
     return new Negate(expected);

@@ -12,7 +12,7 @@ export type UiSessionGeneratorManagerOptions = Merge<PluginManagerWithLoggingOpt
  * configuration options supported by this class are:
  * * `platform` - _[optional]_ an string containing any, none or all of the following string values: _os_, _osVersion_, _browser_, _browserVersion_, _deviceName_
  * * `loadWaitDuration` - _[optional]_ a number representing the max milliseconds to wait for a UI element (defaults to 10000 ms)
- * * `pluginNames` - an array containing any {ISessionPlugin<any, any, any>} implementations to load (NOTE: only the first enabled will be used)
+ * * `pluginNames` - an array containing any `UiSessionGeneratorPlugin<T extends UiSessionGeneratorPluginOptions>` implementations to load (NOTE: only the first enabled will be used)
  * * `searchDir` - the root directory from which to start searching for plugins (defaults to `process.cwd()`)
  * ```
  * {

@@ -316,6 +316,18 @@ export class Retry<T> implements PromiseLike<T> {
 /**
  * generates a new `Retry<T>` instance that runs a given `retryable` until it
  * successfully passes a `condition`
+ * 
+ * Ex:
+ * ```
+ * const result = await retry<NullableObj>(() => returnsNullableObj()); // will call until returns non-nullish value
+ * 
+ * const result = await retry<number>(() => someAction())
+ *     .withStartDelayBetweenAttempts(1000) // wait 1 second before retrying
+ *     .withBackOff('exponential') // increase the delay between retries exponentially
+ *     .withMaxAttempts(10) // stop after 10 retries if not successful
+ *     .withMaxDuration(30000) // stop after 30 seconds if not successful
+ *     .until((res: number) => res === 5); // expect result to equal 5
+ * ```
  * @param retryable the function to be retried until it passes a default
  * condition of return value != null or a custom `condition`
  * @returns a new `Retry<T>` instance

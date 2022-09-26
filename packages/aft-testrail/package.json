@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://github.com/bicarbon8/automated-functional-testing.git"
   },
-  "main": "./dist/src/index/js",
+  "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./.nyc_output && rimraf ./coverage",

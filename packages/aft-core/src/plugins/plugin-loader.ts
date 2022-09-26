@@ -21,7 +21,7 @@ class PluginLoader {
      * attempts to load plugins by name and optional path.
      * 
      * ```typescript
-     * let plugins: CustomPlugin[] = pluginloader.load<CustomPlugin>([{
+     * const plugins: CustomPlugin[] = pluginloader.load<CustomPlugin>([{
      *     name: 'custom-plugin', 
      *     searchDirectory: '../../plugins',
      *     enabled: false,
@@ -169,19 +169,26 @@ class PluginLoader {
 
 /**
  * responsible for finding and loading plugins based on a passed in 
- * {pluginName} and optional {options}. any plugin loaded by this
- * class must extend from {AbstractPlugin<any>} and would be expected
- * to accept an {options} object in its constructor.
+ * `PluginConfig`. any plugin loaded by this class must extend from 
+ * `Plugin<T extends PluginOptions>` and would be expected to accept an object extending
+ * `PluginOptions` object in its constructor.
+ * 
  * ```typescript
- * let plugin: CustomPlugin = await pluginloader.load<CustomPlugin>('custom-plugin', {foo: 'bar'});
+ * const plugins: CustomPlugin[] = pluginloader.load<CustomPlugin>([{
+ *     name: 'custom-plugin', 
+ *     searchDirectory: '../../plugins',
+ *     enabled: false,
+ *     options: {
+ *         storagePath: './'
+ *     }
+ * }, 'custom-plugin-2']);
  * ```
- * NOTE: the above will attempt to load `custom-plugin` package 
- * passing in the specified options to its constructor. if loading
+ * 
+ * **NOTE:** the above attempts to load a `custom-plugin` class. if loading
  * fails then it will search the filesystem, starting at the current
  * execution directory and searching all subdirectories, for a file
  * named `custom-plugin.js` which, if found, will be imported and a 
- * new instance will be created passing in the specified options to
- * its constructor. following instantiation the {onLoad} function is
- * awaited and then the new plugin instance is returned
+ * new instance will be created and added to the internal cache and the
+ * array to be returned
  */
 export const pluginloader = new PluginLoader();
