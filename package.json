@@ -4,27 +4,27 @@
     "packages/*"
   ],
   "scripts": {
-    "clean": "yarn workspaces foreach -p run clean",
-    "build": "yarn clean && yarn workspaces foreach run build",
-    "test": "yarn workspaces foreach -p --exclude=aft-examples run test",
-    "coverage": "yarn workspaces foreach -p --exclude=aft-examples run coverage",
-    "test-core": "yarn workspace aft-core test",
-    "test-awskinesis": "yarn workspace aft-logging-awskinesis test",
-    "test-testrail": "yarn workspace aft-testrail test",
-    "test-ui": "yarn workspace aft-ui test",
-    "test-browsers": "yarn workspace aft-ui-browsers test",
-    "test-mobile-apps": "yarn workspace aft-ui-mobile-apps test",
-    "test-web-services": "yarn workspace aft-web-services test",
-    "test-html": "yarn workspace aft-logging-html test",
-    "test-examples": "yarn workspace aft-examples test",
-    "test-filesystem": "yarn workspace aft-logging-filesystem test",
-    "test-mocha": "yarn workspace aft-mocha-reporter test",
-    "test-jasmine": "yarn workspace aft-jasmine-reporter test"
+    "clean": "npm run clean --workspaces",
+    "build": "npm run clean && npm run build --workspaces --if-present && npm run build-e2e -w aft-examples",
+    "test": "npm run test --workspaces --if-present",
+    "coverage": "npm run coverage --workspaces --if-present",
+    "test-core": "npm run test --workspace=aft-core",
+    "test-awskinesis": "npm run test --workspace=aft-logging-awskinesis",
+    "test-testrail": "npm run test --workspace=aft-testrail",
+    "test-ui": "npm run test --workspace=aft-ui",
+    "test-browsers": "npm run test --workspace=aft-ui-browsers",
+    "test-mobile-apps": "npm run test --workspace=aft-ui-mobile-apps",
+    "test-web-services": "npm run test --workspace=aft-web-services",
+    "test-html": "npm run test --workspace=aft-logging-html",
+    "test-examples": "npm run test-e2e --workspace=aft-examples",
+    "test-filesystem": "npm run test --workspace=aft-logging-filesystem",
+    "test-mocha": "npm run test --workspace=aft-mocha-reporter",
+    "test-jasmine": "npm run test --workspace=aft-jasmine-reporter"
   },
-  "packageManager": "yarn@3.2.0",
   "devDependencies": {
     "dpdm": "^3.9.0",
-    "lerna": "^4.0.0"
+    "lerna": "^5.5.2",
+    "typedoc": "^0.23.15"
   },
   "private": true
 }

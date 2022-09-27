@@ -7,7 +7,7 @@ export type MobileAppSessionOptions = Merge<UiSessionOptions, {
     /**
      * a path to the mobile application (.apk or .ipa).
      * NOTE: if left blank then you must specify the value in 
-     * your {remoteOptions.capabilities['app']}
+     * your `remoteOptions.capabilities['app']`
      */
     app?: string;
     /**

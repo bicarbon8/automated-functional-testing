@@ -30,7 +30,7 @@ type CheckAndSendOptions = {
  *   "secretAccessKey": "your-aws-secret-access-key",
  *   "sessionToken": "your-aws-session-token",
  *   "region": "us-west-1",
- *   "deliveryStream": "your-frehose-delivery-stream"
+ *   "deliveryStream": "your-frehose-delivery-stream",
  *   "batch": true,
  *   "batchSize": 10
  * }

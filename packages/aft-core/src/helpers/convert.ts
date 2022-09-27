@@ -1,11 +1,32 @@
 import { JsonObject } from "./custom-types";
 
+/**
+ * type containing an `exclude` field having either a `string` or `RegExp` 
+ * used to identify characters or strings to be excluded and a `replaceWith`
+ * field containing a `string` to use as a replacement for each excluded value
+ * 
+ * Ex:
+ * ```
+ * const opts = [{exclude: /[\s]+/g, replaceWith: '_'}];
+ * convert.toSafeString('I am an example', opts); // returns 'I_am_an_example'
+ * ```
+ */
 export type SafeStringOption = {
     exclude: string | RegExp;
     replaceWith: string;
 };
 
+/**
+ * module providing a default set of string replacement values via the
+ * `SafeStringOptions.defaults` const
+ */
 export module SafeStringOption {
+    /**
+     * a default set of characters to exclude and their replacement values that prevents
+     * any curly or square brackets, forward or backslashes, commas, dashes, fullstops,
+     * empty spaces and special characters where special characters are replaced with empty
+     * string and the rest with underscore
+     */
     export const defaults: SafeStringOption[] = [
         {exclude: /[\/\\\{\}\(\)\,\.\-]/g, replaceWith: '_'},
         {exclude: /[\s]+/g, replaceWith: '_'},
@@ -32,17 +53,29 @@ class Convert {
 
     /**
      * function will return the number of milliseconds elapsed since the 
-     * passed in timestamp
-     * @param startTime the value from calling 'new Date().getTime()' at the
+     * passed in `startTime`
+     * 
+     * Ex:
+     * ```
+     * const start = Date.now();
+     * // perform some actions...
+     * convert.toElapsedMs(start); // returns Date.now() - start
+     * ```
+     * @param startTime the value from calling 'Date.now()' at the
      * point in time when some event has started.
      */
     toElapsedMs(startTime: number): number {
-        return new Date().getTime() - startTime;
+        return Date.now() - startTime;
     }
 
     /**
      * function will replace any occurrences of the passed in 'excludes' strings with
      * the value of the passed in 'replaceWith' string
+     * 
+     * Ex:
+     * ```
+     * convert.toSafeString('I am an  Example!'); // returns 'I_am_an_Example'
+     * ```
      * @param input the original string to process
      * @param options an array of {exclude: string | RegExp, replaceWith: string} objects to 
      * use in processing the input string
@@ -60,6 +93,12 @@ class Convert {
 
     /**
      * converts the passed in `Map` to a JSON string
+     * 
+     * Ex:
+     * ```
+     * const m = new Map<number, string>([[2, "foo"],[5, "bar"]]);
+     * convert.mapToString(m); // returns '[[2, "foo"],[5, "bar"]]'
+     * ```
      * @param mapObj the `Map` to be converted to a string
      * @returns a JSON string of the format `[["key", "val"],["key", "val"]]`
      */
@@ -69,6 +108,11 @@ class Convert {
 
     /**
      * converts the passed in string to a valid `Map` object
+     * 
+     * Ex:
+     * ```
+     * convert.stringToMap('[[2, "foo"],[5, "bar"]]'); // returns new Map<number, string>([[2, "foo"],[5, "bar"]])
+     * ```
      * @param mapStr a JSON string representation of a `Map` as an array
      * containing arrays of key-value pairs like `[["key", "val"],["key", "val"]]`
      * @returns a `Map` object
@@ -81,6 +125,15 @@ class Convert {
      * converts the passed in object from a complex
      * type possibly containing functions and classes
      * to a simple JSON object
+     * 
+     * Ex:
+     * ```
+     * const foo = {
+     *     bar: () => 'bar',
+     *     baz: 'baz'
+     * };
+     * convert.toJsonObject(foo); // returns {'baz': 'baz'}
+     * ```
      * @param obj an input object to be converted
      * @returns a valid `JsonObject` typed object
      */
@@ -110,6 +163,36 @@ class Convert {
         milliseconds -= seconds * secondsPerMilli;
         return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`;
     }
+
+    /**
+     * converts the passed in seconds to milliseconds
+     * @param seconds the number of seconds
+     * @returns the number of milliseconds in the passed
+     * in `seconds`
+     */
+    secToMillisec(seconds: number): number {
+        return seconds * 1000;
+    }
+
+    /**
+     * converts the passed in minutes to milliseconds
+     * @param minutes the number of minutes
+     * @returns the number of milliseconds in the passed in
+     * `minutes`
+     */
+    minToMillisec(minutes: number): number {
+        return this.secToMillisec(minutes * 60);
+    }
 }
 
+/**
+ * constant helper class for converting values to other values
+ * such as:
+ * ```
+ * convert.toBase64Encoded('foo'); // returns 'Zm9v'
+ * convert.fromBase64Encoded('Zm9v'); // returns 'foo'
+ * convert.toSafeString('I am an Example!'); // returns 'I_am_an_Example'
+ * convert.toHoursMinutesSeconds(3666600); // returns '01:01:06.600'
+ * ```
+ */
 export const convert = new Convert();

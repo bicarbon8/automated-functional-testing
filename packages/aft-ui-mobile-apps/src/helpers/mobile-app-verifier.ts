@@ -42,7 +42,7 @@ export class MobileAppVerifier extends Verifier {
 
     /**
      * allows for passing in an instance of `MobileAppSessionGeneratorManager` to be
-     * used in locating a {AbstractMobileAppSessionGeneratorPlugin} instance to use in 
+     * used in locating a `MobileAppSessionGeneratorPlugin` instance to use in 
      * generating a `MobileAppSession`.
      * NOTE: if not set then the global const `mobileAppSessionGeneratorMgr`
      * will be used

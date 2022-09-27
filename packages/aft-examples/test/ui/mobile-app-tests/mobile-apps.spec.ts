@@ -3,6 +3,7 @@ import { rand } from "aft-core";
 import { MobileAppFacetOptions, mobileAppSessionGeneratorMgr, MobileAppVerifier, verifyWithMobileApp } from "aft-ui-mobile-apps";
 import { WikipediaView } from "./page-objects/wikipedia-view";
 import { assert } from "chai";
+import { AftTest } from "aft-mocha-reporter";
 
 var customId: string;
 
@@ -29,7 +30,12 @@ describe('Functional Mobile App Tests using AFT-UI-MOBILE-APPS', () => {
         }
     });
 
-    it('can search in Wikipedia App', async () => {
+    it('can search in Wikipedia App', async function() {
+        const aft = new AftTest(this);
+        const shouldRun = await aft.shouldRun();
+        if (!shouldRun) {
+            this.skip();
+        }
         await verifyWithMobileApp(async (tw: MobileAppVerifier) => {
             await tw.logMgr.step('get the WikipediaView Facet from the Session...');
             let view: WikipediaView = await tw.session.getFacet<WikipediaView, MobileAppFacetOptions>(WikipediaView);
@@ -44,7 +50,7 @@ describe('Functional Mobile App Tests using AFT-UI-MOBILE-APPS', () => {
                 }
             }
         }).withMobileAppSessionOptions({app: customId})
-        .and.withDescription('can search in Wikipedia App')
+        .and.withLogManager(aft.logMgr)
         .returns(true);
     });
 });

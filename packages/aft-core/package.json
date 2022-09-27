@@ -1,6 +1,6 @@
 {
   "name": "aft-core",
-  "version": "8.4.2",
+  "version": "9.0.0",
   "description": "Automation Framework for Testing (AFT) package supporting JavaScript unit, integration and functional testing",
   "repository": {
     "type": "git",
@@ -10,9 +10,9 @@
   "types": "./dist/src/index.d.ts",
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./.nyc_output && rimraf ./coverage",
-    "build": "yarn clean && tsc --build",
+    "build": "npm run clean && tsc --build",
     "test": "jasmine-ts ./test/**/*-spec.ts",
-    "coverage": "nyc yarn test"
+    "coverage": "nyc npm run test"
   },
   "keywords": [
     "aft",

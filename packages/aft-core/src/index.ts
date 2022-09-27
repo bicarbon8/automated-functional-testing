@@ -20,6 +20,7 @@ export * from './helpers/file-system-map';
 export * from './helpers/disposable';
 export * from './helpers/machine-info';
 export * from './helpers/rand';
+export * from './helpers/retry';
 export * from './helpers/using';
 export * from './helpers/verifier';
 export * from './helpers/verifier-matcher';

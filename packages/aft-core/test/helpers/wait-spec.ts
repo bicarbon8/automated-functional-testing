@@ -2,79 +2,51 @@ import { convert } from "../../src/helpers/convert";
 import { wait } from "../../src/helpers/wait";
 
 describe('Wait', () => {
-    beforeEach(() => {
-        TestHelper.reset();
-    });
-
-    it('can wait for a less than the maximum duration if action returns true', async () => {
-        let now: number = new Date().getTime();
+    it('can wait for a less than the maximum duration', async () => {
+        let start: number = new Date().getTime();
         
-        await wait.untilTrue(async () => {
-            // wait 1 ms and return false 2 times, then true
-            await new Promise<void>((resolve) => {
-                setTimeout(resolve, 1);
-            });
-            TestHelper.count += 1;
-            return TestHelper.count > 2;
-        }, 2000);
+        const result: number = await wait.forResult(() => 12, 500);
 
-        let elapsed: number = convert.toElapsedMs(now);
-        expect(elapsed).toBeGreaterThan(3);
-        expect(elapsed).toBeLessThan(2000);
-        expect(TestHelper.count).toEqual(3);
+        let elapsed: number = convert.toElapsedMs(start);
+        expect(result).toEqual(12);
+        expect(elapsed).toBeLessThan(500);
     });
     
-    it('will emit a rejected promise if duration is exceeded without returning true', async () => {
-        const now: number = new Date().getTime();
-        let actualErr: any;
-        await wait.untilTrue(async () => {
-            TestHelper.count += 1;
-            return false;
-        }, 200).catch((err) => {
-            actualErr = err;
-        });
+    it('will return null on timeout', async () => {
+        const start: number = new Date().getTime();
+        const result: number = await wait.forResult(() => {
+            return new Promise((resolve) => {
+                // called after `wait` duration times out
+                setTimeout(() => resolve(12), 2000);
+            });
+        }, 500);
 
-        const elapsed: number = convert.toElapsedMs(now);
-        expect(elapsed).toBeGreaterThanOrEqual(200);
+        const elapsed: number = convert.toElapsedMs(start);
+        expect(result).toBeUndefined();
         expect(elapsed).toBeLessThan(1000);
-        expect(TestHelper.count).toBeGreaterThan(10);
-        expect(actualErr).toEqual(`wait.untilTrue(...) exceeded [${convert.toHoursMinutesSeconds(200)}] over '${TestHelper.count}' attempts without returning 'true'`);
     });
 
-    it('can execute a failure action on each failed attempt', async () => {
-        let actual: number = 0;
-        await wait.untilTrue(() => {throw new Error('fake error');}, 200, async () => {
-            actual++;
-            await wait.forDuration(50);
-        }).catch((err) => {/* do nothing */});
-
-        expect(actual).toBeGreaterThan(1);
-    });
-
-    it('can handle a rejected promise in the passed in func', async () => {
+    it('allows exceptions in func through', async () => {
         let actualErr: any;
-        await wait.untilTrue(() => Promise.reject('fake error'), 200)
-        .catch((err) => actualErr = err);
+        const result: number = await wait.forResult(() => {throw 'fake error';}, 200)
+            .catch((err) => {
+                actualErr = err;
+                return -1;
+            });
 
+        expect(result).toEqual(-1);
         expect(actualErr).toContain('fake error');
     });
 
-    it('can handle exceptions in the failure action on each failed attempt', async () => {
-        let actual: number = 0;
-        await wait.untilTrue(() => {throw new Error('fake error');}, 200, async () => {
-            actual++;
-            await wait.forDuration(50);
-            throw new Error('onFailureAction error');
-        }).catch((err) => {/* do nothing */});
+    it('allows rejected promises through', async () => {
+        let error: string;
+        const result: number = await wait.forResult(() => Promise.reject('fake rejection'), 200)
+            .catch((err) => {
+                error = err;
+                return -1;
+            });
 
-        expect(actual).toBeGreaterThan(1);
+        expect(result).toEqual(-1);
+        expect(error).toContain('fake rejection');
     });
 });
-
-module TestHelper {
-    export var count: number = 0;
-
-    export function reset(): void {
-        count = 0;
-    }
-}

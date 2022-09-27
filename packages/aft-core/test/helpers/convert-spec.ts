@@ -30,4 +30,29 @@ describe('Converter', () => {
             });
         }
     });
+
+    describe('secToMillisec', () => {
+        const testData = [0.5, 1, 10, 60];
+        for(var i=0; i<testData.length; i++) {
+            const data = testData[i];
+            it(`can calculate the milliseconds in '${data}' seconds`, () => {
+                expect(convert.secToMillisec(data)).toEqual(data * 1000);
+            });
+        }
+    });
+
+    describe('minToMillisec', () => {
+        const testData: Array<{min: number, exp: number}> = [
+            {min: 0.5, exp: 30000},
+            {min: 1, exp: 60000},
+            {min: 2, exp: 120000},
+            {min: 60, exp: 3600000}
+        ];
+        for(var i=0; i<testData.length; i++) {
+            const data = testData[i];
+            it(`can convert minutes to milliseconds for ${JSON.stringify(data)}`, () => {
+                expect(convert.minToMillisec(data.min)).toEqual(data.exp);
+            });
+        }
+    });
 });

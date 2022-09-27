@@ -1,0 +1,175 @@
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>automated-functional-testing</title><meta name="description" content="Documentation for automated-functional-testing"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container">
+<div class="table-cell" id="tsd-search" data-base=".">
+<div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
+<ul class="results">
+<li class="state loading">Preparing search index...</li>
+<li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">automated-functional-testing</a></div>
+<div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="7" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="11" width="14" height="2" fill="var(--color-text)"></rect></svg></a></div></div></header>
+<div class="container container-main">
+<div class="col-8 col-content">
+<div class="tsd-page-title">
+<h2>automated-functional-testing</h2></div>
+<div class="tsd-panel tsd-typography">
+<a href="#automated-functional-testing-aft" id="automated-functional-testing-aft" style="color: inherit; text-decoration: none;">
+  <h1>Automated Functional Testing (AFT)</h1>
+</a>
+<p>library providing a framework for creating Functional Test Automation supporting integration with external systems via a simple plugin mechanism, which can be used for post-deployment verification testing, end-user acceptance testing, end-to-end testing as well as high-level integration testing scenarios. <code>AFT</code> enables test execution flow control and reporting as well as streamlined test development in JavaScript and TypeScript by integrating with common test framworks as well as external test and defect tracking systems (like TestRail and AWS Kinesis Firehose).</p>
+
+<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+  <h2>Usage:</h2>
+</a>
+
+<a href="#example-jasmine-test" id="example-jasmine-test" style="color: inherit; text-decoration: none;">
+  <h3>Example Jasmine Test:</h3>
+</a>
+<pre><code class="language-typescript"><span class="hl-0">describe</span><span class="hl-1">(</span><span class="hl-2">&#39;Sample Test&#39;</span><span class="hl-1">, () </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-0">it</span><span class="hl-1">(</span><span class="hl-2">&#39;can perform a demonstration of AFT&#39;</span><span class="hl-1">, </span><span class="hl-3">async</span><span class="hl-1"> () </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-3">let</span><span class="hl-1"> </span><span class="hl-4">feature</span><span class="hl-1">: </span><span class="hl-5">FeatureObj</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">FeatureObj</span><span class="hl-1">();</span><br/><span class="hl-1">        </span><span class="hl-6">/**</span><br/><span class="hl-6">         * the `verify(assertion).returns(expectation)` function</span><br/><span class="hl-6">         * checks any specified `AbstractTestCasePlugin`</span><br/><span class="hl-6">         * and `AbstractDefectPlugin` implementations</span><br/><span class="hl-6">         * to ensure the test should be run. It will then</span><br/><span class="hl-6">         * report to any `AbstractLoggingPlugin` implementations</span><br/><span class="hl-6">         * with an `ITestResult` indicating the success,</span><br/><span class="hl-6">         * failure or skipped status</span><br/><span class="hl-6">         */</span><br/><span class="hl-1">        </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-0">verify</span><span class="hl-1">(</span><span class="hl-3">async</span><span class="hl-1"> () </span><span class="hl-3">=&gt;</span><span class="hl-1"> </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-4">feature</span><span class="hl-1">.</span><span class="hl-0">performAction</span><span class="hl-1">())</span><br/><span class="hl-1">        .</span><span class="hl-0">withTestId</span><span class="hl-1">(</span><span class="hl-2">&#39;C1234&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">        .</span><span class="hl-4">and</span><span class="hl-1">.</span><span class="hl-0">withKnownDefectId</span><span class="hl-1">(</span><span class="hl-2">&#39;DEFECT-123&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">        .</span><span class="hl-4">and</span><span class="hl-1">.</span><span class="hl-0">withDescription</span><span class="hl-1">(</span><span class="hl-2">&#39;expect that performAction will return </span><span class="hl-8">\&#39;</span><span class="hl-2">result of action</span><span class="hl-8">\&#39;</span><span class="hl-2">&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">        .</span><span class="hl-0">returns</span><span class="hl-1">(</span><span class="hl-2">&#39;result of action&#39;</span><span class="hl-1">);</span><br/><span class="hl-1">    });</span><br/><span class="hl-1">});</span>
+</code></pre>
+<p>the above results in the following console output if the expectation does not return false or throw an exception:</p>
+<pre><code><span class="hl-9">5</span><span class="hl-1">:</span><span class="hl-9">29</span><span class="hl-1">:</span><span class="hl-9">55</span><span class="hl-1"> </span><span class="hl-10">PM</span><span class="hl-1"> - </span><span class="hl-4">expect</span><span class="hl-1"> </span><span class="hl-4">that</span><span class="hl-1"> </span><span class="hl-4">performAction</span><span class="hl-1"> </span><span class="hl-4">will</span><span class="hl-1"> </span><span class="hl-7">return</span><span class="hl-1"> </span><span class="hl-2">&#39;result of action&#39;</span><span class="hl-1"> - </span><span class="hl-10">PASS</span><span class="hl-1">  - </span><span class="hl-10">C1234</span>
+</code></pre>
+<p>in more complex scenarios you can perform multiple actions inside the <em>expectation</em> like in the following example:</p>
+<pre><code class="language-typescript"><span class="hl-0">describe</span><span class="hl-1">(</span><span class="hl-2">&#39;Sample Test&#39;</span><span class="hl-1">, () </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-0">it</span><span class="hl-1">(</span><span class="hl-2">&#39;can perform a more complex demonstration of AFT&#39;</span><span class="hl-1">, </span><span class="hl-3">async</span><span class="hl-1"> () </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-6">/**</span><br/><span class="hl-6">         * the passed in expectation can accept a `Verifier` which can be used</span><br/><span class="hl-6">         * during more complex actions</span><br/><span class="hl-6">         */</span><br/><span class="hl-1">        </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-0">verify</span><span class="hl-1">(</span><span class="hl-3">async</span><span class="hl-1"> (</span><span class="hl-4">v</span><span class="hl-1">: </span><span class="hl-5">Verifier</span><span class="hl-1">) </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">            </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-4">v</span><span class="hl-1">.</span><span class="hl-4">logMgr</span><span class="hl-1">.</span><span class="hl-0">step</span><span class="hl-1">(</span><span class="hl-2">&#39;creating instance of FeatureObj&#39;</span><span class="hl-1">);</span><br/><span class="hl-1">            </span><span class="hl-3">let</span><span class="hl-1"> </span><span class="hl-4">feature</span><span class="hl-1">: </span><span class="hl-5">FeatureObj</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">FeatureObj</span><span class="hl-1">();</span><br/><span class="hl-1">            </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-4">v</span><span class="hl-1">.</span><span class="hl-4">logMgr</span><span class="hl-1">.</span><span class="hl-0">step</span><span class="hl-1">(</span><span class="hl-2">&#39;about to call performAction&#39;</span><span class="hl-1">);</span><br/><span class="hl-1">            </span><span class="hl-3">let</span><span class="hl-1"> </span><span class="hl-4">result</span><span class="hl-1">: </span><span class="hl-5">string</span><span class="hl-1"> = </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-4">feature</span><span class="hl-1">.</span><span class="hl-0">performAction</span><span class="hl-1">();</span><br/><span class="hl-1">            </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-4">v</span><span class="hl-1">.</span><span class="hl-4">logMgr</span><span class="hl-1">.</span><span class="hl-0">info</span><span class="hl-1">(</span><span class="hl-2">`result of performAction was &#39;</span><span class="hl-3">${</span><span class="hl-4">result</span><span class="hl-3">}</span><span class="hl-2">&#39;`</span><span class="hl-1">);</span><br/><span class="hl-1">            </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-4">v</span><span class="hl-1">.</span><span class="hl-4">logMgr</span><span class="hl-1">.</span><span class="hl-0">trace</span><span class="hl-1">(</span><span class="hl-2">&#39;successfully executed expectation&#39;</span><span class="hl-1">);</span><br/><span class="hl-1">            </span><span class="hl-7">return</span><span class="hl-1"> </span><span class="hl-4">result</span><span class="hl-1">;</span><br/><span class="hl-1">        }).</span><span class="hl-0">withTestId</span><span class="hl-1">(</span><span class="hl-2">&#39;C2345&#39;</span><span class="hl-1">).</span><span class="hl-4">and</span><span class="hl-1">.</span><span class="hl-0">withTestId</span><span class="hl-1">(</span><span class="hl-2">&#39;C3344&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">        .</span><span class="hl-4">and</span><span class="hl-1">.</span><span class="hl-0">withDescription</span><span class="hl-1">(</span><span class="hl-2">&#39;more complex expectation actions&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">        .</span><span class="hl-0">returns</span><span class="hl-1">(</span><span class="hl-0">containing</span><span class="hl-1">(</span><span class="hl-2">&#39;result of action&#39;</span><span class="hl-1">));</span><br/><span class="hl-1">    });</span><br/><span class="hl-1">});</span>
+</code></pre>
+<p>which would output the following logs:</p>
+<pre><code><span class="hl-9">5</span><span class="hl-1">:</span><span class="hl-9">29</span><span class="hl-1">:</span><span class="hl-9">54</span><span class="hl-1"> </span><span class="hl-10">PM</span><span class="hl-1"> - </span><span class="hl-4">more</span><span class="hl-1"> </span><span class="hl-4">complex</span><span class="hl-1"> </span><span class="hl-4">expectation</span><span class="hl-1"> </span><span class="hl-4">actions</span><span class="hl-1"> - </span><span class="hl-10">STEP</span><span class="hl-1">  - </span><span class="hl-9">1</span><span class="hl-1">: </span><span class="hl-4">creating</span><span class="hl-1"> </span><span class="hl-4">instance</span><span class="hl-1"> </span><span class="hl-3">of</span><span class="hl-1"> </span><span class="hl-4">FeatureObj</span><br/><span class="hl-9">5</span><span class="hl-1">:</span><span class="hl-9">29</span><span class="hl-1">:</span><span class="hl-9">55</span><span class="hl-1"> </span><span class="hl-10">PM</span><span class="hl-1"> - </span><span class="hl-4">more</span><span class="hl-1"> </span><span class="hl-4">complex</span><span class="hl-1"> </span><span class="hl-4">expectation</span><span class="hl-1"> </span><span class="hl-4">actions</span><span class="hl-1"> - </span><span class="hl-10">STEP</span><span class="hl-1">  - </span><span class="hl-9">2</span><span class="hl-1">: </span><span class="hl-4">about</span><span class="hl-1"> </span><span class="hl-4">to</span><span class="hl-1"> </span><span class="hl-4">call</span><span class="hl-1"> </span><span class="hl-4">performAction</span><br/><span class="hl-9">5</span><span class="hl-1">:</span><span class="hl-9">29</span><span class="hl-1">:</span><span class="hl-9">55</span><span class="hl-1"> </span><span class="hl-10">PM</span><span class="hl-1"> - </span><span class="hl-4">more</span><span class="hl-1"> </span><span class="hl-4">complex</span><span class="hl-1"> </span><span class="hl-4">expectation</span><span class="hl-1"> </span><span class="hl-4">actions</span><span class="hl-1"> - </span><span class="hl-10">INFO</span><span class="hl-1">  - </span><span class="hl-4">result</span><span class="hl-1"> </span><span class="hl-3">of</span><span class="hl-1"> </span><span class="hl-4">performAction</span><span class="hl-1"> </span><span class="hl-4">was</span><span class="hl-1"> </span><span class="hl-2">&#39;result of action&#39;</span><br/><span class="hl-9">5</span><span class="hl-1">:</span><span class="hl-9">29</span><span class="hl-1">:</span><span class="hl-9">56</span><span class="hl-1"> </span><span class="hl-10">PM</span><span class="hl-1"> - </span><span class="hl-4">more</span><span class="hl-1"> </span><span class="hl-4">complex</span><span class="hl-1"> </span><span class="hl-4">expectation</span><span class="hl-1"> </span><span class="hl-4">actions</span><span class="hl-1"> - </span><span class="hl-10">TRACE</span><span class="hl-1"> - </span><span class="hl-4">successfully</span><span class="hl-1"> </span><span class="hl-4">executed</span><span class="hl-1"> </span><span class="hl-4">expectation</span><br/><span class="hl-9">5</span><span class="hl-1">:</span><span class="hl-9">29</span><span class="hl-1">:</span><span class="hl-9">56</span><span class="hl-1"> </span><span class="hl-10">PM</span><span class="hl-1"> - </span><span class="hl-4">more</span><span class="hl-1"> </span><span class="hl-4">complex</span><span class="hl-1"> </span><span class="hl-4">expectation</span><span class="hl-1"> </span><span class="hl-4">actions</span><span class="hl-1"> - </span><span class="hl-10">PASS</span><span class="hl-1">  - </span><span class="hl-10">C2345</span><br/><span class="hl-9">5</span><span class="hl-1">:</span><span class="hl-9">29</span><span class="hl-1">:</span><span class="hl-9">56</span><span class="hl-1"> </span><span class="hl-10">PM</span><span class="hl-1"> - </span><span class="hl-4">more</span><span class="hl-1"> </span><span class="hl-4">complex</span><span class="hl-1"> </span><span class="hl-4">expectation</span><span class="hl-1"> </span><span class="hl-4">actions</span><span class="hl-1"> - </span><span class="hl-10">PASS</span><span class="hl-1">  - </span><span class="hl-10">C3344</span>
+</code></pre>
+<blockquote>
+<p>WARNING: Jasmine&#39;s <em>expect</em> calls do not return a boolean as their type definitions would make you think and failed <code>expect</code> calls will only throw exceptions if the stop on failure option is enabled: </p>
+</blockquote>
+<pre><code class="language-typescript"><span class="hl-0">verify</span><span class="hl-1">(() </span><span class="hl-3">=&gt;</span><span class="hl-1"> </span><span class="hl-0">expect</span><span class="hl-1">(</span><span class="hl-2">&#39;foo&#39;</span><span class="hl-1">).</span><span class="hl-0">toBe</span><span class="hl-1">(</span><span class="hl-2">&#39;bar&#39;</span><span class="hl-1">)); </span><span class="hl-6">// AFT will report as &#39;passed&#39;</span><br/><br/><span class="hl-0">verify</span><span class="hl-1">(() </span><span class="hl-3">=&gt;</span><span class="hl-1"> </span><span class="hl-2">&#39;foo&#39;</span><span class="hl-1">).</span><span class="hl-0">returns</span><span class="hl-1">(</span><span class="hl-2">&#39;bar&#39;</span><span class="hl-1">); </span><span class="hl-6">// AFT will report as &#39;failed&#39;</span><br/><br/><span class="hl-0">verify</span><span class="hl-1">(() </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><span class="hl-7">throw</span><span class="hl-1"> </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">Error</span><span class="hl-1">(</span><span class="hl-2">&#39;failure&#39;</span><span class="hl-1">);}) </span><span class="hl-6">// AFT will report as &#39;failed&#39;</span>
+</code></pre>
+
+<a href="#packages-click-on-name-for-more-info" id="packages-click-on-name-for-more-info" style="color: inherit; text-decoration: none;">
+  <h2>Packages (click on name for more info)</h2>
+</a>
+<ul>
+<li><a href="./packages/aft-core/README.md"><code>aft-core</code></a> - base library containing helpers and configuration and plugin managers</li>
+<li><a href="./packages/aft-examples/README.md"><code>aft-examples</code></a> - provides real-world examples of how the AFT libraries can be used in functional tests</li>
+<li><a href="./packages/aft-jasmine-reporter/README.md"><code>aft-jasmine-reporter</code></a> - a Jasmine Reporter Plugin that integrates with AFT to simplify logging and test execution via AFT</li>
+<li><a href="./packages/aft-logging-awskinesis/README.md"><code>aft-logging-awskinesis</code></a> - logging plugin supporting logging to AWS Kinesis Firehose</li>
+<li><a href="./packages/aft-logging-filesystem/README.md"><code>aft-logging-filesystem</code></a> - logging plugin supporting logging to .log files for all log output</li>
+<li><a href="./packages/aft-logging-html/README.md"><code>aft-logging-html</code></a> - logging plugin supporting logging to a HTML results file</li>
+<li><a href="./packages/aft-mocha-reporter/README.md"><code>aft-mocha-reporter</code></a> - provides Mocha Reporter Plugin that integrates with AFT to simplify logging and test execution via AFT</li>
+<li><a href="./packages/aft-testrail/README.md"><code>aft-testrail</code></a> - logging and test case management plugins supporting logging test results and filtering test execution based on TestRail Projects, Suites and Plans</li>
+<li><a href="./packages/aft-ui/README.md"><code>aft-ui</code></a> - base library supporting development of UI testing packages</li>
+<li><a href="./packages/aft-ui-browsers/README.md"><code>aft-ui-browsers</code></a> - adds support for Selenium-based UI testing using BrowserStack, Sauce Labs or your own Selenium Grid</li>
+<li><a href="./packages/aft-ui-mobile-apps/README.md"><code>aft-ui-mobile-apps</code></a> - adds support for Appium-based UI testing using BrowserStack, Sauce Labs or your own Appium Grid</li>
+<li><a href="./packages/aft-web-services/README.md"><code>aft-web-services</code></a> - adds support for testing REST-based services</li>
+</ul>
+
+<a href="#plugins" id="plugins" style="color: inherit; text-decoration: none;">
+  <h2>Plugins</h2>
+</a>
+<p>the primary benefit of using AFT comes from the plugins and the <code>Verifier</code>. Because logging using AFT&#39;s <code>LogManager</code> will also send to any registered logging plugins, it is easy to create logging plugins that send to any external system such as TestRail or to log results to Elasticsearch. Additionally, before running any <em>assertion</em> passed to a <code>verify(assertion)</code> function, AFT will confirm if the <em>assertion</em> should actually be run based on the results of queries to any supplied <code>TestCasePlugin</code> implementations and a subsequent queries to any supplied <code>DefectPlugin</code> implementations. </p>
+
+<a href="#logging-plugins" id="logging-plugins" style="color: inherit; text-decoration: none;">
+  <h3>Logging Plugins</h3>
+</a>
+<p><code>aft-core</code> provides a <code>LoggingPlugin</code> abstract class which can be extended to create custom loggers which are then loaded by adding their filenames to the <code>plugins</code> array under the <code>logmanager</code> section of your <code>aftconfig.json</code></p>
+<pre><code class="language-json"><span class="hl-1">{</span><br/><span class="hl-1">    </span><span class="hl-11">&quot;LogManager&quot;</span><span class="hl-1">: {</span><br/><span class="hl-1">        </span><span class="hl-11">&quot;plugins&quot;</span><span class="hl-1">: [</span><br/><span class="hl-1">            {</span><br/><span class="hl-1">                </span><span class="hl-11">&quot;name&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;testrail-logging-plugin&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">                </span><span class="hl-11">&quot;searchDirectory&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;../node_modules&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">                </span><span class="hl-11">&quot;options&quot;</span><span class="hl-1">: {</span><br/><span class="hl-1">                    </span><span class="hl-11">&quot;level&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;info&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">                    </span><span class="hl-11">&quot;enabled&quot;</span><span class="hl-1">: </span><span class="hl-3">false</span><br/><span class="hl-1">                }</span><br/><span class="hl-1">            },</span><br/><span class="hl-1">            </span><span class="hl-2">&quot;html-logging-plugin&quot;</span><br/><span class="hl-1">        ]</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">}</span>
+</code></pre>
+<blockquote>
+<p>NOTE: you can either specify a <code>string</code> containing the plugin filename or an <code>object</code> containing the <code>name</code>, <code>searchDirectory</code> and <code>options</code> fields within the <code>plugins</code> array configuration to specify a root directory to use when searching for logging plugin implementations</p>
+</blockquote>
+
+<a href="#test-case-plugin" id="test-case-plugin" style="color: inherit; text-decoration: none;">
+  <h3>Test Case Plugin</h3>
+</a>
+<p>the purpose of a <code>TestCasePlugin</code> implementation is to provide execution control over any expectations by way of supplied <em>Test IDs</em>. to specify an implementation of the plugin to load you can add the following to your <code>aftconfig.json</code> (where plugins <code>testrail-test-case-plugin.js</code> is contained within the test execution directory or a subdirectory of it):</p>
+<pre><code class="language-json"><span class="hl-1">{</span><br/><span class="hl-1">    </span><span class="hl-11">&quot;TestCaseManager&quot;</span><span class="hl-1">: {</span><br/><span class="hl-1">        </span><span class="hl-11">&quot;plugins&quot;</span><span class="hl-1">: [</span><span class="hl-2">&quot;testrail-test-case-plugin&quot;</span><span class="hl-1">]</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">}</span>
+</code></pre>
+<blockquote>
+<p>NOTE: if no plugin is specified then external Test Case Management integration will be disabled and <em>assertions</em> will be executed without checking their status before execution</p>
+</blockquote>
+
+<a href="#defect-plugin" id="defect-plugin" style="color: inherit; text-decoration: none;">
+  <h3>Defect Plugin</h3>
+</a>
+<p>the purpose of a <code>DefectPlugin</code> implementation is to provide execution control over any expectations by way of supplied <em>Test IDs</em> referenced in an external ticket tracking system like Bugzilla or Jira. to specify an implementation of the plugin to load you can add the following to your <code>aftconfig.json</code> (where plugins <code>defect-plugin.js</code> is contained within the test execution directory or a subdirectory of it):</p>
+<pre><code class="language-json"><span class="hl-1">{</span><br/><span class="hl-1">    </span><span class="hl-11">&quot;DefectManager&quot;</span><span class="hl-1">: {</span><br/><span class="hl-1">        </span><span class="hl-11">&quot;plugins&quot;</span><span class="hl-1">: [</span><span class="hl-2">&quot;defect-plugin&quot;</span><span class="hl-1">]</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">}</span>
+</code></pre>
+<blockquote>
+<p>NOTE: if no plugin is specified then external Defect Management integration will be disabled and <em>assertions</em> will be executed without checking their status before execution, however if a Defect Management plugin is specified, the execution of any <em>assertions</em> passed into a <code>verify(assertion)</code> function will be halted if any non-closed defects are found when searching for defects that contain reference to the values passed in via <code>withTestId(caseId)</code> or via direct reference to defect using <code>withKnownDefectId(defectId)</code></p>
+</blockquote>
+
+<a href="#example-test-project" id="example-test-project" style="color: inherit; text-decoration: none;">
+  <h2>Example Test Project</h2>
+</a>
+<ul>
+<li><a href="./packages/aft-examples/README.md"><code>aft-examples</code></a> - a demonstration of how to develop UI and REST based functional test automation using AFT is located under <code>./packages/aft-examples</code></li>
+</ul>
+
+<a href="#contributing-to-aft" id="contributing-to-aft" style="color: inherit; text-decoration: none;">
+  <h2>Contributing to AFT</h2>
+</a>
+<ul>
+<li>create a Fork of the repo in GitHub</li>
+<li>clone the code using <code>git clone https://github.com/&lt;your-project-area&gt;/automated-functional-testing automated-functional-testing</code> where <code>&lt;your-project-area&gt;</code> is replaced with the location of your Fork</li>
+<li>run <code>npm install</code> to install all dependencies</li>
+<li>run a build to ensure <code>npm workspaces</code> understands and caches the project layout using <code>npm run build</code><ul>
+<li>NOTE: you can build each project individually using <code>npm run build --workspace=&lt;project-name&gt;</code> where <code>&lt;project-name&gt;</code> is a value like <code>aft-core</code> or <code>aft-ui</code></li>
+</ul>
+</li>
+<li>run the tests using <code>npm run test</code> or individually using <code>npm run test --workspace=&lt;project-name&gt;</code></li>
+<li>when you are happy with your changes, submit a Pull Request back to the <em>main</em> branch at <a href="https://github.com/bicarbon8/automated-functional-testing">https://github.com/bicarbon8/automated-functional-testing</a></li>
+</ul>
+
+<a href="#notes" id="notes" style="color: inherit; text-decoration: none;">
+  <h2>NOTES</h2>
+</a>
+<blockquote>
+<p>all changes require unit tests and these tests are expected to pass when run via <code>npm run test</code></p>
+</blockquote>
+<blockquote>
+<p>check for any circular dependencies using <code>npx dpdm -T --warning false **/index.ts</code></p>
+</blockquote>
+<blockquote>
+<p>use <code>npx lerna version</code> to automatically update the version of all projects at once (all changes must be committed first)</p>
+</blockquote>
+<blockquote>
+<p>generate documentation using <code>npx typedoc --entryPointStrategy packages ./packages/* --out ./docs</code></p>
+</blockquote>
+</div></div>
+<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+<div class="tsd-navigation settings">
+<details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility">
+<h4 class="uppercase">Member Visibility</h4><form>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-private" name="private"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Private</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></form></div>
+<div class="tsd-theme-toggle">
+<h4 class="uppercase">Theme</h4><select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<nav class="tsd-navigation primary">
+<details class="tsd-index-accordion" open><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Modules</h3></summary>
+<div class="tsd-accordion-details">
+<ul>
+<li class="current selected"><a href="modules.html">automated-<wbr/>functional-<wbr/>testing</a>
+<ul>
+<li class="tsd-kind-module"><a href="modules/aft_core.html">aft-<wbr/>core</a>
+<ul>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/aft_core.Err.html">Err</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/aft_core.LogLevel.html">Log<wbr/>Level</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/aft_core.LogManager.html">Log<wbr/>Manager</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/aft_core.SafeStringOption.html">Safe<wbr/>String<wbr/>Option</a></li></ul></li>
+<li class="tsd-kind-module"><a href="modules/aft_jasmine_reporter.html">aft-<wbr/>jasmine-<wbr/>reporter</a></li>
+<li class="tsd-kind-module"><a href="modules/aft_logging_awskinesis.html">aft-<wbr/>logging-<wbr/>awskinesis</a></li>
+<li class="tsd-kind-module"><a href="modules/aft_logging_filesystem.html">aft-<wbr/>logging-<wbr/>filesystem</a></li>
+<li class="tsd-kind-module"><a href="modules/aft_logging_html.html">aft-<wbr/>logging-<wbr/>html</a></li>
+<li class="tsd-kind-module"><a href="modules/aft_mocha_reporter.html">aft-<wbr/>mocha-<wbr/>reporter</a></li>
+<li class="tsd-kind-module"><a href="modules/aft_testrail.html">aft-<wbr/>testrail</a></li>
+<li class="tsd-kind-module"><a href="modules/aft_ui.html">aft-<wbr/>ui</a></li>
+<li class="tsd-kind-module"><a href="modules/aft_ui_browsers.html">aft-<wbr/>ui-<wbr/>browsers</a></li>
+<li class="tsd-kind-module"><a href="modules/aft_ui_mobile_apps.html">aft-<wbr/>ui-<wbr/>mobile-<wbr/>apps</a></li>
+<li class="tsd-kind-module"><a href="modules/aft_web_services.html">aft-<wbr/>web-<wbr/>services</a>
+<ul>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/aft_web_services.XML.html">XML</a></li></ul></li></ul></li></ul></div></details></nav></div></div>
+<div class="container tsd-generator">
+<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
+<div class="overlay"></div><script src="assets/main.js"></script></body></html>

@@ -1,14 +1,14 @@
 {
   "name": "aft-mocha-reporter",
-  "version": "8.4.2",
+  "version": "9.0.0",
   "description": "Automated Functional Testing (AFT) Reporter for use with Mocha Test Framework",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./logs && rimraf ./FileSystemMap && rimraf ./testresults.html",
-    "build": "yarn clean && tsc --build",
-    "test": "yarn build && mocha",
-    "coverage": "nyc yarn test"
+    "build": "npm run clean && tsc --build",
+    "test": "npm run build && mocha",
+    "coverage": "nyc npm run test"
   },
   "repository": {
     "type": "git",
@@ -29,21 +29,21 @@
     "url": "https://github.com/bicarbon8/automated-functional-testing/issues"
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
+  "dependencies": {
+    "aft-core": "^9.0.0",
+    "mocha": "^10.0.0"
+  },
   "devDependencies": {
     "@types/mocha": "^9.1.1",
     "@types/node": "^18.0.0",
     "@types/sinon": "^10.0.12",
-    "aft-logging-filesystem": "^8.4.2",
-    "aft-logging-html": "^8.4.2",
+    "aft-logging-filesystem": "^9.0.0",
+    "aft-logging-html": "^9.0.0",
     "chai": "^4.3.6",
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
     "sinon": "^14.0.0",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.4"
-  },
-  "dependencies": {
-    "aft-core": "^8.4.2",
-    "mocha": "^10.0.0"
   }
 }

@@ -1,4 +1,4 @@
-import { Class, IHasOptions, LogManager, optmgr, rand } from 'aft-core';
+import { Class, RetryBackOffType, IHasOptions, LogManager, optmgr, rand } from 'aft-core';
 import { UiSession } from '../sessions/ui-session';
 import { UiElementOptions } from './ui-element-options';
 
@@ -9,6 +9,8 @@ export type UiFacetOptions = {
     session?: UiSession<any>;
     logMgr?: LogManager;
     maxWaitMs?: number;
+    retryDelayMs?: number;
+    retryDelayBackOff?: RetryBackOffType;
 };
 
 export abstract class UiFacet<T extends UiFacetOptions> implements IHasOptions<T> {
@@ -38,6 +40,14 @@ export abstract class UiFacet<T extends UiFacetOptions> implements IHasOptions<T
 
     get maxWaitMs(): number {
         return this.option('maxWaitMs', 10000);
+    }
+
+    get retryDelayMs(): number {
+        return this.option('retryDelayMs', 100);
+    }
+
+    get retryDelayBackOff(): RetryBackOffType {
+        return this.option('retryDelayBackOff', 'linear');
     }
 
     get locator(): unknown {
