@@ -66,7 +66,7 @@ describe('Functional Browser Tests using AFT-UI-BROWSERS', () => {
     });
 
     const uiplatforms = [
-        'os x_+_safari',
+        'os x_+_safari_latest',
         'windows_11_firefox',
         'windows_11_edge_+_+'
     ];
