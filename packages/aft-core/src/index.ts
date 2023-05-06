@@ -1,4 +1,5 @@
 /** configuration */
+export * from './configuration/aft-config';
 export * from './configuration/aftconfig-provider';
 export * from './configuration/chained-provider';
 export * from './configuration/config-manager';
