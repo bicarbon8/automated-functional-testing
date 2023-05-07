@@ -25,7 +25,7 @@ export type LogManagerOptions = Merge<PluginManagerOptions, LoggingPluginOptions
  * ```
  * {
  *   ...
- *   "logmanager": {
+ *   "LogManager": {
  *     "level": "info",
  *     "plugins": [
  *       {"name": "logging-plugin1", "enabled": true, "searchDirectory": "./dist/", "options": {"foo": "bar"}},

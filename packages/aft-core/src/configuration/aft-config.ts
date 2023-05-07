@@ -62,12 +62,26 @@ export class AftConfig {
         return val;
     }
 
+    /**
+     * adds the passed in `section` to the `AftConfig` cache of `aftconfig.json`
+     * sections so it will be used instead of the value from the actual JSON file
+     * @param key adds the passed in `section` to the cache so it will be used
+     * instead of reading from `aftconfig.json`
+     * @param section an object containing properties
+     */
     setSection<T extends {}>(key: string, section: T): void {
         if (key && section) {
             this._sectionCache.set(key, section);
         }
     }
 
+    /**
+     * iterates over all properties for the passed in `input` object and
+     * if a property is a `string` it calls `processEnvVars` on the property
+     * @param input an object that contains properties
+     * @returns the input object with any string property values updated
+     * based on the result of calling `processEnvVars`
+     */
     processProperties<T extends {}>(input: T): T {
         if (input) {
             for (var prop of Object.keys(input)) {
@@ -85,6 +99,13 @@ export class AftConfig {
         return input;
     }
 
+    /**
+     * attempts to get an environment variable value for a given key if the passed
+     * in `input` is in the format of `%some_env_var_key%`
+     * @param input a string that might reference an environment var between two `%`
+     * characters like `%some_env_var%` 
+     * @returns the value of the environment variable
+     */
     processEnvVars(input: string): string {
         if (input) {
             let regx = /^%(.*)%$/;
