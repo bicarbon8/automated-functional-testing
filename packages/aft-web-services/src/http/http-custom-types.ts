@@ -1,4 +1,4 @@
-import { LogManager } from "aft-core";
+import { AftLog } from "aft-core";
 import { IncomingHttpHeaders, OutgoingHttpHeaders } from "http";
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'UPDATE' | 'DELETE';
@@ -28,7 +28,7 @@ export type HttpRequest = {
     method?: HttpMethod;
     postData?: any;
     multipart?: boolean;
-    logMgr?: LogManager;
+    logMgr?: AftLog;
 };
 
 /**

@@ -1,4 +1,4 @@
-import { Class, RetryBackOffType, IHasOptions, LogManager, optmgr, rand } from 'aft-core';
+import { Class, RetryBackOffType, IHasOptions, AftLog, optmgr, rand } from 'aft-core';
 import { UiSession } from '../sessions/ui-session';
 import { UiElementOptions } from './ui-element-options';
 
@@ -7,14 +7,14 @@ export type UiFacetOptions = {
     locator?: unknown;
     parent?: UiFacet<any>;
     session?: UiSession<any>;
-    logMgr?: LogManager;
+    logMgr?: AftLog;
     maxWaitMs?: number;
     retryDelayMs?: number;
     retryDelayBackOff?: RetryBackOffType;
 };
 
 export abstract class UiFacet<T extends UiFacetOptions> implements IHasOptions<T> {
-    private _logMgr: LogManager;
+    private _logMgr: AftLog;
     private _opts: T;
 
     constructor(options?: T) {
@@ -27,9 +27,9 @@ export abstract class UiFacet<T extends UiFacetOptions> implements IHasOptions<T
         return (result === undefined) ? defaultVal : result;
     }
 
-    get logMgr(): LogManager {
+    get logMgr(): AftLog {
         if (!this._logMgr) {
-            this._logMgr = this.option('logMgr') || new LogManager({logName: `${this.constructor.name}_${rand.guid}`});
+            this._logMgr = this.option('logMgr') || new AftLog({logName: `${this.constructor.name}_${rand.guid}`});
         }
         return this._logMgr;
     }

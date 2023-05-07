@@ -1,4 +1,4 @@
-import { TestResult, LogManager, rand, LogMessageData, pluginloader } from "../../../src";
+import { TestResult, AftLog, rand, LogMessageData, pluginloader } from "../../../src";
 import { MockLoggingPlugin } from "./mock-logging-plugin";
 
 const consoleLog = console.log;
@@ -17,7 +17,7 @@ describe('LogManager', () => {
 
     it('will send logs to any registered LoggingPlugin implementations', async () => {
         const logName = 'will send logs to any registered LoggingPlugin implementations';
-        const logMgr: LogManager = new LogManager({
+        const logMgr: AftLog = new AftLog({
             logName: logName,
             level: 'trace',
             plugins: ['mock-logging-plugin']
@@ -52,7 +52,7 @@ describe('LogManager', () => {
 
     it('will not output if level set to LogLevel of none', async () => {
         const logName = 'will not output if level set to LogLevel of none';
-        const logMgr: LogManager = new LogManager({
+        const logMgr: AftLog = new AftLog({
             logName: logName,
             level: 'none',
             plugins: []
@@ -67,7 +67,7 @@ describe('LogManager', () => {
 
     it('will send cloned LogMessageData to any registered LoggingPlugin implementations', async () => {
         const logName = 'will send cloned LogMessageData to any registered LoggingPlugin implementations';
-        const logMgr: LogManager = new LogManager({
+        const logMgr: AftLog = new AftLog({
             logName: logName,
             plugins: ['mock-logging-plugin']
         });
@@ -86,7 +86,7 @@ describe('LogManager', () => {
 
     it('will send cloned TestResult to any registered LoggingPlugin implementations', async () => {
         const logName = 'will send cloned TestResult to any registered LoggingPlugin implementations';
-        const logMgr: LogManager = new LogManager({
+        const logMgr: AftLog = new AftLog({
             logName: logName,
             plugins: ['mock-logging-plugin']
         });
@@ -120,7 +120,7 @@ describe('LogManager', () => {
 
     it('calls LoggingPlugin.dispose on LogManager.dispose', async () => {
         const logName = 'calls LoggingPlugin.dispose on LogManager.dispose';
-        const logMgr: LogManager = new LogManager({
+        const logMgr: AftLog = new AftLog({
             logName: logName,
             plugins: ['mock-logging-plugin']
         });
@@ -146,7 +146,7 @@ describe('LogManager', () => {
 
     it('handles exceptions thrown by loaded plugins', async () => {
         const logName = 'handles exceptions thrown by loaded plugins';
-        const logMgr: LogManager = new LogManager({
+        const logMgr: AftLog = new AftLog({
             logName: logName,
             plugins: ['throws-logging-plugin']
         });
@@ -159,7 +159,7 @@ describe('LogManager', () => {
 
     it('passes manager LogLevel to plugins if not set in PluginConfig', async () => {
         const logName = 'passes manager LogLevel to plugins if not set in PluginConfig';
-        const logMgr: LogManager = new LogManager({
+        const logMgr: AftLog = new AftLog({
             logName: logName,
             level: 'error',
             plugins: ['mock-logging-plugin']
@@ -173,7 +173,7 @@ describe('LogManager', () => {
 
     it('allows setting config for plugins in their PluginConfig', async () => {
         const logName = 'passes manager LogLevel to plugins if not set in PluginConfig';
-        const logMgr: LogManager = new LogManager({
+        const logMgr: AftLog = new AftLog({
             logName: logName,
             level: 'error',
             plugins: [{

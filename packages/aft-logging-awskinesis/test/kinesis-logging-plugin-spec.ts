@@ -1,12 +1,12 @@
-import { KinesisLoggingPlugin, KinesisLoggingPluginOptions } from "../src/kinesis-logging-plugin";
-import { LogManager, LogManagerOptions, machineInfo, pluginloader, rand, TestResult } from "aft-core";
+import { KinesisLoggingPlugin, KinesisLoggingPluginConfig } from "../src/kinesis-logging-plugin";
+import { AftLog, LogManagerOptions, machineInfo, pluginloader, rand, TestResult } from "aft-core";
 import * as pkg from "../package.json";
 import * as Firehose from "aws-sdk/clients/firehose";
 import { KinesisLogRecord } from "../src/kinesis-log-record";
 
 describe('KinesisLoggingPlugin', () => {
     it('can batch messages for sending', async () => {
-        const config: KinesisLoggingPluginOptions = {
+        const config: KinesisLoggingPluginConfig = {
             level: 'info',
             batch: true,
             batchSize: 10,
@@ -34,7 +34,7 @@ describe('KinesisLoggingPlugin', () => {
     });
 
     it('can disable batch sending of messages', async () => {
-        const config: KinesisLoggingPluginOptions = {
+        const config: KinesisLoggingPluginConfig = {
             level: 'info',
             batch: false,
             batchSize: 10,
@@ -61,7 +61,7 @@ describe('KinesisLoggingPlugin', () => {
     });
 
     it('sends any unsent batched logs on dispose', async () => {
-        const config: KinesisLoggingPluginOptions = {
+        const config: KinesisLoggingPluginConfig = {
             level: 'info',
             batch: true,
             batchSize: 10,
@@ -96,7 +96,7 @@ describe('KinesisLoggingPlugin', () => {
     });
 
     it('only sends messages of the appropriate level', async () => {
-        const config: KinesisLoggingPluginOptions = {
+        const config: KinesisLoggingPluginConfig = {
             level: 'info',
             batch: false,
             batchSize: 10,
@@ -122,7 +122,7 @@ describe('KinesisLoggingPlugin', () => {
     });
 
     it('adds expected fields to the log record', async () => {
-        const config: KinesisLoggingPluginOptions = {
+        const config: KinesisLoggingPluginConfig = {
             level: 'info',
             batch: false,
             batchSize: 10,
@@ -153,7 +153,7 @@ describe('KinesisLoggingPlugin', () => {
      * only for use in debugging issues locally
      */
     xit('can send real logs and ITestResult objects', async () => {
-        const config: KinesisLoggingPluginOptions = {
+        const config: KinesisLoggingPluginConfig = {
             level: 'trace',
             batch: true,
             batchSize: 10,
@@ -192,11 +192,11 @@ describe('KinesisLoggingPlugin', () => {
                     accessKeyId: rand.getString(20),
                     secretAccessKey: rand.getString(50),
                     enabled: false
-                } as KinesisLoggingPluginOptions
+                } as KinesisLoggingPluginConfig
             }]
         };
         pluginloader.clear();
-        const mgr: LogManager = new LogManager(config);
+        const mgr: AftLog = new AftLog(config);
         const plugins = await mgr.plugins();
         const plugin = plugins[0];
 

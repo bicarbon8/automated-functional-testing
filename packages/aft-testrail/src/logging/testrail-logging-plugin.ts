@@ -1,10 +1,10 @@
-import { LoggingPlugin, LogLevel, TestResult, ellide, ExpiringFileLock, fileio, LogMessageData, Merge, LoggingPluginOptions } from "aft-core";
+import { ILoggingPlugin, LogLevel, TestResult, ellide, ExpiringFileLock, fileio, LogMessageData, Merge, LoggingPluginConfig } from "aft-core";
 import { TestRailApi } from "../api/testrail-api";
 import { TestRailPlan, TestRailResultRequest } from "../api/testrail-custom-types";
 import { TestRailConfig, trconfig } from "../configuration/testrail-config";
 import { statusConverter } from "../helpers/status-converter";
 
-export type TestRailLoggingPluginOptions = Merge<LoggingPluginOptions, {
+export type TestRailLoggingPluginOptions = Merge<LoggingPluginConfig, {
     maxLogCharacters?: number;
 
     config?: TestRailConfig;

@@ -1,5 +1,5 @@
 import { LogLevel } from '../plugins/logging/log-level';
-import { LogManager } from '../plugins/logging/log-manager';
+import { AftLog } from '../plugins/logging/aft-log';
 import { convert } from './convert';
 import { Func } from './custom-types';
 import { ellide } from './ellide';
@@ -11,7 +11,7 @@ export type ErrOptions = {
      * an optional `LogManager` instance to use in logging the error message
      * and stack
      */
-    logMgr?: LogManager;
+    logMgr?: AftLog;
     /**
      * the `LogLevel` to use when logging any caught `Error`. defaults to
      * `warn`
@@ -186,7 +186,7 @@ export module Err {
      * `LogManager` using the `logMgr` field in the `ErrOptions` instance)
      * @returns the result of the passed in `func` or `null` if an error is thrown
      */
-    export async function handle<T extends any>(func: Func<void, T | PromiseLike<T>>, optsOrLogMgr?: LogManager | ErrOptions): Promise<T> {
+    export async function handle<T extends any>(func: Func<void, T | PromiseLike<T>>, optsOrLogMgr?: AftLog | ErrOptions): Promise<T> {
         let opts: ErrOptions;
         if (_isLogManager(optsOrLogMgr)) { // TODO: remove this in next major release
             opts = {logMgr: optsOrLogMgr} as ErrOptions;

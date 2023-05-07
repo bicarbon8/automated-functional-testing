@@ -1,14 +1,6 @@
 /** configuration */
 export * from './configuration/aft-config';
-export * from './configuration/aftconfig-provider';
-export * from './configuration/chained-provider';
 export * from './configuration/config-manager';
-export * from './configuration/envvar-provider';
-export * from './configuration/i-config-provider';
-export * from './configuration/i-has-config';
-export * from './configuration/i-has-options';
-export * from './configuration/options-manager';
-export * from './configuration/options-provider';
 /** helpers */
 export * from './helpers/cache-map';
 export * from './helpers/custom-types';
@@ -41,9 +33,9 @@ export * from './plugins/defects/defect-plugin';
 export * from './plugins/defects/defect-manager';
 /** plugins/logging */
 export * from './plugins/logging/log-message-data';
-export * from './plugins/logging/log-manager';
+export * from './plugins/logging/aft-log';
 export * from './plugins/logging/log-level';
-export * from './plugins/logging/logging-plugin';
+export * from './plugins/logging/i-logging-plugin';
 /** plugins/test-cases */
 export * from './plugins/test-cases/test-case-plugin';
 export * from './plugins/test-cases/test-case-manager';

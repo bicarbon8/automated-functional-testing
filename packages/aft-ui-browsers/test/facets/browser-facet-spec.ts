@@ -1,5 +1,5 @@
 import { By, WebDriver, WebElement, Session } from "selenium-webdriver";
-import { LogManager, rand } from "aft-core";
+import { AftLog, rand } from "aft-core";
 import { BrowserSession, BrowserFacet, BrowserFacetOptions } from "../../src";
 
 describe('BrowserFacet', () => {
@@ -28,7 +28,7 @@ describe('BrowserFacet', () => {
         spyOn(driver, 'findElements').and.returnValues(Promise.reject('no element'), Promise.resolve([element]));
         let session: BrowserSession<any> = new BrowserSession<any>({
             driver: driver, 
-            logMgr: new LogManager({logName: 'can auto-refresh from WebDriver on Error in getRoot'})
+            logMgr: new AftLog({logName: 'can auto-refresh from WebDriver on Error in getRoot'})
         });
         let facet: BrowserFacet = await session.getFacet<BrowserFacet, BrowserFacetOptions>(BrowserFacet, {
             locator: By.css('div.fake'),

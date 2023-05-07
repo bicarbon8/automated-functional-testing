@@ -1,4 +1,4 @@
-import { TestCase, TestCasePlugin, LogManager, Merge, TestCasePluginOptions } from 'aft-core';
+import { TestCase, TestCasePlugin, AftLog, Merge, TestCasePluginOptions } from 'aft-core';
 import { TestRailApi } from '../api/testrail-api';
 import { TestRailCase, TestRailRun, TestRailTest } from '../api/testrail-custom-types';
 import { TestRailConfig, trconfig } from '../configuration/testrail-config';
@@ -7,7 +7,7 @@ import { statusConverter } from '../helpers/status-converter';
 export type TestRailTestCasePluginOptions = Merge<TestCasePluginOptions, {
     config?: TestRailConfig;
     api?: TestRailApi;
-    logMgr?: LogManager;
+    logMgr?: AftLog;
 }>;
 
 /**
@@ -18,7 +18,7 @@ export type TestRailTestCasePluginOptions = Merge<TestCasePluginOptions, {
 export class TestRailTestCasePlugin extends TestCasePlugin<TestRailTestCasePluginOptions> {
     private _trConfig: TestRailConfig;
     private _api: TestRailApi;
-    private _logMgr: LogManager;
+    private _logMgr: AftLog;
 
     get config(): TestRailConfig {
         if (!this._trConfig) {
@@ -34,9 +34,9 @@ export class TestRailTestCasePlugin extends TestCasePlugin<TestRailTestCasePlugi
         return this._api;
     }
 
-    get logMgr(): LogManager {
+    get logMgr(): AftLog {
         if (!this._logMgr) {
-            this._logMgr = this.option('logMgr') || new LogManager({logName: this.constructor.name});
+            this._logMgr = this.option('logMgr') || new AftLog({logName: this.constructor.name});
         }
         return this._logMgr;
     }

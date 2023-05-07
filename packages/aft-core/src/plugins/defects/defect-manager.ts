@@ -1,4 +1,4 @@
-import { LogManager } from "../logging/log-manager";
+import { AftLog } from "../logging/aft-log";
 import { Defect } from "./defect";
 import { DefectPlugin } from "./defect-plugin";
 import { PluginManagerWithLogging, PluginManagerWithLoggingOptions } from "../plugin-manager-with-logging";
@@ -27,12 +27,12 @@ export class DefectManager extends PluginManagerWithLogging<DefectPlugin<any>, P
         .then((p: DefectPlugin<any>) => p?.getDefect(defectId)
             .catch(async (err) => {
                 await this.logMgr()
-                .then((l: LogManager) => l.warn(`error calling ${p?.constructor.name || 'unknown'}.getDefect(${defectId}) due to: ${err}`));
+                .then((l: AftLog) => l.warn(`error calling ${p?.constructor.name || 'unknown'}.getDefect(${defectId}) due to: ${err}`));
                 return null;    
             }))
         .catch(async (err) => {
             await this.logMgr()
-            .then((l: LogManager) => l.warn(err));
+            .then((l: AftLog) => l.warn(err));
             return null;
         });
         return defect;
@@ -44,12 +44,12 @@ export class DefectManager extends PluginManagerWithLogging<DefectPlugin<any>, P
         .then((p: DefectPlugin<any>) => p?.findDefects(searchTerm)
             .catch(async (err) => {
                 await this.logMgr()
-                .then((l: LogManager) => l.warn(`error calling ${p?.constructor.name || 'unknown'}.findDefects(${searchTerm}) due to: ${err}`));
+                .then((l: AftLog) => l.warn(`error calling ${p?.constructor.name || 'unknown'}.findDefects(${searchTerm}) due to: ${err}`));
                 return [];    
             }))
         .catch(async (err) => {
             await this.logMgr()
-            .then((l: LogManager) => l.warn(err));
+            .then((l: AftLog) => l.warn(err));
             return [];
         });
         return defects || [];

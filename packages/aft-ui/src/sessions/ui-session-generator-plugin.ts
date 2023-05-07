@@ -1,18 +1,18 @@
-import { Plugin, LogManager, Merge, PluginOptions } from "aft-core";
+import { Plugin, AftLog, Merge, PluginOptions } from "aft-core";
 import { UiPlatform } from "../configuration/ui-platform";
 import { UiSession, UiSessionOptions } from "./ui-session";
 
 export type UiSessionGeneratorPluginOptions = Merge<PluginOptions, {
     uiplatform?: string;
-    logMgr?: LogManager;
+    logMgr?: AftLog;
 }>;
 
 export abstract class UiSessionGeneratorPlugin<T extends UiSessionGeneratorPluginOptions> extends Plugin<T> {
-    private _logMgr: LogManager;
+    private _logMgr: AftLog;
     private _platform: UiPlatform;
-    get logMgr(): LogManager {
+    get logMgr(): AftLog {
         if (!this._logMgr) {
-            this._logMgr = this.option('logMgr') || new LogManager({logName: this.constructor.name});
+            this._logMgr = this.option('logMgr') || new AftLog({logName: this.constructor.name});
         }
         return this._logMgr;
     }

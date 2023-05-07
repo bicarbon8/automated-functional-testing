@@ -1,62 +1,141 @@
-import { AftConfigProvider } from "./aftconfig-provider";
-import { IConfigProvider } from "./i-config-provider";
-import { ChainedProvider } from "./chained-provider";
-import { EnvVarProvider } from "./envvar-provider";
-import { OptionsProvider } from "./options-provider";
+import { Class, JsonObject, JsonValue } from "../helpers/custom-types";
+import { fileio } from "../helpers/file-io";
 
-type ConfigKeyOptions = <T extends object>(configKey: string, options: T) => IConfigProvider<T>;
+export class ConfigManager {
+    private readonly _cfg: JsonObject;
+    private readonly _valueCache: Map<string, JsonValue>;
+    private readonly _sectionCache: Map<string, {}>;
 
-class ConfigManager {
-    private readonly _default: ConfigKeyOptions = <T extends object>(configKey: string, options: T) => new ChainedProvider<T>([
-        new OptionsProvider<T>(options),
-        new EnvVarProvider<T>(configKey),
-        new AftConfigProvider<T>(configKey)
-    ]);
-    private _override: ConfigKeyOptions;
-    /**
-     * returns a new `ConfigProvider` either using the `default` of a
-     * `ChainedProvider` that reads from an `OptionsProvider` followed
-     * by and `EnvVarProvider` followed by `AftConfigProvider` or using
-     * the value specified using the `set` function.
-     * @param configKey a configuration key to use in `ConfigProvider` instances that
-     * require one
-     * @param options an `object` containing options that override any environment
-     * variables or `aftconfig.json` values
-     * @returns either the default `ConfigProvider` or the one set using the `set`
-     * function
-     */
-    get<T extends object>(configKey: string, options: T): IConfigProvider<T> {
-        return (this._override) ? this._override<T>(configKey, options) : this._default<T>(configKey, options);
+    constructor(config?: JsonObject) {
+        this._cfg = config ?? fileio.readAs<JsonObject>('aftconfig.json') ?? {};
+        this._valueCache = new Map<string, JsonValue>();
+        this._sectionCache = new Map<string, {}>();
     }
+
     /**
-     * this function allows for overriding the default `IConfigProvider` lookup chain
-     * so that any future `IConfigProvider` implementations may be added in or replace
-     * the existing `ChainedProvider`
-     * ```typescript
-     * ConfigManager.set(<T extends object>(configKey: string, options: T) => CustomConfigProvider<T>(configKey, options));
-     * ```
-     * @param func a `Function` accepting two arguments, a `configKey: string` and an
-     * `options: object` and returning a `IConfigProvider` instance
+     * looks for a value in the `aftconfig.json` file at the top level and if found attempts
+     * to extract any environment variable set if the value matches a format of `%some_var_name%`
+     * before returning the value or the specified `defaultVal` if nothing was found
+     * @param key the configuration key
+     * @param defaultVal a default value to return if no value is set for the specified `key`
+     * @returns the value set in the `aftconfig.json` file for the specified `key` or `undefined`
      */
-    set(func: ConfigKeyOptions): void {
-        this._override = func;
+    get<T extends JsonValue>(key: string, defaultVal?: T): T {
+        if (this._valueCache.has(key)) {
+            return this._valueCache.get(key) as T;
+        }
+        let val: T = this._cfg[key] as T;
+        if (val === null || val === undefined) {
+            val = defaultVal as T;
+        }
+        if (typeof val === "string") {
+            val = this.processEnvVars(val) as T;
+        } else if (typeof val === "object") {
+            val = this.processProperties(val);
+        }
+        if (val != null) {
+            this.set(key, val);
+        }
+        return val;
     }
+
+    set<T extends JsonValue>(key: string, val: T): void {
+        this._valueCache.set(key, val);
+    }
+
     /**
-     * resets the `cfgmgr` to use the default provider chain
+     * looks for a top-level section in your `aftconfig.json` file with a name matching the passed in
+     * `className` and returns it or a new instance of the `className` type
+     * @param className a class of type `T` where the name of the class and the section name must match
+     * @returns the section from `aftconfig.json` matching the name of the passed in `className` or a 
+     * new instance of the `className` type
      */
-    reset(): void {
-        this.set(this._default);
+    getSection<T extends {}>(className: Class<T> | string): T {
+        let val: T;
+        let key: string;
+        if (typeof className === "function") {
+            key = `${className.name}`;
+        } else {
+            key = className;
+        }
+        let possibleVal = this._sectionCache.get(key) ?? this._cfg[key];
+        if (typeof possibleVal === "string") {
+            val = JSON.parse(possibleVal) as T;
+        } else {
+            val = possibleVal as T;
+        }
+        if (!val) {
+            if (typeof className === "function") {
+                val = new className();
+            } else {
+                val = {} as T;
+            }
+        }
+        val = this.processProperties(val);
+        this.setSection(key, val);
+        return val;
+    }
+
+    /**
+     * adds the passed in `section` to the `AftConfig` cache of `aftconfig.json`
+     * sections so it will be used instead of the value from the actual JSON file
+     * @param key adds the passed in `section` to the cache so it will be used
+     * instead of reading from `aftconfig.json`
+     * @param section an object containing properties
+     */
+    setSection<T extends {}>(key: string, section: T): void {
+        if (key && section) {
+            this._sectionCache.set(key, section);
+        }
+    }
+
+    /**
+     * iterates over all properties for the passed in `input` object and
+     * if a property is a `string` it calls `processEnvVars` on the property
+     * @param input an object that contains properties
+     * @returns the input object with any string property values updated
+     * based on the result of calling `processEnvVars`
+     */
+    processProperties<T extends {}>(input: T): T {
+        if (input) {
+            for (var prop of Object.keys(input)) {
+                let val = input[prop];
+                if (val != null) {
+                    if (typeof val === "string") {
+                        val = this.processEnvVars(val);
+                    } else if (typeof val === "object") {
+                        val = this.processEnvVars(val);
+                    }
+                    input[prop] = val;
+                }
+            }
+        }
+        return input;
+    }
+
+    /**
+     * attempts to get an environment variable value for a given key if the passed
+     * in `input` is in the format of `%some_env_var_key%`
+     * @param input a string that might reference an environment var between two `%`
+     * characters like `%some_env_var%` 
+     * @returns the value of the environment variable
+     */
+    processEnvVars(input: string): string {
+        if (input) {
+            let regx = /^%(.*)%$/;
+            if ((input?.match(regx)?.length ?? 0) > 0) {
+                var envVarKey = input.match(regx)?.[1];
+                if (envVarKey) {
+                    let result = process.env[envVarKey];
+                    if (result)
+                    {
+                        input = result;
+                    }
+                }
+            }
+        }
+        return input;
     }
 }
 
-/**
- * calling `cfgmgr.get('someCustomKey', {'my_field_1': ObjectInstance, 'my_field_2': true ...})`
- * will (by default) return a `ChainedProvider` that uses the passed in `object` instance
- * followed by environment variables and then aftconfig.json to lookup a value when using the
- * returned `ChainedProvider.get<T>(key, defaultVal)` function.
- * 
- * calling `cfgmgr.set((configKey: string, options: object) => new CustomProvider(configKey))`
- * overrides the default returned `ChainedProvider` with a new `CustomProvider` instance that will
- * be returned from future `cfgmgr.get(...)` calls
- */
-export const cfgmgr = new ConfigManager();
+export const configMgr = new ConfigManager();

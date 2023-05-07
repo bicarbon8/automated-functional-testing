@@ -1,4 +1,4 @@
-import { DefectManager, Defect, LogManager, rand, TestCaseManager, Verifier, verify } from "../../src";
+import { DefectManager, Defect, AftLog, rand, TestCaseManager, Verifier, verify } from "../../src";
 import { containing, equaling } from "../../src/helpers/verifier-matcher";
 
 describe('Verifier', () => {
@@ -36,7 +36,7 @@ describe('Verifier', () => {
     });
     
     it('can execute a passing expectation', async () => {
-        let logMgr: LogManager = new LogManager({logName: 'can execute a passing expectation'});
+        let logMgr: AftLog = new AftLog({logName: 'can execute a passing expectation'});
         spyOn(logMgr, 'logResult').and.callThrough();
         spyOn(logMgr, 'pass').and.callThrough();
         let tcMgr = new TestCaseManager();
@@ -66,7 +66,7 @@ describe('Verifier', () => {
     });
 
     it('accepts a VerifierMatcher in the returns function', async () => {
-        let logMgr: LogManager = new LogManager({logName: 'accepts a VerifierMatcher in the returns function'});
+        let logMgr: AftLog = new AftLog({logName: 'accepts a VerifierMatcher in the returns function'});
         spyOn(logMgr, 'logResult').and.callThrough();
         spyOn(logMgr, 'pass').and.callThrough();
         let tcMgr = new TestCaseManager();
@@ -96,7 +96,7 @@ describe('Verifier', () => {
     });
 
     it('throws on exception in assertion', async () => {
-        let logMgr: LogManager = new LogManager({logName: 'throws on exception in assertion'});
+        let logMgr: AftLog = new AftLog({logName: 'throws on exception in assertion'});
         spyOn(logMgr, 'logResult').and.callThrough();
         spyOn(logMgr, 'fail').and.callThrough();
         let tcMgr = new TestCaseManager();
@@ -133,7 +133,7 @@ describe('Verifier', () => {
     });
 
     it('throws on failed comparison with expected result', async () => {
-        let logMgr: LogManager = new LogManager({logName: 'throws on failed comparison with expected result',});
+        let logMgr: AftLog = new AftLog({logName: 'throws on failed comparison with expected result',});
         spyOn(logMgr, 'logResult').and.callThrough();
         spyOn(logMgr, 'fail').and.callThrough();
         let tcMgr = new TestCaseManager();
@@ -169,7 +169,7 @@ describe('Verifier', () => {
     });
 
     it('will not execute expectation if test case manager says should not run for all cases', async () => {
-        let logMgr: LogManager = new LogManager({logName: 'will not execute expectation if test case manager says should not run for all cases'});
+        let logMgr: AftLog = new AftLog({logName: 'will not execute expectation if test case manager says should not run for all cases'});
         spyOn(logMgr, 'logResult').and.callThrough();
         spyOn(logMgr, 'warn').and.callThrough();
         let tcMgr = new TestCaseManager();
@@ -200,7 +200,7 @@ describe('Verifier', () => {
     });
 
     it('will execute expectation if test case manager says any cases should be run', async () => {
-        let logMgr: LogManager = new LogManager({logName: 'will execute expectation if test case manager says any cases should be run'});
+        let logMgr: AftLog = new AftLog({logName: 'will execute expectation if test case manager says any cases should be run'});
         spyOn(logMgr, 'logResult').and.callThrough();
         spyOn(logMgr, 'pass').and.callThrough();
         let tcMgr = new TestCaseManager();
@@ -236,7 +236,7 @@ describe('Verifier', () => {
     });
 
     it('will not execute expectation if defect manager finds open defect referencing test id', async () => {
-        let logMgr: LogManager = new LogManager({logName: 'will not execute expectation if defect manager finds open defect referencing test id'});
+        let logMgr: AftLog = new AftLog({logName: 'will not execute expectation if defect manager finds open defect referencing test id'});
         spyOn(logMgr, 'logResult').and.callThrough();
         spyOn(logMgr, 'warn').and.callThrough();
         let tcMgr = new TestCaseManager();
@@ -271,7 +271,7 @@ describe('Verifier', () => {
     });
 
     it('will not execute expectation if any referenced defect is open', async () => {
-        let logMgr: LogManager = new LogManager({logName: 'will not execute expectation if any referenced defect is open'});
+        let logMgr: AftLog = new AftLog({logName: 'will not execute expectation if any referenced defect is open'});
         spyOn(logMgr, 'logResult').and.callThrough();
         spyOn(logMgr, 'warn').and.callThrough();
         let tcMgr = new TestCaseManager();
@@ -314,7 +314,7 @@ describe('Verifier', () => {
     });
 
     it('will execute expectation if all defects are closed', async () => {
-        let logMgr: LogManager = new LogManager({logName: 'will execute expectation if all defects are closed'});
+        let logMgr: AftLog = new AftLog({logName: 'will execute expectation if all defects are closed'});
         spyOn(logMgr, 'logResult').and.callThrough();
         spyOn(logMgr, 'pass').and.callThrough();
         let tcMgr = new TestCaseManager();

@@ -1,8 +1,8 @@
 import * as path from "path";
-import { convert, fileio, LoggingPlugin, LoggingPluginOptions, LogLevel, LogMessageData, Merge, Err, TestResult } from "aft-core";
+import { convert, fileio, ILoggingPlugin, LoggingPluginConfig, LogLevel, LogMessageData, Merge, Err, TestResult } from "aft-core";
 import * as date from "date-and-time";
 
-export type FilesystemLoggingPluginOptions = Merge<LoggingPluginOptions, {
+export type FilesystemLoggingPluginOptions = Merge<LoggingPluginConfig, {
     outputPath?: string;
     includeResults?: boolean;
     dateFormat?: string;

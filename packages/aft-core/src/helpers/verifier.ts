@@ -1,7 +1,7 @@
 import { buildinfo, BuildInfoManager } from "../plugins/build-info/build-info-manager";
 import { DefectManager, defects } from "../plugins/defects/defect-manager";
 import { Defect } from "../plugins/defects/defect";
-import { LogManager } from "../plugins/logging/log-manager";
+import { AftLog } from "../plugins/logging/aft-log";
 import { TestResult } from "../plugins/test-cases/test-result";
 import { TestCaseManager, testcases } from "../plugins/test-cases/test-case-manager";
 import { TestStatus } from "../plugins/test-cases/test-status";
@@ -37,7 +37,7 @@ export class Verifier implements PromiseLike<void> {
     protected _innerPromise: Promise<void>;
     protected _tests: Set<string>;
     protected _defects: Set<string>;
-    protected _logMgr: LogManager;
+    protected _logMgr: AftLog;
     protected _testMgr: TestCaseManager;
     protected _defectMgr: DefectManager;
     protected _buildMgr: BuildInfoManager;
@@ -54,7 +54,7 @@ export class Verifier implements PromiseLike<void> {
      * on which is available (NOTE: description is preferred most and
      * will be used if other values are also present)
      */
-    get logMgr(): LogManager {
+    get logMgr(): AftLog {
         let logName: string;
         if (this._description) {
             logName = this._description;
@@ -64,7 +64,7 @@ export class Verifier implements PromiseLike<void> {
             logName = this.constructor.name;
         }
         if (!this._logMgr) {
-            this._logMgr = new LogManager({logName: logName});
+            this._logMgr = new AftLog({logName: logName});
         }
         return this._logMgr;
     }
@@ -224,7 +224,7 @@ export class Verifier implements PromiseLike<void> {
      * @param logMgr a `LogManager` instance
      * @returns this `Verifier` instance
      */
-    withLogManager(logMgr: LogManager): this {
+    withLogManager(logMgr: AftLog): this {
         this._logMgr = logMgr;
         return this;
     }

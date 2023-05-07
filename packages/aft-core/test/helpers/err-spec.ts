@@ -1,4 +1,4 @@
-import { rand, Err, LogManager, LogLevel } from "../../src";
+import { rand, Err, AftLog, LogLevel } from "../../src";
 
 describe('Err', () => {
     it('exposes the original Error', () => {
@@ -76,7 +76,7 @@ describe('Err', () => {
         });
 
         it('will log a warning if a LogManager is supplied and the Func throws', async () => {
-            const logMgr = new LogManager({logName: 'will log a warning if a LogManager is supplied and the Func throws', plugins: []});
+            const logMgr = new AftLog({logName: 'will log a warning if a LogManager is supplied and the Func throws', plugins: []});
             let logMessage: string;
             spyOn(logMgr, 'warn').and.callFake((message: string) => {
                 logMessage = message;
@@ -92,7 +92,7 @@ describe('Err', () => {
 
         it('accepts ErrOptions as a second argument', async () => {
             const func = function () { throw 'foo'; };
-            const logger = new LogManager({logName: 'accepts ErrOptions as a second argument'});
+            const logger = new AftLog({logName: 'accepts ErrOptions as a second argument'});
             let actualLevel: LogLevel;
             let actualMessage: string;
             spyOn(logger, 'log').and.callFake((level: LogLevel, message: string) => {

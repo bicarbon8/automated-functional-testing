@@ -1,4 +1,4 @@
-import { LogManager, rand } from "aft-core";
+import { AftLog, rand } from "aft-core";
 import { FakeDriver } from "../sessions/fake-driver";
 import { FakeSession } from "../sessions/fake-session";
 import { FakeFacet, FakeFacetOptions } from "./fake-facet";
@@ -10,7 +10,7 @@ describe('UiFacet<T>', () => {
             session: new FakeSession({driver: new FakeDriver()}),
             index: 0,
             locator: FakeLocator.css('fake:loc'),
-            logMgr: new LogManager({logName: rand.getString(15)})
+            logMgr: new AftLog({logName: rand.getString(15)})
         } as FakeFacetOptions;
         const facet = new FakeFacet(options);
 

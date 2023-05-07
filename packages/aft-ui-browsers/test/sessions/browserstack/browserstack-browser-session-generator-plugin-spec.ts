@@ -1,5 +1,5 @@
 import { By, Capabilities } from 'selenium-webdriver';
-import { using, LogManager, rand, buildinfo } from "aft-core";
+import { using, AftLog, rand, buildinfo } from "aft-core";
 import { UiPlatform } from "aft-ui";
 import { BrowserStackBrowserSessionGeneratorPlugin, BrowserStackBrowserSessionGeneratorPluginOptions, BrowserFacet, BrowserSession, BrowserFacetOptions, BrowserStackBrowserSessionOptions } from "../../../src";
 
@@ -18,7 +18,7 @@ describe('BrowserStackBrowserSessionGeneratorPlugin', () => {
             resolution: rand.getString(4, false, true) + 'x' + rand.getString(4, false, true),
             local: true,
             uiplatform: platform.toString(),
-            logMgr: new LogManager({logName: 'can generate capabilities from the BrowserStackBrowserSessionGeneratorPluginOptions'})
+            logMgr: new AftLog({logName: 'can generate capabilities from the BrowserStackBrowserSessionGeneratorPluginOptions'})
         };
         const session: BrowserStackBrowserSessionGeneratorPlugin = new BrowserStackBrowserSessionGeneratorPlugin(opts);
 
@@ -52,7 +52,7 @@ describe('BrowserStackBrowserSessionGeneratorPlugin', () => {
             resolution: rand.getString(4, false, true) + 'x' + rand.getString(4, false, true),
             local: true,
             uiplatform: platform.toString(),
-            logMgr: new LogManager({logName: 'can generate capabilities from the passed in BrowserStackBrowserSessionOptions'})
+            logMgr: new AftLog({logName: 'can generate capabilities from the passed in BrowserStackBrowserSessionOptions'})
         };
         
         const capabilities: Capabilities = await session.generateCapabilities(opts);

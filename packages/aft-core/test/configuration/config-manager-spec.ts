@@ -1,30 +1,39 @@
-import { cfgmgr, IConfigProvider } from "../../src";
+import { ConfigManager, rand } from "../../src"
 
-describe('ConfigManager', () => {
-    afterEach(() => {
-        cfgmgr.reset();
-    });
+describe('AftConfig', () => {
+    class FakeSectionConfig {
+        constructor() {}
+        option1: number = -1;
+        option2: boolean = false;
+        option3: string = "option3val";
+    };
 
-    it('can be overridden', async () => {
-        class FakeProvider<T extends object> implements IConfigProvider<T> {
-            async get<K extends keyof T, V extends T[K]>(key: K, defaultVal?: V): Promise<V> {
-                switch(key) {
-                    case 'foo':
-                        return 'bar' as unknown as V;
-                    case 'bar':
-                        return 'foo' as unknown as V;
-                }
+    it('can use a Class type to get an existing section from aftconfig.json', () => {
+        let randomEnvVarKey = rand.getString(12);
+        process.env[randomEnvVarKey] = rand.getString(15);
+        let aftcfg = new ConfigManager({
+            FakeSectionConfig: {
+                option1: 1,
+                option2: true,
+                option3: `%${randomEnvVarKey}%`
             }
-        }
-
-        cfgmgr.set((configKey: string, options: object) => new FakeProvider());
-
-        const actual = cfgmgr.get('any', {
-            foo: 'foo',
-            bar: 'bar'
         });
 
-        expect(await actual.get('foo')).toEqual('bar');
-        expect(await actual.get('bar')).toEqual('foo');
-    });
-});
+        let actual = aftcfg.getSection(FakeSectionConfig);
+        expect(actual).not.toBeNull();
+        expect(actual.option1).toEqual(1);
+        expect(actual.option2).toEqual(true);
+        expect(actual.option3).toEqual(process.env[randomEnvVarKey]);
+    })
+
+    it('can use a Class type to create a non-existing section from aftconfig.json', () => {
+        let aftcfg = new ConfigManager({});
+
+        let expected = new FakeSectionConfig();
+        let actual = aftcfg.getSection(FakeSectionConfig);
+        expect(actual).not.toBeNull();
+        expect(actual.option1).toEqual(expected.option1);
+        expect(actual.option2).toEqual(expected.option2);
+        expect(actual.option3).toEqual(expected.option3);
+    })
+})

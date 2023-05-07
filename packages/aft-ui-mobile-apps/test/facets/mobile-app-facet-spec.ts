@@ -1,4 +1,4 @@
-import { LogManager, rand } from "aft-core";
+import { AftLog, rand } from "aft-core";
 import { Browser, Element, ElementArray, ChainablePromiseArray } from "webdriverio";
 import { MobileAppFacet, MobileAppFacetOptions, MobileAppSession } from "../../src";
 
@@ -25,7 +25,7 @@ describe('MobileAppFacet', () => {
         spyOn(driver, '$$').and.returnValues(Promise.reject('no element') as ChainablePromiseArray<ElementArray>, Promise.resolve([element] as ElementArray) as ChainablePromiseArray<ElementArray>);
         let session = new MobileAppSession<any>({
             driver: driver, 
-            logMgr: new LogManager({logName: 'can auto-refresh from Driver on Error in getRoot'})
+            logMgr: new AftLog({logName: 'can auto-refresh from Driver on Error in getRoot'})
         });
         let facet: MobileAppFacet = await session.getFacet<MobileAppFacet, MobileAppFacetOptions>(MobileAppFacet, {
             locator: 'div.fake',

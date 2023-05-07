@@ -1,4 +1,4 @@
-import { convert, IHasOptions, LogManager, optmgr } from "aft-core";
+import { convert, IHasOptions, AftLog, optmgr } from "aft-core";
 import { HttpResponse, httpService, httpData } from "aft-web-services";
 import * as fs from "fs";
 import * as FormData from "form-data";
@@ -8,7 +8,7 @@ export type BrowserStackAppAutomateApiOptions = {
     apiUrl?: string;
     user?: string;
     key?: string;
-    logMgr?: LogManager;
+    logMgr?: AftLog;
 };
 
 export class BrowserStackAppAutomateApi implements IHasOptions<BrowserStackAppAutomateApiOptions> {
@@ -16,7 +16,7 @@ export class BrowserStackAppAutomateApi implements IHasOptions<BrowserStackAppAu
     private _apiUrl: string;
     private _user: string;
     private _key: string;
-    private _logMgr: LogManager;
+    private _logMgr: AftLog;
     
     constructor(options?: BrowserStackAppAutomateApiOptions) {
         options = options || {} as BrowserStackAppAutomateApiOptions;
@@ -49,9 +49,9 @@ export class BrowserStackAppAutomateApi implements IHasOptions<BrowserStackAppAu
         return this._key;
     }
 
-    get logMgr(): LogManager {
+    get logMgr(): AftLog {
         if (!this._logMgr) {
-            this._logMgr = this.option('logMgr') || new LogManager({logName: this.constructor.name});
+            this._logMgr = this.option('logMgr') || new AftLog({logName: this.constructor.name});
         }
         return this._logMgr;
     }

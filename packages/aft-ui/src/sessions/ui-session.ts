@@ -1,9 +1,9 @@
-import { Class, Disposable, LogManager, rand, IHasOptions, optmgr } from "aft-core";
+import { Class, Disposable, AftLog, rand, IHasOptions, optmgr } from "aft-core";
 import { UiPlatform } from "../configuration/ui-platform";
 import { UiFacet, UiFacetOptions } from "../facets/ui-facet";
 
 export type UiSessionOptions = {
-    logMgr?: LogManager;
+    logMgr?: AftLog;
     uiplatform?: string;
     driver?: unknown;
 };
@@ -12,7 +12,7 @@ export abstract class UiSession<T extends UiSessionOptions> implements IHasOptio
     private readonly _options: T;
 
     private _platform: UiPlatform;
-    private _logMgr: LogManager;
+    private _logMgr: AftLog;
 
     constructor(options?: T) {
         options = options || {} as T;
@@ -34,9 +34,9 @@ export abstract class UiSession<T extends UiSessionOptions> implements IHasOptio
         return this._platform;
     }
     
-    get logMgr(): LogManager {
+    get logMgr(): AftLog {
         if (!this._logMgr) {
-            this._logMgr = this.option('logMgr') || new LogManager({logName: `${this.constructor.name}_${this.platform}_${rand.getString(4, false, true)}`});
+            this._logMgr = this.option('logMgr') || new AftLog({logName: `${this.constructor.name}_${this.platform}_${rand.getString(4, false, true)}`});
         }
         return this._logMgr;
     }

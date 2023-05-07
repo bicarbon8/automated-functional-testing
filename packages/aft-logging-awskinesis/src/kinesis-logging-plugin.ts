@@ -1,9 +1,9 @@
-import { LoggingPlugin, LogLevel, TestResult, machineInfo, BuildInfoManager, buildinfo, LogManager, LogMessageData, Err, Merge, LoggingPluginOptions } from "aft-core";
+import { ILoggingPlugin, LogLevel, TestResult, machineInfo, BuildInfoManager, buildinfo, AftLog, LogMessageData, Err, Merge, LoggingPluginConfig } from "aft-core";
 import * as AWS from "aws-sdk";
 import * as pkg from "../package.json";
 import { KinesisLogRecord } from "./kinesis-log-record";
 
-export type KinesisLoggingPluginOptions = Merge<LoggingPluginOptions, {
+export type KinesisLoggingPluginConfig = Merge<LoggingPluginConfig, {
     accessKeyId?: string,
     secretAccessKey?: string,
     sessionToken?: string,
@@ -44,13 +44,13 @@ type CheckAndSendOptions = {
  * - Process Credentials: any credentials set on the current process
  * - Options: read from passed in `KinesisLoggingPluginOptions`
  */
-export class KinesisLoggingPlugin extends LoggingPlugin<KinesisLoggingPluginOptions> {
+export class KinesisLoggingPlugin extends LoggingPlugin<KinesisLoggingPluginConfig> {
     private readonly _logs: Map<string, AWS.Firehose.Record[]>;
     private readonly _buildInfoMgr: BuildInfoManager;
 
     private _client: AWS.Firehose;
     
-    constructor(options?: KinesisLoggingPluginOptions) {
+    constructor(options?: KinesisLoggingPluginConfig) {
         super(options);
         this._logs = new Map<string, AWS.Firehose.Record[]>();
         this._buildInfoMgr = this.option('buildInfoMgr', buildinfo);
@@ -124,7 +124,7 @@ export class KinesisLoggingPlugin extends LoggingPlugin<KinesisLoggingPluginOpti
                 () => new AWS.ProcessCredentials()
             ]).resolvePromise()
             .catch((err) => {
-                LogManager.toConsole({name: this.constructor.name, message: err, level: 'warn'});
+                AftLog.toConsole({name: this.constructor.name, message: err, level: 'warn'});
                 return null;
             });    
         }

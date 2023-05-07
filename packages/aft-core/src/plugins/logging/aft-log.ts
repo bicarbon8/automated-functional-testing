@@ -1,18 +1,13 @@
 import { cloneDeep } from "lodash";
 import * as colors from "colors";
-import { LoggingPlugin, LoggingPluginOptions } from "./logging-plugin";
+import { ILoggingPlugin } from "./i-logging-plugin";
 import { LogLevel } from "./log-level";
 import { LogMessageData } from "./log-message-data";
-import { PluginManager, PluginManagerOptions } from "../plugin-manager";
 import { TestResult } from "../test-cases/test-result";
 import { ellide } from "../../helpers/ellide";
-import { Disposable } from "../../helpers/disposable";
-import { Merge } from "../../helpers/custom-types";
-import { PluginConfig } from "../plugin-loader";
-
-export type LogManagerOptions = Merge<PluginManagerOptions, LoggingPluginOptions, {
-    logName: string;
-}>;
+import { ConfigManager, configMgr } from "../../configuration/config-manager";
+import { AftConfig } from "../../configuration/aft-config";
+import { pluginloader } from "../plugin-loader";
 
 /**
  * a logging class that uses configuration to determine what
@@ -25,12 +20,8 @@ export type LogManagerOptions = Merge<PluginManagerOptions, LoggingPluginOptions
  * ```
  * {
  *   ...
- *   "LogManager": {
- *     "level": "info",
- *     "plugins": [
- *       {"name": "logging-plugin1", "enabled": true, "searchDirectory": "./dist/", "options": {"foo": "bar"}},
- *       {"name": "logging-plugin2", "enabled": false, "options": {"foo": "bar"}}
- *     ]
+ *   "AftConfig": {
+ *     "logLevel": "info"
  *   }
  *   ...
  * }
@@ -38,19 +29,28 @@ export type LogManagerOptions = Merge<PluginManagerOptions, LoggingPluginOptions
  * NOTE: multiple instances of this class are expected to be created as each instance should have a unique
  * `logName` associated with it. Ex:
  * ```typescript
- * let logMgr1: LogManager = new LogManager({logName: 'logger for test 1'});
- * let logMgr2: LogManager = new LogManager({logName: 'logger for test 2'});
+ * let logMgr1: AftLog = new AftLog({logName: 'logger for test 1'});
+ * let logMgr2: AftLog = new AftLog({logName: 'logger for test 2'});
  * ```
  */
-export class LogManager extends PluginManager<LoggingPlugin<any>, LogManagerOptions> implements Disposable {
+export class AftLog {
+    private readonly _cfgMgr: ConfigManager;
+    private readonly _plugins: Array<ILoggingPlugin>;
     private _stepCount: number = 0;
 
-    constructor(options: LogManagerOptions) {
-        super(options);
-    }
+    public readonly logName: string;
 
-    get logName(): string {
-        return this.option('logName', 'AFT');
+    constructor(logName: string, cfgMgr?: ConfigManager) {
+        this.logName = logName;
+        this._cfgMgr = cfgMgr ?? configMgr;
+        this._plugins = pluginloader.getPluginsByType<ILoggingPlugin>('logging', this._cfgMgr);
+        this._plugins.forEach((p: ILoggingPlugin) => {
+            p?.initialise(logName)?.catch((err) => AftLog.toConsole({
+                level: 'warn',
+                message: err,
+                name: logName
+            }));
+        })
     }
 
     /**
@@ -67,9 +67,8 @@ export class LogManager extends PluginManager<LoggingPlugin<any>, LogManagerOpti
      * - `error` - used for unexpected errors that are **not** recoverable
      * - `none` - used when no logging is desired (disables logging)
      */
-    async level(): Promise<LogLevel> {
-        let lvl: string = await this.config('level', 'info');
-        return (LogLevel.isType(lvl)) ? lvl as LogLevel : 'info';
+    public get level(): LogLevel {
+        return this._cfgMgr.getSection(AftConfig).logLevel ?? 'warn';
     }
 
     /**
@@ -143,24 +142,21 @@ export class LogManager extends PluginManager<LoggingPlugin<any>, LogManagerOpti
      * @param message the string to be logged
      */
     async log(level: LogLevel, message: string): Promise<void> {
-        const lvl: LogLevel = await this.level();
-        const name = this.logName;
-        const logdata: LogMessageData = {name: name, level: level, message: message};
-        if (LogLevel.toValue(level) >= LogLevel.toValue(lvl) && level != 'none') {
-            LogManager.toConsole(logdata);
+        const logdata: LogMessageData = {name: this.logName, level: this.level, message: message};
+        if (LogLevel.toValue(level) >= LogLevel.toValue(this.level) && level != 'none') {
+            AftLog.toConsole(logdata);
         }
-        return await this.enabled()
-        .then((plugins: LoggingPlugin<any>[]) => plugins.forEach((p: LoggingPlugin<any>) => p?.log({...logdata})
-            .catch((err) => LogManager.toConsole({
-                level: 'warn',
-                message: `unable to send log message to '${p?.constructor.name || 'unknown'}' due to: ${err}`,
-                name: name
-            }))))
-        .catch((err) => LogManager.toConsole({
-            level: 'warn', 
-            message: `unable to send log message to LoggingPlugin due to: ${err}`,
-            name: name
-        }));
+        for (var plugin of this._plugins) {
+            try {
+                await plugin?.log({...logdata});
+            } catch (e) {
+                AftLog.toConsole({
+                    level: 'warn',
+                    message: `unable to send log message to '${plugin?.constructor.name || 'unknown'}' due to: ${e}`,
+                    name: this.logName
+                });
+            }
+        }
     }
 
     /**
@@ -170,18 +166,17 @@ export class LogManager extends PluginManager<LoggingPlugin<any>, LogManagerOpti
      */
     async logResult(result: TestResult): Promise<void> {
         const name = this.logName;
-        return await this.enabled()
-        .then((plugins: LoggingPlugin<any>[]) => plugins.forEach((p: LoggingPlugin<any>) => p?.logResult(name, cloneDeep(result))
-            .catch((err) => LogManager.toConsole({
-                level: 'warn',
-                message: `unable to send result to '${p?.constructor.name || 'unknown'}' due to: ${err}`,
-                name: name
-            }))))
-        .catch((err) => LogManager.toConsole({
-            level: 'warn', 
-            message: `unable to send result to LoggingPlugin due to: ${err}`,
-            name: name
-        }));
+        for (var plugin of this._plugins) {
+            try {
+                await plugin?.logResult(name, cloneDeep(result));
+            } catch (e) { 
+                AftLog.toConsole({
+                    level: 'warn',
+                    message: `unable to send result to '${plugin?.constructor.name || 'unknown'}' due to: ${e}`,
+                    name: name
+                });
+            }
+        }
     }
 
     /**
@@ -191,42 +186,28 @@ export class LogManager extends PluginManager<LoggingPlugin<any>, LogManagerOpti
      */
     async dispose(error?: Error): Promise<void> {
         const name = this.logName;
-        await this.enabled()
-        .then((plugins: LoggingPlugin<any>[]) => plugins.forEach((p: LoggingPlugin<any>) => p?.dispose(name, error)
-            .catch((err) => LogManager.toConsole({
-                level: 'warn',
-                message: `unable to call dispose on '${p?.constructor.name || 'unknown'}' due to: ${err}`,
-                name: name
-            }))))
-        .catch((err) => LogManager.toConsole({
-            level: 'warn', 
-            message: `unable to dispose of LoggingPlugin due to: ${err}`,
-            name: name
-        }));
-    }
-
-    override async pluginConfigs(): Promise<Array<string | PluginConfig>> {
-        const configs: Array<string | PluginConfig> = await this.config('plugins', []);
-        const updatedConfigs: Array<PluginConfig> = new Array<PluginConfig>();
-        for (var i=0; i<configs?.length; i++) {
-            let maybeStringOrConfig = configs[i];
-            if (maybeStringOrConfig) {
-                let cfg: PluginConfig = {options: {}};
-                if (typeof maybeStringOrConfig === 'string') {
-                    cfg.name = maybeStringOrConfig;
-                } else {
-                    cfg = {...maybeStringOrConfig};
-                }
-                cfg.options = cfg.options || {};
-                cfg.options['level'] = cfg.options['level'] || await this.level();
-                updatedConfigs.push(cfg);
+        for (var plugin of this._plugins) {
+            try {
+                await plugin?.finalise(name);
+            } catch (e) {
+                AftLog.toConsole({
+                    level: 'warn',
+                    message: `unable to call dispose on '${plugin?.constructor.name || 'unknown'}' due to: ${e}`,
+                    name: name
+                });
             }
         }
-        return updatedConfigs;
+        if (error) {
+            AftLog.toConsole({
+                level: 'error',
+                message: error.message,
+                name: name
+            });
+        }
     }
 }
 
-export module LogManager {
+export module AftLog {
     /**
      * formats the passed in `LogMessage.message` based on the passed in options
      * @param message a `LogMessage` object containing the `level`, `name` and `message` to
@@ -250,7 +231,7 @@ export module LogManager {
      */
     export function toConsole(message?: LogMessageData) {
         if (message?.message && message?.level != 'none') {
-            const out: string = LogManager.format(message);
+            const out: string = AftLog.format(message);
             switch (message?.level) {
                 case 'error':
                 case 'fail':

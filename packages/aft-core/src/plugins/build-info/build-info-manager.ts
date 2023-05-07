@@ -1,4 +1,4 @@
-import { LogManager } from "../logging/log-manager";
+import { AftLog } from "../logging/aft-log";
 import { BuildInfoPlugin, BuildInfoPluginOptions } from "./build-info-plugin";
 import { machineInfo, MachineInfoData } from "../../helpers/machine-info";
 import { convert, SafeStringOption } from "../../helpers/convert";
@@ -37,12 +37,12 @@ export class BuildInfoManager extends PluginManagerWithLogging<BuildInfoPlugin<a
         .then((p: BuildInfoPlugin<any>) => p?.buildName()
             .catch(async (err) => {
                 await this.logMgr()
-                .then((l: LogManager) => l.warn(`error calling ${p?.constructor.name || 'unknown'}.buildName() due to: ${err}`));
+                .then((l: AftLog) => l.warn(`error calling ${p?.constructor.name || 'unknown'}.buildName() due to: ${err}`));
                 return null;
             }))
         .catch(async (err) => {
             await this.logMgr()
-            .then((l: LogManager) => l.warn(err));
+            .then((l: AftLog) => l.warn(err));
             return null;
         });
         return buildName;
@@ -59,12 +59,12 @@ export class BuildInfoManager extends PluginManagerWithLogging<BuildInfoPlugin<a
         .then((p: BuildInfoPlugin<any>) => p?.buildNumber()
             .catch(async (err) => {
                 await this.logMgr()
-                .then((l: LogManager) => l.warn(`error calling ${p?.constructor.name || 'unknown'}.buildNumber() due to: ${err}`));
+                .then((l: AftLog) => l.warn(`error calling ${p?.constructor.name || 'unknown'}.buildNumber() due to: ${err}`));
                 return `${Date.now()}`;
             }))
         .catch(async (err) => {
             await this.logMgr()
-            .then((l: LogManager) => l.warn(err));
+            .then((l: AftLog) => l.warn(err));
             return `${Date.now()}`;
         });
         return buildNumber;

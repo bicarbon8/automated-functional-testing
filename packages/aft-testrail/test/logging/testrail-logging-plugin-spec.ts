@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { TestRailLoggingPlugin, TestRailLoggingPluginOptions } from "../../src/logging/testrail-logging-plugin";
-import { rand, TestResult, ellide, LogManager } from "aft-core";
+import { rand, TestResult, ellide, AftLog } from "aft-core";
 import { TestRailApi } from "../../src/api/testrail-api";
 import { TestRailConfig } from "../../src/configuration/testrail-config";
 import { httpService } from "aft-web-services";
@@ -168,7 +168,7 @@ describe('TestRailLoggingPlugin', () => {
             logName: 'can be loaded by the LogManager',
             plugins: ['testrail-logging-plugin']
         };
-        let mgr: LogManager = new LogManager(conf);
+        let mgr: AftLog = new AftLog(conf);
         let plugin = await mgr.first();
 
         expect(plugin).toBeDefined();

@@ -1,76 +1,99 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { convert } from '../helpers/convert';
-import { LogManager } from './logging/log-manager';
-import { Plugin } from './plugin';
-
-export type PluginConfig = {
-    name?: string;
-    searchDirectory?: string;
-    options?: object;
-};
+import { AftLog } from './logging/aft-log';
+import { IPlugin } from './i-plugin';
+import { AftConfig } from '../configuration/aft-config';
+import { ConfigManager, configMgr } from '../configuration/config-manager';
 
 class PluginLoader {
-    private readonly _pluginsMap: Map<string, any>;
+    private readonly _pluginsMap: Map<string, IPlugin>;
+    private _loaded: boolean;
 
     constructor() {
-        this._pluginsMap = new Map<string, any>();
+        this._pluginsMap = new Map<string, IPlugin>();
+        this._loaded = false;
     }
 
-    /**
-     * attempts to load plugins by name and optional path.
-     * 
-     * ```typescript
-     * const plugins: CustomPlugin[] = pluginloader.load<CustomPlugin>([{
-     *     name: 'custom-plugin', 
-     *     searchDirectory: '../../plugins',
-     *     enabled: false,
-     *     options: {
-     *         storagePath: './'
-     *     }
-     * }, 'custom-plugin-2']);
-     * ```
-     * 
-     * **NOTE:** the above attempts to load a `custom-plugin` class. if loading
-     * fails then it will search the filesystem, starting at the current
-     * execution directory and searching all subdirectories, for a file
-     * named `custom-plugin.js` which, if found, will be imported and a 
-     * new instance will be created and added to the internal cache and the
-     * array to be returned
-     * @param pluginConfigs an array of plugin name strings or `PluginConfig` objects
-     * used to locate and instantiate the plugins
-     * @returns an array of singleton plugin instances of the specified type
-     */
-    async load<T extends Plugin<any>>(pluginConfigs: Array<string | PluginConfig>): Promise<T[]> {
-        let plugins: T[] = [];
-        if (pluginConfigs?.length > 0) {
-            for (var i=0; i<pluginConfigs.length; i++) {
-                let maybeConfigOrString = pluginConfigs[i];
-                let pname: string;
-                let searchDir: string = process.cwd();
-                let options: object;
-                if (typeof maybeConfigOrString === 'string') {
-                    pname = maybeConfigOrString
-                } else {
-                    pname = maybeConfigOrString.name;
-                    (maybeConfigOrString.searchDirectory) ? searchDir = path.join(process.cwd(), maybeConfigOrString.searchDirectory) : false;
-                    options = maybeConfigOrString.options;
-                }
-                if (pname) {
-                    if (!this._pluginsMap.has(pname)) {
-                        if (!path.isAbsolute(searchDir)) {
-                            searchDir = path.join(process.cwd(), searchDir);
-                        }
-                        this._findAndInstantiatePlugin<T>(pname, searchDir, options);
-                    }
-                    const p = this._pluginsMap.get(pname) as T;
-                    if (p) {
-                        plugins.push(p);
+    private _load<T extends IPlugin>(cfgMgr?: ConfigManager): void {
+        if (!this._loaded) {
+            cfgMgr ??= configMgr;
+            let aftCfg = cfgMgr.getSection(AftConfig);
+            for (var pname of aftCfg.pluginNames ?? []) {
+                let name = convert.toSafeString(pname, [{exclude: /[-_.\s\d]/gi, replaceWith: ''}]);
+                let searchDir: string = (path.isAbsolute(aftCfg.pluginsSearchDir ?? ".")) 
+                    ? aftCfg.pluginsSearchDir : path.join(process.cwd(), aftCfg.pluginsSearchDir);
+                if (name) {
+                    if (!this._pluginsMap.has(name)) {
+                        this._findAndInstantiatePlugin<T>(name, searchDir, cfgMgr);
                     }
                 }
             }
+            this._loaded = true;
+        }
+    }
+
+    /**
+     * iterates over all plugins listed in `AftConfig.pluginNames` looking for any that 
+     * extend the passed in `typeName` and returns those that do as an array of objects.
+     * ex: 
+     * ```typescript
+     * let loggingPlugins = pluginloader.getPluginsByType(LoggingPlugin);
+     * // loggingPlugins will all extend from LoggingPlugin class
+     * ```
+     * 
+     * NOTE: if this is the first time the `pluginloader` is being called then plugins will
+     * also be loaded
+     * @param typeName a `Class<T: Plugin>` base class like `LoggingPlugin` that must be extended
+     * by any of the objects returned by this call
+     * @param cfgMgr an optional `ConfigManager` instance to use when loading plugins if not
+     * already loaded
+     * @returns an array of plugin objects that all extend the passed in `typeName` class
+     */
+    getPluginsByType<T extends IPlugin>(typeName: string, cfgMgr?: ConfigManager): Array<T> {
+        this._load<T>(cfgMgr);
+        let plugins = new Array<T>();
+        for (var key of this._pluginsMap.keys()) {
+            let plugin = this._pluginsMap.get(key);
+            if (plugin.pluginType?.toLowerCase() === typeName.toLowerCase()) {
+                plugins.push(plugin as T);
+            }
         }
         return plugins;
+    }
+
+    /**
+     * returns a plugin by it's name
+     * ex: 
+     * ```typescript
+     * let testCasePlugin = pluginloader.getPluginByName<TestRailTestCasePlugin>('testrail-test-case-plugin');
+     * // testCasePlugin will be `undefined` if not found
+     * ```
+     * 
+     * NOTE: if this is the first time the `pluginloader` is being called then plugins will
+     * also be loaded
+     * @param pluginName the name of the plugin package or file like `html-logging-plugin`
+     * @param cfgMgr an optional `ConfigManager` instance to use when loading plugins if not
+     * already loaded
+     * @returns the requested plugin or `undefined` if not found
+     */
+    getPluginByName<T extends IPlugin>(pluginName: string, cfgMgr?: ConfigManager): T {
+        this._load<T>(cfgMgr);
+        let name = convert.toSafeString(pluginName, [{exclude: /[-_.\s\d]/gi, replaceWith: ''}]);
+        return this._pluginsMap.get(name) as T;
+    }
+
+    private _getPluginBaseClasses(plugin: unknown, baseClasses?: Array<string>): Array<string> {
+        baseClasses ??= new Array<string>();
+        if (plugin) {
+            let baseClass = Object.getPrototypeOf(plugin);
+            if (baseClass) {
+                let baseClassName = baseClass.name;
+                baseClasses.push(baseClassName);
+                baseClasses = this._getPluginBaseClasses(baseClass, baseClasses);
+            }
+        }
+        return baseClasses;
     }
 
     /**
@@ -83,9 +106,10 @@ class PluginLoader {
      */
     clear(): void {
         this._pluginsMap.clear();
+        this._loaded = false;
     }
 
-    private _findAndInstantiatePlugin<T>(pluginName: string, searchRoot: string, config: PluginConfig): void {
+    private _findAndInstantiatePlugin<T extends IPlugin>(pluginName: string, searchRoot: string, cfgMgr: ConfigManager): void {
         let plugin: T;
         
         try {
@@ -105,18 +129,17 @@ class PluginLoader {
             try {
                 let constructorName: string;
                 let keys: string[] = Object.keys(plugin);
-                let name: string = convert.toSafeString(pluginName, [{exclude: /[-_.\s\d]/gi, replaceWith: ''}]);
                 // LogManager.toConsole({name: this.constructor.name, message: `searching for plugin constructor name for ${pluginName}...`, level: 'trace'});
                 for (var i=0; i<keys.length; i++) {
                     let key: string = keys[i];
-                    if (name.toLowerCase() == key.toLowerCase()) {
+                    if (pluginName.toLowerCase() == key.toLowerCase()) {
                         // LogManager.toConsole({name: this.constructor.name, message: `found constructor name of ${key} for ${pluginName}`, level: 'trace'});
                         constructorName = key;
                         break;
                     }
                 }
                 if (constructorName) {
-                    const p: T = new plugin[constructorName](config);
+                    const p: T = new plugin[constructorName](cfgMgr);
                     this._pluginsMap.set(pluginName, p);
                 }
             } catch (e) {
@@ -150,7 +173,7 @@ class PluginLoader {
                 throw `no files found at path: '${dir}'`;
             }
         } catch (e) {
-            LogManager.toConsole({name: this.constructor.name, message: e, level: 'warn'});
+            AftLog.toConsole({name: this.constructor.name, message: e, level: 'warn'});
         }
         return filePath;
     }
@@ -161,34 +184,36 @@ class PluginLoader {
             const stats: fs.Stats = fs.statSync(fullFileAndPath);
             isDir = stats?.isDirectory() || false;
         } catch (e) {
-            LogManager.toConsole({name: this.constructor.name, message: e, level: 'warn'});
+            AftLog.toConsole({name: this.constructor.name, message: e, level: 'warn'});
         }
         return isDir;
     }
 }
 
 /**
- * responsible for finding and loading plugins based on a passed in 
- * `PluginConfig`. any plugin loaded by this class must extend from 
- * `Plugin<T extends PluginOptions>` and would be expected to accept an object extending
- * `PluginOptions` object in its constructor.
+ * attempts to load plugins by name and optional path.
  * 
  * ```typescript
- * const plugins: CustomPlugin[] = pluginloader.load<CustomPlugin>([{
- *     name: 'custom-plugin', 
- *     searchDirectory: '../../plugins',
- *     enabled: false,
- *     options: {
- *         storagePath: './'
- *     }
- * }, 'custom-plugin-2']);
+ * // aftconfig.json
+ * {
+ *   "pluginsSearchDir": "../",
+ *   "pluginNames": [
+ *     "testrail-logging-plugin",
+ *     "testrail-test-case-plugin"
+ *     "html-logging-plugin"
+ *   ]
+ * }
  * ```
  * 
- * **NOTE:** the above attempts to load a `custom-plugin` class. if loading
- * fails then it will search the filesystem, starting at the current
- * execution directory and searching all subdirectories, for a file
- * named `custom-plugin.js` which, if found, will be imported and a 
- * new instance will be created and added to the internal cache and the
- * array to be returned
+ * **NOTE:** the above will attempt to load a `testrail-logging-plugin`,
+ * `testrail-test-case-plugin` and `html-logging-plugin` class. if loading
+ * fails then it will search the filesystem, starting at the relative
+ * `pluginsSearchDir` path (relative to current nodejs execution dir)
+ * and searching all subdirectories, for a file named `custom-plugin.js` 
+ * which, if found, will be imported and a new instance will be created 
+ * and added to the internal cache and the array to be returned
+ * @param cfgMgr the `AftConfig` instace containing a `pluginsSearchDir` string
+ * and a `pluginNames` array used to locate and load plugins
+ * used to locate and instantiate the plugins
  */
 export const pluginloader = new PluginLoader();

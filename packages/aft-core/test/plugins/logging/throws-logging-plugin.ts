@@ -1,13 +1,27 @@
-import { LoggingPlugin, TestResult, LogMessageData, LoggingPluginOptions } from "../../../src";
+import { ILoggingPlugin, TestResult, LogMessageData, LogLevel, ConfigManager, configMgr } from "../../../src";
 
-export class ThrowsLoggingPlugin extends LoggingPlugin<LoggingPluginOptions> {
-    override async log(messageData: LogMessageData): Promise<void> {
+export class ThrowsLoggingPlugin implements ILoggingPlugin {
+    public readonly cfgMgr: ConfigManager;
+    public readonly pluginType: string = 'logging';
+    get enabled(): boolean {
+        return true;
+    }
+    get level(): LogLevel {
+        return 'trace';
+    }
+    constructor(cfgMgr?: ConfigManager) {
+        this.cfgMgr = cfgMgr ?? configMgr;
+    }
+    async initialise(logName: string): Promise<void> {
+        throw 'initialise exception';
+    }
+    async log(messageData: LogMessageData): Promise<void> {
         throw 'log exception';
     }
-    override async logResult(name: string, result: TestResult): Promise<void> {
+    async logResult(name: string, result: TestResult): Promise<void> {
         throw 'logResult exception';
     }
-    override async dispose(name: string, error?: Error): Promise<void> {
+    async finalise(name: string, error?: Error): Promise<void> {
         throw 'dispose exception';
     }
 }

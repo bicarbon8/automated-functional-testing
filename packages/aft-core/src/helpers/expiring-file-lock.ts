@@ -3,7 +3,7 @@ import * as path from "path";
 import * as os from "os";
 import { flockSync } from "fs-ext";
 import { convert } from "./convert";
-import { ellide, EllipsisLocation } from "./ellide";
+import { ellide } from "./ellide";
 
 /**
  * class will create a new (or use existing) lockfile locking 

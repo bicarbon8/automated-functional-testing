@@ -1,5 +1,5 @@
 import { By, Capabilities } from 'selenium-webdriver';
-import { using, LogManager, rand, buildinfo } from "aft-core";
+import { using, AftLog, rand, buildinfo } from "aft-core";
 import { UiPlatform } from "aft-ui";
 import { BrowserFacet, BrowserFacetOptions, SauceLabsBrowserSessionGeneratorPlugin, SauceLabsBrowserSessionGeneratorPluginOptions, SauceLabsBrowserSessionOptions } from '../../../src';
 
@@ -19,7 +19,7 @@ describe('SauceLabsBrowserSessionGeneratorPlugin', () => {
             tunnel: true,
             tunnelIdentifier: rand.getString(11, true),
             uiplatform: plt.toString(),
-            logMgr: new LogManager({logName:'can generate capabilities from the passed in SauceLabsBrowserSessionGeneratorPluginOptions'})
+            logMgr: new AftLog({logName:'can generate capabilities from the passed in SauceLabsBrowserSessionGeneratorPluginOptions'})
         }
         const session: SauceLabsBrowserSessionGeneratorPlugin = new SauceLabsBrowserSessionGeneratorPlugin(opts);
 
@@ -54,7 +54,7 @@ describe('SauceLabsBrowserSessionGeneratorPlugin', () => {
             tunnel: true,
             tunnelIdentifier: rand.getString(11, true),
             uiplatform: plt.toString(),
-            logMgr: new LogManager({logName:'can generate capabilities from the passed in SauceLabsBrowserSessionOptions'})
+            logMgr: new AftLog({logName:'can generate capabilities from the passed in SauceLabsBrowserSessionOptions'})
         };
         
         const caps: Capabilities = await session.generateCapabilities(opts);
