@@ -34,25 +34,15 @@ import { pluginloader } from "../plugin-loader";
  * ```
  */
 export class AftLog {
+    readonly plugins: Array<ILoggingPlugin>;
     private readonly _cfgMgr: ConfigManager;
-    private readonly _plugins: Array<ILoggingPlugin>;
     private _stepCount: number = 0;
 
+    /**
+     * a name unique to a given logging instance intended to uniquely identify logs by
+     * either the associated test or class doing the logging
+     */
     public readonly logName: string;
-
-    constructor(logName: string, cfgMgr?: ConfigManager) {
-        this.logName = logName;
-        this._cfgMgr = cfgMgr ?? configMgr;
-        this._plugins = pluginloader.getPluginsByType<ILoggingPlugin>('logging', this._cfgMgr);
-        this._plugins.forEach((p: ILoggingPlugin) => {
-            p?.initialise(logName)?.catch((err) => AftLog.toConsole({
-                level: 'warn',
-                message: err,
-                name: logName
-            }));
-        })
-    }
-
     /**
      * allows for filtering out of erroneous information from logs by assigning
      * values to different types of logging. the purpose of each log level is
@@ -67,8 +57,20 @@ export class AftLog {
      * - `error` - used for unexpected errors that are **not** recoverable
      * - `none` - used when no logging is desired (disables logging)
      */
-    public get level(): LogLevel {
-        return this._cfgMgr.getSection(AftConfig).logLevel ?? 'warn';
+    public readonly logLevel: LogLevel;
+
+    constructor(logName: string, cfgMgr?: ConfigManager) {
+        this.logName = logName;
+        this._cfgMgr = cfgMgr ?? configMgr;
+        this.logLevel = this._cfgMgr.getSection(AftConfig).logLevel ?? 'warn';
+        this.plugins = pluginloader.getPluginsByType<ILoggingPlugin>('logging', this._cfgMgr);
+        this.plugins.forEach((p: ILoggingPlugin) => {
+            p?.initialise(logName)?.catch((err) => AftLog.toConsole({
+                logLevel: 'warn',
+                message: err,
+                name: logName
+            }));
+        })
     }
 
     /**
@@ -142,16 +144,16 @@ export class AftLog {
      * @param message the string to be logged
      */
     async log(level: LogLevel, message: string): Promise<void> {
-        const logdata: LogMessageData = {name: this.logName, level: this.level, message: message};
-        if (LogLevel.toValue(level) >= LogLevel.toValue(this.level) && level != 'none') {
+        const logdata: LogMessageData = {name: this.logName, logLevel: this.logLevel, message: message};
+        if (LogLevel.toValue(level) >= LogLevel.toValue(this.logLevel) && level != 'none') {
             AftLog.toConsole(logdata);
         }
-        for (var plugin of this._plugins) {
+        for (var plugin of this.plugins) {
             try {
                 await plugin?.log({...logdata});
             } catch (e) {
                 AftLog.toConsole({
-                    level: 'warn',
+                    logLevel: 'warn',
                     message: `unable to send log message to '${plugin?.constructor.name || 'unknown'}' due to: ${e}`,
                     name: this.logName
                 });
@@ -166,12 +168,12 @@ export class AftLog {
      */
     async logResult(result: TestResult): Promise<void> {
         const name = this.logName;
-        for (var plugin of this._plugins) {
+        for (var plugin of this.plugins) {
             try {
                 await plugin?.logResult(name, cloneDeep(result));
             } catch (e) { 
                 AftLog.toConsole({
-                    level: 'warn',
+                    logLevel: 'warn',
                     message: `unable to send result to '${plugin?.constructor.name || 'unknown'}' due to: ${e}`,
                     name: name
                 });
@@ -186,12 +188,12 @@ export class AftLog {
      */
     async dispose(error?: Error): Promise<void> {
         const name = this.logName;
-        for (var plugin of this._plugins) {
+        for (var plugin of this.plugins) {
             try {
                 await plugin?.finalise(name);
             } catch (e) {
                 AftLog.toConsole({
-                    level: 'warn',
+                    logLevel: 'warn',
                     message: `unable to call dispose on '${plugin?.constructor.name || 'unknown'}' due to: ${e}`,
                     name: name
                 });
@@ -199,7 +201,7 @@ export class AftLog {
         }
         if (error) {
             AftLog.toConsole({
-                level: 'error',
+                logLevel: 'error',
                 message: error.message,
                 name: name
             });
@@ -218,9 +220,9 @@ export module AftLog {
         message = message || {};
         if (!message.name) { message.name = 'AFT'; }
         if (!message.message) { message.message = ''; }
-        if (!message.level) { message.level = 'none' }
+        if (!message.logLevel) { message.logLevel = 'none' }
         let d: string = new Date().toLocaleTimeString();
-        let out: string = `${d} - [${message.name}] - ${ellide(message.level.toUpperCase(), 5, 'end', '')} - ${message.message}`;
+        let out: string = `${d} - [${message.name}] - ${ellide(message.logLevel.toUpperCase(), 5, 'end', '')} - ${message.message}`;
         return out;
     }
     /**
@@ -230,9 +232,9 @@ export module AftLog {
      * the console
      */
     export function toConsole(message?: LogMessageData) {
-        if (message?.message && message?.level != 'none') {
+        if (message?.message && message?.logLevel != 'none') {
             const out: string = AftLog.format(message);
-            switch (message?.level) {
+            switch (message?.logLevel) {
                 case 'error':
                 case 'fail':
                     console.log(colors.red(out));

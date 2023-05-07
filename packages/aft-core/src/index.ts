@@ -19,13 +19,10 @@ export * from './helpers/verifier';
 export * from './helpers/verifier-matcher';
 export * from './helpers/wait';
 /** plugins */
-export * from './plugins/plugin';
+export * from './plugins/i-plugin';
 export * from './plugins/plugin-loader';
-export * from './plugins/plugin-manager';
-export * from './plugins/plugin-manager-with-logging';
 /** plugins/build-info */
-export * from './plugins/build-info/build-info-plugin';
-export * from './plugins/build-info/build-info-manager';
+export * from './plugins/build-info/i-build-info-plugin';
 /** plugins/defects */
 export * from './plugins/defects/defect-status';
 export * from './plugins/defects/defect';

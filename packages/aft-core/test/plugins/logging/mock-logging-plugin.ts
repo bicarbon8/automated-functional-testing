@@ -7,13 +7,13 @@ export class MockLoggingPluginConfig {
 };
 
 export class MockLoggingPlugin implements ILoggingPlugin {
-    public readonly pluginType: string = 'logging';
     public readonly cfgMgr: ConfigManager;
+    public readonly pluginType: "logging";
     get enabled(): boolean {
         var cfg = this.cfgMgr.getSection(MockLoggingPluginConfig);
         return cfg.enabled ?? false;
     }
-    get level(): LogLevel {
+    get logLevel(): LogLevel {
         var cfg = this.cfgMgr.getSection(MockLoggingPluginConfig);
         return cfg.level ?? this.cfgMgr.getSection(AftConfig)
             .logLevel ?? 'warn';

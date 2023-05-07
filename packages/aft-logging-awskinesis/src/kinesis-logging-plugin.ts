@@ -1,20 +1,15 @@
-import { ILoggingPlugin, LogLevel, TestResult, machineInfo, BuildInfoManager, buildinfo, AftLog, LogMessageData, Err, Merge, LoggingPluginConfig } from "aft-core";
+import { ILoggingPlugin, LogLevel, TestResult, machineInfo, AftLog, LogMessageData, ConfigManager, configMgr, pluginloader, IBuildInfoPlugin, AftConfig } from "aft-core";
 import * as AWS from "aws-sdk";
 import * as pkg from "../package.json";
 import { KinesisLogRecord } from "./kinesis-log-record";
 
-export type KinesisLoggingPluginConfig = Merge<LoggingPluginConfig, {
-    accessKeyId?: string,
-    secretAccessKey?: string,
-    sessionToken?: string,
-    region?: string,
-    deliveryStream?: string,
-    batch?: boolean;
-    batchSize?: number;
-
-    client?: AWS.Firehose;
-    buildInfoMgr?: BuildInfoManager;
-}>;
+export class KinesisLoggingPluginConfig {
+    logLevel: LogLevel;
+    region: string;
+    deliveryStream: string;
+    batch: boolean;
+    batchSize: number;
+};
 
 type CheckAndSendOptions = {
     override?: boolean;
@@ -25,14 +20,13 @@ type CheckAndSendOptions = {
  * NOTE: this plugin accepts the following options:
  * ```json
  * {
- *   "level": "info",
- *   "accessKeyId": "your-aws-access-key-id",
- *   "secretAccessKey": "your-aws-secret-access-key",
- *   "sessionToken": "your-aws-session-token",
- *   "region": "us-west-1",
- *   "deliveryStream": "your-frehose-delivery-stream",
- *   "batch": true,
- *   "batchSize": 10
+ *     "KinesisLoggingPluginConfig": {
+ *       "logLevel": "info",
+ *       "region": "us-west-1",
+ *       "deliveryStream": "your-frehose-delivery-stream",
+ *       "batch": true,
+ *       "batchSize": 10
+ *     }
  * }
  * ```
  * NOTE:
@@ -44,22 +38,34 @@ type CheckAndSendOptions = {
  * - Process Credentials: any credentials set on the current process
  * - Options: read from passed in `KinesisLoggingPluginOptions`
  */
-export class KinesisLoggingPlugin extends LoggingPlugin<KinesisLoggingPluginConfig> {
+export class KinesisLoggingPlugin implements ILoggingPlugin {
     private readonly _logs: Map<string, AWS.Firehose.Record[]>;
-    private readonly _buildInfoMgr: BuildInfoManager;
+    private readonly _buildInfo: IBuildInfoPlugin;
 
     private _client: AWS.Firehose;
+
+    public readonly cfgMgr: ConfigManager;
+    public readonly pluginType: 'logging';
+    public readonly logLevel: LogLevel;
+    public get enabled(): boolean {
+        return this.logLevel != 'none';
+    }
     
-    constructor(options?: KinesisLoggingPluginConfig) {
-        super(options);
+    constructor(cfgMgr?: ConfigManager, client?: AWS.Firehose) {
+        this.cfgMgr = cfgMgr ?? configMgr;
+        this._client = client;
         this._logs = new Map<string, AWS.Firehose.Record[]>();
-        this._buildInfoMgr = this.option('buildInfoMgr', buildinfo);
-        this._client = this.option('client'); // new client created if not passed in
+        this.logLevel = this.cfgMgr.getSection(KinesisLoggingPluginConfig).logLevel
+            ?? this.cfgMgr.getSection(AftConfig).logLevel;
+        if (this.enabled) {
+            this._buildInfo = pluginloader.getPluginsByType<IBuildInfoPlugin>('buildinfo', this.cfgMgr)
+                ?.find(p => p?.enabled);
+        }
     }
 
     async client(): Promise<AWS.Firehose> {
         if (!this._client) {
-            this._client = this.option('client') || new AWS.Firehose({
+            this._client = new AWS.Firehose({
                 region: this.region,
                 credentials: await this.credentials()
             });
@@ -67,32 +73,20 @@ export class KinesisLoggingPlugin extends LoggingPlugin<KinesisLoggingPluginConf
         return this._client;
     }
 
-    get accessKeyId(): string {
-        return this.option('accessKeyId');
-    }
-
-    get secretAccessKey(): string {
-        return this.option('secretAccessKey');
-    }
-
-    get sessionToken(): string {
-        return this.option('sessionToken');
-    }
-
     get region(): string {
-        return this.option('region');
+        return this.cfgMgr.getSection(KinesisLoggingPluginConfig).region;
     }
 
     get deliveryStream(): string {
-        return this.option('deliveryStream');
+        return this.cfgMgr.getSection(KinesisLoggingPluginConfig).deliveryStream;
     }
 
     get batch(): boolean {
-        return this.option('batch', true);
+        return this.cfgMgr.getSection(KinesisLoggingPluginConfig).batch ?? true;
     }
 
     get batchSize(): number {
-        return this.option('batchSize', 10);
+        return this.cfgMgr.getSection(KinesisLoggingPluginConfig).batchSize ?? 10;
     }
 
     /**
@@ -108,77 +102,76 @@ export class KinesisLoggingPlugin extends LoggingPlugin<KinesisLoggingPluginConf
      */
     async credentials(): Promise<AWS.Credentials> {
         let creds: AWS.Credentials;
-        if (this.accessKeyId && this.secretAccessKey) {
-            creds = new AWS.Credentials({
-                accessKeyId: this.accessKeyId, 
-                secretAccessKey: this.secretAccessKey,
-                sessionToken: this.sessionToken
-            });
-        }
-        if (!creds) {
+        try {
             creds = await new AWS.CredentialProviderChain([
                 () => new AWS.EnvironmentCredentials('AWS'),
                 () => new AWS.EC2MetadataCredentials(),
                 () => new AWS.SharedIniFileCredentials(),
                 () => new AWS.ECSCredentials(),
                 () => new AWS.ProcessCredentials()
-            ]).resolvePromise()
-            .catch((err) => {
-                AftLog.toConsole({name: this.constructor.name, message: err, level: 'warn'});
-                return null;
-            });    
+            ]).resolvePromise();    
+        } catch (e) {
+            AftLog.toConsole({name: this.constructor.name, message: e, logLevel: 'warn'});
+            return null;
         }
         return creds;
     }
 
     logs(key: string, val?: AWS.Firehose.Record[]): AWS.Firehose.Record[] {
-        if (!this._logs.has(key)) {
-            this._logs.set(key, new Array<AWS.Firehose.Record>());
-        }
         if (val) {
             this._logs.set(key, val);
         }
         return this._logs.get(key);
     }
 
-    override async log(data: LogMessageData): Promise<void> {
-        if (LogLevel.toValue(data.level) >= LogLevel.toValue(this.level) && data.level != 'none') {
+    async initialise(logName: string): Promise<void> {
+        if (this.enabled) {
+            if (!this._logs.has(logName)) {
+                this._logs.set(logName, new Array<AWS.Firehose.Record>());
+            }
+        }
+    }
+
+    async log(data: LogMessageData): Promise<void> {
+        if (this.enabled) {
+            if (LogLevel.toValue(data.logLevel) >= LogLevel.toValue(this.logLevel) && data.logLevel != 'none') {
+                let record: AWS.Firehose.Record = this._createKinesisLogRecord({
+                    logName: data.name,
+                    level: data.logLevel,
+                    message: data.message,
+                    version: pkg.version,
+                    buildName: await this._buildInfo.buildName().catch((err) => 'unknown'),
+                    machineInfo: machineInfo.data
+                });
+                const logs = this.logs(data.name);
+                logs.push(record);
+                this.logs(data.name, logs);
+                await this._checkAndSendLogs({logName: data.name});
+            }
+        }
+    }
+
+    async logResult(name: string, result: TestResult): Promise<void> {
+        if (this.enabled) {
             let record: AWS.Firehose.Record = this._createKinesisLogRecord({
-                logName: data.name,
-                level: data.level,
-                message: data.message,
+                logName: name,
+                result: result,
                 version: pkg.version,
-                buildName: await this._buildInfoMgr.buildName().catch((err) => 'unknown'),
+                buildName: await this._buildInfo.buildName().catch((err) => 'unknown'),
                 machineInfo: machineInfo.data
             });
-            const logs = this.logs(data.name);
+            const logs = this.logs(name);
             logs.push(record);
-            this.logs(data.name, logs);
-            await this._checkAndSendLogs({logName: data.name});
+            this.logs(name, logs);
+            await this._checkAndSendLogs({logName: name});
         }
     }
 
-    override async logResult(name: string, result: TestResult): Promise<void> {
-        let record: AWS.Firehose.Record = this._createKinesisLogRecord({
-            logName: name,
-            result: result,
-            version: pkg.version,
-            buildName: await this._buildInfoMgr.buildName().catch((err) => 'unknown'),
-            machineInfo: machineInfo.data
-        });
-        const logs = this.logs(name);
-        logs.push(record);
-        this.logs(name, logs);
-        await this._checkAndSendLogs({logName: name});
-    }
-
-    override async dispose(name: string, error?: Error): Promise<void> {
-        if (error) {
-            await this.log({name: name, level: 'error', message: Err.short(error)});
+    async finalise(name: string): Promise<void> {
+        if (this.enabled) {
+            // ensure all remaining logs are sent
+            await this._checkAndSendLogs({override: true, logName: name});
         }
-        // ensure all remaining logs are sent
-        await this._checkAndSendLogs({override: true, logName: name});
-        this._logs.delete(name);
     }
 
     private _createKinesisLogRecord(logRecord: KinesisLogRecord): AWS.Firehose.Record {

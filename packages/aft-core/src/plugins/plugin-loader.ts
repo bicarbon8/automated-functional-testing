@@ -173,7 +173,7 @@ class PluginLoader {
                 throw `no files found at path: '${dir}'`;
             }
         } catch (e) {
-            AftLog.toConsole({name: this.constructor.name, message: e, level: 'warn'});
+            AftLog.toConsole({name: this.constructor.name, message: e, logLevel: 'warn'});
         }
         return filePath;
     }
@@ -184,7 +184,7 @@ class PluginLoader {
             const stats: fs.Stats = fs.statSync(fullFileAndPath);
             isDir = stats?.isDirectory() || false;
         } catch (e) {
-            AftLog.toConsole({name: this.constructor.name, message: e, level: 'warn'});
+            AftLog.toConsole({name: this.constructor.name, message: e, logLevel: 'warn'});
         }
         return isDir;
     }

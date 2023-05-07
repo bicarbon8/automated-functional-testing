@@ -1,4 +1,4 @@
-import { BuildInfoPlugin, BuildInfoPluginOptions, Merge, rand } from "../../../src";
+import { IBuildInfoPlugin, BuildInfoPluginOptions, Merge, rand } from "../../../src";
 
 export type MockBuildInfoPluginOptions = Merge<BuildInfoPluginOptions, {
     buildName?: string;

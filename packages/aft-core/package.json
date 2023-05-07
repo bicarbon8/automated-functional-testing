@@ -30,6 +30,7 @@
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
     "colors": "^1.4.0",
+    "dotenv": "^16.0.3",
     "fs-ext": "^2.0.0",
     "lodash": "^4.17.21",
     "uuid": "^8.3.2"

@@ -1,3 +1,4 @@
+import * as dotenv from "dotenv";
 import { Class, JsonObject, JsonValue } from "../helpers/custom-types";
 import { fileio } from "../helpers/file-io";
 
@@ -10,6 +11,7 @@ export class ConfigManager {
         this._cfg = config ?? fileio.readAs<JsonObject>('aftconfig.json') ?? {};
         this._valueCache = new Map<string, JsonValue>();
         this._sectionCache = new Map<string, {}>();
+        dotenv.config();
     }
 
     /**
@@ -77,7 +79,7 @@ export class ConfigManager {
     }
 
     /**
-     * adds the passed in `section` to the `AftConfig` cache of `aftconfig.json`
+     * adds the passed in `section` to the `ConfigManager` cache of `aftconfig.json`
      * sections so it will be used instead of the value from the actual JSON file
      * @param key adds the passed in `section` to the cache so it will be used
      * instead of reading from `aftconfig.json`

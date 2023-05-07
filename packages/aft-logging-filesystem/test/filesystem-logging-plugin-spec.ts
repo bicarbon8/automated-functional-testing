@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
-import { convert, rand } from "aft-core";
-import { FilesystemLoggingPlugin } from "../src/filesystem-logging-plugin";
+import { ConfigManager, convert, rand } from "aft-core";
+import { FilesystemLoggingPlugin, FilesystemLoggingPluginConfig } from "../src/filesystem-logging-plugin";
 
 describe('FilesystemLoggingPlugin', () => {
     beforeEach(() => {
@@ -12,23 +12,22 @@ describe('FilesystemLoggingPlugin', () => {
     });
 
     it('can create a file on the filesystem and write logs to it', async () => {
-        const plugin = new FilesystemLoggingPlugin({
-            level: 'trace'
-        });
+        const cfgMgr = new ConfigManager();
+        const plugin = new FilesystemLoggingPlugin(cfgMgr);
         const logName = 'can create a file on the filesystem and write logs to it';
         await plugin.log({
             name: logName,
-            level: 'trace',
+            logLevel: 'trace',
             message: rand.getString(rand.getInt(100, 200))
         });
         await plugin.log({
             name: logName,
-            level: 'info',
+            logLevel: 'info',
             message: rand.getString(rand.getInt(100, 200))
         });
         await plugin.log({
             name: logName,
-            level: 'error',
+            logLevel: 'error',
             message: rand.getString(rand.getInt(100, 200))
         });
         await plugin.logResult(logName, {
@@ -63,48 +62,51 @@ describe('FilesystemLoggingPlugin', () => {
     });
 
     it('will not write to file if level below specified value', async () => {
-        const plugin = new FilesystemLoggingPlugin({
-            level: 'error'
+        const cfgMgr = new ConfigManager({
+            FilesystemLoggingPluginConfig: {
+                logLevel: 'error'
+            }
         });
+        const plugin = new FilesystemLoggingPlugin(cfgMgr);
         const logName = 'will not write to file if level below specified value';
         await plugin.log({
             name: logName,
-            level: 'trace',
+            logLevel: 'trace',
             message: rand.getString(rand.getInt(100, 200))
         });
         await plugin.log({
             name: logName,
-            level: 'debug',
+            logLevel: 'debug',
             message: rand.getString(rand.getInt(100, 200))
         });
         await plugin.log({
             name: logName,
-            level: 'info',
+            logLevel: 'info',
             message: rand.getString(rand.getInt(100, 200))
         });
         await plugin.log({
             name: logName,
-            level: 'step',
+            logLevel: 'step',
             message: rand.getString(rand.getInt(100, 200))
         });
         await plugin.log({
             name: logName,
-            level: 'pass',
+            logLevel: 'pass',
             message: rand.getString(rand.getInt(100, 200))
         });
         await plugin.log({
             name: logName,
-            level: 'fail',
+            logLevel: 'fail',
             message: rand.getString(rand.getInt(100, 200))
         });
         await plugin.log({
             name: logName,
-            level: 'warn',
+            logLevel: 'warn',
             message: rand.getString(rand.getInt(100, 200))
         });
         await plugin.log({
             name: logName,
-            level: 'error',
+            logLevel: 'error',
             message: rand.getString(rand.getInt(100, 200))
         });
 
@@ -119,12 +121,13 @@ describe('FilesystemLoggingPlugin', () => {
 
     it('can change the date formatting', async () => {
         const logName = 'can change the date formatting';
-        const plugin = new FilesystemLoggingPlugin({
-            level: 'info',
-            dateFormat: 'SSS'
-        });
+        const cfgMgr = new ConfigManager();
+        const config = cfgMgr.getSection(FilesystemLoggingPluginConfig);
+        config.logLevel = 'info';
+        config.dateFormat = 'SSS';
+        const plugin = new FilesystemLoggingPlugin(cfgMgr);
 
-        await plugin.log({name: logName, level: 'warn', message: rand.getString(rand.getInt(100, 200))});
+        await plugin.log({name: logName, logLevel: 'warn', message: rand.getString(rand.getInt(100, 200))});
 
         const filePath = path.join(process.cwd(), 'logs', `${convert.toSafeString(logName)}.log`);
         expect(fs.existsSync(filePath)).toBeTrue();
@@ -137,10 +140,13 @@ describe('FilesystemLoggingPlugin', () => {
 
     it('can disable output of TestResult objects', async () => {
         const logName = 'can disable output of TestResult objects';
-        const plugin = new FilesystemLoggingPlugin({
-            level: 'trace',
-            includeResults: false
+        const cfgMgr = new ConfigManager({
+            FilesystemLoggingPluginConfig: {
+                logLevel: 'trace',
+                includeResults: false
+            }
         });
+        const plugin = new FilesystemLoggingPlugin(cfgMgr);
 
         await plugin.logResult(logName, {
             resultId: rand.guid,

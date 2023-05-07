@@ -2,11 +2,11 @@ import { ILoggingPlugin, TestResult, LogMessageData, LogLevel, ConfigManager, co
 
 export class ThrowsLoggingPlugin implements ILoggingPlugin {
     public readonly cfgMgr: ConfigManager;
-    public readonly pluginType: string = 'logging';
+    public readonly pluginType: 'logging';
     get enabled(): boolean {
         return true;
     }
-    get level(): LogLevel {
+    get logLevel(): LogLevel {
         return 'trace';
     }
     constructor(cfgMgr?: ConfigManager) {

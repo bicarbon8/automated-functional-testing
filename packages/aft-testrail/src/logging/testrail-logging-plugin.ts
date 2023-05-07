@@ -61,7 +61,7 @@ export class TestRailLoggingPlugin extends LoggingPlugin<TestRailLoggingPluginOp
     }
 
     override async log(data: LogMessageData): Promise<void> {
-        if (LogLevel.toValue(data.level) >= LogLevel.toValue(this.level) && data.level != 'none') {
+        if (LogLevel.toValue(data.logLevel) >= LogLevel.toValue(this.level) && data.logLevel != 'none') {
             let logs = this.logs(data.name);
             if (logs.length > 0) {
                 logs += '\n'; // separate new logs from previous

@@ -1,6 +1,6 @@
 import { TestResult, MachineInfoData } from "aft-core";
 
-export interface KinesisLogRecord {
+export type KinesisLogRecord = {
     logName?: string;
     message?: string;
     level?: string;

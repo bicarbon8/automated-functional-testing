@@ -1,5 +1,5 @@
 import { AftLog } from "../logging/aft-log";
-import { BuildInfoPlugin, BuildInfoPluginOptions } from "./build-info-plugin";
+import { IBuildInfoPlugin, BuildInfoPluginOptions } from "./i-build-info-plugin";
 import { machineInfo, MachineInfoData } from "../../helpers/machine-info";
 import { convert, SafeStringOption } from "../../helpers/convert";
 import { PluginManagerWithLogging, PluginManagerWithLoggingOptions } from "../plugin-manager-with-logging";
@@ -24,7 +24,7 @@ export type BuildInfoManagerOptions = Merge<PluginManagerWithLoggingOptions, Bui
  * }
  * ```
  */
-export class BuildInfoManager extends PluginManagerWithLogging<BuildInfoPlugin<any>, BuildInfoManagerOptions> {
+export class BuildInfoManager extends PluginManagerWithLogging<IBuildInfoPlugin<any>, BuildInfoManagerOptions> {
     private readonly safeStrOpt: SafeStringOption[] = [{exclude: /[\()\;\\\/\|\<\>""'*&^%$#@!,.\-\+_=\?]/gi, replaceWith: ''}];
     
     /**
@@ -34,7 +34,7 @@ export class BuildInfoManager extends PluginManagerWithLogging<BuildInfoPlugin<a
      */
     async buildName(): Promise<string> {
         let buildName: string = await this.first()
-        .then((p: BuildInfoPlugin<any>) => p?.buildName()
+        .then((p: IBuildInfoPlugin<any>) => p?.buildName()
             .catch(async (err) => {
                 await this.logMgr()
                 .then((l: AftLog) => l.warn(`error calling ${p?.constructor.name || 'unknown'}.buildName() due to: ${err}`));
@@ -56,7 +56,7 @@ export class BuildInfoManager extends PluginManagerWithLogging<BuildInfoPlugin<a
      */
     async buildNumber(): Promise<string> {
         let buildNumber: string = await this.first()
-        .then((p: BuildInfoPlugin<any>) => p?.buildNumber()
+        .then((p: IBuildInfoPlugin<any>) => p?.buildNumber()
             .catch(async (err) => {
                 await this.logMgr()
                 .then((l: AftLog) => l.warn(`error calling ${p?.constructor.name || 'unknown'}.buildNumber() due to: ${err}`));

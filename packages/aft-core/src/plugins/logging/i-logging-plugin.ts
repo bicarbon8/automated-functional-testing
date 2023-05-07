@@ -4,6 +4,7 @@ import { LogLevel } from "./log-level";
 import { LogMessageData } from "./log-message-data";
 
 export interface ILoggingPlugin extends IPlugin {
+    readonly pluginType: 'logging';
     /**
      * allows for filtering out of erroneous information from logs by assigning
      * values to different types of logging. the purpose of each log level is
@@ -18,7 +19,7 @@ export interface ILoggingPlugin extends IPlugin {
      * - `error` - used for unexpected errors that are **not** recoverable
      * - `none` - used when no logging is desired (disables logging)
      */
-    readonly level: LogLevel;
+    readonly logLevel: LogLevel;
     /**
      * called by the parent `AftLog` on load to allow any plugins to configure
      * themselves for a new logger

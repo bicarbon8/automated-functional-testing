@@ -40,7 +40,7 @@ describe('TestRailLoggingPlugin', () => {
 
         let expected: string = rand.getString(250, true, true);
         const logName = 'keeps the last 250 characters logged';
-        await plugin.log({level: 'info', message: expected, name: logName});
+        await plugin.log({logLevel: 'info', message: expected, name: logName});
 
         let actual: string = plugin.logs(logName);
         expect(actual).toEqual(expected);
@@ -61,7 +61,7 @@ describe('TestRailLoggingPlugin', () => {
         let expected: string = rand.getString(250, true, true);
         const logName = rand.getString(15);
         
-        await plugin.log({level: 'info', message: expected, name: logName});
+        await plugin.log({logLevel: 'info', message: expected, name: logName});
 
         let actual: string = plugin.logs(logName);
         expect(actual).toEqual(expected);
@@ -86,8 +86,8 @@ describe('TestRailLoggingPlugin', () => {
         let expected: string = rand.getString(250, true, true);
         
         const logName = rand.getString(60);
-        await plugin.log({level: 'info', message: notExpected, name: logName});
-        await plugin.log({level: 'info', message: expected, name: logName});
+        await plugin.log({logLevel: 'info', message: notExpected, name: logName});
+        await plugin.log({logLevel: 'info', message: expected, name: logName});
 
         let actual: string = plugin.logs(logName);
         expect(actual).toEqual(ellide(`${notExpected}${expected}`, 250, 'beginning'));
@@ -196,7 +196,7 @@ describe('TestRailLoggingPlugin', () => {
         let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(opts);
         
         const logName = 'sends actual TestResult to TestRail';
-        await plugin.log({level: 'error', message: rand.getString(100), name: logName});
+        await plugin.log({logLevel: 'error', message: rand.getString(100), name: logName});
         
         let testResult: TestResult = {
             testId: 'C4663085', // must be an existing TestRail Case ID
