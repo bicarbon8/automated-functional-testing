@@ -1,4 +1,4 @@
-import { rand, Err, AftLog, LogLevel } from "../../src";
+import { rand, Err, AftLog, LogLevel, AftConfig } from "../../src";
 
 describe('Err', () => {
     it('exposes the original Error', () => {
@@ -75,24 +75,24 @@ describe('Err', () => {
             expect(val).toBeNull();
         });
 
-        it('will log a warning if a LogManager is supplied and the Func throws', async () => {
-            const logMgr = new AftLog({logName: 'will log a warning if a LogManager is supplied and the Func throws', plugins: []});
+        it('will log a warning if a AftLog is supplied and the Func throws', async () => {
+            const logMgr = new AftLog('will log a warning if a AftLog is supplied and the Func throws', new AftConfig({ pluginNames: [] }));
             let logMessage: string;
             spyOn(logMgr, 'warn').and.callFake((message: string) => {
                 logMessage = message;
                 return Promise.resolve();
             });
             const func = function () { throw 'foo'; };
-            const val = await Err.handle(func, logMgr);
+            const val = await Err.handle(func, {aftLog: logMgr});
 
             expect(val).toBeNull();
-            expect(logMgr.warn).toHaveBeenCalledTimes(2); // 1 time for logging and 1 time to output deprecation warning for passing LogMgr instead of ErrOptions
+            expect(logMgr.warn).toHaveBeenCalledTimes(1);
             expect(logMessage).toContain('Error: foo');
         });
 
         it('accepts ErrOptions as a second argument', async () => {
             const func = function () { throw 'foo'; };
-            const logger = new AftLog({logName: 'accepts ErrOptions as a second argument'});
+            const logger = new AftLog('accepts ErrOptions as a second argument');
             let actualLevel: LogLevel;
             let actualMessage: string;
             spyOn(logger, 'log').and.callFake((level: LogLevel, message: string) => {
@@ -103,7 +103,7 @@ describe('Err', () => {
             const val = await Err.handle(func, {
                 verbosity: 'short',
                 errLevel: 'info',
-                logMgr: logger
+                aftLog: logger
             });
 
             expect(val).toBeNull();

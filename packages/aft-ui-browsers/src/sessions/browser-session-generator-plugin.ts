@@ -71,11 +71,11 @@ export abstract class BrowserSessionGeneratorPlugin<T extends BrowserSessionGene
                     .withCapabilities(capabilities)
                     .build();
                 await Err.handle(() => driver.manage().setTimeouts({implicit: this.implicitTimeout}), {
-                    logMgr: this.logMgr,
+                    aftLog: this.logMgr,
                     errLevel: 'debug'
                 });
                 await Err.handle(() => driver.manage().window().maximize(), {
-                    logMgr: this.logMgr,
+                    aftLog: this.logMgr,
                     errLevel: 'debug'
                 });
                 return driver;

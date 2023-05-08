@@ -1,15 +1,16 @@
-import { buildinfo, BuildInfoManager } from "../plugins/build-info/build-info-manager";
-import { DefectManager, defects } from "../plugins/defects/defect-manager";
+import { DefectManager } from "../plugins/defects/defect-manager";
 import { Defect } from "../plugins/defects/defect";
 import { AftLog } from "../plugins/logging/aft-log";
 import { TestResult } from "../plugins/test-cases/test-result";
-import { TestCaseManager, testcases } from "../plugins/test-cases/test-case-manager";
+import { TestCaseManager } from "../plugins/test-cases/test-case-manager";
 import { TestStatus } from "../plugins/test-cases/test-status";
 import { convert } from "./convert";
 import { Func, ProcessingResult } from "./custom-types";
 import { rand } from "./rand";
 import { equaling, VerifierMatcher } from "./verifier-matcher";
 import { Err } from "./err";
+import { AftBuildInfo } from "../plugins/build-info/aft-build-info";
+import { AftConfig, aftConfig } from "../configuration/aft-config";
 
 /**
  * class to be used for executing some Functional Test Assertion after checking with any
@@ -31,6 +32,8 @@ import { Err } from "./err";
  * @returns a new `Verifier` instance
  */
 export class Verifier implements PromiseLike<void> {
+    public readonly aftCfg: AftConfig;
+
     protected _assertion: Func<Verifier, any>;
     protected _matcher: VerifierMatcher;
     protected _description: string;
@@ -41,9 +44,11 @@ export class Verifier implements PromiseLike<void> {
     protected _logMgr: AftLog;
     protected _testMgr: TestCaseManager;
     protected _defectMgr: DefectManager;
-    protected _buildMgr: BuildInfoManager;
+    protected _buildInfo: AftBuildInfo;
 
-    constructor() {
+    constructor(aftCfg?: AftConfig) {
+        this.aftCfg = aftCfg ?? aftConfig;
+
         this._startTime = new Date().getTime();
         this._tests = new Set<string>();
         this._defects = new Set<string>();
@@ -65,30 +70,30 @@ export class Verifier implements PromiseLike<void> {
             logName = this.constructor.name;
         }
         if (!this._logMgr) {
-            this._logMgr = new AftLog(logName);
+            this._logMgr = new AftLog(logName, this.aftCfg);
         }
         return this._logMgr;
     }
 
     get testMgr(): TestCaseManager {
         if (!this._testMgr) {
-            this._testMgr = testcases;
+            this._testMgr = new TestCaseManager(this.aftCfg);
         }
         return this._testMgr;
     }
 
     get defectMgr(): DefectManager {
         if (!this._defectMgr) {
-            this._defectMgr = defects;
+            this._defectMgr = new DefectManager(this.aftCfg);
         }
         return this._defectMgr;
     }
 
-    get buildMgr(): BuildInfoManager {
-        if (!this._buildMgr) {
-            this._buildMgr = buildinfo;
+    get buildInfo(): AftBuildInfo {
+        if (!this._buildInfo) {
+            this._buildInfo = new AftBuildInfo(this.aftCfg);
         }
-        return this._buildMgr;
+        return this._buildInfo;
     }
 
     async then<TResult1 = Verifier, TResult2 = never>(onfulfilled?: (value: void) => TResult1 | PromiseLike<TResult1>, onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2> {
@@ -258,8 +263,8 @@ export class Verifier implements PromiseLike<void> {
      * @param buildMgr a `BuildInfoManager` instance
      * @returns this `Verifier` instance
      */
-    withBuildInfoManager(buildMgr: BuildInfoManager): this {
-        this._buildMgr = buildMgr;
+    withAftBuildInfo(buildMgr: AftBuildInfo): this {
+        this._buildInfo = buildMgr;
         return this;
     }
 
@@ -271,7 +276,7 @@ export class Verifier implements PromiseLike<void> {
                 let testId: string = tests[i];
                 let result: boolean = await this.testMgr.shouldRun(testId);
                 if (result === true) {
-                    let defects: Array<Defect> = await this.defectMgr.findDefects(testId) || new Array<Defect>();
+                    let defects: Array<Defect> = await this.defectMgr.findDefects({title: testId}) || new Array<Defect>();
                     if (defects.some((d: Defect) => d?.status == 'open')) {
                         let openDefects: string = defects
                             .filter((d: Defect) => d.status == 'open')
@@ -387,8 +392,8 @@ export class Verifier implements PromiseLike<void> {
             status: status,
             metadata: {
                 durationMs: convert.toElapsedMs(this._startTime),
-                buildName: await this.buildMgr.buildName() || 'unknown',
-                buildNumber: await this.buildMgr.buildNumber() || 'unknown'
+                buildName: await this.buildInfo.buildName() || 'unknown',
+                buildNumber: await this.buildInfo.buildNumber() || 'unknown'
             }
         };
         return result;

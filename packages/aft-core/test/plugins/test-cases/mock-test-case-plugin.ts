@@ -1,58 +1,61 @@
 import { rand, TestStatus, TestCase, ITestCasePlugin, AftConfig, aftConfig } from "../../../src";
 
 export class MockTestCasePluginConfig {
-    public enabled: boolean;
+    enabled: boolean = false;
+    testCases: Array<TestCase> = new Array<TestCase>();
 }
 
 export class MockTestCasePlugin implements ITestCasePlugin {
     public readonly aftCfg: AftConfig;
     public readonly pluginType: "testcase" = 'testcase';
     public readonly enabled: boolean;
+    private readonly _tests: Array<TestCase>;
     constructor(aftCfg?: AftConfig) {
         this.aftCfg = aftCfg ?? aftConfig;
         const cfg = this.aftCfg.getSection(MockTestCasePluginConfig);
-        this.enabled = cfg.enabled;
+        this.enabled = cfg.enabled ?? false;
+        if (this.enabled) {
+            this._tests = cfg.testCases ?? new Array<TestCase>();
+        }
     }
     async getTestCase(testId: string): Promise<TestCase> {
         if (this.enabled) {
-            return {
-                id: testId,
-                title: rand.getString(8),
-                description: rand.getString(100),
-                status: rand.getFrom<TestStatus>('Blocked', 'Failed', 'Passed', 'Retest', 'Skipped', 'Untested')
-            } as TestCase;
+            return this._tests.find(t => t.id === testId);
         }
         return null;
     }
     async findTestCases(searchCriteria: Partial<TestCase>): Promise<TestCase[]> {
         if (this.enabled) {
-            let cases: TestCase[] = [];
-            let resultCount: number = rand.getInt(1, 5);
-            for (var i=0; i<resultCount; i++) {
-                let c: TestCase = {
-                    id: 'C' + rand.getInt(100, 999),
-                    title: rand.getString(8),
-                    description: rand.getString(100),
-                    status: rand.getFrom<TestStatus>('Blocked', 'Failed', 'Passed', 'Retest', 'Skipped', 'Untested')
-                } as TestCase;
-                cases.push(c);
+            let found = [...this._tests];
+            if (searchCriteria.created != null) {
+                found = found.filter(t => t.created === searchCriteria.created);
             }
-            return cases;
+            if (searchCriteria.description) {
+                found = found.filter(t => t.description?.includes(searchCriteria.description));
+            }
+            if (searchCriteria.id) {
+                found = found.filter(t => t.id === searchCriteria.id);
+            }
+            if (searchCriteria.result) {
+                if (searchCriteria.result.status) {
+                    found = found.filter(t => t.result?.status === searchCriteria.result.status);
+                }
+            }
+            if (searchCriteria.status) {
+                found = found.filter(t => t.status === searchCriteria.status);
+            }
+            if (searchCriteria.title) {
+                found = found.filter(t => t.title?.includes(searchCriteria.title));
+            }
+            return found;
         }
         return null;
     }
     async shouldRun(testId: string): Promise<boolean> {
         if (this.enabled) {
-            switch(testId) {
-                case 'C1234':
-                    let c1: TestCase = await this.getTestCase(testId);
-                    return false;
-                case 'C2345':
-                    let c2: TestCase = await this.getTestCase(testId);
-                    return true;
-                default:
-                    let c3: TestCase = await this.getTestCase(testId);
-                    return rand.boolean;
+            const test = await this.getTestCase(testId);
+            if (test) {
+                return test.result == null || test.result?.status === 'Retest';
             }
         }
         return true;

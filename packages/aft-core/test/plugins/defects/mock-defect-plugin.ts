@@ -1,40 +1,46 @@
-import { DefectStatus, Defect, IDefectPlugin, rand, AftConfig } from "../../../src";
+import { DefectStatus, Defect, IDefectPlugin, rand, AftConfig, aftConfig } from "../../../src";
+
+export class MockDefectPluginConfig {
+    enabled: boolean = false;
+    defects: Array<Defect> = new Array<Defect>();
+}
 
 export class MockDefectPlugin implements IDefectPlugin {
     public readonly aftCfg: AftConfig;
     public readonly pluginType: "defect" = 'defect';
     public readonly enabled: boolean;
+    private readonly _defects: Array<Defect>;
+    constructor(aftCfg?: AftConfig) {
+        this.aftCfg = aftCfg ?? aftConfig;
+        const cfg = this.aftCfg.getSection(MockDefectPluginConfig);
+        this.enabled = cfg.enabled ?? false;
+        if (this.enabled) {
+            this._defects = cfg.defects ?? new Array<Defect>();
+        }
+    }
     async getDefect(defectId: string): Promise<Defect> {
-        return {
-            id: defectId, 
-            title: rand.getString(17),
-            description: rand.getString(150),
-            status: rand.getFrom<DefectStatus>('open', 'closed')
-        } as Defect;
+        if (this.enabled) {
+            return this._defects.find(d => d.id === defectId);
+        }
+        return null;
     }
     async findDefects(searchCriteria: Partial<Defect>): Promise<Defect[]> {
-        switch (searchCriteria.title) {
-            case 'C1234':
-                let d1: Defect = await this.getDefect('AUTO-123');
-                d1.status = 'open';
-                return [d1];
-            case 'C2345':
-                let d2: Defect = await this.getDefect('AUTO-234');
-                d2.status = 'closed';
-                return [d2];
-            default: 
-                let defects: Defect[] = [];
-                let randomCount: number = rand.getInt(1, 5);
-                for (var i=0; i<randomCount; i++) {
-                    let defect: Defect = {
-                        id: rand.getString(5),
-                        title: rand.getString(17),
-                        description: rand.getString(150),
-                        status: rand.getFrom<DefectStatus>('open', 'closed')
-                    } as Defect;
-                    defects.push(defect);
-                }
-                return defects;
+        if (this.enabled) {
+            let found = [...this._defects];
+            if (searchCriteria.id) {
+                found = found.filter(d => d.id === searchCriteria.id);
+            }
+            if (searchCriteria.title) {
+                found = found.filter(d => d.title?.includes(searchCriteria.title));
+            }
+            if (searchCriteria.status) {
+                found = found.filter(d => d.status === searchCriteria.status);
+            }
+            if (searchCriteria.description) {
+                found = found.filter(d => d.description?.includes(searchCriteria.description));
+            }
+            return found;
         }
+        return new Array<Defect>();
     }
 }
