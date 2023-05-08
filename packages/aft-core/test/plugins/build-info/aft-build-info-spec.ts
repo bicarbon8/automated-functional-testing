@@ -1,4 +1,4 @@
-import { AftBuildInfo, AftConfig, convert, machineInfo, MachineInfoData, pluginLoader, rand } from "../../../src";
+import { BuildInfoManager, AftConfig, convert, machineInfo, MachineInfoData, pluginLoader, rand } from "../../../src";
 
 describe('AftBuildInfo', () => {
     afterEach(() => {
@@ -7,7 +7,7 @@ describe('AftBuildInfo', () => {
 
     it('can load expected plugin', async () => {
         const randomName = rand.getString(12);
-        const actual = new AftBuildInfo(new AftConfig({
+        const actual = new BuildInfoManager(new AftConfig({
             pluginNames: ['mock-build-info-plugin'],
             MockBuildInfoPluginConfig: {
                 enabled: true,
@@ -26,7 +26,7 @@ describe('AftBuildInfo', () => {
     });
 
     it('will generate a string based on the machine user and name if no BuildInfoPlugin available', async () => {
-        const mgr: AftBuildInfo = new AftBuildInfo();
+        const mgr: BuildInfoManager = new BuildInfoManager();
         const actual: string = await mgr.get();
         const mi: MachineInfoData = machineInfo.data;
 
@@ -38,7 +38,7 @@ describe('AftBuildInfo', () => {
 
     it('will generate a string based on the plugin if a BuildInfoPlugin is available', async () => {
         const randomName = rand.getString(22);
-        const mgr: AftBuildInfo = new AftBuildInfo(new AftConfig({
+        const mgr: BuildInfoManager = new BuildInfoManager(new AftConfig({
             pluginNames: ['mock-build-info-plugin'],
             MockBuildInfoPluginConfig: {
                 enabled: true,

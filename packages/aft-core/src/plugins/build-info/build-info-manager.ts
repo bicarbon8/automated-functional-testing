@@ -2,11 +2,11 @@ import { AftConfig, aftConfig } from "../../configuration/aft-config";
 import { SafeStringOption, convert } from "../../helpers/convert";
 import { Err } from "../../helpers/err";
 import { MachineInfoData, machineInfo } from "../../helpers/machine-info";
-import { AftLog } from "../logging/aft-log";
+import { LogManager } from "../logging/log-manager";
 import { pluginLoader } from "../plugin-loader";
 import { IBuildInfoPlugin } from "./i-build-info-plugin";
 
-export class AftBuildInfo {
+export class BuildInfoManager {
     public readonly aftCfg: AftConfig;
     public readonly plugins: Array<IBuildInfoPlugin>
 
@@ -42,7 +42,7 @@ export class AftBuildInfo {
             try {
                 return plugin.buildName();
             } catch (e) {
-                AftLog.toConsole({
+                LogManager.toConsole({
                     name: this.constructor.name,
                     logLevel: 'warn',
                     message: `error calling '${plugin.constructor.name}.buildName': ${Err.short(e)}`
@@ -67,7 +67,7 @@ export class AftBuildInfo {
             try {
                 return plugin.buildNumber();
             } catch (e) {
-                AftLog.toConsole({
+                LogManager.toConsole({
                     name: this.constructor.name,
                     logLevel: 'warn',
                     message: `error calling '${plugin.constructor.name}.buildNumber': ${Err.short(e)}`
@@ -90,4 +90,4 @@ export class AftBuildInfo {
     }
 }
 
-export const aftBuildInfo = new AftBuildInfo();
+export const aftBuildInfo = new BuildInfoManager();

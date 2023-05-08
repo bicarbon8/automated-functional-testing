@@ -3,6 +3,11 @@ import { convert } from "./convert";
 import { JsonKey, JsonValue } from "./custom-types";
 import { ExpiringFileLock } from "./expiring-file-lock";
 import { fileio } from "./file-io";
+import { AftConfig, aftConfig } from "../configuration/aft-config";
+
+export class FileSystemMapConfig {
+    directory: string = FileSystemMap.name;
+}
 
 /**
  * an implementation of `Map` that stores all its data on the filesystem allowing
@@ -13,19 +18,25 @@ import { fileio } from "./file-io";
  * the extension .json appended to it
  * @param entries an optional array of arrays containing two elements used to seed 
  * the instantiated map object
+ * @param aftCfg an optional `AftConfig` instance that allows you to override any
+ * `FileSystemMapConfig` loaded from `appsettings.json`
  */
 export class FileSystemMap<Tkey extends JsonKey, Tval extends JsonValue> implements Map<Tkey, Tval>
 {
     public readonly filename: string;
 
     private readonly _memoryMap: Map<Tkey, Tval>;
+    private readonly _aftCfg: AftConfig;
 
-    constructor(filename: string, entries?: readonly (readonly [Tkey, Tval])[] | null) {
+    constructor(filename: string, entries?: readonly (readonly [Tkey, Tval])[] | null, aftCfg?: AftConfig) {
         if (!filename) {
             throw 'filename argument must be defined';
         }
+        this._aftCfg = aftCfg ?? aftConfig;
         this._memoryMap = new Map<Tkey, Tval>();
-        this.filename = path.join(process.cwd(), this.constructor.name, `${convert.toSafeString(filename)}.json`);
+        const fsmc = this._aftCfg.getSection(FileSystemMapConfig);
+        const dir = fsmc.directory;
+        this.filename = path.join(process.cwd(), dir, `${convert.toSafeString(filename)}.json`);
         this._updateMemoryMap();
         if (entries?.length > 0) {
             for (var i=0; i<entries.length; i++) {
@@ -91,7 +102,7 @@ export class FileSystemMap<Tkey extends JsonKey, Tval extends JsonValue> impleme
     }
 
     private _writeToFile(): void {
-        const lock: ExpiringFileLock = fileio.getExpiringFileLock(this.filename, 10000, 5000);
+        const lock: ExpiringFileLock = fileio.getExpiringFileLock(this.filename, this._aftCfg);
         try {
             fileio.write(this.filename, convert.mapToString(this._memoryMap));
         } finally {
@@ -101,7 +112,7 @@ export class FileSystemMap<Tkey extends JsonKey, Tval extends JsonValue> impleme
 
     private _updateMemoryMap(): void {
         let fileMapData: Map<Tkey, Tval>;
-        const lock: ExpiringFileLock = fileio.getExpiringFileLock(this.filename, 10000, 5000);
+        const lock: ExpiringFileLock = fileio.getExpiringFileLock(this.filename, this._aftCfg);
         try {
             fileMapData = fileio.readAs<Map<Tkey, Tval>>(this.filename, convert.stringToMap);
         } catch (e) {

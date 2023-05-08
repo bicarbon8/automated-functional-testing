@@ -4,6 +4,12 @@ import * as os from "os";
 import { flockSync } from "fs-ext";
 import { convert } from "./convert";
 import { ellide } from "./ellide";
+import { AftConfig, aftConfig } from "../configuration/aft-config";
+
+export class ExpriringFileLockConfig {
+    maxWaitMs: number = 1000;
+    maxHoldMs: number = 1000;
+}
 
 /**
  * class will create a new (or use existing) lockfile locking 
@@ -28,6 +34,7 @@ import { ellide } from "./ellide";
  * ```
  */
 export class ExpiringFileLock {
+    public readonly aftCfg: AftConfig;
     public readonly lockName: string;
     public readonly lockDuration: number;
     public readonly waitDuration: number;
@@ -35,12 +42,14 @@ export class ExpiringFileLock {
     private readonly _lockFileDescriptor: number;
     private readonly _timeout: NodeJS.Timeout;
     
-    constructor(lockFileName: string, maxWaitDurationMs: number, maxHoldDurationMs: number) {
+    constructor(lockFileName: string, aftCfg?: AftConfig) {
         if (!lockFileName) {
             throw `[${this.constructor.name}] - lockFileName must be set`;
         }
-        this.lockDuration = maxHoldDurationMs || 1; // defaults to 1 ms
-        this.waitDuration = maxWaitDurationMs || 1; // defaults to 1 ms
+        this.aftCfg = aftCfg ?? aftConfig;
+        const eflc = this.aftCfg.getSection(ExpriringFileLockConfig);
+        this.lockDuration = Math.abs(eflc?.maxHoldMs); // ensure positive value; defaults to 1 s
+        this.waitDuration = Math.abs(eflc?.maxWaitMs); // ensure positive value; defaults to 1 s
         this.lockName = path.join(os.tmpdir(), ellide(convert.toSafeString(lockFileName), 255, 'beginning', ''));
         this._lockFileDescriptor = this._waitForLock();
         this._timeout = setTimeout(() => flockSync(this._lockFileDescriptor, 'un'), this.lockDuration);

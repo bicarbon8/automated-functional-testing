@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-import { Class, JsonObject, JsonValue } from "../helpers/custom-types";
+import { Class, JsonObject, JsonValue, RetryBackOffType } from "../helpers/custom-types";
 import { fileio } from "../helpers/file-io";
 import { LogLevel } from "../plugins/logging/log-level";
 
@@ -20,15 +20,6 @@ export class AftConfig {
     }
     get pluginNames(): Array<string> {
         return this.get('pluginNames', new Array<string>());
-    }
-    get logLevel(): LogLevel {
-        return this.get('logLevel', 'warn');
-    }
-    get resultsDirectory(): string {
-        return this.get('resultsDirectory', 'AftResults');
-    }
-    get cacheDirectory(): string {
-        return this.get('cacheDirectory', 'AftCache');
     }
 
     /**
@@ -81,15 +72,28 @@ export class AftConfig {
         } else {
             key = className;
         }
-        val = this.get<T>(key);
+        val = this._sectionCache.get(key) as T;
         if (!val) {
-            if (typeof className === "function") {
-                val = new className();
-            } else {
-                val = {} as T;
+            val = this.get<T>(key);
+            if (!val) {
+                if (typeof className === "function") {
+                    val = new className();
+                } else {
+                    val = {} as T;
+                }
             }
+            if (val && typeof className === "function") {
+                // copy props to class
+                const config = new className();
+                for (var prop of Object.getOwnPropertyNames(config)) {
+                    if (val[prop] != null) {
+                        config[prop] = val[prop];
+                    }
+                }
+                val = config as T;
+            }
+            this.setSection(key, val);
         }
-        this.setSection(key, val);
         return val;
     }
 

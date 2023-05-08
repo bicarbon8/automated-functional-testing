@@ -12,10 +12,10 @@ describe('REST Request', () => {
         const aft = new AftLog(this);
         let response: HttpResponse;
         await verify(async (tw) => {            
-            await tw.logger.step('making request...');
+            await tw.logMgr.step('making request...');
             const r = retry(() => httpService.performRequest({
                 url: 'https://reqres.in/api/users?page=2',
-                logMgr: tw.logger
+                logMgr: tw.logMgr
             })).until((res: HttpResponse) => res.statusCode >= 200 && res.statusCode < 400)
             .withStartDelayBetweenAttempts(100)
             .withBackOff('exponential')
@@ -23,7 +23,7 @@ describe('REST Request', () => {
 
             response = await Promise.resolve(r);
             if (!r.isSuccessful) {
-                await tw.logger.error(r.lastError);
+                await tw.logMgr.error(r.lastError);
             }
             return r.totalDuration;
         }).withLogManager(aft.logMgr)
@@ -32,11 +32,11 @@ describe('REST Request', () => {
         .returns(lessThan(10000));
 
         await verify(async (tw) => {
-            await tw.logger.step('confirm response is not null...');
+            await tw.logMgr.step('confirm response is not null...');
             expect(response).to.exist;
-            await tw.logger.info('confirmed response is not null.');
-            await tw.logger.info('response status code: ' + response.statusCode);
-            await tw.logger.step('confirm response.data is not null...');
+            await tw.logMgr.info('confirmed response is not null.');
+            await tw.logMgr.info('response status code: ' + response.statusCode);
+            await tw.logMgr.step('confirm response.data is not null...');
             return response.data;
         }).withLogManager(aft.logMgr)
         .and.withDescription('returns a valid response object')
@@ -44,11 +44,11 @@ describe('REST Request', () => {
         .returns(havingValue());
 
         await verify(async (tw) => {
-            await tw.logger.step('confirm can deserialise response.data into typed object...');
+            await tw.logMgr.step('confirm can deserialise response.data into typed object...');
             let obj: ListUsersResponse = httpData.as<ListUsersResponse>(response);
             expect(obj).to.exist;
-            await tw.logger.info('confirmed can deserialise response.data into typed object.');
-            await tw.logger.step('confirm object data property contains more than one result...');
+            await tw.logMgr.info('confirmed can deserialise response.data into typed object.');
+            await tw.logMgr.step('confirm object data property contains more than one result...');
             return obj.data.length;
         }).withLogManager(aft.logMgr)
         .and.withDescription('receives more than 0 results in the data array')

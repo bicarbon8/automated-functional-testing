@@ -1,16 +1,18 @@
-import { RetryBackOffType } from "../../src";
+import { AftConfig, RetryBackOffType } from "../../src";
 import { convert } from "../../src/helpers/convert";
-import { Retry, retry } from "../../src/helpers/retry";
+import { Retry, RetryConfig, retry } from "../../src/helpers/retry";
 
 describe('Retry', () => {
     it('can delay by specified number of milliseconds and delay type constant', async () => {
         const now: number = Date.now();
         let result: number = 0;
 
-        await retry(() => ++result)
-            .until((res: number) => res > 2)
-            .withStartDelayBetweenAttempts(100)
-            .withBackOff('constant');
+        await retry(() => ++result, new AftConfig({
+            RetryConfig: {
+                delayMs: 100,
+                backOffType: 'constant'
+            }
+        })).until((res: number) => res > 2);
 
         let elapsed: number = convert.toElapsedMs(now);
         expect(elapsed).toBeGreaterThan(3);
@@ -21,10 +23,12 @@ describe('Retry', () => {
     it('can use a linearly increasing back-off delay', async () => {
         const now: number = Date.now();
         let result: number = 0;
-        await retry(() => ++result)
-            .until((res: number) => res > 9)
-            .withStartDelayBetweenAttempts(10)
-            .withBackOff('linear');
+        await retry(() => ++result, new AftConfig({
+            RetryConfig: {
+                delayMs: 10,
+                backOffType: 'linear'
+            }
+        })).until((res: number) => res > 9);
 
         const elapsed: number = convert.toElapsedMs(now);
         expect(elapsed).toBeGreaterThan(450);
@@ -38,10 +42,12 @@ describe('Retry', () => {
         await retry(() => {
             actual += 1;
             return actual > 5;
-        })
-        .until((res: boolean) => res)
-        .withStartDelayBetweenAttempts(10)
-        .withBackOff('exponential');
+        }, new AftConfig({
+            RetryConfig: {
+                delayMs: 10,
+                backOffType: 'exponential'
+            }
+        })).until((res: boolean) => res);
 
         const elapsed = convert.toElapsedMs(now);
         expect(elapsed).toBeGreaterThan(300);
@@ -52,10 +58,12 @@ describe('Retry', () => {
     it('can set a maximum number of attempts', async () => {
         const now = Date.now();
         let attempts: number = 0;
-        await retry(() => ++attempts)
-            .until((res: number) => res > 100)
-            .withMaxAttempts(10)
-            .rejectIfUnsuccessful(false);
+        await retry(() => ++attempts, new AftConfig({
+            RetryConfig: {
+                maxAttempts: 10,
+                rejectOnFail: false
+            }
+        })).until((res: number) => res > 100);
 
         expect(attempts).toEqual(10);
         const elapsed = convert.toElapsedMs(now);
@@ -65,12 +73,14 @@ describe('Retry', () => {
     it('can set a maximum duration to run', async () => {
         const now = Date.now();
         let attempts: number = 0;
-        const r = retry(() => ++attempts)
-            .until((res: number) => res > Infinity)
-            .withStartDelayBetweenAttempts(100)
-            .withBackOff('constant')
-            .withMaxDuration(500)
-            .rejectIfUnsuccessful(false);
+        const aftCfg = new AftConfig();
+        const rc = aftCfg.getSection(RetryConfig);
+        rc.delayMs = 100;
+        rc.backOffType = 'constant';
+        rc.maxDurationMs = 500;
+        rc.rejectOnFail = false;
+        const r = retry(() => ++attempts, aftCfg)
+            .until((res: number) => res > Infinity);
         await Promise.resolve(r);
 
         const elapsed = convert.toElapsedMs(now);
@@ -84,9 +94,11 @@ describe('Retry', () => {
     it('returns a rejected promise if max duration or attempts is exceeded before success', async () => {
         let attempts = 0;
         let errStr: string;
-        const r = retry(() => ++attempts)
-            .until((res: number) => res > Infinity)
-            .withMaxAttempts(100);
+        const r = retry(() => ++attempts, new AftConfig({
+            RetryConfig: {
+                maxAttempts: 100
+            }
+        })).until((res: number) => res > Infinity);
         await Promise.resolve(r).catch((err) => errStr = err);
 
         expect(errStr).toBeDefined();
@@ -103,9 +115,11 @@ describe('Retry', () => {
                 return Promise.reject('fake error');
             }
             return result > 1;
-        })
-        .until((res: boolean) => res)
-        .withStartDelayBetweenAttempts(1)
+        }, new AftConfig({
+            RetryConfig: {
+                delayMs: 1
+            }
+        })).until((res: boolean) => res)
         .withFailAction(() => Promise.reject('fake fail action error'));
 
         expect(result).toEqual(2);
@@ -120,9 +134,11 @@ describe('Retry', () => {
                 throw new Error('fake error');
             }
             return result > 1;
-        })
-        .until((res: boolean) => res)
-        .withStartDelayBetweenAttempts(200)
+        }, new AftConfig({
+            RetryConfig: {
+                delayMs: 200
+            }
+        })).until((res: boolean) => res)
         .withFailAction(() => {throw new Error('fake fail action error');});
 
         expect(result).toEqual(2);

@@ -1,6 +1,6 @@
 import { DefectManager } from "../plugins/defects/defect-manager";
 import { Defect } from "../plugins/defects/defect";
-import { AftLog } from "../plugins/logging/aft-log";
+import { LogManager } from "../plugins/logging/log-manager";
 import { TestResult } from "../plugins/test-cases/test-result";
 import { TestCaseManager } from "../plugins/test-cases/test-case-manager";
 import { TestStatus } from "../plugins/test-cases/test-status";
@@ -9,7 +9,7 @@ import { Func, ProcessingResult } from "./custom-types";
 import { rand } from "./rand";
 import { equaling, VerifierMatcher } from "./verifier-matcher";
 import { Err } from "./err";
-import { AftBuildInfo } from "../plugins/build-info/aft-build-info";
+import { BuildInfoManager } from "../plugins/build-info/build-info-manager";
 import { AftConfig, aftConfig } from "../configuration/aft-config";
 
 /**
@@ -41,10 +41,10 @@ export class Verifier implements PromiseLike<void> {
     protected _innerPromise: Promise<void>;
     protected _tests: Set<string>;
     protected _defects: Set<string>;
-    protected _logMgr: AftLog;
+    protected _logMgr: LogManager;
     protected _testMgr: TestCaseManager;
     protected _defectMgr: DefectManager;
-    protected _buildInfo: AftBuildInfo;
+    protected _buildInfoMgr: BuildInfoManager;
 
     constructor(aftCfg?: AftConfig) {
         this.aftCfg = aftCfg ?? aftConfig;
@@ -60,7 +60,7 @@ export class Verifier implements PromiseLike<void> {
      * on which is available (NOTE: description is preferred most and
      * will be used if other values are also present)
      */
-    get logger(): AftLog {
+    get logMgr(): LogManager {
         let logName: string;
         if (this._description) {
             logName = this._description;
@@ -70,7 +70,7 @@ export class Verifier implements PromiseLike<void> {
             logName = this.constructor.name;
         }
         if (!this._logMgr) {
-            this._logMgr = new AftLog(logName, this.aftCfg);
+            this._logMgr = new LogManager(logName, this.aftCfg);
         }
         return this._logMgr;
     }
@@ -89,11 +89,11 @@ export class Verifier implements PromiseLike<void> {
         return this._defectMgr;
     }
 
-    get buildInfo(): AftBuildInfo {
-        if (!this._buildInfo) {
-            this._buildInfo = new AftBuildInfo(this.aftCfg);
+    get buildInfo(): BuildInfoManager {
+        if (!this._buildInfoMgr) {
+            this._buildInfoMgr = new BuildInfoManager(this.aftCfg);
         }
-        return this._buildInfo;
+        return this._buildInfoMgr;
     }
 
     async then<TResult1 = Verifier, TResult2 = never>(onfulfilled?: (value: void) => TResult1 | PromiseLike<TResult1>, onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2> {
@@ -105,15 +105,12 @@ export class Verifier implements PromiseLike<void> {
         if (!this._innerPromise) {
             this._innerPromise = new Promise(async (resolve, reject) => {
                 try {
-                    const shouldRun: Array<ProcessingResult> = await Promise.all([
-                        this._shouldRun_tests(...Array.from(this._tests)),
-                        this._shouldRun_defects(...Array.from(this._defects))
-                    ]);
-                    if (shouldRun.map(pr => pr.success).reduce((prev, cur) => prev && cur)) {
+                    const shouldRun = await this._shouldRunTests(...Array.from(this._tests));
+                    if (shouldRun.success) {
                         await this._resolveAssertion();
                         await this._logResult('Passed');
                     } else {
-                        await this._logResult('Skipped', shouldRun.filter(pr => !pr.success).map(pr => pr.message).join('; '));
+                        await this._logResult('Skipped', shouldRun.message);
                     }
                     resolve();
                 } catch(e) {
@@ -230,7 +227,7 @@ export class Verifier implements PromiseLike<void> {
      * @param logMgr a `LogManager` instance
      * @returns this `Verifier` instance
      */
-    withLogManager(logMgr: AftLog): this {
+    withLogManager(logMgr: LogManager): this {
         this._logMgr = logMgr;
         return this;
     }
@@ -263,12 +260,12 @@ export class Verifier implements PromiseLike<void> {
      * @param buildMgr a `BuildInfoManager` instance
      * @returns this `Verifier` instance
      */
-    withAftBuildInfo(buildMgr: AftBuildInfo): this {
-        this._buildInfo = buildMgr;
+    withAftBuildInfo(buildMgr: BuildInfoManager): this {
+        this._buildInfoMgr = buildMgr;
         return this;
     }
 
-    protected async _shouldRun_tests(...tests: string[]): Promise<ProcessingResult> {
+    protected async _shouldRunTests(...tests: string[]): Promise<ProcessingResult> {
         const shouldRunTests = new Array<string>();
         const shouldNotRunTests = new Array<string>();
         if (tests?.length) {
@@ -276,44 +273,45 @@ export class Verifier implements PromiseLike<void> {
                 let testId: string = tests[i];
                 let result: boolean = await this.testMgr.shouldRun(testId);
                 if (result === true) {
-                    let defects: Array<Defect> = await this.defectMgr.findDefects({title: testId}) || new Array<Defect>();
-                    if (defects.some((d: Defect) => d?.status == 'open')) {
-                        let openDefects: string = defects
-                            .filter((d: Defect) => d.status == 'open')
-                            .map((d: Defect) => d.id)
-                            .join(', ');
-                        shouldNotRunTests.push(testId);
-                        return {
-                            success: false, 
-                            message: `the testId ${testId} has one or more open defects so test should not be run: [${openDefects}]`
-                        };
-                    } else {
+                    const noOpenDefectsResult = await this._hasNoOpenDefects(testId);
+                    if (noOpenDefectsResult.success) {
                         shouldRunTests.push(testId);
+                    } else {
+                        return noOpenDefectsResult;
                     }
                 } else {
                     shouldNotRunTests.push(testId);
                 }
             }
-            let shouldRun: boolean = shouldRunTests.length > 0;
-            if (!shouldRun) {
+            if (shouldRunTests.length === 0) {
                 return {success: false, message: `none of the supplied tests should be run: [${tests.join(', ')}]`};
             }
         }
         return {success: true, message: 'returning the test IDs, as an array, that should be run', obj: shouldRunTests};
     }
 
-    protected async _shouldRun_defects(...defects: string[]): Promise<ProcessingResult> {
-        // first search for any specified Defects by ID
-        if (defects?.length) {
-            for (var i=0; i<defects.length; i++) {
-                let defectId: string = defects[i];
-                let defect: Defect = await this.defectMgr.getDefect(defectId);
-                if (defect?.status == 'open') {
-                    return {success: false, message: `Defect: '${defectId}' is open so test should not be run.`};
-                }
-            }
+    /**
+     * searches the `DefectManager` for any open defects referencing the supplied `testId` in their title and
+     * if found returns a `ProcessingResult` with `success` set to `false` and a message containing a list of the 
+     * open defect ID's
+     * @param testId the test ID to search for in the `DefectManager`
+     * @returns a `ProcessingResult` with `success` equaling `true` if the `testId` has no open defects
+     */
+    protected async _hasNoOpenDefects(testId: string): Promise<ProcessingResult> {
+        let defects: Array<Defect> = await this.defectMgr.findDefects({title: testId}) || new Array<Defect>();
+        if (defects.some((d: Defect) => d?.status == 'open')) {
+            let openDefects: string = defects
+                .filter((d: Defect) => d.status == 'open')
+                .map((d: Defect) => d.id)
+                .join(', ');
+            return {
+                success: false, 
+                message: `the testId ${testId} has one or more open defects so test should not be run: [${openDefects}]`
+            };
         }
-        return {success: true};
+        return {
+            success: true
+        };
     }
 
     /**
@@ -339,31 +337,31 @@ export class Verifier implements PromiseLike<void> {
             for (var i=0; i<results.length; i++) {
                 let result: TestResult = results[i];
                 try {
-                    await this.logger.logResult(result);
+                    await this.logMgr.logResult(result);
                 } catch (e) {
-                    await this.logger.warn(`unable to log test result for test '${result.testId || result.resultId}' due to: ${Err.short(e)}`);
+                    await this.logMgr.warn(`unable to log test result for test '${result.testId || result.resultId}' due to: ${Err.short(e)}`);
                 }
             }
         } finally {
-            await this.logger.dispose();
+            await this.logMgr.dispose();
         }
     }
 
     protected async _logMessage(status: TestStatus, message?: string): Promise<void> {
-        message = message || this.logger.logName;
+        message = message || this.logMgr.logName;
         switch (status) {
             case 'Blocked':
             case 'Retest':
             case 'Skipped':
             case 'Untested':
-                await this.logger.warn(message);
+                await this.logMgr.warn(message);
                 break;
             case 'Failed':
-                await this.logger.fail(message);
+                await this.logMgr.fail(message);
                 break;
             case 'Passed':
             default:
-                await this.logger.pass(message);
+                await this.logMgr.pass(message);
                 break;
         }
     }

@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { Func } from "./custom-types";
 import { ExpiringFileLock } from "./expiring-file-lock";
+import { AftConfig } from "../configuration/aft-config";
 
 class FileIO {
     /**
@@ -101,10 +102,11 @@ class FileIO {
      * @param lockFileName the name of the temporary lockfile to use
      * @param maxWaitDurationMs the maximum amount fo time to wait to acquire the lock
      * @param maxHoldDurationMs the maximum amount of time the lock can be held
+     * @param aftCfg an optional `AftConfig` instance you can used to override default behaviours
      * @returns an `ExpriringFileLock` instance that can be used to release the lock
      */
-    getExpiringFileLock(lockFileName: string, maxWaitDurationMs?: number, maxHoldDurationMs?: number): ExpiringFileLock {
-        return new ExpiringFileLock(lockFileName, maxWaitDurationMs, maxHoldDurationMs);
+    getExpiringFileLock(lockFileName: string, aftCfg?: AftConfig): ExpiringFileLock {
+        return new ExpiringFileLock(lockFileName, aftCfg);
     }
 }
 

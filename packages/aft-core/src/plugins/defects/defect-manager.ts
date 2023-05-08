@@ -1,6 +1,6 @@
 import { AftConfig, aftConfig } from "../../configuration/aft-config";
 import { Err } from "../../helpers/err";
-import { AftLog } from "../logging/aft-log";
+import { LogManager } from "../logging/log-manager";
 import { pluginLoader } from "../plugin-loader";
 import { Defect } from "./defect";
 import { IDefectPlugin } from "./i-defect-plugin";
@@ -20,7 +20,7 @@ export class DefectManager {
             try {
                 return await plugin.getDefect(defectId);
             } catch (e) {
-                AftLog.toConsole({
+                LogManager.toConsole({
                     name: this.constructor.name,
                     logLevel: 'warn',
                     message: `error calling '${plugin.constructor.name}.getDefect(${defectId})': ${Err.short(e)}`
@@ -36,7 +36,7 @@ export class DefectManager {
             try {
                 return await plugin.findDefects(searchCriteria);
             } catch (e) {
-                AftLog.toConsole({
+                LogManager.toConsole({
                     name: this.constructor.name,
                     logLevel: 'warn',
                     message: `error calling '${plugin.constructor.name}.findDefects(${JSON.stringify(searchCriteria)})': ${Err.short(e)}`

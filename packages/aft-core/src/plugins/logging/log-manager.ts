@@ -9,6 +9,10 @@ import { AftConfig, aftConfig } from "../../configuration/aft-config";
 import { pluginLoader } from "../plugin-loader";
 import { Err } from "../../helpers/err";
 
+export class LogManagerConfig {
+    logLevel: LogLevel = 'warn';
+}
+
 /**
  * a logging class that uses configuration to determine what
  * should be logged to the console and formats the logging output
@@ -20,7 +24,7 @@ import { Err } from "../../helpers/err";
  * ```
  * {
  *   ...
- *   "AftConfig": {
+ *   "LogManagerConfig": {
  *     "logLevel": "info"
  *   }
  *   ...
@@ -29,11 +33,11 @@ import { Err } from "../../helpers/err";
  * NOTE: multiple instances of this class are expected to be created as each instance should have a unique
  * `logName` associated with it. Ex:
  * ```typescript
- * let logMgr1: AftLog = new AftLog({logName: 'logger for test 1'});
- * let logMgr2: AftLog = new AftLog({logName: 'logger for test 2'});
+ * let logMgr1 = new LogManager('logger for test 1');
+ * let logMgr2 = new LogManager('logger for test 2');
  * ```
  */
-export class AftLog {
+export class LogManager {
     readonly plugins: Array<ILoggingPlugin>;
     private readonly _aftCfg: AftConfig;
     private _stepCount: number = 0;
@@ -62,10 +66,11 @@ export class AftLog {
     constructor(logName: string, aftCfg?: AftConfig) {
         this.logName = logName;
         this._aftCfg = aftCfg ?? aftConfig;
-        this.logLevel = this._aftCfg.logLevel;
+        const lmc = this._aftCfg.getSection(LogManagerConfig);
+        this.logLevel = lmc.logLevel;
         this.plugins = pluginLoader.getPluginsByType<ILoggingPlugin>('logging', this._aftCfg);
         this.plugins.filter(p => Err.handle(() => p?.enabled)).forEach((p: ILoggingPlugin) => {
-            p?.initialise(logName)?.catch((err) => AftLog.toConsole({
+            p?.initialise(logName)?.catch((err) => LogManager.toConsole({
                 logLevel: 'warn',
                 message: err,
                 name: logName
@@ -144,15 +149,15 @@ export class AftLog {
      * @param message the string to be logged
      */
     async log(level: LogLevel, message: string): Promise<void> {
-        const logdata: LogMessageData = {name: this.logName, logLevel: this.logLevel, message: message};
+        const logdata: LogMessageData = {name: this.logName, logLevel: level, message: message};
         if (LogLevel.toValue(level) >= LogLevel.toValue(this.logLevel) && level != 'none') {
-            AftLog.toConsole(logdata);
+            LogManager.toConsole(logdata);
         }
         for (var plugin of this.plugins.filter(p => Err.handle(() => p?.enabled))) {
             try {
                 await plugin?.log({...logdata});
             } catch (e) {
-                AftLog.toConsole({
+                LogManager.toConsole({
                     logLevel: 'warn',
                     message: `unable to send log message to '${plugin?.constructor.name || 'unknown'}' due to: ${Err.short(e)}`,
                     name: this.logName
@@ -172,7 +177,7 @@ export class AftLog {
             try {
                 await plugin?.logResult(name, cloneDeep(result));
             } catch (e) { 
-                AftLog.toConsole({
+                LogManager.toConsole({
                     logLevel: 'warn',
                     message: `unable to send result to '${plugin?.constructor.name || 'unknown'}' due to: ${Err.short(e)}`,
                     name: name
@@ -192,7 +197,7 @@ export class AftLog {
             try {
                 await plugin?.finalise(name);
             } catch (e) {
-                AftLog.toConsole({
+                LogManager.toConsole({
                     logLevel: 'warn',
                     message: `unable to call dispose on '${plugin?.constructor.name || 'unknown'}' due to: ${Err.short(e)}`,
                     name: name
@@ -200,7 +205,7 @@ export class AftLog {
             }
         }
         if (error) {
-            AftLog.toConsole({
+            LogManager.toConsole({
                 logLevel: 'error',
                 message: error.message,
                 name: name
@@ -209,7 +214,7 @@ export class AftLog {
     }
 }
 
-export module AftLog {
+export module LogManager {
     /**
      * formats the passed in `LogMessage.message` based on the passed in options
      * @param message a `LogMessage` object containing the `level`, `name` and `message` to
@@ -233,7 +238,7 @@ export module AftLog {
      */
     export function toConsole(message?: LogMessageData) {
         if (message?.message && message?.logLevel != 'none') {
-            const out: string = AftLog.format(message);
+            const out: string = LogManager.format(message);
             switch (message?.logLevel) {
                 case 'error':
                 case 'fail':

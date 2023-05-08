@@ -1,6 +1,6 @@
 import { AftConfig, aftConfig } from "../../configuration/aft-config";
 import { Err } from "../../helpers/err";
-import { AftLog } from "../logging/aft-log";
+import { LogManager } from "../logging/log-manager";
 import { pluginLoader } from "../plugin-loader";
 import { ITestCasePlugin } from "./i-test-case-plugin";
 import { TestCase } from "./test-case";
@@ -20,7 +20,7 @@ export class TestCaseManager {
             try {
                 return await plugin.getTestCase(testId);
             } catch (e) {
-                AftLog.toConsole({
+                LogManager.toConsole({
                     name: this.constructor.name,
                     logLevel: 'warn',
                     message: `error calling '${plugin.constructor.name}.getTestCase(${testId})': ${Err.short(e)}`
@@ -36,7 +36,7 @@ export class TestCaseManager {
             try {
                 return await plugin.findTestCases(searchCriteria);
             } catch (e) {
-                AftLog.toConsole({
+                LogManager.toConsole({
                     name: this.constructor.name,
                     logLevel: 'warn',
                     message: `error calling '${plugin.constructor.name}.findTestCases(${JSON.stringify(searchCriteria)})': ${Err.short(e)}`
@@ -52,7 +52,7 @@ export class TestCaseManager {
             try {
                 return await plugin.shouldRun(testId);
             } catch (e) {
-                AftLog.toConsole({
+                LogManager.toConsole({
                     name: this.constructor.name,
                     logLevel: 'warn',
                     message: `error calling '${plugin.constructor.name}.shouldRun(${testId})': ${Err.short(e)}`

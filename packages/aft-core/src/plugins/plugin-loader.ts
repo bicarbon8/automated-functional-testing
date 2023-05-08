@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { convert } from '../helpers/convert';
-import { AftLog } from './logging/aft-log';
+import { LogManager } from './logging/log-manager';
 import { IPlugin } from './i-plugin';
 import { AftConfig, aftConfig } from '../configuration/aft-config';
 import { Err } from '../helpers/err';
@@ -172,7 +172,7 @@ class PluginLoader {
                 throw `no files found at path: '${dir}'`;
             }
         } catch (e) {
-            AftLog.toConsole({name: this.constructor.name, message: e, logLevel: 'warn'});
+            LogManager.toConsole({name: this.constructor.name, message: e, logLevel: 'warn'});
         }
         return filePath;
     }
@@ -183,7 +183,7 @@ class PluginLoader {
             const stats: fs.Stats = fs.statSync(fullFileAndPath);
             isDir = stats?.isDirectory() || false;
         } catch (e) {
-            AftLog.toConsole({name: this.constructor.name, message: e, logLevel: 'warn'});
+            LogManager.toConsole({name: this.constructor.name, message: e, logLevel: 'warn'});
         }
         return isDir;
     }

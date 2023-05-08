@@ -1,7 +1,17 @@
-import { DefectManager, Defect, AftLog, rand, TestCaseManager, Verifier, verify } from "../../src";
+import { DefectManager, Defect, LogManager, rand, TestCaseManager, Verifier, verify, TestResult, LogMessageData, LogLevel } from "../../src";
 import { containing, equaling } from "../../src/helpers/verifier-matcher";
 
+var consoleLog = console.log;
 describe('Verifier', () => {
+    /* comment `beforeAll` and `afterAll` out to see actual test output */
+    beforeAll(() => {
+        console.log = function(){};
+    });
+
+    afterAll(() => {
+        console.log = consoleLog;
+    });
+    
     beforeEach(() => {
         testStore.clear();
     });
@@ -9,7 +19,7 @@ describe('Verifier', () => {
     it('uses \'description\' as logMgr name if provided', async () => {
         let description: string = rand.getString(22);
         await verify(async (v: Verifier) => {
-            expect(v.logger.logName).toEqual(description);
+            expect(v.logMgr.logName).toEqual(description);
         })
         .withDescription(description);
     });
@@ -28,7 +38,7 @@ describe('Verifier', () => {
         });
 
         await verify(async (v: Verifier) => {
-            expect(v.logger.logName).toEqual('C1234_C2345');
+            expect(v.logMgr.logName).toEqual('C1234_C2345');
         })
         .withTestIds('C1234','C2345')
         .and.withTestCaseManager(tcMgr)
@@ -36,8 +46,9 @@ describe('Verifier', () => {
     });
     
     it('can execute a passing expectation', async () => {
-        let logMgr: AftLog = new AftLog('can execute a passing expectation');
-        spyOn(logMgr, 'logResult').and.callThrough();
+        let logMgr: LogManager = new LogManager('can execute a passing expectation');
+        spyOn(logMgr, 'logResult').and.callFake((result: TestResult) => Promise.resolve());
+        spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'pass').and.callThrough();
         let tcMgr = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<boolean> => {
@@ -66,8 +77,9 @@ describe('Verifier', () => {
     });
 
     it('accepts a VerifierMatcher in the returns function', async () => {
-        let logMgr: AftLog = new AftLog('accepts a VerifierMatcher in the returns function');
-        spyOn(logMgr, 'logResult').and.callThrough();
+        let logMgr: LogManager = new LogManager('accepts a VerifierMatcher in the returns function');
+        spyOn(logMgr, 'logResult').and.callFake((result: TestResult) => Promise.resolve());
+        spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'pass').and.callThrough();
         let tcMgr = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<boolean> => {
@@ -96,8 +108,9 @@ describe('Verifier', () => {
     });
 
     it('throws on exception in assertion', async () => {
-        let logMgr: AftLog = new AftLog('throws on exception in assertion');
-        spyOn(logMgr, 'logResult').and.callThrough();
+        let logMgr: LogManager = new LogManager('throws on exception in assertion');
+        spyOn(logMgr, 'logResult').and.callFake((result: TestResult) => Promise.resolve());
+        spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'fail').and.callThrough();
         let tcMgr = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<boolean> => {
@@ -133,8 +146,9 @@ describe('Verifier', () => {
     });
 
     it('throws on failed comparison with expected result', async () => {
-        let logMgr: AftLog = new AftLog('throws on failed comparison with expected result',);
-        spyOn(logMgr, 'logResult').and.callThrough();
+        let logMgr: LogManager = new LogManager('throws on failed comparison with expected result',);
+        spyOn(logMgr, 'logResult').and.callFake((result: TestResult) => Promise.resolve());
+        spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'fail').and.callThrough();
         let tcMgr = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<boolean> => {
@@ -169,8 +183,9 @@ describe('Verifier', () => {
     });
 
     it('will not execute expectation if test case manager says should not run for all cases', async () => {
-        let logMgr: AftLog = new AftLog('will not execute expectation if test case manager says should not run for all cases');
-        spyOn(logMgr, 'logResult').and.callThrough();
+        let logMgr: LogManager = new LogManager('will not execute expectation if test case manager says should not run for all cases');
+        spyOn(logMgr, 'logResult').and.callFake((result: TestResult) => Promise.resolve());
+        spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'warn').and.callThrough();
         let tcMgr = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<boolean> => {
@@ -200,8 +215,9 @@ describe('Verifier', () => {
     });
 
     it('will execute expectation if test case manager says any cases should be run', async () => {
-        let logMgr: AftLog = new AftLog('will execute expectation if test case manager says any cases should be run');
-        spyOn(logMgr, 'logResult').and.callThrough();
+        let logMgr: LogManager = new LogManager('will execute expectation if test case manager says any cases should be run');
+        spyOn(logMgr, 'logResult').and.callFake((result: TestResult) => Promise.resolve());
+        spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'pass').and.callThrough();
         let tcMgr = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<boolean> => {
@@ -236,8 +252,9 @@ describe('Verifier', () => {
     });
 
     it('will not execute expectation if defect manager finds open defect referencing test id', async () => {
-        let logMgr: AftLog = new AftLog('will not execute expectation if defect manager finds open defect referencing test id');
-        spyOn(logMgr, 'logResult').and.callThrough();
+        let logMgr: LogManager = new LogManager('will not execute expectation if defect manager finds open defect referencing test id');
+        spyOn(logMgr, 'logResult').and.callFake((result: TestResult) => Promise.resolve());
+        spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'warn').and.callThrough();
         let tcMgr = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<boolean> => {
@@ -271,8 +288,9 @@ describe('Verifier', () => {
     });
 
     it('will not execute expectation if any referenced defect is open', async () => {
-        let logMgr: AftLog = new AftLog('will not execute expectation if any referenced defect is open');
-        spyOn(logMgr, 'logResult').and.callThrough();
+        let logMgr: LogManager = new LogManager('will not execute expectation if any referenced defect is open');
+        spyOn(logMgr, 'logResult').and.callFake((result: TestResult) => Promise.resolve());
+        spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'warn').and.callThrough();
         let tcMgr = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<boolean> => {
@@ -314,8 +332,9 @@ describe('Verifier', () => {
     });
 
     it('will execute expectation if all defects are closed', async () => {
-        let logMgr: AftLog = new AftLog('will execute expectation if all defects are closed');
-        spyOn(logMgr, 'logResult').and.callThrough();
+        let logMgr: LogManager = new LogManager('will execute expectation if all defects are closed');
+        spyOn(logMgr, 'logResult').and.callFake((result: TestResult) => Promise.resolve());
+        spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'pass').and.callThrough();
         let tcMgr = new TestCaseManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<boolean> => {

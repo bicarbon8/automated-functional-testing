@@ -37,11 +37,11 @@ describe('Functional Mobile App Tests using AFT-UI-MOBILE-APPS', () => {
             this.skip();
         }
         await verifyWithMobileApp(async (tw: MobileAppVerifier) => {
-            await tw.logger.step('get the WikipediaView Facet from the Session...');
+            await tw.logMgr.step('get the WikipediaView Facet from the Session...');
             let view: WikipediaView = await tw.session.getFacet<WikipediaView, MobileAppFacetOptions>(WikipediaView);
-            await tw.logger.step('enter a search term...');
+            await tw.logMgr.step('enter a search term...');
             await view.searchFor('pizza');
-            await tw.logger.step('get the results and ensure they contain the search term...');
+            await tw.logMgr.step('get the results and ensure they contain the search term...');
             let results: string[] = await view.getResults();
             for (var i=0; i<results.length; i++) {
                 let res: string = results[i];

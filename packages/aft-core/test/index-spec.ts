@@ -20,8 +20,8 @@ describe('AFT', () => {
             let count: number = 10;
             let result: boolean = true;
             for (var i=0; i<count; i++) {
-                await v.logger.info(`running count: ${i}`);
-                await v.logger.warn(`random string: ${rand.getString()}`);
+                await v.logMgr.info(`running count: ${i}`);
+                await v.logMgr.warn(`random string: ${rand.getString()}`);
                 result = result && !isNaN(i);
             }
             return count;

@@ -1,5 +1,5 @@
 import { LogLevel } from '../plugins/logging/log-level';
-import { AftLog } from '../plugins/logging/aft-log';
+import { LogManager } from '../plugins/logging/log-manager';
 import { convert } from './convert';
 import { Func } from './custom-types';
 import { ellide } from './ellide';
@@ -8,10 +8,10 @@ export type ErrVerbosity = 'full' | 'short';
 
 export type ErrOptions = {
     /**
-     * an optional `AftLog` instance to use in logging the error message
+     * an optional `LogManager` instance to use in logging the error message
      * and stack
      */
-    aftLog?: AftLog;
+    logger?: LogManager;
     /**
      * the `LogLevel` to use when logging any caught `Error`. defaults to
      * `warn`
@@ -28,9 +28,9 @@ export type ErrOptions = {
  * provides a standardised way of generating log-friendly exception details
  * in either short or full formatting. Usage would look like:
  * ```typescript
- * const logger = new AftLog('foo');
+ * const logger = new LogManager('foo');
  * const result = await Err.handle(functionThatThrowsTypeError, {
- *     aftLog: logger,
+ *     logger: logger,
  *     errLevel: 'debug',
  *     verbosity: 'short'
  * });
@@ -41,7 +41,7 @@ export type ErrOptions = {
  * ```
  * and:
  * ```typescript
- * const logger = new AftLog('AFT');
+ * const logger = new LogManager('AFT');
  * try {
  *     functionThatThrowsTypeError();
  * } catch (e) {
@@ -188,7 +188,7 @@ export module Err {
             .then(func)
             .catch(async (err) => {
                 const e = new Err(err).setVerbosity(opts?.verbosity);
-                await opts?.aftLog?.[opts?.errLevel || 'warn'](e.toString());
+                await opts?.logger?.[opts?.errLevel || 'warn'](e.toString());
                 return null;
             });
     }
