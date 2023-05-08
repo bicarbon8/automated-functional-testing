@@ -1,16 +1,16 @@
-import { ILoggingPlugin, TestResult, LogMessageData, LogLevel, ConfigManager, configMgr } from "../../../src";
+import { ILoggingPlugin, TestResult, LogMessageData, LogLevel, AftConfig, aftConfig } from "../../../src";
 
 export class ThrowsLoggingPlugin implements ILoggingPlugin {
-    public readonly cfgMgr: ConfigManager;
-    public readonly pluginType: 'logging';
+    public readonly aftCfg: AftConfig;
+    public readonly pluginType: 'logging' = 'logging';
     get enabled(): boolean {
-        return true;
+        throw 'enabled exception';
     }
     get logLevel(): LogLevel {
-        return 'trace';
+        throw 'logLevel exception';
     }
-    constructor(cfgMgr?: ConfigManager) {
-        this.cfgMgr = cfgMgr ?? configMgr;
+    constructor(aftCfg?: AftConfig) {
+        this.aftCfg = aftCfg ?? aftConfig;
     }
     async initialise(logName: string): Promise<void> {
         throw 'initialise exception';

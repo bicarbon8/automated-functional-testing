@@ -41,12 +41,12 @@ export type ErrOptions = {
  * ```
  * and:
  * ```typescript
- * const logMgr = new LogManager({logName: 'AFT'});
+ * const logger = new AftLog('AFT');
  * try {
  *     functionThatThrowsTypeError();
  * } catch (e) {
- *     await logMgr.warn(Err.short(e));
- *     await logMgr.debug(Err.full(e));
+ *     await logger.warn(Err.short(e));
+ *     await logger.debug(Err.full(e));
  * }
  * ```
  * which outputs:
@@ -180,20 +180,10 @@ export module Err {
     /**
      * calls the passed in `Func<void, T | PromiseLike<T>>` and handles any errors
      * @param func a function to be run inside a try-catch
-     * @param optsOrLogMgr an `ErrOptions` object containing options for this handler or a
-     * `LogManager` used to log any captured `Error` _(defaults to `undefined`)_
-     * > **WARNING** passing a `LogManager` is deprecated and you should instead add the
-     * `LogManager` using the `logMgr` field in the `ErrOptions` instance)
+     * @param opts an `ErrOptions` object containing options for this call to `handle`
      * @returns the result of the passed in `func` or `null` if an error is thrown
      */
-    export async function handle<T extends any>(func: Func<void, T | PromiseLike<T>>, optsOrLogMgr?: AftLog | ErrOptions): Promise<T> {
-        let opts: ErrOptions;
-        if (_isLogManager(optsOrLogMgr)) { // TODO: remove this in next major release
-            opts = {logMgr: optsOrLogMgr} as ErrOptions;
-            await opts.logMgr?.warn(`passing a 'LogManager' is DEPRECATED! pass a 'ErrOptions' object containing your 'LogManager' instead`);
-        } else {
-            opts = optsOrLogMgr as ErrOptions || {};
-        }
+    export async function handle<T extends any>(func: Func<void, T | PromiseLike<T>>, opts?: ErrOptions): Promise<T> {
         return await Promise.resolve()
             .then(func)
             .catch(async (err) => {
@@ -201,12 +191,5 @@ export module Err {
                 await opts?.logMgr?.[opts?.errLevel || 'warn'](e.toString());
                 return null;
             });
-    }
-
-    function _isLogManager(obj: any): boolean {
-        if (obj?.logName && obj?.trace && obj?.debug && obj?.info) {
-            return true;
-        }
-        return false;
     }
 }

@@ -1,10 +1,10 @@
-import { pluginloader, rand } from "aft-core";
+import { pluginLoader, rand } from "aft-core";
 import { UiPlatform } from "../../src";
 import { FakeSessionGeneratorManager, FakeSessionGeneratorManagerOptions } from "./fake-session-generator-manager";
 
 describe('UiSessionGeneratorManager', () => {
     beforeEach(() => {
-        pluginloader.clear();
+        pluginLoader.reset();
     });
 
     it('can be extended by a class instance', async () => {

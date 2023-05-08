@@ -1,4 +1,4 @@
-import { ILoggingPlugin, LogLevel, TestResult, machineInfo, AftLog, LogMessageData, ConfigManager, configMgr, pluginloader, IBuildInfoPlugin, AftConfig } from "aft-core";
+import { ILoggingPlugin, LogLevel, TestResult, machineInfo, AftLog, LogMessageData, ConfigManager, configMgr, pluginLoader, IBuildInfoPlugin, AftConfig } from "aft-core";
 import * as AWS from "aws-sdk";
 import * as pkg from "../package.json";
 import { KinesisLogRecord } from "./kinesis-log-record";
@@ -44,7 +44,7 @@ export class KinesisLoggingPlugin implements ILoggingPlugin {
 
     private _client: AWS.Firehose;
 
-    public readonly cfgMgr: ConfigManager;
+    public readonly aftCfg: ConfigManager;
     public readonly pluginType: 'logging';
     public readonly logLevel: LogLevel;
     public get enabled(): boolean {
@@ -52,13 +52,13 @@ export class KinesisLoggingPlugin implements ILoggingPlugin {
     }
     
     constructor(cfgMgr?: ConfigManager, client?: AWS.Firehose) {
-        this.cfgMgr = cfgMgr ?? configMgr;
+        this.aftCfg = cfgMgr ?? configMgr;
         this._client = client;
         this._logs = new Map<string, AWS.Firehose.Record[]>();
-        this.logLevel = this.cfgMgr.getSection(KinesisLoggingPluginConfig).logLevel
-            ?? this.cfgMgr.getSection(AftConfig).logLevel;
+        this.logLevel = this.aftCfg.getSection(KinesisLoggingPluginConfig).logLevel
+            ?? this.aftCfg.getSection(AftConfig).logLevel;
         if (this.enabled) {
-            this._buildInfo = pluginloader.getPluginsByType<IBuildInfoPlugin>('buildinfo', this.cfgMgr)
+            this._buildInfo = pluginLoader.getPluginsByType<IBuildInfoPlugin>('buildinfo', this.aftCfg)
                 ?.find(p => p?.enabled);
         }
     }
@@ -74,19 +74,19 @@ export class KinesisLoggingPlugin implements ILoggingPlugin {
     }
 
     get region(): string {
-        return this.cfgMgr.getSection(KinesisLoggingPluginConfig).region;
+        return this.aftCfg.getSection(KinesisLoggingPluginConfig).region;
     }
 
     get deliveryStream(): string {
-        return this.cfgMgr.getSection(KinesisLoggingPluginConfig).deliveryStream;
+        return this.aftCfg.getSection(KinesisLoggingPluginConfig).deliveryStream;
     }
 
     get batch(): boolean {
-        return this.cfgMgr.getSection(KinesisLoggingPluginConfig).batch ?? true;
+        return this.aftCfg.getSection(KinesisLoggingPluginConfig).batch ?? true;
     }
 
     get batchSize(): number {
-        return this.cfgMgr.getSection(KinesisLoggingPluginConfig).batchSize ?? 10;
+        return this.aftCfg.getSection(KinesisLoggingPluginConfig).batchSize ?? 10;
     }
 
     /**

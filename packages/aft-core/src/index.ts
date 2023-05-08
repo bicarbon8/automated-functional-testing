@@ -1,6 +1,5 @@
 /** configuration */
 export * from './configuration/aft-config';
-export * from './configuration/config-manager';
 /** helpers */
 export * from './helpers/cache-map';
 export * from './helpers/custom-types';
@@ -22,20 +21,19 @@ export * from './helpers/wait';
 export * from './plugins/i-plugin';
 export * from './plugins/plugin-loader';
 /** plugins/build-info */
+export * from './plugins/build-info/aft-build-info';
 export * from './plugins/build-info/i-build-info-plugin';
 /** plugins/defects */
 export * from './plugins/defects/defect-status';
 export * from './plugins/defects/defect';
-export * from './plugins/defects/defect-plugin';
-export * from './plugins/defects/defect-manager';
+export * from './plugins/defects/i-defect-plugin';
 /** plugins/logging */
 export * from './plugins/logging/log-message-data';
 export * from './plugins/logging/aft-log';
 export * from './plugins/logging/log-level';
 export * from './plugins/logging/i-logging-plugin';
 /** plugins/test-cases */
-export * from './plugins/test-cases/test-case-plugin';
-export * from './plugins/test-cases/test-case-manager';
+export * from './plugins/test-cases/i-test-case-plugin';
 export * from './plugins/test-cases/test-case';
 export * from './plugins/test-cases/test-result';
 export * from './plugins/test-cases/test-status';

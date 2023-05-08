@@ -5,9 +5,9 @@ import { LogLevel } from "./log-level";
 import { LogMessageData } from "./log-message-data";
 import { TestResult } from "../test-cases/test-result";
 import { ellide } from "../../helpers/ellide";
-import { ConfigManager, configMgr } from "../../configuration/config-manager";
-import { AftConfig } from "../../configuration/aft-config";
-import { pluginloader } from "../plugin-loader";
+import { AftConfig, aftConfig } from "../../configuration/aft-config";
+import { pluginLoader } from "../plugin-loader";
+import { Err } from "../../helpers/err";
 
 /**
  * a logging class that uses configuration to determine what
@@ -35,7 +35,7 @@ import { pluginloader } from "../plugin-loader";
  */
 export class AftLog {
     readonly plugins: Array<ILoggingPlugin>;
-    private readonly _cfgMgr: ConfigManager;
+    private readonly _aftCfg: AftConfig;
     private _stepCount: number = 0;
 
     /**
@@ -59,12 +59,12 @@ export class AftLog {
      */
     public readonly logLevel: LogLevel;
 
-    constructor(logName: string, cfgMgr?: ConfigManager) {
+    constructor(logName: string, aftCfg?: AftConfig) {
         this.logName = logName;
-        this._cfgMgr = cfgMgr ?? configMgr;
-        this.logLevel = this._cfgMgr.getSection(AftConfig).logLevel ?? 'warn';
-        this.plugins = pluginloader.getPluginsByType<ILoggingPlugin>('logging', this._cfgMgr);
-        this.plugins.forEach((p: ILoggingPlugin) => {
+        this._aftCfg = aftCfg ?? aftConfig;
+        this.logLevel = this._aftCfg.logLevel;
+        this.plugins = pluginLoader.getPluginsByType<ILoggingPlugin>('logging', this._aftCfg);
+        this.plugins.filter(p => Err.handle(() => p?.enabled)).forEach((p: ILoggingPlugin) => {
             p?.initialise(logName)?.catch((err) => AftLog.toConsole({
                 logLevel: 'warn',
                 message: err,
@@ -148,13 +148,13 @@ export class AftLog {
         if (LogLevel.toValue(level) >= LogLevel.toValue(this.logLevel) && level != 'none') {
             AftLog.toConsole(logdata);
         }
-        for (var plugin of this.plugins) {
+        for (var plugin of this.plugins.filter(p => Err.handle(() => p?.enabled))) {
             try {
                 await plugin?.log({...logdata});
             } catch (e) {
                 AftLog.toConsole({
                     logLevel: 'warn',
-                    message: `unable to send log message to '${plugin?.constructor.name || 'unknown'}' due to: ${e}`,
+                    message: `unable to send log message to '${plugin?.constructor.name || 'unknown'}' due to: ${Err.short(e)}`,
                     name: this.logName
                 });
             }
@@ -168,13 +168,13 @@ export class AftLog {
      */
     async logResult(result: TestResult): Promise<void> {
         const name = this.logName;
-        for (var plugin of this.plugins) {
+        for (var plugin of this.plugins.filter(p => Err.handle(() => p?.enabled))) {
             try {
                 await plugin?.logResult(name, cloneDeep(result));
             } catch (e) { 
                 AftLog.toConsole({
                     logLevel: 'warn',
-                    message: `unable to send result to '${plugin?.constructor.name || 'unknown'}' due to: ${e}`,
+                    message: `unable to send result to '${plugin?.constructor.name || 'unknown'}' due to: ${Err.short(e)}`,
                     name: name
                 });
             }
@@ -188,13 +188,13 @@ export class AftLog {
      */
     async dispose(error?: Error): Promise<void> {
         const name = this.logName;
-        for (var plugin of this.plugins) {
+        for (var plugin of this.plugins.filter(p => Err.handle(() => p?.enabled))) {
             try {
                 await plugin?.finalise(name);
             } catch (e) {
                 AftLog.toConsole({
                     logLevel: 'warn',
-                    message: `unable to call dispose on '${plugin?.constructor.name || 'unknown'}' due to: ${e}`,
+                    message: `unable to call dispose on '${plugin?.constructor.name || 'unknown'}' due to: ${Err.short(e)}`,
                     name: name
                 });
             }

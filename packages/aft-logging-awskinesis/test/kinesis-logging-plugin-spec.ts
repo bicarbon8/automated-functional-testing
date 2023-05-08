@@ -1,5 +1,5 @@
 import { KinesisLoggingPlugin, KinesisLoggingPluginConfig } from "../src/kinesis-logging-plugin";
-import { AftLog, ConfigManager, machineInfo, pluginloader, rand, TestResult } from "aft-core";
+import { AftLog, ConfigManager, machineInfo, pluginLoader, rand, TestResult } from "aft-core";
 import * as pkg from "../package.json";
 import * as Firehose from "aws-sdk/clients/firehose";
 import { KinesisLogRecord } from "../src/kinesis-log-record";
@@ -206,7 +206,7 @@ describe('KinesisLoggingPlugin', () => {
             }
         };
         const cfgMgr = new ConfigManager(config);
-        pluginloader.clear();
+        pluginLoader.reset();
         const mgr: AftLog = new AftLog(rand.getString(20), cfgMgr);
         const plugins = mgr.plugins;
         const plugin = plugins[0];

@@ -9,6 +9,7 @@ import { convert } from "./convert";
 import { Func, ProcessingResult } from "./custom-types";
 import { rand } from "./rand";
 import { equaling, VerifierMatcher } from "./verifier-matcher";
+import { Err } from "./err";
 
 /**
  * class to be used for executing some Functional Test Assertion after checking with any
@@ -54,7 +55,7 @@ export class Verifier implements PromiseLike<void> {
      * on which is available (NOTE: description is preferred most and
      * will be used if other values are also present)
      */
-    get logMgr(): AftLog {
+    get logger(): AftLog {
         let logName: string;
         if (this._description) {
             logName = this._description;
@@ -64,7 +65,7 @@ export class Verifier implements PromiseLike<void> {
             logName = this.constructor.name;
         }
         if (!this._logMgr) {
-            this._logMgr = new AftLog({logName: logName});
+            this._logMgr = new AftLog(logName);
         }
         return this._logMgr;
     }
@@ -333,31 +334,31 @@ export class Verifier implements PromiseLike<void> {
             for (var i=0; i<results.length; i++) {
                 let result: TestResult = results[i];
                 try {
-                    await this.logMgr.logResult(result);
+                    await this.logger.logResult(result);
                 } catch (e) {
-                    await this.logMgr.warn(`unable to log test result for test '${result.testId || result.resultId}' due to: ${e}`);
+                    await this.logger.warn(`unable to log test result for test '${result.testId || result.resultId}' due to: ${Err.short(e)}`);
                 }
             }
         } finally {
-            await this.logMgr.dispose();
+            await this.logger.dispose();
         }
     }
 
     protected async _logMessage(status: TestStatus, message?: string): Promise<void> {
-        message = message || this.logMgr.logName;
+        message = message || this.logger.logName;
         switch (status) {
             case 'Blocked':
             case 'Retest':
             case 'Skipped':
             case 'Untested':
-                await this.logMgr.warn(message);
+                await this.logger.warn(message);
                 break;
             case 'Failed':
-                await this.logMgr.fail(message);
+                await this.logger.fail(message);
                 break;
             case 'Passed':
             default:
-                await this.logMgr.pass(message);
+                await this.logger.pass(message);
                 break;
         }
     }

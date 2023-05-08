@@ -12,7 +12,7 @@ describe('MobileAppVerifier', () => {
 
         await verifyWithMobileApp(async (mav: MobileAppVerifier) => {
             expect(mav.session).toBeDefined();
-            expect(mav.session.logMgr.logName).toBe(mav.logMgr.logName);
+            expect(mav.session.logMgr.logName).toBe(mav.logger.logName);
         }).and.withMobileAppSessionGeneratorManager(sessionMgr);
 
         expect(sessionMgr.newUiSession).toHaveBeenCalledTimes(1);

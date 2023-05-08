@@ -10,7 +10,7 @@ export class FilesystemLoggingPluginConfig {
 };
 
 export class FilesystemLoggingPlugin implements ILoggingPlugin {
-    public readonly cfgMgr: ConfigManager;
+    public readonly aftCfg: ConfigManager;
     public readonly logLevel: LogLevel;
     public readonly enabled: boolean;
     public readonly pluginType: "logging";

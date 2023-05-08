@@ -1,4 +1,4 @@
-import { buildinfo, ProcessingResult, rand, TestResult, TestStatus } from "aft-core";
+import { buildinfo, ProcessingResult, rand, TestResult, TestStatus, Err } from "aft-core";
 import { AftLog } from "./aft-log";
 import { shouldRun } from "./should-run";
 import { TitleParser } from "./title-parser";
@@ -95,7 +95,7 @@ export class AftTest extends AftLog {
                 try {
                     await this.logMgr.logResult(result);
                 } catch (e) {
-                    await this.logMgr.warn(`unable to log test result for test '${result.testId || result.resultId}' due to: ${e}`);
+                    await this.logMgr.warn(`unable to log test result for test '${result.testId || result.resultId}' due to: ${Err.short(e)}`);
                 }
             }
         } finally {

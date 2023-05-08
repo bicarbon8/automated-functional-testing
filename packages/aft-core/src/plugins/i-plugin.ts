@@ -1,10 +1,10 @@
-import { ConfigManager } from "../configuration/config-manager";
+import { AftConfig } from "../configuration/aft-config";
 
 /**
  * interface to be implemented by any Plugin implementation
  */
 export interface IPlugin {
-    readonly cfgMgr: ConfigManager;
+    readonly aftCfg: AftConfig;
     readonly enabled: boolean;
     readonly pluginType: string;
 }

@@ -1,25 +1,24 @@
-import { ILoggingPlugin, TestResult, LogMessageData, LogLevel, AftConfig, ConfigManager, configMgr } from "../../../src";
+import { ILoggingPlugin, TestResult, LogMessageData, LogLevel, AftConfig, aftConfig } from "../../../src";
 
 export class MockLoggingPluginConfig {
     mockConfigKey: string;
     enabled: boolean;
-    level: LogLevel;
+    logLevel: LogLevel;
 };
 
 export class MockLoggingPlugin implements ILoggingPlugin {
-    public readonly cfgMgr: ConfigManager;
-    public readonly pluginType: "logging";
+    public readonly aftCfg: AftConfig;
+    public readonly pluginType: "logging" = 'logging';
     get enabled(): boolean {
-        var cfg = this.cfgMgr.getSection(MockLoggingPluginConfig);
-        return cfg.enabled ?? false;
+        return this.logLevel != 'none';
     }
     get logLevel(): LogLevel {
-        var cfg = this.cfgMgr.getSection(MockLoggingPluginConfig);
-        return cfg.level ?? this.cfgMgr.getSection(AftConfig)
+        var cfg = this.aftCfg.getSection(MockLoggingPluginConfig);
+        return cfg.logLevel ?? this.aftCfg.getSection(AftConfig)
             .logLevel ?? 'warn';
     }
-    constructor(cfgMgr?: ConfigManager) {
-        this.cfgMgr = cfgMgr ?? configMgr;
+    constructor(aftCfg?: AftConfig) {
+        this.aftCfg = aftCfg ?? aftConfig;
     }
     initialise(logName: string): Promise<void> {
         return Promise.resolve();

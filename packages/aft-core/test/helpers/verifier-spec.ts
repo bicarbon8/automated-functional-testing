@@ -9,7 +9,7 @@ describe('Verifier', () => {
     it('uses \'description\' as logMgr name if provided', async () => {
         let description: string = rand.getString(22);
         await verify(async (v: Verifier) => {
-            expect(v.logMgr.logName).toEqual(description);
+            expect(v.logger.logName).toEqual(description);
         })
         .withDescription(description);
     });
@@ -28,7 +28,7 @@ describe('Verifier', () => {
         });
 
         await verify(async (v: Verifier) => {
-            expect(v.logMgr.logName).toEqual('C1234_C2345');
+            expect(v.logger.logName).toEqual('C1234_C2345');
         })
         .withTestIds('C1234','C2345')
         .and.withTestCaseManager(tcMgr)

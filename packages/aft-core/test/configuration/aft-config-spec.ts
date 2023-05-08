@@ -1,4 +1,4 @@
-import { ConfigManager, rand } from "../../src"
+import { AftConfig, rand } from "../../src"
 
 describe('AftConfig', () => {
     class FakeSectionConfig {
@@ -11,7 +11,7 @@ describe('AftConfig', () => {
     it('can use a Class type to get an existing section from aftconfig.json', () => {
         let randomEnvVarKey = rand.getString(12);
         process.env[randomEnvVarKey] = rand.getString(15);
-        let aftcfg = new ConfigManager({
+        let aftcfg = new AftConfig({
             FakeSectionConfig: {
                 option1: 1,
                 option2: true,
@@ -27,7 +27,7 @@ describe('AftConfig', () => {
     })
 
     it('can use a Class type to create a non-existing section from aftconfig.json', () => {
-        let aftcfg = new ConfigManager({});
+        let aftcfg = new AftConfig({});
 
         let expected = new FakeSectionConfig();
         let actual = aftcfg.getSection(FakeSectionConfig);

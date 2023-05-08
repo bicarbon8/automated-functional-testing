@@ -1,7 +1,10 @@
-import { DefectStatus, Defect, DefectPlugin, rand, DefectPluginOptions } from "../../../src";
+import { DefectStatus, Defect, IDefectPlugin, rand, AftConfig } from "../../../src";
 
-export class MockDefectPlugin extends DefectPlugin<DefectPluginOptions> {
-    override async getDefect(defectId: string): Promise<Defect> {
+export class MockDefectPlugin implements IDefectPlugin {
+    public readonly aftCfg: AftConfig;
+    public readonly pluginType: "defect" = 'defect';
+    public readonly enabled: boolean;
+    async getDefect(defectId: string): Promise<Defect> {
         return {
             id: defectId, 
             title: rand.getString(17),
@@ -9,8 +12,8 @@ export class MockDefectPlugin extends DefectPlugin<DefectPluginOptions> {
             status: rand.getFrom<DefectStatus>('open', 'closed')
         } as Defect;
     }
-    override async findDefects(searchTerm: string): Promise<Defect[]> {
-        switch (searchTerm) {
+    async findDefects(searchCriteria: Partial<Defect>): Promise<Defect[]> {
+        switch (searchCriteria.title) {
             case 'C1234':
                 let d1: Defect = await this.getDefect('AUTO-123');
                 d1.status = 'open';

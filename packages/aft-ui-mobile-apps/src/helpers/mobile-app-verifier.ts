@@ -60,14 +60,14 @@ export class MobileAppVerifier extends Verifier {
      */
     get sessionOptions(): MobileAppSessionOptions {
         if (!this._sessionOptions) {
-            this._sessionOptions = {logMgr: this.logMgr};
+            this._sessionOptions = {logMgr: this.logger};
         }
         return this._sessionOptions;
     }
 
     protected override async _resolveAssertion(): Promise<void> {
         let opts: MobileAppSessionOptions = this.sessionOptions;
-        opts.logMgr = opts.logMgr || this.logMgr;
+        opts.logMgr = opts.logMgr || this.logger;
         await using(await this.sessionGeneratorManager.newUiSession(opts), async (session) => {
             this._session = session;
             await super._resolveAssertion();

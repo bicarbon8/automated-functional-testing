@@ -3,8 +3,8 @@ import * as path from 'path';
 import { convert } from '../helpers/convert';
 import { AftLog } from './logging/aft-log';
 import { IPlugin } from './i-plugin';
-import { AftConfig } from '../configuration/aft-config';
-import { ConfigManager, configMgr } from '../configuration/config-manager';
+import { AftConfig, aftConfig } from '../configuration/aft-config';
+import { Err } from '../helpers/err';
 
 class PluginLoader {
     private readonly _pluginsMap: Map<string, IPlugin>;
@@ -15,17 +15,16 @@ class PluginLoader {
         this._loaded = false;
     }
 
-    private _load<T extends IPlugin>(cfgMgr?: ConfigManager): void {
+    private _load<T extends IPlugin>(aftCfg?: AftConfig): void {
         if (!this._loaded) {
-            cfgMgr ??= configMgr;
-            let aftCfg = cfgMgr.getSection(AftConfig);
+            aftCfg ??= aftConfig;
             for (var pname of aftCfg.pluginNames ?? []) {
                 let name = convert.toSafeString(pname, [{exclude: /[-_.\s\d]/gi, replaceWith: ''}]);
                 let searchDir: string = (path.isAbsolute(aftCfg.pluginsSearchDir ?? ".")) 
                     ? aftCfg.pluginsSearchDir : path.join(process.cwd(), aftCfg.pluginsSearchDir);
                 if (name) {
                     if (!this._pluginsMap.has(name)) {
-                        this._findAndInstantiatePlugin<T>(name, searchDir, cfgMgr);
+                        this._findAndInstantiatePlugin<T>(name, searchDir, aftCfg);
                     }
                 }
             }
@@ -46,12 +45,12 @@ class PluginLoader {
      * also be loaded
      * @param typeName a `Class<T: Plugin>` base class like `LoggingPlugin` that must be extended
      * by any of the objects returned by this call
-     * @param cfgMgr an optional `ConfigManager` instance to use when loading plugins if not
+     * @param aftCfg an optional `AftConfig` instance to use when loading plugins if not
      * already loaded
      * @returns an array of plugin objects that all extend the passed in `typeName` class
      */
-    getPluginsByType<T extends IPlugin>(typeName: string, cfgMgr?: ConfigManager): Array<T> {
-        this._load<T>(cfgMgr);
+    getPluginsByType<T extends IPlugin>(typeName: string, aftCfg?: AftConfig): Array<T> {
+        this._load<T>(aftCfg);
         let plugins = new Array<T>();
         for (var key of this._pluginsMap.keys()) {
             let plugin = this._pluginsMap.get(key);
@@ -73,12 +72,12 @@ class PluginLoader {
      * NOTE: if this is the first time the `pluginloader` is being called then plugins will
      * also be loaded
      * @param pluginName the name of the plugin package or file like `html-logging-plugin`
-     * @param cfgMgr an optional `ConfigManager` instance to use when loading plugins if not
+     * @param aftCfg an optional `AftConfig` instance to use when loading plugins if not
      * already loaded
      * @returns the requested plugin or `undefined` if not found
      */
-    getPluginByName<T extends IPlugin>(pluginName: string, cfgMgr?: ConfigManager): T {
-        this._load<T>(cfgMgr);
+    getPluginByName<T extends IPlugin>(pluginName: string, aftCfg?: AftConfig): T {
+        this._load<T>(aftCfg);
         let name = convert.toSafeString(pluginName, [{exclude: /[-_.\s\d]/gi, replaceWith: ''}]);
         return this._pluginsMap.get(name) as T;
     }
@@ -97,19 +96,19 @@ class PluginLoader {
     }
 
     /**
-     * clears the loaded plugins so that new plugins can be loaded
+     * clears the cached plugins so that new plugins can be loaded
      * 
      * **DANGER** 
      * 
      * only use if you are certain you know what you are doing as this
      * can result in multiple instances of named plugins existing
      */
-    clear(): void {
+    reset(): void {
         this._pluginsMap.clear();
         this._loaded = false;
     }
 
-    private _findAndInstantiatePlugin<T extends IPlugin>(pluginName: string, searchRoot: string, cfgMgr: ConfigManager): void {
+    private _findAndInstantiatePlugin<T extends IPlugin>(pluginName: string, searchRoot: string, aftCfg: AftConfig): void {
         let plugin: T;
         
         try {
@@ -139,11 +138,11 @@ class PluginLoader {
                     }
                 }
                 if (constructorName) {
-                    const p: T = new plugin[constructorName](cfgMgr);
+                    const p: T = new plugin[constructorName](aftCfg);
                     this._pluginsMap.set(pluginName, p);
                 }
             } catch (e) {
-                throw new Error(`unable to create instance of loaded plugin '${pluginName}' due to: ${e}`);
+                throw new Error(`unable to create instance of loaded plugin '${pluginName}' due to: ${Err.short(e)}`);
             }
         }
     }
@@ -216,4 +215,4 @@ class PluginLoader {
  * and a `pluginNames` array used to locate and load plugins
  * used to locate and instantiate the plugins
  */
-export const pluginloader = new PluginLoader();
+export const pluginLoader = new PluginLoader();
