@@ -1,9 +1,7 @@
-import { DefectManager } from "../plugins/defects/defect-manager";
-import { Defect } from "../plugins/defects/defect";
 import { LogManager } from "../plugins/logging/log-manager";
-import { TestResult } from "../plugins/test-cases/test-result";
-import { TestCaseManager } from "../plugins/test-cases/test-case-manager";
-import { TestStatus } from "../plugins/test-cases/test-status";
+import { TestResult } from "../plugins/logging/test-result";
+import { PolicyEngineManager } from "../plugins/policy-engine/policy-engine-manager";
+import { TestStatus } from "../plugins/logging/test-status";
 import { convert } from "./convert";
 import { Func, ProcessingResult } from "./custom-types";
 import { rand } from "./rand";
@@ -39,19 +37,16 @@ export class Verifier implements PromiseLike<void> {
     protected _description: string;
     protected _startTime: number;
     protected _innerPromise: Promise<void>;
-    protected _tests: Set<string>;
-    protected _defects: Set<string>;
+    protected _testIds: Set<string>;
     protected _logMgr: LogManager;
-    protected _testMgr: TestCaseManager;
-    protected _defectMgr: DefectManager;
+    protected _policyEngMgr: PolicyEngineManager;
     protected _buildInfoMgr: BuildInfoManager;
 
     constructor(aftCfg?: AftConfig) {
         this.aftCfg = aftCfg ?? aftConfig;
 
         this._startTime = new Date().getTime();
-        this._tests = new Set<string>();
-        this._defects = new Set<string>();
+        this._testIds = new Set<string>();
     }
     
     /**
@@ -64,8 +59,8 @@ export class Verifier implements PromiseLike<void> {
         let logName: string;
         if (this._description) {
             logName = this._description;
-        } else if (this._tests.size > 0) {
-            logName = Array.from(this._tests).join('_');
+        } else if (this._testIds.size > 0) {
+            logName = Array.from(this._testIds).join('_');
         } else {
             logName = this.constructor.name;
         }
@@ -75,18 +70,11 @@ export class Verifier implements PromiseLike<void> {
         return this._logMgr;
     }
 
-    get testMgr(): TestCaseManager {
-        if (!this._testMgr) {
-            this._testMgr = new TestCaseManager(this.aftCfg);
+    get policyEng(): PolicyEngineManager {
+        if (!this._policyEngMgr) {
+            this._policyEngMgr = new PolicyEngineManager(this.aftCfg);
         }
-        return this._testMgr;
-    }
-
-    get defectMgr(): DefectManager {
-        if (!this._defectMgr) {
-            this._defectMgr = new DefectManager(this.aftCfg);
-        }
-        return this._defectMgr;
+        return this._policyEngMgr;
     }
 
     get buildInfo(): BuildInfoManager {
@@ -105,16 +93,16 @@ export class Verifier implements PromiseLike<void> {
         if (!this._innerPromise) {
             this._innerPromise = new Promise(async (resolve, reject) => {
                 try {
-                    const shouldRun = await this._shouldRunTests(...Array.from(this._tests));
-                    if (shouldRun.success) {
+                    const shouldRun = await this._shouldRunTests(...Array.from(this._testIds));
+                    if (shouldRun.result === true) {
                         await this._resolveAssertion();
-                        await this._logResult('Passed');
+                        await this._logResult('passed');
                     } else {
-                        await this._logResult('Skipped', shouldRun.message);
+                        await this._logResult('skipped', shouldRun.message);
                     }
                     resolve();
                 } catch(e) {
-                    await this._logResult('Failed', e);
+                    await this._logResult('failed', e);
                     reject(e);
                 }
             });
@@ -183,22 +171,7 @@ export class Verifier implements PromiseLike<void> {
     withTestIds(...testIds: string[]): this {
         if (testIds?.length) {
             for (var i=0; i<testIds.length; i++) {
-                this._tests.add(testIds[i]);
-            }
-        }
-        return this;
-    }
-
-    /**
-     * allows for setting a `defectId` to be checked before executing the `assertion`.
-     * if the referenced `defectId` is _open_ then the `assertion` will not be run.
-     * @param defectIds a defect identifier for your connected `DefectPlugin`
-     * @returns this `Verifier` instance
-     */
-    withKnownDefectIds(...defectIds: string[]): this {
-        if (defectIds?.length) {
-            for (var i=0; i<defectIds.length; i++) {
-                this._defects.add(defectIds[i]);
+                this._testIds.add(testIds[i]);
             }
         }
         return this;
@@ -233,24 +206,13 @@ export class Verifier implements PromiseLike<void> {
     }
 
     /**
-     * allows for using a specific `TestCaseManager` instance. if not
-     * set then the global `TestCaseManager.instance()` will be used
-     * @param testMgr a `TestCaseManager` instance
+     * allows for using a specific `PolicyEngineManager` instance. if not
+     * set then the global `PolicyEngineManager.instance()` will be used
+     * @param policyMgr a `PolicyEngineManager` instance
      * @returns this `Verifier` instance
      */
-    withTestCaseManager(testMgr: TestCaseManager): this {
-        this._testMgr = testMgr;
-        return this;
-    }
-
-    /**
-     * allows for using a specific `DefectManager` instance. if not
-     * set then the global `DefectManager.instance()` will be used
-     * @param defectMgr a `DefectManager` instance
-     * @returns this `Verifier` instance
-     */
-    withDefectManager(defectMgr: DefectManager): this {
-        this._defectMgr = defectMgr;
+    withPolicyEngineManager(policyMgr: PolicyEngineManager): this {
+        this._policyEngMgr = policyMgr;
         return this;
     }
 
@@ -265,53 +227,34 @@ export class Verifier implements PromiseLike<void> {
         return this;
     }
 
-    protected async _shouldRunTests(...tests: string[]): Promise<ProcessingResult> {
+    /**
+     * checks if any of the supplied test ids should be run and returns `true` if at least
+     * one of them should
+     * @param testIds iterates over all test ids checking the `PolicyEngineManager` to see
+     * if any should be run and returns `true` if any should be run, otherwise `false`
+     * @returns a `ProcessingResult<boolean>` indicating if the testing should proceed
+     */
+    protected async _shouldRunTests(...testIds: string[]): Promise<ProcessingResult<boolean>> {
         const shouldRunTests = new Array<string>();
         const shouldNotRunTests = new Array<string>();
-        if (tests?.length) {
-            for (var i=0; i<tests.length; i++) {
-                let testId: string = tests[i];
-                let result: boolean = await this.testMgr.shouldRun(testId);
-                if (result === true) {
-                    const noOpenDefectsResult = await this._hasNoOpenDefects(testId);
-                    if (noOpenDefectsResult.success) {
-                        shouldRunTests.push(testId);
-                    } else {
-                        return noOpenDefectsResult;
-                    }
+        if (testIds?.length) {
+            for (var i=0; i<testIds.length; i++) {
+                let testId: string = testIds[i];
+                let result: ProcessingResult<boolean> = await this.policyEng.shouldRun(testId);
+                if (result.result === true) {
+                    shouldRunTests.push(testId);
                 } else {
                     shouldNotRunTests.push(testId);
                 }
             }
             if (shouldRunTests.length === 0) {
-                return {success: false, message: `none of the supplied tests should be run: [${tests.join(', ')}]`};
+                return {result: false, message: `none of the supplied tests should be run: [${testIds.join(', ')}]`};
             }
+            return {result: true, message: `the following supplied tests should be run: [${shouldRunTests.join(', ')}]`};
+        } else if (this.policyEng.plugins?.filter(p => Err.handle(() => p?.enabled)).length > 0) {
+            return {result: false, message: `no associated testIds found for test, but enabled 'IPolicyEnginePlugins' exist so test should not be run`}
         }
-        return {success: true, message: 'returning the test IDs, as an array, that should be run', obj: shouldRunTests};
-    }
-
-    /**
-     * searches the `DefectManager` for any open defects referencing the supplied `testId` in their title and
-     * if found returns a `ProcessingResult` with `success` set to `false` and a message containing a list of the 
-     * open defect ID's
-     * @param testId the test ID to search for in the `DefectManager`
-     * @returns a `ProcessingResult` with `success` equaling `true` if the `testId` has no open defects
-     */
-    protected async _hasNoOpenDefects(testId: string): Promise<ProcessingResult> {
-        let defects: Array<Defect> = await this.defectMgr.findDefects({title: testId}) || new Array<Defect>();
-        if (defects.some((d: Defect) => d?.status == 'open')) {
-            let openDefects: string = defects
-                .filter((d: Defect) => d.status == 'open')
-                .map((d: Defect) => d.id)
-                .join(', ');
-            return {
-                success: false, 
-                message: `the testId ${testId} has one or more open defects so test should not be run: [${openDefects}]`
-            };
-        }
-        return {
-            success: true
-        };
+        return {result: true};
     }
 
     /**
@@ -320,9 +263,9 @@ export class Verifier implements PromiseLike<void> {
      */
     protected async _logResult(status: TestStatus, message?: string): Promise<void> {
         try {
-            status = status || 'Untested';
-            if (this._tests.size) {
-                this._tests.forEach(async (testId: string) => {
+            status ??= 'untested';
+            if (this._testIds.size) {
+                this._testIds.forEach(async (testId: string) => {
                     if (message) {
                         await this._logMessage(status, `${testId} - ${message}`);
                     } else {
@@ -333,7 +276,7 @@ export class Verifier implements PromiseLike<void> {
                 await this._logMessage(status, message);
             }
 
-            let results: TestResult[] = await this._generateTestResults(status, message, ...Array.from(this._tests.values()));
+            let results: TestResult[] = await this._generateTestResults(status, message, ...Array.from(this._testIds.values()));
             for (var i=0; i<results.length; i++) {
                 let result: TestResult = results[i];
                 try {
@@ -350,16 +293,16 @@ export class Verifier implements PromiseLike<void> {
     protected async _logMessage(status: TestStatus, message?: string): Promise<void> {
         message = message || this.logMgr.logName;
         switch (status) {
-            case 'Blocked':
-            case 'Retest':
-            case 'Skipped':
-            case 'Untested':
+            case 'blocked':
+            case 'retest':
+            case 'skipped':
+            case 'untested':
                 await this.logMgr.warn(message);
                 break;
-            case 'Failed':
+            case 'failed':
                 await this.logMgr.fail(message);
                 break;
-            case 'Passed':
+            case 'passed':
             default:
                 await this.logMgr.pass(message);
                 break;
@@ -403,14 +346,13 @@ export class Verifier implements PromiseLike<void> {
  * Test Assertion.
  * 
  * Ex:
- * ```
+ * ```typescript
  * await verify(async (v: Verifier) => {
  *   await v.logMgr.info('doing some testing...');
  *   let feature = new FeatureObj();
  *   return await feature.returnExpectedValue();
  * }).withDescription('example usage for Verifier')
- * .and.withTestIds('C1234') // if TestCasePlugin.shouldRun('C1234') returns `false` the assertion is not run
- * .and.withKnownDefectIds('AUTO-123') // if DefectPlugin.getDefect('AUTO-123').status === 'open' the assertion is not run
+ * .and.withTestIds('C1234') // if PolicyEngineManager.shouldRun('C1234') returns `false` the assertion is not run
  * .returns('expected value');
  * ```
  * @param assertion the `Func<Verifier, any>` function to be executed by this `Verifier`

@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { TestCase, TestCaseManager } from 'aft-core';
+import { TestCase, PolicyEngineManager } from 'aft-core';
 import { httpService } from 'aft-web-services';
 import { TestRailConfig, TestRailTestCasePlugin, TestRailTestCasePluginOptions } from "../../src";
 import { TestRailApi } from '../../src/api/testrail-api';
@@ -85,7 +85,7 @@ describe('TestRailTestCasePlugin', () => {
         const config = {
             plugins: ['testrail-test-case-plugin']
         };
-        let mgr: TestCaseManager = new TestCaseManager(config);
+        let mgr: PolicyEngineManager = new PolicyEngineManager(config);
         let plugin = await mgr.first();
 
         expect(plugin).toBeDefined();

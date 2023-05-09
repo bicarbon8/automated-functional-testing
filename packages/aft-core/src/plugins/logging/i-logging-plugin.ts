@@ -1,5 +1,5 @@
 import { IPlugin } from "../i-plugin";
-import { TestResult } from "../test-cases/test-result";
+import { TestResult } from "./test-result";
 import { LogLevel } from "./log-level";
 import { LogMessageData } from "./log-message-data";
 

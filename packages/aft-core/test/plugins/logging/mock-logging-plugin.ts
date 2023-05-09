@@ -1,4 +1,4 @@
-import { ILoggingPlugin, TestResult, LogMessageData, LogLevel, AftConfig, aftConfig } from "../../../src";
+import { ILoggingPlugin, TestResult, LogMessageData, LogLevel, AftConfig, aftConfig, LogManagerConfig } from "../../../src";
 
 export class MockLoggingPluginConfig {
     mockConfigKey: string;
@@ -14,7 +14,7 @@ export class MockLoggingPlugin implements ILoggingPlugin {
     }
     get logLevel(): LogLevel {
         var cfg = this.aftCfg.getSection(MockLoggingPluginConfig);
-        return cfg.logLevel ?? this.aftCfg.getSection(AftConfig)
+        return cfg.logLevel ?? this.aftCfg.getSection(LogManagerConfig)
             .logLevel ?? 'warn';
     }
     constructor(aftCfg?: AftConfig) {

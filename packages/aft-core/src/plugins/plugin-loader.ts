@@ -19,13 +19,10 @@ class PluginLoader {
         if (!this._loaded) {
             aftCfg ??= aftConfig;
             for (var pname of aftCfg.pluginNames ?? []) {
-                let name = convert.toSafeString(pname, [{exclude: /[-_.\s\d]/gi, replaceWith: ''}]);
                 let searchDir: string = (path.isAbsolute(aftCfg.pluginsSearchDir ?? ".")) 
                     ? aftCfg.pluginsSearchDir : path.join(process.cwd(), aftCfg.pluginsSearchDir);
-                if (name) {
-                    if (!this._pluginsMap.has(name)) {
-                        this._findAndInstantiatePlugin<T>(name, searchDir, aftCfg);
-                    }
+                if (!this._pluginsMap.has(pname)) {
+                    this._findAndInstantiatePlugin<T>(pname, searchDir, aftCfg);
                 }
             }
             this._loaded = true;
@@ -82,19 +79,6 @@ class PluginLoader {
         return this._pluginsMap.get(name) as T;
     }
 
-    private _getPluginBaseClasses(plugin: unknown, baseClasses?: Array<string>): Array<string> {
-        baseClasses ??= new Array<string>();
-        if (plugin) {
-            let baseClass = Object.getPrototypeOf(plugin);
-            if (baseClass) {
-                let baseClassName = baseClass.name;
-                baseClasses.push(baseClassName);
-                baseClasses = this._getPluginBaseClasses(baseClass, baseClasses);
-            }
-        }
-        return baseClasses;
-    }
-
     /**
      * clears the cached plugins so that new plugins can be loaded
      * 
@@ -128,10 +112,11 @@ class PluginLoader {
             try {
                 let constructorName: string;
                 let keys: string[] = Object.keys(plugin);
+                const name = convert.toSafeString(pluginName, [{exclude: /[-_.\s\d]/gi, replaceWith: ''}]);
                 // LogManager.toConsole({name: this.constructor.name, message: `searching for plugin constructor name for ${pluginName}...`, level: 'trace'});
                 for (var i=0; i<keys.length; i++) {
                     let key: string = keys[i];
-                    if (pluginName.toLowerCase() == key.toLowerCase()) {
+                    if (name.toLowerCase() == key.toLowerCase()) {
                         // LogManager.toConsole({name: this.constructor.name, message: `found constructor name of ${key} for ${pluginName}`, level: 'trace'});
                         constructorName = key;
                         break;

@@ -23,19 +23,13 @@ export * from './plugins/plugin-loader';
 /** plugins/build-info */
 export * from './plugins/build-info/build-info-manager';
 export * from './plugins/build-info/i-build-info-plugin';
-/** plugins/defects */
-export * from './plugins/defects/defect-manager';
-export * from './plugins/defects/defect-status';
-export * from './plugins/defects/defect';
-export * from './plugins/defects/i-defect-plugin';
 /** plugins/logging */
 export * from './plugins/logging/i-logging-plugin';
 export * from './plugins/logging/log-level';
 export * from './plugins/logging/log-manager';
 export * from './plugins/logging/log-message-data';
 /** plugins/test-cases */
-export * from './plugins/test-cases/i-test-case-plugin';
-export * from './plugins/test-cases/test-case-manager';
-export * from './plugins/test-cases/test-case';
-export * from './plugins/test-cases/test-result';
-export * from './plugins/test-cases/test-status';
+export * from './plugins/policy-engine/i-policy-engine-plugin';
+export * from './plugins/policy-engine/policy-engine-manager';
+export * from './plugins/logging/test-result';
+export * from './plugins/logging/test-status';

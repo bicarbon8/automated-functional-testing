@@ -1,4 +1,4 @@
-import { rand, TestCaseManager } from "aft-core";
+import { rand, PolicyEngineManager } from "aft-core";
 import { Session, WebDriver } from "selenium-webdriver";
 import { BrowserSession, BrowserSessionOptions, verifyWithBrowser, BrowserVerifier } from "../../src";
 import { BrowserSessionGeneratorManager } from "../../src/sessions/browser-session-generator-manager";
@@ -63,14 +63,14 @@ describe('BrowserVerifier', () => {
         spyOn(sessionMgr, 'newUiSession').and.callFake((options?: BrowserSessionOptions): Promise<BrowserSession<any>> => {
             return Promise.resolve(new BrowserSession<any>(options));
         });
-        let tcMgr: TestCaseManager = new TestCaseManager();
+        let tcMgr: PolicyEngineManager = new PolicyEngineManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string) => Promise.resolve(false));
         
         await verifyWithBrowser((bv: BrowserVerifier) => {
             expect(true).toBeFalse();
         }).and.withBrowserSessionGeneratorManager(sessionMgr)
         .and.withTestIds('C1234')
-        .and.withTestCaseManager(tcMgr);
+        .and.withPolicyEngineManager(tcMgr);
 
         expect(sessionMgr.newUiSession).not.toHaveBeenCalled();
     });

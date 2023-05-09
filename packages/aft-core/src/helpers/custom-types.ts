@@ -65,13 +65,24 @@ export type JsonValue = JsonKey | boolean | JsonObject | null | undefined;
 export type JsonObject = { [key: JsonKey]: JsonValue; } | Array<JsonValue>;
 
 /**
- * this type allows for more complex return values
- * to be expressed from functions that would normally
- * return a simple boolean
+ * this type allows for a descriptive message to be
+ * included in a result from functions that would normally
+ * be limited to returning only a single value
+ * 
+ * ex:
+ * ```typescript
+ * function shouldDoWork(input: Worker): ProcessingResult<boolean> {
+ *     try {
+ *         const result = input.functionThatMightThrow();
+ *         return { result: result };
+ *     } catch (e) {
+ *         return { result: false, message: Err.short(e) };
+ *     }
+ * }
+ * ```
  */
-export type ProcessingResult = {
-    obj?: any;
-    success?: boolean;
+export type ProcessingResult<T> = {
+    result: T;
     message?: string;
 };
 

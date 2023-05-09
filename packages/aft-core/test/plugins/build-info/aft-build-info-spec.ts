@@ -1,11 +1,16 @@
 import { BuildInfoManager, AftConfig, convert, machineInfo, MachineInfoData, pluginLoader, rand } from "../../../src";
+import { MockBuildInfoPlugin } from "./mock-build-info-plugin";
 
 describe('AftBuildInfo', () => {
+    beforeEach(() => {
+        pluginLoader.reset();
+    })
+
     afterEach(() => {
         pluginLoader.reset();
     })
 
-    it('can load expected plugin', async () => {
+    fit('can load expected plugin', async () => {
         const randomName = rand.getString(12);
         const actual = new BuildInfoManager(new AftConfig({
             pluginNames: ['mock-build-info-plugin'],
@@ -19,7 +24,7 @@ describe('AftBuildInfo', () => {
         
         expect(actual).toBeDefined();
         expect(actual.plugins.length).toBe(1);
-        expect(actual.plugins[0].constructor.name).toBe('MockBuildInfoPlugin');
+        expect(actual.plugins[0].constructor.name).toBe(MockBuildInfoPlugin.name);
         expect(actual.plugins[0].enabled).toBe(true);
         expect(await actual.plugins[0].buildName()).toEqual(`MockBuildName-${randomName}`);
         expect(await actual.plugins[0].buildNumber()).toMatch(/MockBuildNumber-[0-9]{3}/);

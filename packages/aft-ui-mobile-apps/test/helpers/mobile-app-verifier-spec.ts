@@ -1,4 +1,4 @@
-import { TestCaseManager } from "aft-core";
+import { PolicyEngineManager } from "aft-core";
 import { Browser } from "webdriverio";
 import { MobileAppSession, MobileAppSessionOptions, MobileAppVerifier, verifyWithMobileApp } from "../../src";
 import { MobileAppSessionGeneratorManager } from "../../src/sessions/mobile-app-session-generator-manager";
@@ -58,14 +58,14 @@ describe('MobileAppVerifier', () => {
         spyOn(sessionMgr, 'newUiSession').and.callFake((options?: MobileAppSessionOptions): Promise<MobileAppSession<any>> => {
             return Promise.resolve(new MobileAppSession<any>(options));
         });
-        let tcMgr: TestCaseManager = new TestCaseManager();
+        let tcMgr: PolicyEngineManager = new PolicyEngineManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string) => Promise.resolve(false));
         
         await verifyWithMobileApp((mav: MobileAppVerifier) => {
             expect(true).toBeFalse();
         }).withTestIds('C1234')
         .and.withMobileAppSessionGeneratorManager(sessionMgr)
-        .and.withTestCaseManager(tcMgr);
+        .and.withPolicyEngineManager(tcMgr);
 
         expect(sessionMgr.newUiSession).not.toHaveBeenCalled();
     });

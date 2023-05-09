@@ -3,7 +3,7 @@ import * as colors from "colors";
 import { ILoggingPlugin } from "./i-logging-plugin";
 import { LogLevel } from "./log-level";
 import { LogMessageData } from "./log-message-data";
-import { TestResult } from "../test-cases/test-result";
+import { TestResult } from "./test-result";
 import { ellide } from "../../helpers/ellide";
 import { AftConfig, aftConfig } from "../../configuration/aft-config";
 import { pluginLoader } from "../plugin-loader";

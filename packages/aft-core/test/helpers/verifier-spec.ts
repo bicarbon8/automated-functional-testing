@@ -1,4 +1,4 @@
-import { DefectManager, Defect, LogManager, rand, TestCaseManager, Verifier, verify, TestResult, LogMessageData, LogLevel } from "../../src";
+import { LogManager, rand, PolicyEngineManager, Verifier, verify, TestResult, LogLevel, ProcessingResult, AftConfig, pluginLoader } from "../../src";
 import { containing, equaling } from "../../src/helpers/verifier-matcher";
 
 var consoleLog = console.log;
@@ -16,7 +16,7 @@ describe('Verifier', () => {
         testStore.clear();
     });
 
-    it('uses \'description\' as logMgr name if provided', async () => {
+    it('uses "description" as logMgr name if provided', async () => {
         let description: string = rand.getString(22);
         await verify(async (v: Verifier) => {
             expect(v.logMgr.logName).toEqual(description);
@@ -24,25 +24,17 @@ describe('Verifier', () => {
         .withDescription(description);
     });
 
-    it('uses \'test case IDs\' as logMgr name if no description provided', async () => {
-        let tcMgr = new TestCaseManager();
-        spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<boolean> => {
-            return Promise.resolve(true);
-        });
-        let dMgr = new DefectManager();
-        spyOn(dMgr, 'findDefects').and.callFake((searchCriteria: Partial<Defect>): Promise<Defect[]> => {
-            return Promise.resolve([]);
-        });
-        spyOn(dMgr, 'getDefect').and.callFake((defectId: string): Promise<Defect> => {
-            return Promise.resolve(null);
+    it('uses "test case IDs" as logMgr name if no description provided', async () => {
+        let peMgr = new PolicyEngineManager();
+        spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
+            return Promise.resolve({result: true});
         });
 
         await verify(async (v: Verifier) => {
             expect(v.logMgr.logName).toEqual('C1234_C2345');
         })
         .withTestIds('C1234','C2345')
-        .and.withTestCaseManager(tcMgr)
-        .and.withDefectManager(dMgr);
+        .and.withPolicyEngineManager(peMgr);
     });
     
     it('can execute a passing expectation', async () => {
@@ -50,28 +42,19 @@ describe('Verifier', () => {
         spyOn(logMgr, 'logResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'pass').and.callThrough();
-        let tcMgr = new TestCaseManager();
-        spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<boolean> => {
-            return Promise.resolve(true);
-        });
-        let dMgr = new DefectManager();
-        spyOn(dMgr, 'findDefects').and.callFake((searchCriteria: Partial<Defect>): Promise<Defect[]> => {
-            return Promise.resolve([]);
-        });
-        spyOn(dMgr, 'getDefect').and.callFake((defectId: string): Promise<Defect> => {
-            return Promise.resolve(null);
+        let peMgr = new PolicyEngineManager();
+        spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
+            return Promise.resolve({result: true});
         });
 
         await verify(async (v: Verifier) => 'foo')
         .returns('foo')
         .withLogManager(logMgr)
-        .and.withTestCaseManager(tcMgr)
-        .and.withDefectManager(dMgr)
+        .and.withPolicyEngineManager(peMgr)
         .and.withDescription('true should be true')
         .and.withTestIds('C1234','C2345');
 
-        expect(tcMgr.shouldRun).toHaveBeenCalledTimes(2);
-        expect(dMgr.findDefects).toHaveBeenCalledTimes(2);
+        expect(peMgr.shouldRun).toHaveBeenCalledTimes(2);
         expect(logMgr.logResult).toHaveBeenCalledTimes(2);
         expect(logMgr.pass).toHaveBeenCalledTimes(2);
     });
@@ -81,28 +64,19 @@ describe('Verifier', () => {
         spyOn(logMgr, 'logResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'pass').and.callThrough();
-        let tcMgr = new TestCaseManager();
-        spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<boolean> => {
-            return Promise.resolve(true);
-        });
-        let dMgr = new DefectManager();
-        spyOn(dMgr, 'findDefects').and.callFake((searchCriteria: Partial<Defect>): Promise<Defect[]> => {
-            return Promise.resolve([]);
-        });
-        spyOn(dMgr, 'getDefect').and.callFake((defectId: string): Promise<Defect> => {
-            return Promise.resolve(null);
+        let peMgr = new PolicyEngineManager();
+        spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
+            return Promise.resolve({result: true});
         });
 
         await verify(async (v: Verifier) => ['foo', 'bar', 'baz'])
         .returns(containing('bar'))
         .withLogManager(logMgr)
-        .and.withTestCaseManager(tcMgr)
-        .and.withDefectManager(dMgr)
+        .and.withPolicyEngineManager(peMgr)
         .and.withDescription('array contains "bar"')
         .and.withTestIds('C1234','C2345');
 
-        expect(tcMgr.shouldRun).toHaveBeenCalledTimes(2);
-        expect(dMgr.findDefects).toHaveBeenCalledTimes(2);
+        expect(peMgr.shouldRun).toHaveBeenCalledTimes(2);
         expect(logMgr.logResult).toHaveBeenCalledTimes(2);
         expect(logMgr.pass).toHaveBeenCalledTimes(2);
     });
@@ -112,16 +86,9 @@ describe('Verifier', () => {
         spyOn(logMgr, 'logResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'fail').and.callThrough();
-        let tcMgr = new TestCaseManager();
-        spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<boolean> => {
-            return Promise.resolve(true);
-        });
-        let dMgr = new DefectManager();
-        spyOn(dMgr, 'findDefects').and.callFake((searchCriteria: Partial<Defect>): Promise<Defect[]> => {
-            return Promise.resolve([]);
-        });
-        spyOn(dMgr, 'getDefect').and.callFake((defectId: string): Promise<Defect> => {
-            return Promise.resolve(null);
+        let peMgr = new PolicyEngineManager();
+        spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
+            return Promise.resolve({result: true});
         });
 
         try {
@@ -129,8 +96,7 @@ describe('Verifier', () => {
                 throw new Error('fake error');
             })
             .withLogManager(logMgr)
-            .withTestCaseManager(tcMgr)
-            .withDefectManager(dMgr)
+            .withPolicyEngineManager(peMgr)
             .withDescription('true should be true')
             .and.withTestIds('C1234').and.withTestIds('C2345');
 
@@ -139,8 +105,7 @@ describe('Verifier', () => {
             expect(e.toString()).toEqual('Error: fake error');
         }
 
-        expect(tcMgr.shouldRun).toHaveBeenCalledTimes(2);
-        expect(dMgr.findDefects).toHaveBeenCalledTimes(2);
+        expect(peMgr.shouldRun).toHaveBeenCalledTimes(2);
         expect(logMgr.logResult).toHaveBeenCalledTimes(2);
         expect(logMgr.fail).toHaveBeenCalledTimes(2);
     });
@@ -150,24 +115,16 @@ describe('Verifier', () => {
         spyOn(logMgr, 'logResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'fail').and.callThrough();
-        let tcMgr = new TestCaseManager();
-        spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<boolean> => {
-            return Promise.resolve(true);
-        });
-        let dMgr = new DefectManager();
-        spyOn(dMgr, 'findDefects').and.callFake((searchCriteria: Partial<Defect>): Promise<Defect[]> => {
-            return Promise.resolve([]);
-        });
-        spyOn(dMgr, 'getDefect').and.callFake((defectId: string): Promise<Defect> => {
-            return Promise.resolve(null);
+        let peMgr = new PolicyEngineManager();
+        spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
+            return Promise.resolve({result: true});
         });
 
         try {
             await verify(() => true)
             .returns(false)
             .and.withLogManager(logMgr)
-            .and.withTestCaseManager(tcMgr)
-            .and.withDefectManager(dMgr)
+            .and.withPolicyEngineManager(peMgr)
             .and.withDescription('failure expected due to true not being false')
             .and.withTestIds('C1234').and.withTestIds('C2345');
 
@@ -176,199 +133,88 @@ describe('Verifier', () => {
             expect(e.toString()).toEqual(equaling(false).setActual(true).failureString());
         }
 
-        expect(tcMgr.shouldRun).toHaveBeenCalledTimes(2);
-        expect(dMgr.findDefects).toHaveBeenCalledTimes(2);
+        expect(peMgr.shouldRun).toHaveBeenCalledTimes(2);
         expect(logMgr.logResult).toHaveBeenCalledTimes(2);
         expect(logMgr.fail).toHaveBeenCalledTimes(2);
     });
 
-    it('will not execute expectation if test case manager says should not run for all cases', async () => {
-        let logMgr: LogManager = new LogManager('will not execute expectation if test case manager says should not run for all cases');
+    it('will not execute expectation if PolicyEngineManager says should not run for all cases', async () => {
+        let logMgr: LogManager = new LogManager('will not execute expectation if PolicyEngineManager says should not run for all cases');
         spyOn(logMgr, 'logResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'warn').and.callThrough();
-        let tcMgr = new TestCaseManager();
-        spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<boolean> => {
-            return Promise.resolve(false);
-        });
-        let dMgr = new DefectManager();
-        spyOn(dMgr, 'findDefects').and.callFake((searchCriteria: Partial<Defect>): Promise<Defect[]> => {
-            return Promise.resolve([]);
-        });
-        spyOn(dMgr, 'getDefect').and.callFake((defectId: string): Promise<Defect> => {
-            return Promise.resolve(null);
+        let peMgr = new PolicyEngineManager();
+        spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
+            return Promise.resolve({result: false});
         });
 
         await verify(() => {
             testStore.set('executed', true);
         })
         .withLogManager(logMgr)
-        .and.withTestCaseManager(tcMgr)
-        .and.withDefectManager(dMgr)
+        .and.withPolicyEngineManager(peMgr)
         .and.withTestIds('C1234','C2345');
 
-        expect(tcMgr.shouldRun).toHaveBeenCalledTimes(2);
-        expect(dMgr.findDefects).not.toHaveBeenCalled();
+        expect(peMgr.shouldRun).toHaveBeenCalledTimes(2);
         expect(testStore.has('executed')).toBeFalse();
         expect(logMgr.logResult).toHaveBeenCalledTimes(2);
         expect(logMgr.warn).toHaveBeenCalledTimes(2);
     });
 
-    it('will execute expectation if test case manager says any cases should be run', async () => {
-        let logMgr: LogManager = new LogManager('will execute expectation if test case manager says any cases should be run');
+    it('will execute expectation if PolicyEngineManager says any cases should be run', async () => {
+        let logMgr: LogManager = new LogManager('will execute expectation if PolicyEngineManager says any cases should be run');
         spyOn(logMgr, 'logResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'pass').and.callThrough();
-        let tcMgr = new TestCaseManager();
-        spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<boolean> => {
+        let peMgr = new PolicyEngineManager();
+        spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
             if (testId == 'C1234') {
-                return Promise.resolve(false);
+                return Promise.resolve({result: false, message: 'do not run C1234'});
             } else {
-                return Promise.resolve(true);
+                return Promise.resolve({result: true});
             }
-        });
-        let dMgr = new DefectManager();
-        spyOn(dMgr, 'findDefects').and.callFake((searchCriteria: Partial<Defect>): Promise<Defect[]> => {
-            return Promise.resolve([]);
-        });
-        spyOn(dMgr, 'getDefect').and.callFake((defectId: string): Promise<Defect> => {
-            return Promise.resolve(null);
         });
 
         await verify(() => {
             testStore.set('executed', true);
         })
         .withLogManager(logMgr)
-        .and.withTestCaseManager(tcMgr)
-        .and.withDefectManager(dMgr)
+        .and.withPolicyEngineManager(peMgr)
         .and.withTestIds('C1234','C2345');
 
-        expect(tcMgr.shouldRun).toHaveBeenCalledWith('C1234');
-        expect(tcMgr.shouldRun).toHaveBeenCalledWith('C2345');
-        expect(dMgr.findDefects).toHaveBeenCalledTimes(1);
+        expect(peMgr.shouldRun).toHaveBeenCalledWith('C1234');
+        expect(peMgr.shouldRun).toHaveBeenCalledWith('C2345');
         expect(testStore.has('executed')).toBeTrue();
         expect(logMgr.logResult).toHaveBeenCalledTimes(2);
         expect(logMgr.pass).toHaveBeenCalledTimes(2);
     });
 
-    it('will not execute expectation if defect manager finds open defect referencing test id', async () => {
-        let logMgr: LogManager = new LogManager('will not execute expectation if defect manager finds open defect referencing test id');
+    it('will not execute expectation if no associated testIds and PolicyEngineManager has enabled plugins', async () => {
+        let logMgr: LogManager = new LogManager('will not execute expectation if no associated testIds and PolicyEngineManager has enabled plugins');
         spyOn(logMgr, 'logResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'warn').and.callThrough();
-        let tcMgr = new TestCaseManager();
-        spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<boolean> => {
-            return Promise.resolve(true);
-        });
-        let dMgr = new DefectManager();
-        spyOn(dMgr, 'findDefects').and.callFake((searchCriteria: Partial<Defect>): Promise<Defect[]> => {
-            return Promise.resolve([{
-                id: 'DEFECT-123',
-                title: '[C1234] problem with feature functionality',
-                status: 'open'
-            } as Defect]);
-        });
-        spyOn(dMgr, 'getDefect').and.callFake((defectId: string): Promise<Defect> => {
-            return Promise.resolve(null);
-        });
-
-        await verify(() => {
-            testStore.set('executed', true);
-        })
-        .withLogManager(logMgr)
-        .and.withTestCaseManager(tcMgr)
-        .and.withDefectManager(dMgr)
-        .and.withTestIds('C1234');
-
-        expect(tcMgr.shouldRun).toHaveBeenCalledTimes(1);
-        expect(dMgr.findDefects).toHaveBeenCalledTimes(1);
-        expect(testStore.has('executed')).toBeFalse();
-        expect(logMgr.logResult).toHaveBeenCalledTimes(1);
-        expect(logMgr.warn).toHaveBeenCalledTimes(1);
-    });
-
-    it('will not execute expectation if any referenced defect is open', async () => {
-        let logMgr: LogManager = new LogManager('will not execute expectation if any referenced defect is open');
-        spyOn(logMgr, 'logResult').and.callFake((result: TestResult) => Promise.resolve());
-        spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
-        spyOn(logMgr, 'warn').and.callThrough();
-        let tcMgr = new TestCaseManager();
-        spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<boolean> => {
-            return Promise.resolve(true);
-        });
-        let dMgr = new DefectManager();
-        spyOn(dMgr, 'findDefects').and.callFake((searchCriteria: Partial<Defect>): Promise<Defect[]> => {
-            return Promise.resolve([]);
-        });
-        spyOn(dMgr, 'getDefect').and.callFake((defectId: string): Promise<Defect> => {
-            if (defectId == 'DEFECT-123') {
-                return Promise.resolve({
-                    id: defectId,
-                    status: 'closed'
-                });
-            } else {
-                return Promise.resolve({
-                    id: defectId,
-                    status: 'open'
-                })
+        pluginLoader.reset();
+        let peMgr = new PolicyEngineManager(new AftConfig({
+            pluginNames: ['mock-policy-engine-plugin'],
+            MockPolicyEnginePluginConfig: {
+                enabled: true
             }
-        });
+        }));
 
         await verify(() => {
             testStore.set('executed', true);
         })
         .withLogManager(logMgr)
-        .and.withTestCaseManager(tcMgr)
-        .and.withDefectManager(dMgr)
-        .and.withTestIds('C1234')
-        .and.withKnownDefectIds('DEFECT-123','DEFECT-234');
+        .and.withPolicyEngineManager(peMgr);
 
-        expect(tcMgr.shouldRun).toHaveBeenCalledTimes(1);
-        expect(dMgr.findDefects).toHaveBeenCalledTimes(1);
-        expect(dMgr.getDefect).toHaveBeenCalledTimes(2);
+        expect(peMgr.plugins.length).toEqual(1);
         expect(testStore.has('executed')).toBeFalse();
         expect(logMgr.logResult).toHaveBeenCalledTimes(1);
         expect(logMgr.warn).toHaveBeenCalledTimes(1);
     });
 
-    it('will execute expectation if all defects are closed', async () => {
-        let logMgr: LogManager = new LogManager('will execute expectation if all defects are closed');
-        spyOn(logMgr, 'logResult').and.callFake((result: TestResult) => Promise.resolve());
-        spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
-        spyOn(logMgr, 'pass').and.callThrough();
-        let tcMgr = new TestCaseManager();
-        spyOn(tcMgr, 'shouldRun').and.callFake((testId: string): Promise<boolean> => {
-            return Promise.resolve(true);
-        });
-        let dMgr = new DefectManager();
-        spyOn(dMgr, 'findDefects').and.callFake((searchCriteria: Partial<Defect>): Promise<Defect[]> => {
-            return Promise.resolve([]);
-        });
-        spyOn(dMgr, 'getDefect').and.callFake((defectId: string): Promise<Defect> => {
-            return Promise.resolve({
-                id: defectId,
-                status: 'closed'
-            });
-        });
-
-        await verify(() => {
-            testStore.set('executed', true);
-        })
-        .withLogManager(logMgr)
-        .and.withTestCaseManager(tcMgr)
-        .and.withDefectManager(dMgr)
-        .and.withKnownDefectIds('DEFECT-123','DEFECT-234');
-
-        expect(tcMgr.shouldRun).not.toHaveBeenCalled();
-        expect(dMgr.findDefects).not.toHaveBeenCalled();
-        expect(dMgr.getDefect).toHaveBeenCalledWith('DEFECT-123');
-        expect(dMgr.getDefect).toHaveBeenCalledWith('DEFECT-234');
-        expect(testStore.has('executed')).toBeTrue();
-        expect(logMgr.logResult).toHaveBeenCalledTimes(1);
-        expect(logMgr.pass).toHaveBeenCalledTimes(1);
-    });
-
-    it('assertion return value not checked if \'returns\' not used', async () => {
+    it('assertion return value not checked if "returns" not used', async () => {
         await verify(() => {
             return 'foo';
         });
