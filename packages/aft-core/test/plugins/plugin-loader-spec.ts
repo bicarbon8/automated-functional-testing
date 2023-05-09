@@ -10,7 +10,7 @@ describe('PluginLoader', () => {
         pluginLoader.reset();
     })
     
-    fit('can load a class implementing IPlugin', () => {
+    it('can load a class implementing IPlugin', () => {
         const plugins = pluginLoader.getPluginsByType<IPlugin>('mock', new AftConfig({
             pluginNames: ['mock-plugin'],
             MockPluginConfig: {

@@ -150,6 +150,7 @@ class PluginLoader {
                     } else {
                         if (fileOrDirectory.match(name)) {
                             filePath = fileAndPath;
+                            break;
                         }
                     }
                 }

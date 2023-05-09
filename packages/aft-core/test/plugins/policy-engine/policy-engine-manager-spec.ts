@@ -10,7 +10,7 @@ describe('PolicyEngineManager', () => {
         pluginLoader.reset();
     })
 
-    fit('can load a specified IPolicyEnginePlugin', async () => {
+    it('can load a specified IPolicyEnginePlugin', async () => {
         let tcm: PolicyEngineManager = new PolicyEngineManager(new AftConfig({
             pluginNames: ['mock-policy-engine-plugin'],
             MockTestCasePluginConfig: {
@@ -22,7 +22,7 @@ describe('PolicyEngineManager', () => {
         expect(actual).toBeDefined();
         expect(actual.length).withContext('plugins array length').toBe(1);
         expect(actual[0]).toBeDefined();
-        expect(actual[0].constructor.name).withContext('plugin should be instance of MockTestCasePlugin').toEqual('MockTestCasePlugin');
+        expect(actual[0].constructor.name).withContext('plugin should be instance of MockPolicyEnginePlugin').toEqual(MockPolicyEnginePlugin.name);
     });
 
     describe('shouldRun', () => {

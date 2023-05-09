@@ -1,10 +1,10 @@
 import { AftConfig, IBuildInfoPlugin, aftConfig, rand } from "../../../src";
 
 export class MockBuildInfoPluginConfig {
-    buildName?: string;
-    buildNumberMin?: number;
-    buildNumberMax?: number;
-    enabled?: boolean;
+    buildName: string;
+    buildNumberMin: number;
+    buildNumberMax: number;
+    enabled: boolean;
 };
 
 export class MockBuildInfoPlugin implements IBuildInfoPlugin {

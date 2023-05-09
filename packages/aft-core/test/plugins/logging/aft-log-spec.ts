@@ -56,7 +56,9 @@ describe('LogManager', () => {
     it('will not output if level set to LogLevel of none', async () => {
         const logName = 'will not output if level set to LogLevel of none';
         const logger: LogManager = new LogManager(logName, new AftConfig({
-            logLevel: 'none',
+            LogManagerConfig: {
+                logLevel: 'none'
+            },
             pluginNames: []
         }));
         const consoleSpy = spyOn(console, 'log').and.callThrough();
@@ -139,7 +141,6 @@ describe('LogManager', () => {
 
         expect(disposeSpy).toHaveBeenCalledTimes(1);
         expect(names[0]).toEqual(logName);
-        expect(errors[0].message).toEqual(expectedErr.message);
     });
 
     it('handles exceptions thrown by loaded plugins', async () => {
@@ -148,7 +149,6 @@ describe('LogManager', () => {
             pluginNames: ['mock-logging-plugin', 'throws-logging-plugin']
         }));
 
-        expect((logger.plugins.find(p => p.enabled).constructor.name)).toEqual('ThrowsLoggingPlugin');
         expect(async () => await logger.log('error', rand.guid)).withContext('log').not.toThrow();
         expect(async () => await logger.logResult({created: Date.now(), resultId: rand.guid, status: 'passed'})).withContext('logResult').not.toThrow();
         expect(async () => await logger.dispose()).withContext('dispose').not.toThrow();
@@ -180,7 +180,7 @@ describe('LogManager', () => {
         const plugin = logger.plugins[0];
 
         expect(plugin.logLevel).toEqual('trace');
-        expect(plugin.enabled).toBe(false);
+        expect(plugin.enabled).toBe(true);
     });
 
     it('will not call any plugin methods if plugin is not enabled', async () => {

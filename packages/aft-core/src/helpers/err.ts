@@ -178,18 +178,34 @@ export module Err {
     }
 
     /**
-     * calls the passed in `Func<void, T | PromiseLike<T>>` and handles any errors
+     * calls the passed in `Func<void, T>` and handles any errors
      * @param func a function to be run inside a try-catch
      * @param opts an `ErrOptions` object containing options for this call to `handle`
      * @returns the result of the passed in `func` or `null` if an error is thrown
      */
-    export async function handle<T extends any>(func: Func<void, T | PromiseLike<T>>, opts?: ErrOptions): Promise<T> {
+    export function handle<T>(func: Func<void, T>, opts?: ErrOptions): T {
+        try {
+            return func();
+        } catch (e) {
+            const err = new Err(e).setVerbosity(opts?.verbosity);
+            opts?.logger?.[opts?.errLevel || 'warn'](e.toString());
+            return null as T;
+        }
+    }
+
+    /**
+     * calls the passed in `Func<void, PromiseLike<T>>` and handles any errors
+     * @param func a function to be run inside a try-catch
+     * @param opts an `ErrOptions` object containing options for this call to `handle`
+     * @returns the result of the passed in `func` or `null` if an error is thrown
+     */
+    export async function handleAsync<T>(func: Func<void, PromiseLike<T>>, opts?: ErrOptions): Promise<T> {
         return await Promise.resolve()
             .then(func)
             .catch(async (err) => {
                 const e = new Err(err).setVerbosity(opts?.verbosity);
                 await opts?.logger?.[opts?.errLevel || 'warn'](e.toString());
-                return null;
+                return null as T;
             });
     }
 }

@@ -56,21 +56,21 @@ describe('Err', () => {
     describe('handle', () => {
         it('can handle try-catch for a Func<void, any> that does not throw', async () => {
             const func = function () { return 'foo'; };
-            const val = await Err.handle(func);
+            const val = Err.handle(func);
 
             expect(val).toEqual('foo');
         });
 
         it('can handle try-catch for a Func<void, any> that throws', async () => {
             const func = function () { throw 'foo'; };
-            const val = await Err.handle(func);
+            const val = Err.handle(func);
 
             expect(val).toBeNull();
         });
 
         it('can handle try-catch for a Func<void, any> that rejects a Promise', async () => {
             const func = () => Promise.reject('foo');
-            const val = await Err.handle(func);
+            const val = await Err.handleAsync(func);
 
             expect(val).toBeNull();
         });
@@ -83,7 +83,7 @@ describe('Err', () => {
                 return Promise.resolve();
             });
             const func = function () { throw 'foo'; };
-            const val = await Err.handle(func, {logger: logMgr});
+            const val = await Err.handleAsync(func, {logger: logMgr});
 
             expect(val).toBeNull();
             expect(logMgr.warn).toHaveBeenCalledTimes(1);
@@ -100,7 +100,7 @@ describe('Err', () => {
                 actualMessage = message;
                 return Promise.resolve();
             });
-            const val = await Err.handle(func, {
+            const val = await Err.handleAsync(func, {
                 verbosity: 'short',
                 errLevel: 'info',
                 logger: logger

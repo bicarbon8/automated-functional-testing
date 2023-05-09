@@ -85,7 +85,7 @@ export class AftConfig {
             if (val && typeof className === "function") {
                 // copy props to class
                 const config = new className();
-                for (var prop of Object.getOwnPropertyNames(config)) {
+                for (var prop of Object.getOwnPropertyNames(val)) {
                     if (val[prop] != null) {
                         config[prop] = val[prop];
                     }

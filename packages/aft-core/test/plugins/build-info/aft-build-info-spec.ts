@@ -10,7 +10,7 @@ describe('AftBuildInfo', () => {
         pluginLoader.reset();
     })
 
-    fit('can load expected plugin', async () => {
+    it('can load expected plugin', async () => {
         const randomName = rand.getString(12);
         const actual = new BuildInfoManager(new AftConfig({
             pluginNames: ['mock-build-info-plugin'],
