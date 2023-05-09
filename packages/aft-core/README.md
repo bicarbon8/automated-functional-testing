@@ -5,40 +5,52 @@ the base Automated Functional Testing (AFT) library providing support for Plugin
 `> npm i aft-core`
 
 ## Configuration
-the `aft-core` package contains the `cfgmgr` constant class for reading in configuration from multiple different sources all chained in the following order by default, but updatable using `cfgmgr.set((configKey: string, options: object) => new ChainedProvider([new ProviderOne(), new ProviderTwo(), ...]))`:
-- **OptionsProvider** - reads from the passed in `options` object passed to `cfgmgr.get(configKey, options)`
-- **EnvVarProvider** - reads from the `process.env` prepending all environment variable keys with the supplied `configKey`
-- **AftConfigProvider** - reads from the `aftconfig.json` file starting from a property named with the supplied `configKey`
+the `aft-core` package contains the `aftConfig` constant class (instance of `new AftConfig()`) for reading in configuration an `aftconfig.json` file at the project root. this configuration can be read as a top-level field using `aftConfig.get('field_name')` or `aftConfig.get('field_name', defaultVal)` and can also be set without actually modifying the values in your `aftconfig.json` using `aftConfig.set('field_name', val)`. additionally, configuration classes can be read using `AftConfig` with the `aftConfig.getSection(ConfigClass)` which will read from your `aftconfig.json` file for a field named `ConfigClass`
 
 Ex: with an `aftconfig.json` containing:
 ```json
 {
-    "ConfigSectionName": {
-        "config_field3": "%your_env_var%",
-        "config_field4": "some-value",
-        "config_field5": "['foo', true, 10]"
+    "SomeCustomClassConfig": {
+        "configField1": "%your_env_var%",
+        "configField2": "some-value",
+        "configField3": ["foo", true, 10]
     }
 }
 ```
 and with the following environment variables set:
 > export your_env_var="an important value"
 
-can be accessed using the `cfgmgr` as follows:
+and a config class of:
 ```typescript
-const config = cfgmgr.get('ConfigSectionName', {
-    config_field1: 12345,
-    config_field2: true,
-    config_field4: 'a value here'
-});
-await config.get('config_field1', -1); // returns 12345
-await config.get('config_field2', true); // returns false
-await config.get<string>('config_field3'); // returns "an important value"
-await config.get('config_field4', 'no value'); // returns "a value here" (passed in options override aftconfig.json values)
-await config.get<string>('config_field5'); // returns ["foo", true, 10] as an array
+export class SomeCustomClassConfig {
+    configField1: string = 'default_value_here';
+    configField2: string = 'another_default_value';
+    configField3: Array<string | boolean | number> = ['default_val'];
+    configField4: string = 'last_default_value';
+}
 ```
-for classes that rely on dependency injected options, there is also the `optmgr` constant class that will extract environment variables and JSON objects from a object passed to the `optmgr.process()` function. this is useful when combined with the `IHasOptions<T>` interface resulting in easier scoping of lookups on the passed in `options` object.
 
-> NOTE: the `optmgr.process` function is used in the `OptionsProvider` and `AftConfigProvider` classes before returning the values for a given key
+can be accessed using an `AftConfig` instance as follows:
+```typescript
+const config = aftConfig.getSection(SomeCustomClassConfig); // or new AftConfig().getSection(SomeCustomClassConfig);
+config.configField1; // returns "an important value"
+config.configField2; // returns "some-value"
+config.configField3; // returns ["foo", true, 10] as an array
+config.configField4; // returns "last_default_value"
+```
+
+and if you wish to entirely disregarg the configuration specified in your `aftconfig.json` file you can use the following (still based on the above example):
+```typescript
+const config = new AftConfig({
+    SomeCustomClassConfig: {
+        configField1: 'custom_value_here'
+    }
+});
+config.configField1; // returns "custom_value_here"
+config.configField2; // returns "another_default_value"
+config.configField3; // returns ["default_val"] as an array
+config.configField4; // returns "last_default_value"
+```
 
 ## Helpers
 the `aft-core` package contains several helper and utility classes, interfaces and functions to make functional testing and test development easier. These include:
@@ -75,73 +87,102 @@ to create your own simple logging plugin that stores all logs until the `dispose
 
 > NOTE: configuration for the below can be added in a object in the `aftconfig.json` named `ondisposeconsolelogger` based on the `key` passed to the `LoggingPlugin` constructor
 ```typescript
-export type OnDisposeConsoleLoggerOptions = Merge<LoggingPluginOptions, {
-    maxLogLines?: number;
-}>;
-export class OnDisposeConsoleLogger extends LoggingPlugin<OnDisposeConsoleLoggerOptions> {
-    private _logs: Array<LogMessageData>;
-    private _maxLines: number;
-    constructor(options?: OnDisposeConsoleLoggerOptions) {
-        super(options);
-        this._logs = new Array<LogMessageData>();
-    }
-    get maxLogLines(): number {
-        if (!this._maxLines) {
-            this._maxLines = this.option('maxLogLines', 100);
+export class OnDisposeConsoleLoggerConfig {
+    maxLogLines: number = 100;
+    logLevel: LogLevel = 'warn';
+};
+export class OnDisposeConsoleLogger implements ILoggingPlugin {
+    public readonly aftCfg: AftConfig;
+    public readonly pluginType: 'logging' = 'logging';
+    public readonly logLevel: LogLevel;
+    public readonly enabled: boolean;
+    private readonly _logs: Map<string, Array<LogMessageData>>;
+    private readonly _maxLines: number;
+    constructor(aftCfg?: AftConfig) {
+        this.aftCfg = aftCfg ?? aftConfig;
+        const cfg = this.aftCfg.getSection(OnDisposeConsoleLoggerConfig);
+        this.logLevel = cfg.logLevel ?? 'warn';
+        this.enabled = this.logLevel != 'none';
+        if (this.enabled) {
+            this._logs = new Map<string, Array<LogMessageData>>();
         }
-        return this._maxLines;
+    }
+    async initialise(name: string): Promise<void> {
+        if (!this._logs.has(name)) {
+            this._logs.set(name, new Array<LogMessageData>());
+        }
     }
     async log(data: LogMessageData): Promise<void> {
-        let l: LoggingLevel = this.level;
-        if (LogLevel.toValue(data.level) >= LogLevel.toValue(l) && level != 'none') {
-            this._logs.push(data);
-            while (this._logs.length > this.maxLogLines) {
-                this._logs.shift();
+        if (this.enabled) {
+            if (LogLevel.toValue(data.level) >= LogLevel.toValue(this.logLevel) && level != 'none') {
+                const namedLogs = this._logs.get(data.name);
+                namedLogs.push(data);
+                while (namedLogs.length > this.maxLogLines) {
+                    namedLogs.shift();
+                }
             }
         }
     }
     async logResult(name: string, result: ITestResult): Promise<void> { 
-        if (result.status == 'Passed') {
-            this.log(LoggingLevel.pass, JSON.stringify(result));
-        } else {
-            this.log(LogginLevel.fail, JSON.stringify(result));
+        if (this.enabled) {
+            if (result?.status == 'Passed') {
+                this.log(LoggingLevel.pass, JSON.stringify(result));
+            } else {
+                this.log(LogginLevel.fail, JSON.stringify(result));
+            }
         }
     }
-    async dispose(name: string, error?: Error): Promise<void> { 
-        this._logs.forEach((message) => {
-            LogManager.toConsole(message);
-        });
-        if (error) {
-            LogManager.toConsole({name: this.logName, level: 'error', message: Err.full(error.message)});
+    async finalise(name: string): Promise<void> { 
+        if (this.enabled) {
+            const namedLogs = this._logs.get(name);
+            while (namedLogs?.length > 0) {
+                let message = namedLogs.shift();
+                LogManager.toConsole(message);
+            });
+            LogManager.toConsole({name: this.name, level: 'debug', message: 'OnDisposeConsoleLogger is now disposed!'});
         }
-        LogManager.toConsole({name: this.logName, level: 'info', message: 'OnDisposeConsoleLogger is now disposed!'});
     }
 }
 ```
 
 ### Example Test Case Plugin (TestRail)
 ```typescript
-export type TestRailTestCasePluginOptions = Merge<TestCasePluginOptions, {
-    client?: TestRailClient;
-}>;
-export class TestRailTestCasePlugin extends TestCasePlugin<TestRailTestCasePluginOptions> {
-    private _client: TestRailClient;
-    get client(): TestRailClient {
-        if (!this._client) {
-            this._client = this.option('client') || new TestRailClient();
+export class TestRailTestCasePluginConfig {
+    username: string;
+    password: string;
+    url: string = 'https://you.testrail.io';
+    readEnabled: boolean = true;
+    writeEnabled: boolean = false;
+    projectId: number;
+    suiteIds: Array<number> = new Array<number>();
+    planId: number;
+};
+export class TestRailTestCasePlugin implements ITestCasePlugin {
+    public readonly aftCfg: AftConfig;
+    public readonly pluginType: 'testcase' = 'testcase';
+    public readonly enabled: boolean;
+    private readonly _client: TestRailClient;
+    constructor(aftCfg?: AftConfig) {
+        this.aftCfg = aftCfg ?? aftConfig;
+        const cfg = this.aftCfg.getSection(TestRailTestCasePluginConfig);
+        this.enabled = cfg.readEnabled || cfg.writeEnabled;
+        if (this.enabled) {
+            this._client = new TestRailClient(cfg.url, cfg.username, cfg.password);
         }
-        return this._client;
     }
-    async getTestCase(testId: string): Promise<ITestCase> {
-        return await this.client.getTestCase(testId);
+    async getTestCase(testId: string): Promise<TestCase> {
+        return await this._client.getTestCase(testId);
     }
-    async findTestCases(searchTerm: string): Promise<ITestCase[]> {
-        return await this.client.findTestCases(searchTerm);
+    async findTestCases(searchCriteria: TestCase): Promise<TestCase[]> {
+        return await this._client.findTestCases(searchCriteria);
     }
     async shouldRun(testId: string): Promise<ProcessingResult> {
-        return await this.client.shouldRun(testId);
+        const result = await this._client.getLastTestResult(testId);
+        if (result.status === 'Passed') {
+            return false;
+        }
+        return true;
     }
-    async dispose(error?: Error) { /* perform some action if needed */ }
 }
 ```
 ### Example Defect Plugin (Bugzilla)
