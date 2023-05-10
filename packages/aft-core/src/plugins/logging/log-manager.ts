@@ -62,7 +62,7 @@ export class LogManager {
     public readonly logLevel: LogLevel;
 
     constructor(logName: string, aftCfg?: AftConfig) {
-        this.logName = logName;
+        this.logName = logName ?? 'AFT';
         this._aftCfg = aftCfg ?? aftConfig;
         const lmc = this._aftCfg.getSection(LogManagerConfig);
         this.logLevel = lmc.logLevel;

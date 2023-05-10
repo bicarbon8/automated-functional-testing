@@ -1,5 +1,5 @@
 import * as path from "path";
-import { AftConfig, ConfigManager, configMgr, convert, fileio, ILoggingPlugin, LogLevel, LogMessageData, TestResult } from "aft-core";
+import { AftConfig, convert, fileio, LoggingPlugin, LogLevel, LogManagerConfig, LogMessageData, ResultsPlugin, TestResult } from "aft-core";
 import * as date from "date-and-time";
 
 export class FilesystemLoggingPluginConfig {
@@ -9,54 +9,53 @@ export class FilesystemLoggingPluginConfig {
     dateFormat: string = 'YYYY-MM-DD HH:mm:ss.SSS';
 };
 
-export class FilesystemLoggingPlugin implements ILoggingPlugin {
-    public readonly aftCfg: ConfigManager;
-    public readonly logLevel: LogLevel;
-    public readonly enabled: boolean;
-    public readonly implements: "logging";
-    public readonly outputPath: string;
-    public readonly includeResults: boolean;
-    public readonly dateFormat: string;
+export class FilesystemLoggingPlugin extends LoggingPlugin implements ResultsPlugin {
+    public override readonly logLevel: LogLevel;
+    public override readonly enabled: boolean;
 
-    constructor(cfgMgr?: ConfigManager) {
-        cfgMgr = cfgMgr ?? configMgr;
-        const fslpc = cfgMgr.getSection(FilesystemLoggingPluginConfig);
-        this.logLevel = fslpc.logLevel ?? cfgMgr.getSection(AftConfig).logLevel
+    private readonly _outputPath: string;
+    private readonly _includeResults: boolean;
+    private readonly _dateFormat: string;
+
+    constructor(aftCfg?: AftConfig) {
+        super(aftCfg);
+        const fslpc = aftCfg.getSection(FilesystemLoggingPluginConfig);
+        this.logLevel = fslpc.logLevel ?? aftCfg.getSection(LogManagerConfig).logLevel
             ?? 'trace';
         this.enabled = this.logLevel != 'none';
         if (this.enabled) {
             if (!path.isAbsolute(fslpc.outputPath)) {
-                this.outputPath = path.join(process.cwd(), fslpc.outputPath);
+                this._outputPath = path.join(process.cwd(), fslpc.outputPath);
             } else {
-                this.outputPath = fslpc.outputPath;
+                this._outputPath = fslpc.outputPath;
             }
-            this.includeResults = fslpc.includeResults ?? true;
-            this.dateFormat = fslpc.dateFormat ?? 'YYYY-MM-DD HH:mm:ss.SSS';
+            this._includeResults = fslpc.includeResults ?? true;
+            this._dateFormat = fslpc.dateFormat ?? 'YYYY-MM-DD HH:mm:ss.SSS';
         }
     }
 
-    async initialise(logName: string): Promise<void> {
+    override initialise = async (logName: string): Promise<void> => {
         /* do nothing */
     }
     
-    async log(message: LogMessageData): Promise<void> {
+    override log = async (name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => {
         if (this.enabled) {
-            this._appendToFile(message);
+            this._appendToFile({name, level, message});
         }
     }
 
-    async logResult(logName: string, result: TestResult): Promise<void> {
-        if (this.enabled && this.includeResults) {
+    submitResult = async (result: TestResult): Promise<void> => {
+        if (this.enabled && this._includeResults) {
             let level: LogLevel;
             switch(result.status) {
-                case 'Failed':
+                case 'failed':
                     level = 'fail';
                     break;
-                case 'Passed':
+                case 'passed':
                     level = 'pass';
                     break;
-                case 'Blocked':
-                case 'Skipped':
+                case 'blocked':
+                case 'skipped':
                     level = 'warn';
                     break;
                 default: 
@@ -64,7 +63,7 @@ export class FilesystemLoggingPlugin implements ILoggingPlugin {
                     break;
             }
             const data: LogMessageData = {
-                name: logName,
+                name: result.testName,
                 level: level,
                 message: JSON.stringify(result)
             };
@@ -72,15 +71,15 @@ export class FilesystemLoggingPlugin implements ILoggingPlugin {
         }
     }
 
-    async finalise(logName: string): Promise<void> {
+    override finalise = async (logName: string): Promise<void> => {
         /* do nothing */
     }
 
     private _appendToFile(data: LogMessageData): void {
         if (LogLevel.toValue(data.level) >= LogLevel.toValue(this.logLevel) && data.level != 'none') {
             const filename = convert.toSafeString(data.name);
-            const fullPath = path.join(this.outputPath, `${filename}.log`);
-            const lock = fileio.getExpiringFileLock(fullPath, 15, 10);
+            const fullPath = path.join(this._outputPath, `${filename}.log`);
+            const lock = fileio.getExpiringFileLock(fullPath, this.aftCfg);
             try {
                 fileio.append(fullPath, `${this._format(data)}\n`);
             } finally {
@@ -93,7 +92,7 @@ export class FilesystemLoggingPlugin implements ILoggingPlugin {
         data = data || {};
         if (!data.message) { data.message = ''; }
         if (!data.level) { data.level = 'none' }
-        let d: string = date.format(new Date(), this.dateFormat);
+        let d: string = date.format(new Date(), this._dateFormat);
         let out: string = `[${d}] - ${data.level.toUpperCase()} - ${data.message}`;
         return out;
     }

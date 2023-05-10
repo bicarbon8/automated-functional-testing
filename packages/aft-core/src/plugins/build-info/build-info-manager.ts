@@ -89,5 +89,3 @@ export class BuildInfoManager {
         return now;
     }
 }
-
-export const aftBuildInfo = new BuildInfoManager();

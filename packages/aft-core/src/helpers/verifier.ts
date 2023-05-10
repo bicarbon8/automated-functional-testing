@@ -73,14 +73,14 @@ export class Verifier implements PromiseLike<void> {
         return this._logMgr;
     }
 
-    get policyEng(): PolicyEngineManager {
+    get policyEngMgr(): PolicyEngineManager {
         if (!this._policyEngMgr) {
             this._policyEngMgr = new PolicyEngineManager(this.aftCfg);
         }
         return this._policyEngMgr;
     }
 
-    get buildInfo(): BuildInfoManager {
+    get buildInfoMgr(): BuildInfoManager {
         if (!this._buildInfoMgr) {
             this._buildInfoMgr = new BuildInfoManager(this.aftCfg);
         }
@@ -272,7 +272,7 @@ export class Verifier implements PromiseLike<void> {
         if (testIds?.length) {
             for (var i=0; i<testIds.length; i++) {
                 let testId: string = testIds[i];
-                let result: ProcessingResult<boolean> = await this.policyEng.shouldRun(testId);
+                let result: ProcessingResult<boolean> = await this.policyEngMgr.shouldRun(testId);
                 if (result.result === true) {
                     shouldRunTests.push(testId);
                 } else {
@@ -283,7 +283,7 @@ export class Verifier implements PromiseLike<void> {
                 return {result: false, message: `none of the supplied tests should be run: [${testIds.join(', ')}]`};
             }
             return {result: true, message: `the following supplied tests should be run: [${shouldRunTests.join(', ')}]`};
-        } else if (this.policyEng.plugins?.filter(p => Err.handle(() => p?.enabled)).length > 0) {
+        } else if (this.policyEngMgr.plugins?.filter(p => Err.handle(() => p?.enabled)).length > 0) {
             return {result: false, message: `no associated testIds found for test, but enabled 'IPolicyEnginePlugins' exist so test should not be run`}
         }
         return {result: true};
@@ -358,6 +358,7 @@ export class Verifier implements PromiseLike<void> {
 
     protected async _generateTestResult(status: TestStatus, logMessage: string, testId?: string): Promise<TestResult> {
         let result: TestResult = {
+            testName: this.logMgr.logName,
             testId: testId,
             created: Date.now(),
             resultId: rand.guid,
@@ -365,8 +366,8 @@ export class Verifier implements PromiseLike<void> {
             status: status,
             metadata: {
                 durationMs: convert.toElapsedMs(this._startTime),
-                buildName: await this.buildInfo.buildName() || 'unknown',
-                buildNumber: await this.buildInfo.buildNumber() || 'unknown'
+                buildName: await this.buildInfoMgr.buildName() || 'unknown',
+                buildNumber: await this.buildInfoMgr.buildNumber() || 'unknown'
             }
         };
         return result;

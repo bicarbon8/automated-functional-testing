@@ -15,6 +15,7 @@ export * from './helpers/rand';
 export * from './helpers/retry';
 export * from './helpers/using';
 export * from './helpers/verifier';
+export * from './helpers/verifier-internals';
 export * from './helpers/verifier-matcher';
 export * from './helpers/wait';
 /** plugins */

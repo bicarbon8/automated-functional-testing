@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { LogManager, rand, TestResult, LogManagerOptions } from "aft-core";
-import { HtmlLoggingPlugin, HtmlLoggingPluginOptions } from "../src";
+import { HtmlLoggingPlugin, HtmlLoggingPluginConfig } from "../src";
 import { HtmlResult } from "../src/html-result";
 
 describe('HtmlLoggingPlugin', () => {
@@ -15,7 +15,7 @@ describe('HtmlLoggingPlugin', () => {
     });
     
     it('stores the specified number of log lines', async () => {
-        const config: HtmlLoggingPluginOptions = {
+        const config: HtmlLoggingPluginConfig = {
             level: 'info',
             maxLogLines: 14
         };
@@ -30,7 +30,7 @@ describe('HtmlLoggingPlugin', () => {
     });
 
     it('adds an ellipsis to the oldest log line only when exceeded maxLogLines', async () => {
-        const config: HtmlLoggingPluginOptions = {
+        const config: HtmlLoggingPluginConfig = {
             level: 'info',
             maxLogLines: 3
         };
@@ -52,7 +52,7 @@ describe('HtmlLoggingPlugin', () => {
     });
 
     it('stores logs only when at or above the specified level', async () => {
-        const config: HtmlLoggingPluginOptions = {
+        const config: HtmlLoggingPluginConfig = {
             level: 'step',
             maxLogLines: 14
         };
@@ -89,7 +89,7 @@ describe('HtmlLoggingPlugin', () => {
     });
 
     it('only attempts to write to HTML file on call to dispose', async () => {
-        const config: HtmlLoggingPluginOptions = {
+        const config: HtmlLoggingPluginConfig = {
             outputDir: './',
             fileName: 'testresults.html'
         };
@@ -133,7 +133,7 @@ describe('HtmlLoggingPlugin', () => {
     });
 
     it('can generate HTML result file', async () => {
-        const config: HtmlLoggingPluginOptions = {
+        const config: HtmlLoggingPluginConfig = {
             outputDir: './',
             fileName: 'testresults.html'
         };
