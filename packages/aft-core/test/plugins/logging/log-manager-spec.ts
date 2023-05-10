@@ -1,4 +1,4 @@
-import { TestResult, LogManager, rand, LogMessageData, pluginLoader, AftConfig } from "../../../src";
+import { TestResult, LogManager, rand, LogMessageData, pluginLoader, AftConfig, LogLevel } from "../../../src";
 import { MockLoggingPlugin } from "./mock-logging-plugin";
 
 const consoleLog = console.log;
@@ -27,11 +27,10 @@ describe('LogManager', () => {
         }));
         const plugin = logMgr.plugins.find(p => p?.enabled);
         const logs = new Array<LogMessageData>();
-        const logSpy = spyOn(plugin, 'log').and.callFake((message: LogMessageData) => {
-            logs.push(message);
+        const logSpy = spyOn(plugin, 'log').and.callFake((name: string, level: LogLevel, message: string, ...data: any[]) => {
+            logs.push({name, level, message});
             return Promise.resolve();
         });
-        const resultSpy = spyOn(plugin, 'logResult').and.callThrough();
         let messages: string[] = [];
 
         for (var i=0; i<5; i++) {
@@ -48,7 +47,6 @@ describe('LogManager', () => {
             await logMgr.log('none', message);
         }
         expect(logSpy).toHaveBeenCalledTimes(5 * 9);
-        expect(resultSpy).not.toHaveBeenCalled();
         expect(logs[0].message).toEqual(messages[0]);
         expect(logs[logs.length - 1].message).toEqual(messages[messages.length - 1]);
     });
@@ -76,8 +74,8 @@ describe('LogManager', () => {
         }));
         const plugin = logger.plugins.find(p => p.enabled) as MockLoggingPlugin;
         const logs: LogMessageData[] = [];
-        const logSpy = spyOn(plugin, 'log').and.callFake((message: LogMessageData): Promise<void> => {
-            logs.push(message);
+        const logSpy = spyOn(plugin, 'log').and.callFake((name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => {
+            logs.push({name, level, message});
             return Promise.resolve();
         })
         const expected: string = rand.getString(25, true, true, true, true);
@@ -85,39 +83,6 @@ describe('LogManager', () => {
 
         expect(logSpy).toHaveBeenCalledTimes(1);
         expect(logs[0].message).toBe(expected);
-    });
-
-    it('will send cloned TestResult to any registered LoggingPlugin implementations', async () => {
-        const logName = 'will send cloned TestResult to any registered LoggingPlugin implementations';
-        const logger = new LogManager(logName, new AftConfig({
-            pluginNames: ['mock-logging-plugin']
-        }));
-        const plugin = logger.plugins.find(p => p.enabled);
-        const logSpy = spyOn(plugin, 'log').and.callThrough();
-        const results = new Array<TestResult>();
-        const names = new Array<string>();
-        const resultSpy = spyOn(plugin, 'logResult').and.callFake((logName: string, result: TestResult) => {
-            names.push(logName);
-            results.push(result);
-            return Promise.resolve();
-        });
-        let result: TestResult = {
-            testId: 'C' + rand.getInt(1000, 999999),
-            created: Date.now(),
-            resultId: rand.guid,
-            status: 'untested',
-            resultMessage: rand.getString(100)
-        };
-
-        await logger.logResult(result);
-
-        expect(logSpy).not.toHaveBeenCalled();
-        expect(resultSpy).toHaveBeenCalledTimes(1);
-        expect(names[0]).toEqual(logName);
-        expect(results.length).toEqual(1);
-        expect(results[0]).not.toBe(result);
-        expect(results[0].testId).toEqual(result.testId);
-        expect(results[0].created).toEqual(result.created);
     });
 
     it('calls ILoggingPlugin.finalise on logger.dispose', async () => {
@@ -150,7 +115,6 @@ describe('LogManager', () => {
         }));
 
         expect(async () => await logger.log('error', rand.guid)).withContext('log').not.toThrow();
-        expect(async () => await logger.logResult({created: Date.now(), resultId: rand.guid, status: 'passed'})).withContext('logResult').not.toThrow();
         expect(async () => await logger.dispose()).withContext('dispose').not.toThrow();
     });
 
@@ -195,20 +159,13 @@ describe('LogManager', () => {
         const plugin = logger.plugins[0];
         const initSpy = spyOn(plugin, 'initialise');
         const logSpy = spyOn(plugin, 'log');
-        const logResSpy = spyOn(plugin, 'logResult');
         const finSpy = spyOn(plugin, 'finalise');
 
         await logger.log('error', rand.getString(33));
-        await logger.logResult({
-            created: Date.now(),
-            resultId: rand.guid,
-            status: 'failed'
-        });
         logger.dispose();
 
         expect(initSpy).not.toHaveBeenCalled();
         expect(logSpy).not.toHaveBeenCalled();
-        expect(logResSpy).not.toHaveBeenCalled();
         expect(finSpy).not.toHaveBeenCalled();
     })
 });

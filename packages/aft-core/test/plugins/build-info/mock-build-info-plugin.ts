@@ -1,4 +1,4 @@
-import { AftConfig, IBuildInfoPlugin, aftConfig, rand } from "../../../src";
+import { AftConfig, BuildInfoPlugin, rand } from "../../../src";
 
 export class MockBuildInfoPluginConfig {
     buildName: string;
@@ -7,15 +7,13 @@ export class MockBuildInfoPluginConfig {
     enabled: boolean;
 };
 
-export class MockBuildInfoPlugin implements IBuildInfoPlugin {
-    public readonly aftCfg: AftConfig;
-    public readonly pluginType: "build-info" = 'build-info';
-    public readonly enabled: boolean;
+export class MockBuildInfoPlugin extends BuildInfoPlugin {
+    public override readonly enabled: boolean;
     private readonly _buildName: string;
     private readonly _buildNumberMin: number;
     private readonly _buildNumberMax: number;
     constructor(aftCfg?: AftConfig) {
-        this.aftCfg = aftCfg ?? aftConfig;
+        super(aftCfg);
         const cfg = this.aftCfg.getSection(MockBuildInfoPluginConfig);
         this.enabled = cfg.enabled ?? false;
         if (this.enabled) {
@@ -24,13 +22,13 @@ export class MockBuildInfoPlugin implements IBuildInfoPlugin {
             this._buildNumberMax = cfg.buildNumberMax ?? 9999;
         }
     }
-    async buildName(): Promise<string> {
+    override buildName = async (): Promise<string> => {
         if (this.enabled) {
             return `MockBuildName-${this._buildName}`;
         }
         return null;
     }
-    async buildNumber(): Promise<string> {
+    override buildNumber = async (): Promise<string> => {
         if (this.enabled) {
             return `MockBuildNumber-${rand.getInt(this._buildNumberMin, this._buildNumberMax)}`;
         }

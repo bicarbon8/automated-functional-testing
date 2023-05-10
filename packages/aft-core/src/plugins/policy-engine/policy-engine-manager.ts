@@ -4,15 +4,15 @@ import { Err } from "../../helpers/err";
 import { LogManager } from "../logging/log-manager";
 import { LogMessageData } from "../logging/log-message-data";
 import { pluginLoader } from "../plugin-loader";
-import { IPolicyEnginePlugin } from "./i-policy-engine-plugin";
+import { PolicyEnginePlugin } from "./policy-engine-plugin";
 
 export class PolicyEngineManager {
     public readonly aftCfg: AftConfig;
-    public readonly plugins: Array<IPolicyEnginePlugin>;
+    public readonly plugins: Array<PolicyEnginePlugin>;
 
     constructor(aftCfg?: AftConfig) {
         this.aftCfg = aftCfg ?? aftConfig;
-        this.plugins = pluginLoader.getPluginsByType<IPolicyEnginePlugin>('policy-engine', this.aftCfg);
+        this.plugins = pluginLoader.getPluginsByType(PolicyEnginePlugin, this.aftCfg);
     }
 
     /**
@@ -32,7 +32,7 @@ export class PolicyEngineManager {
                 } catch (e) {
                     let logData: LogMessageData = {
                         name: this.constructor.name,
-                        logLevel: 'warn',
+                        level: 'warn',
                         message: `error calling '${plugins.constructor.name}.shouldRun(${testId})': ${Err.short(e)}`
                     };
                     LogManager.toConsole(logData);
@@ -48,7 +48,7 @@ export class PolicyEngineManager {
         return { result: true };
     }
 
-    private _getEnabledPlugins(): Array<IPolicyEnginePlugin> {
+    private _getEnabledPlugins(): Array<PolicyEnginePlugin> {
         return this.plugins.filter(p => Err.handle(() => p?.enabled));
     }
 }

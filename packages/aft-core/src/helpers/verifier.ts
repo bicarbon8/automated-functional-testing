@@ -1,7 +1,7 @@
 import { LogManager } from "../plugins/logging/log-manager";
-import { TestResult } from "../plugins/logging/test-result";
+import { TestResult } from "../plugins/results/test-result";
 import { PolicyEngineManager } from "../plugins/policy-engine/policy-engine-manager";
-import { TestStatus } from "../plugins/logging/test-status";
+import { TestStatus } from "../plugins/results/test-status";
 import { convert } from "./convert";
 import { Func, ProcessingResult } from "./custom-types";
 import { rand } from "./rand";
@@ -9,6 +9,7 @@ import { equaling, VerifierMatcher } from "./verifier-matcher";
 import { Err } from "./err";
 import { BuildInfoManager } from "../plugins/build-info/build-info-manager";
 import { AftConfig, aftConfig } from "../configuration/aft-config";
+import { ResultsManager } from "../plugins/results/results-manager";
 
 /**
  * class to be used for executing some Functional Test Assertion after checking with any
@@ -41,6 +42,7 @@ export class Verifier implements PromiseLike<void> {
     protected _logMgr: LogManager;
     protected _policyEngMgr: PolicyEngineManager;
     protected _buildInfoMgr: BuildInfoManager;
+    protected _resMgr: ResultsManager;
 
     constructor(aftCfg?: AftConfig) {
         this.aftCfg = aftCfg ?? aftConfig;
@@ -82,6 +84,13 @@ export class Verifier implements PromiseLike<void> {
             this._buildInfoMgr = new BuildInfoManager(this.aftCfg);
         }
         return this._buildInfoMgr;
+    }
+
+    get resultsMgr(): ResultsManager {
+        if (!this._resMgr) {
+            this._resMgr = new ResultsManager(this.aftCfg);
+        }
+        return this._resMgr;
     }
 
     async then<TResult1 = Verifier, TResult2 = never>(onfulfilled?: (value: void) => TResult1 | PromiseLike<TResult1>, onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2> {
@@ -228,6 +237,17 @@ export class Verifier implements PromiseLike<void> {
     }
 
     /**
+     * allows for using a specific `ResultsManager` instance. if not
+     * set then the global `ResultsManager.instance()` will be used
+     * @param refMgr a `ResultsManager` instance
+     * @returns this `Verifier` instance
+     */
+    withResultsManager(refMgr: ResultsManager): this {
+        this._resMgr = refMgr;
+        return this;
+    }
+
+    /**
      * checks if any of the supplied test ids should be run and returns `true` if at least
      * one of them should
      * @param testIds iterates over all test ids checking the `PolicyEngineManager` to see
@@ -280,7 +300,7 @@ export class Verifier implements PromiseLike<void> {
             for (var i=0; i<results.length; i++) {
                 let result: TestResult = results[i];
                 try {
-                    await this.logMgr.logResult(result);
+                    await this.resultsMgr.submitResult(result);
                 } catch (e) {
                     await this.logMgr.warn(`unable to log test result for test '${result.testId || result.resultId}' due to: ${Err.short(e)}`);
                 }

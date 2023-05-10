@@ -29,7 +29,7 @@ describe('KinesisLoggingPlugin', () => {
         const logName = rand.getString(10);
         for (var i=0; i<20; i++) {
             let logMessage: string = rand.getString(99, true, true);
-            await plugin.log({logLevel: 'warn', message: logMessage, name: logName});
+            await plugin.log({level: 'warn', message: logMessage, name: logName});
         }
 
         expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(20);
@@ -59,7 +59,7 @@ describe('KinesisLoggingPlugin', () => {
 
         for (var i=0; i<20; i++) {
             let logMessage: string = rand.getString(99, true, true);
-            await plugin.log({logLevel: 'warn', message: logMessage, name: rand.getString(10)});
+            await plugin.log({level: 'warn', message: logMessage, name: rand.getString(10)});
         }
 
         expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(20);
@@ -90,7 +90,7 @@ describe('KinesisLoggingPlugin', () => {
         const logName = rand.getString(10);
         for (var i=0; i<9; i++) {
             let logMessage: string = rand.getString(99, true, true);
-            await plugin.log({logLevel: 'warn', message: logMessage, name: logName});
+            await plugin.log({level: 'warn', message: logMessage, name: logName});
         }
 
         expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(9);
@@ -125,9 +125,9 @@ describe('KinesisLoggingPlugin', () => {
             /* do nothing */
         });
 
-        await plugin.log({logLevel: 'debug', message: rand.guid, name: rand.getString(10)});
-        await plugin.log({logLevel: 'info', message: rand.guid, name: rand.getString(10)});
-        await plugin.log({logLevel: 'warn', message: rand.guid, name: rand.getString(10)});
+        await plugin.log({level: 'debug', message: rand.guid, name: rand.getString(10)});
+        await plugin.log({level: 'info', message: rand.guid, name: rand.getString(10)});
+        await plugin.log({level: 'warn', message: rand.guid, name: rand.getString(10)});
 
         expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(2);
         expect(spySendBatch).toHaveBeenCalledTimes(0);
@@ -152,7 +152,7 @@ describe('KinesisLoggingPlugin', () => {
         });
 
         let expectedMessage: string = rand.guid;
-        await plugin.log({logLevel: 'warn', message: expectedMessage, name: 'adds expected fields to the log record'});
+        await plugin.log({level: 'warn', message: expectedMessage, name: 'adds expected fields to the log record'});
 
         let logRecord: Firehose.Record = store.get('_send');
         let data: KinesisLogRecord = JSON.parse(logRecord.Data.toString()) as KinesisLogRecord;
@@ -188,7 +188,7 @@ describe('KinesisLoggingPlugin', () => {
         let message: string = rand.getString(250);
 
         const logName = rand.getString(10, true, true, true, true);
-        await plugin.log({logLevel: 'info', message: message, name: logName});
+        await plugin.log({level: 'info', message: message, name: logName});
         await plugin.logResult(logName, result);
         await plugin.finalise(logName);
     });

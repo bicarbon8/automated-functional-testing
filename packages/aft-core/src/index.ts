@@ -18,18 +18,21 @@ export * from './helpers/verifier';
 export * from './helpers/verifier-matcher';
 export * from './helpers/wait';
 /** plugins */
-export * from './plugins/i-plugin';
+export * from './plugins/plugin';
 export * from './plugins/plugin-loader';
 /** plugins/build-info */
 export * from './plugins/build-info/build-info-manager';
-export * from './plugins/build-info/i-build-info-plugin';
+export * from './plugins/build-info/build-info-plugin';
 /** plugins/logging */
-export * from './plugins/logging/i-logging-plugin';
+export * from './plugins/logging/logging-plugin';
 export * from './plugins/logging/log-level';
 export * from './plugins/logging/log-manager';
 export * from './plugins/logging/log-message-data';
-/** plugins/test-cases */
-export * from './plugins/policy-engine/i-policy-engine-plugin';
+/** plugins/policy-engine */
+export * from './plugins/policy-engine/policy-engine-plugin';
 export * from './plugins/policy-engine/policy-engine-manager';
-export * from './plugins/logging/test-result';
-export * from './plugins/logging/test-status';
+/** plugins/results */
+export * from './plugins/results/results-plugin';
+export * from './plugins/results/results-manager';
+export * from './plugins/results/test-result';
+export * from './plugins/results/test-status';

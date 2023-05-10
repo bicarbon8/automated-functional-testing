@@ -1,10 +1,7 @@
-import { IPlugin } from "../i-plugin";
-import { TestResult } from "./test-result";
+import { Plugin } from "../plugin";
 import { LogLevel } from "./log-level";
-import { LogMessageData } from "./log-message-data";
 
-export interface ILoggingPlugin extends IPlugin {
-    readonly pluginType: 'logging';
+export class LoggingPlugin extends Plugin {
     /**
      * allows for filtering out of erroneous information from logs by assigning
      * values to different types of logging. the purpose of each log level is
@@ -19,29 +16,22 @@ export interface ILoggingPlugin extends IPlugin {
      * - `error` - used for unexpected errors that are **not** recoverable
      * - `none` - used when no logging is desired (disables logging)
      */
-    readonly logLevel: LogLevel;
+    logLevel = 'none';
     /**
      * called by the parent `AftLog` on load to allow any plugins to configure
      * themselves for a new logger
      * @param logName the name of the `AftLog` instance calling dispose
      */
-    initialise(logName: string): Promise<void>;
+    initialise = (logName: string): Promise<void> => null;
     /**
      * used for logging of message strings. this function would be called often
      * @param message the `LogMessageData` to be logged by this plugin
      */
-    log(message: LogMessageData): Promise<void>;
-    /**
-     * used for logging test results. this function would only be called at the end
-     * of a given test
-     * @param logName the name of the `AftLog` instance sending this result
-     * @param result a `TestResult` indicating success or failure of a given test
-     */
-    logResult(logName: string, result: TestResult): Promise<void>;
+    log = (name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => null;
     /**
      * called by the parent `AftLog` before terminating to allow each plugin to 
      * finalise any deferred logging actions
      * @param logName the name of the `AftLog` instance calling finalise
      */
-    finalise(logName: string): Promise<void>;
+    finalise = (logName: string): Promise<void> => null;
 }

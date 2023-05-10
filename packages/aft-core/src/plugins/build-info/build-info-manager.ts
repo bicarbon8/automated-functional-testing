@@ -4,17 +4,17 @@ import { Err } from "../../helpers/err";
 import { MachineInfoData, machineInfo } from "../../helpers/machine-info";
 import { LogManager } from "../logging/log-manager";
 import { pluginLoader } from "../plugin-loader";
-import { IBuildInfoPlugin } from "./i-build-info-plugin";
+import { BuildInfoPlugin } from "./build-info-plugin";
 
 export class BuildInfoManager {
     public readonly aftCfg: AftConfig;
-    public readonly plugins: Array<IBuildInfoPlugin>
+    public readonly plugins: Array<BuildInfoPlugin>
 
     private readonly safeStrOpt: SafeStringOption[] = [{exclude: /[\()\;\\\/\|\<\>""'*&^%$#@!,.\-\+_=\?]/gi, replaceWith: ''}];
     
     constructor(aftCfg?: AftConfig) {
         this.aftCfg = aftCfg ?? aftConfig;
-        this.plugins = pluginLoader.getPluginsByType<IBuildInfoPlugin>('build-info', this.aftCfg);
+        this.plugins = pluginLoader.getPluginsByType(BuildInfoPlugin, this.aftCfg);
     }
 
     /**
@@ -44,7 +44,7 @@ export class BuildInfoManager {
             } catch (e) {
                 LogManager.toConsole({
                     name: this.constructor.name,
-                    logLevel: 'warn',
+                    level: 'warn',
                     message: `error calling '${plugin.constructor.name}.buildName': ${Err.short(e)}`
                 });
             }
@@ -69,7 +69,7 @@ export class BuildInfoManager {
             } catch (e) {
                 LogManager.toConsole({
                     name: this.constructor.name,
-                    logLevel: 'warn',
+                    level: 'warn',
                     message: `error calling '${plugin.constructor.name}.buildNumber': ${Err.short(e)}`
                 });
             }

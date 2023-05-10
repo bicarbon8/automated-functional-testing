@@ -1,4 +1,4 @@
-import { AftConfig, IPlugin, pluginLoader } from "../../src"
+import { AftConfig, Plugin, pluginLoader } from "../../src"
 import { MockPlugin } from "./mock-plugin";
 
 describe('PluginLoader', () => {
@@ -11,7 +11,7 @@ describe('PluginLoader', () => {
     })
     
     it('can load a class implementing IPlugin', () => {
-        const plugins = pluginLoader.getPluginsByType<IPlugin>('mock', new AftConfig({
+        const plugins = pluginLoader.getPluginsByType(Plugin, new AftConfig({
             pluginNames: ['mock-plugin'],
             MockPluginConfig: {
                 enabled: true

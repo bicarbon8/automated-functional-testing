@@ -95,7 +95,7 @@ describe('Err', () => {
             const logger = new LogManager('accepts ErrOptions as a second argument');
             let actualLevel: LogLevel;
             let actualMessage: string;
-            spyOn(logger, 'log').and.callFake((level: LogLevel, message: string) => {
+            spyOn(logger, 'log').and.callFake((level: LogLevel, message: string, ...data: any[]) => {
                 actualLevel = level;
                 actualMessage = message;
                 return Promise.resolve();

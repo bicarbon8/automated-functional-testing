@@ -13,7 +13,7 @@ export class FilesystemLoggingPlugin implements ILoggingPlugin {
     public readonly aftCfg: ConfigManager;
     public readonly logLevel: LogLevel;
     public readonly enabled: boolean;
-    public readonly pluginType: "logging";
+    public readonly implements: "logging";
     public readonly outputPath: string;
     public readonly includeResults: boolean;
     public readonly dateFormat: string;
@@ -65,7 +65,7 @@ export class FilesystemLoggingPlugin implements ILoggingPlugin {
             }
             const data: LogMessageData = {
                 name: logName,
-                logLevel: level,
+                level: level,
                 message: JSON.stringify(result)
             };
             this._appendToFile(data);
@@ -77,7 +77,7 @@ export class FilesystemLoggingPlugin implements ILoggingPlugin {
     }
 
     private _appendToFile(data: LogMessageData): void {
-        if (LogLevel.toValue(data.logLevel) >= LogLevel.toValue(this.logLevel) && data.logLevel != 'none') {
+        if (LogLevel.toValue(data.level) >= LogLevel.toValue(this.logLevel) && data.level != 'none') {
             const filename = convert.toSafeString(data.name);
             const fullPath = path.join(this.outputPath, `${filename}.log`);
             const lock = fileio.getExpiringFileLock(fullPath, 15, 10);
@@ -92,9 +92,9 @@ export class FilesystemLoggingPlugin implements ILoggingPlugin {
     private _format(data: LogMessageData): string {
         data = data || {};
         if (!data.message) { data.message = ''; }
-        if (!data.logLevel) { data.logLevel = 'none' }
+        if (!data.level) { data.level = 'none' }
         let d: string = date.format(new Date(), this.dateFormat);
-        let out: string = `[${d}] - ${data.logLevel.toUpperCase()} - ${data.message}`;
+        let out: string = `[${d}] - ${data.level.toUpperCase()} - ${data.message}`;
         return out;
     }
 }

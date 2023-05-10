@@ -1,4 +1,4 @@
-import { ILoggingPlugin, LogLevel, TestResult, machineInfo, AftLog, LogMessageData, ConfigManager, configMgr, pluginLoader, IBuildInfoPlugin, AftConfig } from "aft-core";
+import { ILoggingPlugin, LogLevel, TestResult, machineInfo, AftLog, LogMessageData, ConfigManager, configMgr, pluginLoader, BuildInfoPlugin, AftConfig } from "aft-core";
 import * as AWS from "aws-sdk";
 import * as pkg from "../package.json";
 import { KinesisLogRecord } from "./kinesis-log-record";
@@ -40,12 +40,12 @@ type CheckAndSendOptions = {
  */
 export class KinesisLoggingPlugin implements ILoggingPlugin {
     private readonly _logs: Map<string, AWS.Firehose.Record[]>;
-    private readonly _buildInfo: IBuildInfoPlugin;
+    private readonly _buildInfo: BuildInfoPlugin;
 
     private _client: AWS.Firehose;
 
     public readonly aftCfg: ConfigManager;
-    public readonly pluginType: 'logging';
+    public readonly implements: 'logging';
     public readonly logLevel: LogLevel;
     public get enabled(): boolean {
         return this.logLevel != 'none';
@@ -58,7 +58,7 @@ export class KinesisLoggingPlugin implements ILoggingPlugin {
         this.logLevel = this.aftCfg.getSection(KinesisLoggingPluginConfig).logLevel
             ?? this.aftCfg.getSection(AftConfig).logLevel;
         if (this.enabled) {
-            this._buildInfo = pluginLoader.getPluginsByType<IBuildInfoPlugin>('buildinfo', this.aftCfg)
+            this._buildInfo = pluginLoader.getPluginsByType<BuildInfoPlugin>('buildinfo', this.aftCfg)
                 ?.find(p => p?.enabled);
         }
     }
@@ -134,10 +134,10 @@ export class KinesisLoggingPlugin implements ILoggingPlugin {
 
     async log(data: LogMessageData): Promise<void> {
         if (this.enabled) {
-            if (LogLevel.toValue(data.logLevel) >= LogLevel.toValue(this.logLevel) && data.logLevel != 'none') {
+            if (LogLevel.toValue(data.level) >= LogLevel.toValue(this.logLevel) && data.level != 'none') {
                 let record: AWS.Firehose.Record = this._createKinesisLogRecord({
                     logName: data.name,
-                    level: data.logLevel,
+                    level: data.level,
                     message: data.message,
                     version: pkg.version,
                     buildName: await this._buildInfo.buildName().catch((err) => 'unknown'),

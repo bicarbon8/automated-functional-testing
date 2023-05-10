@@ -1,9 +1,7 @@
-import { cloneDeep } from "lodash";
 import * as colors from "colors";
-import { ILoggingPlugin } from "./i-logging-plugin";
+import { LoggingPlugin } from "./logging-plugin";
 import { LogLevel } from "./log-level";
 import { LogMessageData } from "./log-message-data";
-import { TestResult } from "./test-result";
 import { ellide } from "../../helpers/ellide";
 import { AftConfig, aftConfig } from "../../configuration/aft-config";
 import { pluginLoader } from "../plugin-loader";
@@ -38,7 +36,7 @@ export class LogManagerConfig {
  * ```
  */
 export class LogManager {
-    readonly plugins: Array<ILoggingPlugin>;
+    readonly plugins: Array<LoggingPlugin>;
     private readonly _aftCfg: AftConfig;
     private _stepCount: number = 0;
 
@@ -68,10 +66,10 @@ export class LogManager {
         this._aftCfg = aftCfg ?? aftConfig;
         const lmc = this._aftCfg.getSection(LogManagerConfig);
         this.logLevel = lmc.logLevel;
-        this.plugins = pluginLoader.getPluginsByType<ILoggingPlugin>('logging', this._aftCfg);
-        this.plugins.filter(p => Err.handle(() => p?.enabled)).forEach((p: ILoggingPlugin) => {
+        this.plugins = pluginLoader.getPluginsByType(LoggingPlugin, this._aftCfg);
+        this.plugins.filter(p => Err.handle(() => p?.enabled)).forEach((p: LoggingPlugin) => {
             p?.initialise(logName)?.catch((err) => LogManager.toConsole({
-                logLevel: 'warn',
+                level: 'warn',
                 message: err,
                 name: logName
             }));
@@ -147,40 +145,21 @@ export class LogManager {
      * loaded `LoggingPlugin` objects
      * @param level the `LogLevel` of this message
      * @param message the string to be logged
+     * @param data an array of additional data to be included in the logs
      */
-    async log(level: LogLevel, message: string): Promise<void> {
-        const logdata: LogMessageData = {name: this.logName, logLevel: level, message: message};
+    async log(level: LogLevel, message: string, ...data: any[]): Promise<void> {
+        const logdata: LogMessageData = {name: this.logName, level: level, message: message};
         if (LogLevel.toValue(level) >= LogLevel.toValue(this.logLevel) && level != 'none') {
             LogManager.toConsole(logdata);
         }
         for (var plugin of this.plugins.filter(p => Err.handle(() => p?.enabled))) {
             try {
-                await plugin?.log({...logdata});
+                await plugin?.log(this.logName, level, message, ...data);
             } catch (e) {
                 LogManager.toConsole({
-                    logLevel: 'warn',
+                    level: 'warn',
                     message: `unable to send log message to '${plugin?.constructor.name || 'unknown'}' due to: ${Err.short(e)}`,
                     name: this.logName
-                });
-            }
-        }
-    }
-
-    /**
-     * function will send the passed in `TestResult` to any loaded `LoggingPlugin` objects
-     * allowing them to process the result
-     * @param result a `TestResult` object to be sent
-     */
-    async logResult(result: TestResult): Promise<void> {
-        const name = this.logName;
-        for (var plugin of this.plugins.filter(p => Err.handle(() => p?.enabled))) {
-            try {
-                await plugin?.logResult(name, cloneDeep(result));
-            } catch (e) { 
-                LogManager.toConsole({
-                    logLevel: 'warn',
-                    message: `unable to send result to '${plugin?.constructor.name || 'unknown'}' due to: ${Err.short(e)}`,
-                    name: name
                 });
             }
         }
@@ -198,7 +177,7 @@ export class LogManager {
                 await plugin?.finalise(name);
             } catch (e) {
                 LogManager.toConsole({
-                    logLevel: 'warn',
+                    level: 'warn',
                     message: `unable to call dispose on '${plugin?.constructor.name || 'unknown'}' due to: ${Err.short(e)}`,
                     name: name
                 });
@@ -206,7 +185,7 @@ export class LogManager {
         }
         if (error) {
             LogManager.toConsole({
-                logLevel: 'error',
+                level: 'error',
                 message: error.message,
                 name: name
             });
@@ -225,9 +204,9 @@ export module LogManager {
         message = message || {};
         if (!message.name) { message.name = 'AFT'; }
         if (!message.message) { message.message = ''; }
-        if (!message.logLevel) { message.logLevel = 'none' }
+        if (!message.level) { message.level = 'none' }
         let d: string = new Date().toLocaleTimeString();
-        let out: string = `${d} - [${message.name}] - ${ellide(message.logLevel.toUpperCase(), 5, 'end', '')} - ${message.message}`;
+        let out: string = `${d} - [${message.name}] - ${ellide(message.level.toUpperCase(), 5, 'end', '')} - ${message.message}`;
         return out;
     }
     /**
@@ -237,9 +216,9 @@ export module LogManager {
      * the console
      */
     export function toConsole(message?: LogMessageData) {
-        if (message?.message && message?.logLevel != 'none') {
+        if (message?.message && message?.level != 'none') {
             const out: string = LogManager.format(message);
-            switch (message?.logLevel) {
+            switch (message?.level) {
                 case 'error':
                 case 'fail':
                     console.log(colors.red(out));

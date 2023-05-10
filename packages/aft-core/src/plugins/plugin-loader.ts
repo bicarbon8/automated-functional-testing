@@ -2,27 +2,28 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { convert } from '../helpers/convert';
 import { LogManager } from './logging/log-manager';
-import { IPlugin } from './i-plugin';
+import { Plugin } from './plugin';
 import { AftConfig, aftConfig } from '../configuration/aft-config';
 import { Err } from '../helpers/err';
+import { Class } from '../helpers/custom-types';
 
 class PluginLoader {
-    private readonly _pluginsMap: Map<string, IPlugin>;
+    private readonly _pluginsMap: Map<string, Plugin>;
     private _loaded: boolean;
 
     constructor() {
-        this._pluginsMap = new Map<string, IPlugin>();
+        this._pluginsMap = new Map<string, Plugin>();
         this._loaded = false;
     }
 
-    private _load<T extends IPlugin>(aftCfg?: AftConfig): void {
+    private _load(aftCfg?: AftConfig): void {
         if (!this._loaded) {
             aftCfg ??= aftConfig;
             for (var pname of aftCfg.pluginNames ?? []) {
                 let searchDir: string = (path.isAbsolute(aftCfg.pluginsSearchDir ?? ".")) 
                     ? aftCfg.pluginsSearchDir : path.join(process.cwd(), aftCfg.pluginsSearchDir);
                 if (!this._pluginsMap.has(pname)) {
-                    this._findAndInstantiatePlugin<T>(pname, searchDir, aftCfg);
+                    this._findAndInstantiatePlugin(pname, searchDir, aftCfg);
                 }
             }
             this._loaded = true;
@@ -35,23 +36,32 @@ class PluginLoader {
      * ex: 
      * ```typescript
      * let loggingPlugins = pluginloader.getPluginsByType(LoggingPlugin);
-     * // loggingPlugins will all extend from LoggingPlugin class
+     * // loggingPlugins will all extend from LoggingPlugin abstract class
      * ```
      * 
      * NOTE: if this is the first time the `pluginloader` is being called then plugins will
      * also be loaded
-     * @param typeName a `Class<T: Plugin>` base class like `LoggingPlugin` that must be extended
+     * @param clazz a `Class<T: Plugin>` base class like `LoggingPlugin` that must be extended
      * by any of the objects returned by this call
      * @param aftCfg an optional `AftConfig` instance to use when loading plugins if not
      * already loaded
      * @returns an array of plugin objects that all extend the passed in `typeName` class
      */
-    getPluginsByType<T extends IPlugin>(typeName: string, aftCfg?: AftConfig): Array<T> {
-        this._load<T>(aftCfg);
-        let plugins = new Array<T>();
-        for (var key of this._pluginsMap.keys()) {
-            let plugin = this._pluginsMap.get(key);
-            if (plugin.pluginType?.toLowerCase() === typeName.toLowerCase()) {
+    getPluginsByType<T extends Plugin>(clazz: Class<T>, aftCfg?: AftConfig): Array<T> {
+        this._load(aftCfg);
+        const plugins = new Array<T>();
+        const classInst = new clazz();
+        for (var pKey of this._pluginsMap.keys()) {
+            let plugin = this._pluginsMap.get(pKey);
+            let isMatch = true;
+            for (var cKey of Object.keys(classInst)) {
+                let pluginKeys = Object.keys(plugin);
+                if (!pluginKeys.includes(cKey) || typeof plugin[cKey] !== typeof classInst[cKey]) {
+                    isMatch = false;
+                    break;
+                }
+            }
+            if (isMatch) {
                 plugins.push(plugin as T);
             }
         }
@@ -73,8 +83,8 @@ class PluginLoader {
      * already loaded
      * @returns the requested plugin or `undefined` if not found
      */
-    getPluginByName<T extends IPlugin>(pluginName: string, aftCfg?: AftConfig): T {
-        this._load<T>(aftCfg);
+    getPluginByName<T extends Plugin>(pluginName: string, aftCfg?: AftConfig): T {
+        this._load(aftCfg);
         let name = convert.toSafeString(pluginName, [{exclude: /[-_.\s\d]/gi, replaceWith: ''}]);
         return this._pluginsMap.get(name) as T;
     }
@@ -92,8 +102,8 @@ class PluginLoader {
         this._loaded = false;
     }
 
-    private _findAndInstantiatePlugin<T extends IPlugin>(pluginName: string, searchRoot: string, aftCfg: AftConfig): void {
-        let plugin: T;
+    private _findAndInstantiatePlugin(pluginName: string, searchRoot: string, aftCfg: AftConfig): void {
+        let plugin: Plugin;
         
         try {
             // LogManager.toConsole({name: this.constructor.name, message: `searching for plugin '${pluginName}' starting at: ${searchRoot}`, level: 'trace'});
@@ -123,7 +133,7 @@ class PluginLoader {
                     }
                 }
                 if (constructorName) {
-                    const p: T = new plugin[constructorName](aftCfg);
+                    const p: Plugin = new plugin[constructorName](aftCfg);
                     this._pluginsMap.set(pluginName, p);
                 }
             } catch (e) {
@@ -158,7 +168,7 @@ class PluginLoader {
                 throw `no files found at path: '${dir}'`;
             }
         } catch (e) {
-            LogManager.toConsole({name: this.constructor.name, message: e, logLevel: 'warn'});
+            LogManager.toConsole({name: this.constructor.name, message: e, level: 'warn'});
         }
         return filePath;
     }
@@ -169,7 +179,7 @@ class PluginLoader {
             const stats: fs.Stats = fs.statSync(fullFileAndPath);
             isDir = stats?.isDirectory() || false;
         } catch (e) {
-            LogManager.toConsole({name: this.constructor.name, message: e, logLevel: 'warn'});
+            LogManager.toConsole({name: this.constructor.name, message: e, level: 'warn'});
         }
         return isDir;
     }

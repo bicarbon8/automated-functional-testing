@@ -17,17 +17,17 @@ describe('FilesystemLoggingPlugin', () => {
         const logName = 'can create a file on the filesystem and write logs to it';
         await plugin.log({
             name: logName,
-            logLevel: 'trace',
+            level: 'trace',
             message: rand.getString(rand.getInt(100, 200))
         });
         await plugin.log({
             name: logName,
-            logLevel: 'info',
+            level: 'info',
             message: rand.getString(rand.getInt(100, 200))
         });
         await plugin.log({
             name: logName,
-            logLevel: 'error',
+            level: 'error',
             message: rand.getString(rand.getInt(100, 200))
         });
         await plugin.logResult(logName, {
@@ -71,42 +71,42 @@ describe('FilesystemLoggingPlugin', () => {
         const logName = 'will not write to file if level below specified value';
         await plugin.log({
             name: logName,
-            logLevel: 'trace',
+            level: 'trace',
             message: rand.getString(rand.getInt(100, 200))
         });
         await plugin.log({
             name: logName,
-            logLevel: 'debug',
+            level: 'debug',
             message: rand.getString(rand.getInt(100, 200))
         });
         await plugin.log({
             name: logName,
-            logLevel: 'info',
+            level: 'info',
             message: rand.getString(rand.getInt(100, 200))
         });
         await plugin.log({
             name: logName,
-            logLevel: 'step',
+            level: 'step',
             message: rand.getString(rand.getInt(100, 200))
         });
         await plugin.log({
             name: logName,
-            logLevel: 'pass',
+            level: 'pass',
             message: rand.getString(rand.getInt(100, 200))
         });
         await plugin.log({
             name: logName,
-            logLevel: 'fail',
+            level: 'fail',
             message: rand.getString(rand.getInt(100, 200))
         });
         await plugin.log({
             name: logName,
-            logLevel: 'warn',
+            level: 'warn',
             message: rand.getString(rand.getInt(100, 200))
         });
         await plugin.log({
             name: logName,
-            logLevel: 'error',
+            level: 'error',
             message: rand.getString(rand.getInt(100, 200))
         });
 
@@ -127,7 +127,7 @@ describe('FilesystemLoggingPlugin', () => {
         config.dateFormat = 'SSS';
         const plugin = new FilesystemLoggingPlugin(cfgMgr);
 
-        await plugin.log({name: logName, logLevel: 'warn', message: rand.getString(rand.getInt(100, 200))});
+        await plugin.log({name: logName, level: 'warn', message: rand.getString(rand.getInt(100, 200))});
 
         const filePath = path.join(process.cwd(), 'logs', `${convert.toSafeString(logName)}.log`);
         expect(fs.existsSync(filePath)).toBeTrue();

@@ -1,27 +1,16 @@
-import { ILoggingPlugin, TestResult, LogMessageData, LogLevel, AftConfig, aftConfig } from "../../../src";
+import { LoggingPlugin, LogLevel, AftConfig } from "../../../src";
 
-export class ThrowsLoggingPlugin implements ILoggingPlugin {
-    public readonly aftCfg: AftConfig;
-    public readonly pluginType: 'logging' = 'logging';
-    get enabled(): boolean {
-        throw 'enabled exception';
-    }
-    get logLevel(): LogLevel {
-        throw 'logLevel exception';
-    }
+export class ThrowsLoggingPlugin extends LoggingPlugin {
     constructor(aftCfg?: AftConfig) {
-        this.aftCfg = aftCfg ?? aftConfig;
+        super(aftCfg);
     }
-    async initialise(logName: string): Promise<void> {
+    override initialise = async (logName: string): Promise<void> => {
         throw 'initialise exception';
     }
-    async log(messageData: LogMessageData): Promise<void> {
+    override log = async (name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => {
         throw 'log exception';
     }
-    async logResult(name: string, result: TestResult): Promise<void> {
-        throw 'logResult exception';
-    }
-    async finalise(name: string, error?: Error): Promise<void> {
+    override finalise = async (name: string, error?: Error): Promise<void> => {
         throw 'dispose exception';
     }
 }
