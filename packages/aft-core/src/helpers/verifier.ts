@@ -10,6 +10,7 @@ import { Err } from "./err";
 import { BuildInfoManager } from "../plugins/build-info/build-info-manager";
 import { AftConfig, aftConfig } from "../configuration/aft-config";
 import { ResultsManager } from "../plugins/results/results-manager";
+import { VerifierInternals } from "./verifier-internals";
 
 /**
  * class to be used for executing some Functional Test Assertion after checking with any
@@ -204,47 +205,58 @@ export class Verifier implements PromiseLike<void> {
     }
 
     /**
-     * allows for using a specific `LogManager` instance. if not
-     * set then one will be created for use by this `Verifier`
-     * @param logMgr a `LogManager` instance
-     * @returns this `Verifier` instance
+     * creates an object exposing internal functions allowing setting custom instances
+     * to internal objects
+     * @returns a `VerifierInternals` object containing functions allowing users to
+     * set values for the `LogManager`, `PolicyEngineManager`, `BuildInfoManager` and
+     * `ResultsManager`
      */
-    withLogManager(logMgr: LogManager): this {
-        this._logMgr = logMgr;
-        return this;
-    }
+    get internals(): VerifierInternals {
+        return {
+            /**
+             * allows for using a specific `LogManager` instance. if not
+             * set then one will be created for use by this `Verifier`
+             * @param logMgr a `LogManager` instance
+             * @returns this `Verifier` instance
+             */
+            usingLogManager: (logMgr: LogManager): this => {
+                this._logMgr = logMgr;
+                return this;
+            },
 
-    /**
-     * allows for using a specific `PolicyEngineManager` instance. if not
-     * set then the global `PolicyEngineManager.instance()` will be used
-     * @param policyMgr a `PolicyEngineManager` instance
-     * @returns this `Verifier` instance
-     */
-    withPolicyEngineManager(policyMgr: PolicyEngineManager): this {
-        this._policyEngMgr = policyMgr;
-        return this;
-    }
+            /**
+             * allows for using a specific `PolicyEngineManager` instance. if not
+             * set then the global `PolicyEngineManager.instance()` will be used
+             * @param policyMgr a `PolicyEngineManager` instance
+             * @returns this `Verifier` instance
+             */
+            usingPolicyEngineManager: (policyMgr: PolicyEngineManager): this => {
+                this._policyEngMgr = policyMgr;
+                return this;
+            },
 
-    /**
-     * allows for using a specific `BuildInfoManager` instance. if not
-     * set then the global `BuildInfoManager.instance()` will be used
-     * @param buildMgr a `BuildInfoManager` instance
-     * @returns this `Verifier` instance
-     */
-    withAftBuildInfo(buildMgr: BuildInfoManager): this {
-        this._buildInfoMgr = buildMgr;
-        return this;
-    }
+            /**
+             * allows for using a specific `BuildInfoManager` instance. if not
+             * set then the global `BuildInfoManager.instance()` will be used
+             * @param buildMgr a `BuildInfoManager` instance
+             * @returns this `Verifier` instance
+             */
+            usingBuildInfoManager: (buildMgr: BuildInfoManager): this => {
+                this._buildInfoMgr = buildMgr;
+                return this;
+            },
 
-    /**
-     * allows for using a specific `ResultsManager` instance. if not
-     * set then the global `ResultsManager.instance()` will be used
-     * @param refMgr a `ResultsManager` instance
-     * @returns this `Verifier` instance
-     */
-    withResultsManager(refMgr: ResultsManager): this {
-        this._resMgr = refMgr;
-        return this;
+            /**
+             * allows for using a specific `ResultsManager` instance. if not
+             * set then the global `ResultsManager.instance()` will be used
+             * @param refMgr a `ResultsManager` instance
+             * @returns this `Verifier` instance
+             */
+            usingResultsManager: (refMgr: ResultsManager): this => {
+                this._resMgr = refMgr;
+                return this;
+            }
+        }
     }
 
     /**

@@ -25,7 +25,7 @@ describe('Verifier', () => {
     });
 
     it('uses "test case IDs" as logMgr name if no description provided', async () => {
-        let peMgr = new PolicyEngineManager();
+        const peMgr = new PolicyEngineManager();
         spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
             return Promise.resolve({result: true});
         });
@@ -34,25 +34,25 @@ describe('Verifier', () => {
             expect(v.logMgr.logName).toEqual('C1234_C2345');
         })
         .withTestIds('C1234','C2345')
-        .and.withPolicyEngineManager(peMgr);
+        .internals.usingPolicyEngineManager(peMgr);
     });
     
     it('can execute a passing expectation', async () => {
         const resMgr = new ResultsManager();
         spyOn(resMgr, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
-        let logMgr: LogManager = new LogManager('can execute a passing expectation');
+        const logMgr = new LogManager('can execute a passing expectation');
         spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'pass').and.callThrough();
-        let peMgr = new PolicyEngineManager();
+        const peMgr = new PolicyEngineManager();
         spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
             return Promise.resolve({result: true});
         });
 
         await verify(async (v: Verifier) => 'foo')
         .returns('foo')
-        .withLogManager(logMgr)
-        .and.withPolicyEngineManager(peMgr)
-        .and.withResultsManager(resMgr)
+        .internals.usingLogManager(logMgr)
+        .internals.usingPolicyEngineManager(peMgr)
+        .internals.usingResultsManager(resMgr)
         .and.withDescription('true should be true')
         .and.withTestIds('C1234','C2345');
 
@@ -64,19 +64,19 @@ describe('Verifier', () => {
     it('accepts a VerifierMatcher in the returns function', async () => {
         const resMgr = new ResultsManager();
         spyOn(resMgr, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
-        let logMgr: LogManager = new LogManager('accepts a VerifierMatcher in the returns function');
+        const logMgr = new LogManager('accepts a VerifierMatcher in the returns function');
         spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'pass').and.callThrough();
-        let peMgr = new PolicyEngineManager();
+        const peMgr = new PolicyEngineManager();
         spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
             return Promise.resolve({result: true});
         });
 
         await verify(async (v: Verifier) => ['foo', 'bar', 'baz'])
         .returns(containing('bar'))
-        .withLogManager(logMgr)
-        .and.withPolicyEngineManager(peMgr)
-        .and.withResultsManager(resMgr)
+        .internals.usingLogManager(logMgr)
+        .internals.usingPolicyEngineManager(peMgr)
+        .internals.usingResultsManager(resMgr)
         .and.withDescription('array contains "bar"')
         .and.withTestIds('C1234','C2345');
 
@@ -88,10 +88,10 @@ describe('Verifier', () => {
     it('throws on exception in assertion', async () => {
         const resMgr = new ResultsManager();
         spyOn(resMgr, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
-        let logMgr: LogManager = new LogManager('throws on exception in assertion');
+        const logMgr = new LogManager('throws on exception in assertion');
         spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'fail').and.callThrough();
-        let peMgr = new PolicyEngineManager();
+        const peMgr = new PolicyEngineManager();
         spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
             return Promise.resolve({result: true});
         });
@@ -100,9 +100,9 @@ describe('Verifier', () => {
             await verify(() => {
                 throw new Error('fake error');
             })
-            .withLogManager(logMgr)
-            .withPolicyEngineManager(peMgr)
-            .withResultsManager(resMgr)
+            .internals.usingLogManager(logMgr)
+            .internals.usingPolicyEngineManager(peMgr)
+            .internals.usingResultsManager(resMgr)
             .withDescription('true should be true')
             .and.withTestIds('C1234').and.withTestIds('C2345');
 
@@ -119,10 +119,10 @@ describe('Verifier', () => {
     it('throws on failed comparison with expected result', async () => {
         const resMgr = new ResultsManager();
         spyOn(resMgr, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
-        let logMgr: LogManager = new LogManager('throws on failed comparison with expected result');
+        const logMgr = new LogManager('throws on failed comparison with expected result');
         spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'fail').and.callThrough();
-        let peMgr = new PolicyEngineManager();
+        const peMgr = new PolicyEngineManager();
         spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
             return Promise.resolve({result: true});
         });
@@ -130,9 +130,9 @@ describe('Verifier', () => {
         try {
             await verify(() => true)
             .returns(false)
-            .and.withLogManager(logMgr)
-            .and.withPolicyEngineManager(peMgr)
-            .and.withResultsManager(resMgr)
+            .internals.usingLogManager(logMgr)
+            .internals.usingPolicyEngineManager(peMgr)
+            .internals.usingResultsManager(resMgr)
             .and.withDescription('failure expected due to true not being false')
             .and.withTestIds('C1234').and.withTestIds('C2345');
 
@@ -149,10 +149,10 @@ describe('Verifier', () => {
     it('will not execute expectation if PolicyEngineManager says should not run for all cases', async () => {
         const resMgr = new ResultsManager();
         spyOn(resMgr, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
-        let logMgr: LogManager = new LogManager('will not execute expectation if PolicyEngineManager says should not run for all cases');
+        const logMgr = new LogManager('will not execute expectation if PolicyEngineManager says should not run for all cases');
         spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'warn').and.callThrough();
-        let peMgr = new PolicyEngineManager();
+        const peMgr = new PolicyEngineManager();
         spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
             return Promise.resolve({result: false});
         });
@@ -160,9 +160,9 @@ describe('Verifier', () => {
         await verify(() => {
             testStore.set('executed', true);
         })
-        .withLogManager(logMgr)
-        .and.withPolicyEngineManager(peMgr)
-        .and.withResultsManager(resMgr)
+        .internals.usingLogManager(logMgr)
+        .internals.usingPolicyEngineManager(peMgr)
+        .internals.usingResultsManager(resMgr)
         .and.withTestIds('C1234','C2345');
 
         expect(peMgr.shouldRun).toHaveBeenCalledTimes(2);
@@ -174,10 +174,10 @@ describe('Verifier', () => {
     it('will execute expectation if PolicyEngineManager says any cases should be run', async () => {
         const resMgr = new ResultsManager();
         spyOn(resMgr, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
-        let logMgr: LogManager = new LogManager('will execute expectation if PolicyEngineManager says any cases should be run');
+        const logMgr = new LogManager('will execute expectation if PolicyEngineManager says any cases should be run');
         spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'pass').and.callThrough();
-        let peMgr = new PolicyEngineManager();
+        const peMgr = new PolicyEngineManager();
         spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
             if (testId == 'C1234') {
                 return Promise.resolve({result: false, message: 'do not run C1234'});
@@ -189,9 +189,9 @@ describe('Verifier', () => {
         await verify(() => {
             testStore.set('executed', true);
         })
-        .withLogManager(logMgr)
-        .and.withPolicyEngineManager(peMgr)
-        .and.withResultsManager(resMgr)
+        .internals.usingLogManager(logMgr)
+        .internals.usingPolicyEngineManager(peMgr)
+        .internals.usingResultsManager(resMgr)
         .and.withTestIds('C1234','C2345');
 
         expect(peMgr.shouldRun).toHaveBeenCalledWith('C1234');
@@ -204,11 +204,11 @@ describe('Verifier', () => {
     it('will not execute expectation if no associated testIds and PolicyEngineManager has enabled plugins', async () => {
         const resMgr = new ResultsManager();
         spyOn(resMgr, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
-        let logMgr: LogManager = new LogManager('will not execute expectation if no associated testIds and PolicyEngineManager has enabled plugins');
+        const logMgr = new LogManager('will not execute expectation if no associated testIds and PolicyEngineManager has enabled plugins');
         spyOn(logMgr, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(logMgr, 'warn').and.callThrough();
         pluginLoader.reset();
-        let peMgr = new PolicyEngineManager(new AftConfig({
+        const peMgr = new PolicyEngineManager(new AftConfig({
             pluginNames: ['mock-policy-engine-plugin'],
             MockPolicyEnginePluginConfig: {
                 enabled: true
@@ -218,9 +218,9 @@ describe('Verifier', () => {
         await verify(() => {
             testStore.set('executed', true);
         })
-        .withLogManager(logMgr)
-        .and.withPolicyEngineManager(peMgr)
-        .and.withResultsManager(resMgr);
+        .internals.usingLogManager(logMgr)
+        .internals.usingPolicyEngineManager(peMgr)
+        .internals.usingResultsManager(resMgr);
 
         expect(peMgr.plugins.length).toEqual(1);
         expect(testStore.has('executed')).toBeFalse();
