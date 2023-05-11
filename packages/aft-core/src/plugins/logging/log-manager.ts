@@ -148,9 +148,12 @@ export class LogManager {
      * @param data an array of additional data to be included in the logs
      */
     async log(level: LogLevel, message: string, ...data: any[]): Promise<void> {
-        const logdata: LogMessageData = {name: this.logName, level: level, message: message};
         if (LogLevel.toValue(level) >= LogLevel.toValue(this.logLevel) && level != 'none') {
-            LogManager.toConsole(logdata);
+            let outputMessage: string;
+            if (data?.length > 0) {
+                outputMessage = `${message} ${data?.map(d => Err.handle(() => d?.toString())).join(', ')}`;
+            }
+            LogManager.toConsole({name: this.logName, message: outputMessage, level: level});
         }
         for (var plugin of this.plugins.filter(p => Err.handle(() => p?.enabled))) {
             try {

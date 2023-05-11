@@ -64,7 +64,7 @@ export class FakeFacet extends UiFacet<FakeFacetOptions> {
         options.index = options.index || 0;
         options.logMgr = options.logMgr || this.logMgr;
         options.parent = options.parent || this;
-        options.session = options.session || this.session;
+        options.driver = options.driver || this.session;
         let facet: F = new facetType(options);
         return facet;
     }

@@ -29,7 +29,8 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-core": "^9.0.0"
+    "aft-core": "^9.0.0",
+    "selenium-webdriver": "^4.9.2"
   },
   "devDependencies": {
     "@types/jasmine": "^3.6.10",

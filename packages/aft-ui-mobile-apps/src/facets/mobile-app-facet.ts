@@ -48,7 +48,7 @@ export class MobileAppFacet extends UiFacet<MobileAppFacetOptions> {
     override async getFacet<T extends UiFacet<MobileAppFacetOptions>>(facetType: Class<T>, options?: MobileAppFacetOptions): Promise<T> {
         options = options || {} as MobileAppFacetOptions;
         options.parent = options.parent || this;
-        options.session = options.session || this.session;
+        options.driver = options.driver || this.session;
         options.logMgr = options.logMgr || this.logMgr;
         options.maxWaitMs = options.maxWaitMs ?? this.maxWaitMs;
         options.retryDelayMs = options.retryDelayMs ?? this.retryDelayMs;

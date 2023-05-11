@@ -42,7 +42,7 @@ export class BrowserSession<T extends BrowserSessionOptions> extends UiSession<T
 
     async getFacet<T extends UiFacet<To>, To extends UiFacetOptions>(facetType: Class<T>, options?: To): Promise<T> {
         options = options || {} as To;
-        options.session = options.session || this;
+        options.driver = options.driver || this;
         options.logMgr = options.logMgr || this.logMgr;
         const facet: T = new facetType(options);
         return facet;

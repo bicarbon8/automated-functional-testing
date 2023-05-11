@@ -1,5 +1,5 @@
 import * as path from "path";
-import { AftConfig, convert, fileio, LoggingPlugin, LogLevel, LogManagerConfig, LogMessageData, ResultsPlugin, TestResult } from "aft-core";
+import { AftConfig, convert, Err, fileio, LoggingPlugin, LogLevel, LogManagerConfig, LogMessageData, ResultsPlugin, TestResult } from "aft-core";
 import * as date from "date-and-time";
 
 export class FilesystemLoggingPluginConfig {
@@ -40,6 +40,9 @@ export class FilesystemLoggingPlugin extends LoggingPlugin implements ResultsPlu
     
     override log = async (name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => {
         if (this.enabled) {
+            if (data?.length > 0) {
+                message = `${message} ${data?.map(d => Err.handle(() => d?.toString())).join(', ')}`;
+            }
             this._appendToFile({name, level, message});
         }
     }

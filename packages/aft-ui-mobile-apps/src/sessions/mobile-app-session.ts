@@ -30,7 +30,7 @@ export class MobileAppSession<T extends MobileAppSessionOptions> extends UiSessi
 
     async getFacet<T extends UiFacet<To>, To extends UiFacetOptions>(facetType: Class<T>, options?: To): Promise<T> {
         options = options || {} as To;
-        options.session = options.session || this;
+        options.driver = options.driver || this;
         options.logMgr = options.logMgr || this.logMgr;
         let facet: T = new facetType(options);
         return facet;

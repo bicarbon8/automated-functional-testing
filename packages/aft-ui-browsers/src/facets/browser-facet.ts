@@ -52,7 +52,7 @@ export class BrowserFacet extends UiFacet<BrowserFacetOptions> {
     override async getFacet<T extends UiFacet<BrowserFacetOptions>>(facetType: Class<T>, options?: BrowserFacetOptions): Promise<T> {
         options = options || {} as BrowserFacetOptions;
         options.parent = options.parent || this;
-        options.session = options.session || this.session;
+        options.driver = options.driver || this.session;
         options.logMgr = options.logMgr || this.logMgr;
         options.maxWaitMs = options.maxWaitMs ?? this.maxWaitMs;
         options.retryDelayMs = options.retryDelayMs ?? this.retryDelayMs;

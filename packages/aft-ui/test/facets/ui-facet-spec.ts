@@ -7,7 +7,7 @@ import { FakeLocator } from "./fake-locator";
 describe('UiFacet<T>', () => {
     it('can be extended to return specific UiFacet types', async () => {
         const options = {
-            session: new FakeSession({driver: new FakeDriver()}),
+            driver: new FakeSession({driver: new FakeDriver()}),
             index: 0,
             locator: FakeLocator.css('fake:loc'),
             logMgr: new AftLog({logName: rand.getString(15)})

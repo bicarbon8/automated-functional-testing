@@ -25,7 +25,7 @@ export class FakeSession extends UiSession<FakeSessionOptions> {
     override async getFacet<F extends UiFacet<Fo>, Fo extends UiFacetOptions>(facetType: Class<F>, options?: Fo): Promise<F> {
         options = options || {} as Fo;
         options.index = options.index || 0;
-        options.session = options.session || this;
+        options.driver = options.driver || this;
         options.logMgr = options.logMgr || this.logMgr;
         let facet: F = new facetType(options);
         return facet;

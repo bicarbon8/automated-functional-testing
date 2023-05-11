@@ -13,4 +13,4 @@ export * from './sessions/browserstack/browserstack-browser-session';
 export * from './sessions/sauce-labs/sauce-labs-browser-session-generator-plugin';
 export * from './sessions/sauce-labs/sauce-labs-browser-session';
 /* sessions - Selenium Grid plugin */
-export * from './sessions/selenium-grid/selenium-grid-session-generator-plugin';
+export * from 'aft-ui/src/sessions/selenium-grid-session-generator-plugin';
