@@ -1,5 +1,5 @@
 import { By, Locator } from 'selenium-webdriver';
-import { BrowserFacet } from 'aft-ui-browsers';
+import { BrowserFacet } from '../../../../../aft-browserstack-automate/src';
 import { HerokuContentWidget } from './heroku-content-widget';
 import { HerokuMessagesWidget } from './heroku-messages-widget';
 
