@@ -1,6 +1,6 @@
 import { containing, retry, Verifier, verify } from "aft-core";
 import { AftLog, AftTest } from "aft-mocha-reporter";
-import { verifyWithBrowser, BrowserVerifier, BrowserFacetOptions } from "../../../../aft-browserstack-automate/src";
+import { verifyWithBrowser, BrowserVerifier, BrowserFacetOptions } from "../../../../aft-ui-browsers/src";
 import { expect } from "chai";
 import { HerokuLoginPage } from "./page-objects/heroku-login-page";
 

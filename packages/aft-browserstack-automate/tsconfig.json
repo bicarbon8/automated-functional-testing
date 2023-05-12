@@ -1,9 +1,0 @@
-{
-    "extends": "../../tsconfig.settings.json",
-    "compilerOptions": {
-        "outDir": "dist",
-        "composite": true
-    },
-    "include": ["src", "test", "../aft-ui/src/sessions/selenium-grid-session-generator-plugin.ts"],
-    "references": [{ "path": "../aft-ui" }]
-}

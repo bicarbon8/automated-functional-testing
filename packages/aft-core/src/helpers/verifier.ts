@@ -32,8 +32,7 @@ import { VerifierInternals } from "./verifier-internals";
  * @returns a new `Verifier` instance
  */
 export class Verifier implements PromiseLike<void> {
-    public readonly aftCfg: AftConfig;
-
+    protected _aftCfg?: AftConfig;
     protected _assertion: Func<Verifier, any>;
     protected _matcher: VerifierMatcher;
     protected _description: string;
@@ -45,11 +44,16 @@ export class Verifier implements PromiseLike<void> {
     protected _buildInfoMgr: BuildInfoManager;
     protected _resMgr: ResultsManager;
 
-    constructor(aftCfg?: AftConfig) {
-        this.aftCfg = aftCfg ?? aftConfig;
-
+    constructor() {
         this._startTime = new Date().getTime();
         this._testIds = new Set<string>();
+    }
+
+    get aftCfg(): AftConfig {
+        if (!this._aftCfg) {
+            this._aftCfg = aftConfig;
+        }
+        return this._aftCfg;
     }
     
     /**
@@ -213,6 +217,16 @@ export class Verifier implements PromiseLike<void> {
      */
     get internals(): VerifierInternals {
         return {
+            /**
+             * allows for using a specifi {AftConfig} instance. if not
+             * set then {aftConfig} global const is used
+             * @param cfg a {AftConfig} instance
+             * @returns this {Verifier} instance
+             */
+            usingAftConfig: (cfg: AftConfig): this => {
+                this._aftCfg = cfg;
+                return this;
+            },
             /**
              * allows for using a specific `LogManager` instance. if not
              * set then one will be created for use by this `Verifier`

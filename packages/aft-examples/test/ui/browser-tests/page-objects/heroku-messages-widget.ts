@@ -1,5 +1,5 @@
 import { By, Locator, WebElement } from "selenium-webdriver";
-import { BrowserFacet } from "../../../../../aft-browserstack-automate/src";
+import { BrowserFacet } from "../../../../../aft-ui-browsers/src";
 
 export class HerokuMessagesWidget extends BrowserFacet {
     /**
