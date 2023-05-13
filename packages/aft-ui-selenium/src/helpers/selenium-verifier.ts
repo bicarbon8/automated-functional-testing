@@ -1,11 +1,11 @@
 import { Class, Err, Func, Verifier } from "aft-core";
 import { WebDriver } from "selenium-webdriver";
 import { UiComponentOptions, UiPlatform, UiSessionConfig, UiSessionGeneratorManager } from "aft-ui";
-import { BrowserVerifierInternals } from "./browser-verifier-internals";
+import { SeleniumVerifierInternals } from "./selenium-verifier-internals";
 import { BrowserComponent } from "../components/browser-component";
 
-export class BrowserVerifier extends Verifier {
-    protected override _assertion: Func<BrowserVerifier, any>;
+export class SeleniumVerifier extends Verifier {
+    protected override _assertion: Func<SeleniumVerifier, any>;
     protected _driver: unknown;
     protected _sessionMgr: UiSessionGeneratorManager;
 
@@ -36,8 +36,8 @@ export class BrowserVerifier extends Verifier {
         return this.aftCfg.getSection(UiSessionConfig).uiplatform;
     }
 
-    override get internals(): BrowserVerifierInternals {
-        const baseInternals = super.internals as BrowserVerifierInternals;
+    override get internals(): SeleniumVerifierInternals {
+        const baseInternals = super.internals as SeleniumVerifierInternals;
         baseInternals.usingUiSessionGeneratorManager = (mgr: UiSessionGeneratorManager) => {
             this._sessionMgr = mgr;
             return this;
@@ -79,6 +79,6 @@ export class BrowserVerifier extends Verifier {
  * @param assertion the {Func<BrowserVerifier, any>} function to be executed by this `BrowserVerifier`
  * @returns a new `BrowserVerifier` instance
  */
-export const verifyWithBrowser = (assertion: Func<BrowserVerifier, any>): BrowserVerifier => {
-    return new BrowserVerifier().verify(assertion);
+export const verifyWithBrowser = (assertion: Func<SeleniumVerifier, any>): SeleniumVerifier => {
+    return new SeleniumVerifier().verify(assertion);
 }

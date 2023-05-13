@@ -1,7 +1,7 @@
 import { Merge, VerifierInternals, Verifier } from "aft-core";
 import { UiSessionGeneratorManager } from "aft-ui";
 
-export type BrowserVerifierInternals = Merge<VerifierInternals, {
+export type SeleniumVerifierInternals = Merge<VerifierInternals, {
     /**
      * allows for setting a specific {UiSessionGeneratorManage} instance to be
      * used to generate a new UI session. if not set a new instance will be created

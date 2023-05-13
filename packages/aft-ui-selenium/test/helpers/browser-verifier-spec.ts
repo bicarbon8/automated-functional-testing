@@ -1,13 +1,13 @@
 import { PolicyEngineManager, AftConfig } from "aft-core";
 import { UiSessionGeneratorManager } from "aft-ui";
 import { WebDriver } from "selenium-webdriver";
-import { BrowserVerifier, verifyWithBrowser } from "../../src";
+import { SeleniumVerifier, verifyWithBrowser } from "../../src";
 
 describe('BrowserVerifier', () => {
     it('calls UiSessionGeneratorManager.getSession when run', async () => {
         const sessionMgr = new UiSessionGeneratorManager();
         spyOn(sessionMgr, 'getSession').and.callFake((id: string, aftCfg?: AftConfig) => Promise.resolve({}));
-        await verifyWithBrowser(async (bv: BrowserVerifier) => {
+        await verifyWithBrowser(async (bv: SeleniumVerifier) => {
             expect(bv.driver).withContext('BrowserVerifier should create a new driver').toBeDefined();
         }).internals.usingUiSessionGeneratorManager(sessionMgr);
 
@@ -26,7 +26,7 @@ describe('BrowserVerifier', () => {
         }));
         spyOn(sessionMgr, 'getSession').and.callFake((id: string, aftCfg?: AftConfig) => Promise.resolve({}));
 
-        await verifyWithBrowser((bv: BrowserVerifier) => {
+        await verifyWithBrowser((bv: SeleniumVerifier) => {
             expect(bv.driver).toBeDefined();
             expect(bv.uiPlatform.toString()).toEqual('windows_8.1_firefox_+_+');
         }).internals.usingUiSessionGeneratorManager(sessionMgr);
@@ -41,7 +41,7 @@ describe('BrowserVerifier', () => {
         });
         spyOn(sessionMgr, 'getSession').and.callFake((id: string, aftCfg?: AftConfig) => Promise.resolve(driver));
         
-        await verifyWithBrowser((bv: BrowserVerifier) => {
+        await verifyWithBrowser((bv: SeleniumVerifier) => {
             expect(bv.driver).toBeDefined();
         }).internals.usingUiSessionGeneratorManager(sessionMgr);
 
@@ -55,7 +55,7 @@ describe('BrowserVerifier', () => {
         let tcMgr: PolicyEngineManager = new PolicyEngineManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string) => Promise.resolve({result: false}));
         
-        await verifyWithBrowser((bv: BrowserVerifier) => {
+        await verifyWithBrowser((bv: SeleniumVerifier) => {
             expect(true).toBeFalse();
         }).internals.usingUiSessionGeneratorManager(sessionMgr)
         .internals.usingPolicyEngineManager(tcMgr)

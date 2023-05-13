@@ -1,12 +1,12 @@
-import { AftConfig, JsonObject } from "aft-core";
+import { AftConfig } from "aft-core";
 import { Builder, Capabilities, WebDriver } from "selenium-webdriver";
 import { UiSessionGeneratorPlugin, UiSessionConfig, UiPlatform } from "aft-ui";
 
-export class LocalBrowserConfig {
-    additionalCapabilities: JsonObject = {};
+export class LocalSessionConfig {
+    capabilities: Record<string, any> = {};
 }
 
-export class LocalBrowserSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
+export class LocalSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
     override getSession = async (identifier: string, aftCfg?: AftConfig): Promise<WebDriver> => {
         aftCfg ??= this.aftCfg;
         const uisc = aftCfg.getSection(UiSessionConfig);
@@ -21,7 +21,7 @@ export class LocalBrowserSessionGeneratorPlugin extends UiSessionGeneratorPlugin
 
     async getCapabilities(aftCfg: AftConfig): Promise<Capabilities> {
         const uisc = aftCfg.getSection(UiSessionConfig);
-        const lbc = aftCfg.getSection(LocalBrowserConfig);
+        const lbc = aftCfg.getSection(LocalSessionConfig);
         let capabilities: Capabilities = new Capabilities();
         const platform: UiPlatform = uisc.uiplatform;
         let osVersion = '';
@@ -35,7 +35,7 @@ export class LocalBrowserSessionGeneratorPlugin extends UiSessionGeneratorPlugin
         capabilities.set('platform', `${platform.os}${osVersion}`); // results in "windows11" or "osx10" type values
         capabilities.set('browserName', `${platform.browser}${browserVersion}`); // results in "chrome113" or "firefox73" type values
         // overwrite the above with passed in capabilities if any
-        const optCaps: Capabilities = new Capabilities(lbc.additionalCapabilities);
+        const optCaps: Capabilities = new Capabilities(lbc.capabilities);
         capabilities = capabilities.merge(optCaps);
         return capabilities;
     }

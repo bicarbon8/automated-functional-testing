@@ -1,9 +1,9 @@
 import { AftConfig, rand } from "aft-core";
 import { By, Capabilities } from "selenium-webdriver";
-import { SeleniumGridSessionGeneratorPlugin } from "../../../src";
-import { BrowserComponent } from "../../../src/components/browser-component";
+import { GridSessionConfig, GridSessionGeneratorPlugin } from "../../src";
+import { BrowserComponent } from "../../src/components/browser-component";
 
-describe('SeleniumGridSessionGeneratorPlugin', () => {
+describe('GridSessionGeneratorPlugin', () => {
     it('can generate capabilities from the passed in options', async () => {
         const uiplatform = {
             os: 'os-' + rand.getString(10),
@@ -11,16 +11,27 @@ describe('SeleniumGridSessionGeneratorPlugin', () => {
             browser: 'browser-' + rand.getString(15),
             browserVersion: 'browserVersion-' + rand.getString(2, false, true)
         };
+        const gsc = {
+            capabilities: {
+                "foo": true,
+                "bar": 1234,
+                "baz": rand.getString(5)
+            }
+        };
         const aftCfg = new AftConfig({
             UiSessionConfig: {
                 uiplatform: uiplatform
-            }
+            },
+            GridSessionConfig: gsc
         });
-        const plugin: SeleniumGridSessionGeneratorPlugin = new SeleniumGridSessionGeneratorPlugin();
+        const plugin: GridSessionGeneratorPlugin = new GridSessionGeneratorPlugin();
         const capabilities: Capabilities = await plugin.getCapabilities(aftCfg);
 
         expect(capabilities.get('platform')).toEqual(`${uiplatform.os} ${uiplatform.osVersion}`);
         expect(capabilities.get('browserName')).toEqual(`${uiplatform.browser} ${uiplatform.browserVersion}`);
+        expect(capabilities.get('foo')).toEqual(gsc.capabilities.foo);
+        expect(capabilities.get('bar')).toEqual(gsc.capabilities.bar);
+        expect(capabilities.get('baz')).toEqual(gsc.capabilities.baz);
     });
     
     /**
@@ -43,7 +54,7 @@ describe('SeleniumGridSessionGeneratorPlugin', () => {
                 uiplatform: uiplatform
             }
         });
-        const plugin: SeleniumGridSessionGeneratorPlugin = new SeleniumGridSessionGeneratorPlugin();
+        const plugin: GridSessionGeneratorPlugin = new GridSessionGeneratorPlugin();
         const session = await plugin.getSession('local', aftCfg);
         try {
             let expectedUrl: string = 'https://the-internet.herokuapp.com/login';

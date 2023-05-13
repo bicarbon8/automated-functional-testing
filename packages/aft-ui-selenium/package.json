@@ -1,5 +1,5 @@
 {
-  "name": "aft-ui-browsers",
+  "name": "aft-ui-selenium",
   "version": "9.0.0",
   "description": "Automated Functional Testing (AFT) package supporting UI testing in browsers",
   "main": "./dist/src/index.js",

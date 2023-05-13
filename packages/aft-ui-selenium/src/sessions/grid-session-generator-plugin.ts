@@ -1,14 +1,14 @@
 import { Builder, Capabilities, WebDriver } from "selenium-webdriver";
 import { UiSessionGeneratorPlugin, UiSessionConfig, UiPlatform } from "aft-ui";
-import { AftConfig, Err, JsonObject, LogManager } from "aft-core";
+import { AftConfig, Err, LogManager } from "aft-core";
 
-export class SeleniumGridConfig {
+export class GridSessionConfig {
     url: string = 'http://127.0.0.1:4444/wd/hub';
     implicitTimeoutMs: number = 1000;
-    additionalCapabilities: JsonObject = {};
+    capabilities: Record<string, any> = {};
 }
 
-export class SeleniumGridSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
+export class GridSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
     private readonly _logMgr: LogManager;
     constructor(aftCfg?: AftConfig) {
         super(aftCfg);
@@ -21,7 +21,7 @@ export class SeleniumGridSessionGeneratorPlugin extends UiSessionGeneratorPlugin
     }
     private async createDriver(aftCfg: AftConfig): Promise<WebDriver> {
         aftCfg ??= this.aftCfg;
-        const cfg = aftCfg.getSection(SeleniumGridConfig);
+        const cfg = aftCfg.getSection(GridSessionConfig);
         const caps: Capabilities = await this.getCapabilities(aftCfg);
         if (caps) {
             try {
@@ -47,7 +47,7 @@ export class SeleniumGridSessionGeneratorPlugin extends UiSessionGeneratorPlugin
     async getCapabilities(aftCfg?: AftConfig): Promise<Capabilities> {
         aftCfg ??= this.aftCfg;
         const uisc = aftCfg.getSection(UiSessionConfig);
-        const sgc = aftCfg.getSection(SeleniumGridConfig);
+        const sgc = aftCfg.getSection(GridSessionConfig);
         let capabilities: Capabilities = new Capabilities();
         const platform: UiPlatform = uisc.uiplatform;
         let osVersion = '';
@@ -61,7 +61,7 @@ export class SeleniumGridSessionGeneratorPlugin extends UiSessionGeneratorPlugin
         capabilities.set('platform', `${platform.os}${osVersion}`); // results in "windows11" or "osx10" type values
         capabilities.set('browserName', `${platform.browser}${browserVersion}`); // results in "chrome113" or "firefox73" type values
         // overwrite the above with passed in capabilities if any
-        const optCaps: Capabilities = new Capabilities(sgc.additionalCapabilities);
+        const optCaps: Capabilities = new Capabilities(sgc.capabilities);
         capabilities = capabilities.merge(optCaps);
         return capabilities;
     }
