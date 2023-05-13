@@ -1,7 +1,7 @@
 import { AftConfig, rand } from "aft-core";
 import { By, Capabilities } from "selenium-webdriver";
 import { GridSessionGeneratorPlugin } from "../../src";
-import { BrowserComponent } from "../../src/components/browser-component";
+import { SeleniumComponent } from "../../src/components/selenium-component";
 
 describe('GridSessionGeneratorPlugin', () => {
     it('can generate capabilities from the passed in options', async () => {
@@ -62,7 +62,7 @@ describe('GridSessionGeneratorPlugin', () => {
 
             expect(actualUrl).toEqual(expectedUrl);
 
-            let facet = new BrowserComponent({
+            let facet = new SeleniumComponent({
                 driver: session,
                 locator: By.css('button.radius')
             });

@@ -1,7 +1,7 @@
 import { By, Locator, WebElement } from 'selenium-webdriver';
-import { BrowserFacet } from '../../../../../aft-ui-browsers/src';
+import { SeleniumComponent } from 'aft-ui-selenium';
 
-export class HerokuContentWidget extends BrowserFacet {
+export class HerokuContentWidget extends SeleniumComponent {
     /**
      * this Facet sets a static locator instead of using a passed
      * in value on the constructor
@@ -11,13 +11,13 @@ export class HerokuContentWidget extends BrowserFacet {
     }
 
     private async usernameInput(): Promise<WebElement> {
-        return await this.getElement({ locator: By.id("username") });
+        return await (await this.getRoot()).findElement(By.id("username"));
     }
     private async passwordInput(): Promise<WebElement> {
-        return await this.getElement({ locator: By.id('password') });
+        return await (await this.getRoot()).findElement(By.id('password'));
     }
     private async loginButton(): Promise<WebElement> {
-        return await this.getElement({ locator: By.css('button.radius') });
+        return await (await this.getRoot()).findElement(By.css('button.radius'));
     }
 
     async login(username: string, password: string): Promise<void> {

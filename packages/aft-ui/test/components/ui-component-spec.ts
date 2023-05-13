@@ -18,7 +18,7 @@ describe('UiComponent', () => {
         };
         const compo = new FakeComponent(options);
 
-        const actual = await compo.getFacet(FakeComponent, {locator: FakeLocator.fakeLocType('new:loc')});
+        const actual = await compo.getComponent(FakeComponent, {locator: FakeLocator.fakeLocType('new:loc')});
 
         expect(actual).toBeDefined();
         expect(actual.locator.input).toEqual('new:loc');

@@ -1,29 +1,29 @@
 import { By, Locator } from 'selenium-webdriver';
-import { BrowserFacet } from '../../../../../aft-ui-browsers/src';
 import { HerokuContentWidget } from './heroku-content-widget';
 import { HerokuMessagesWidget } from './heroku-messages-widget';
+import { SeleniumComponent } from 'aft-ui-selenium';
 
-export class HerokuLoginPage extends BrowserFacet {
+export class HerokuLoginPage extends SeleniumComponent {
     /**
      * this Facet sets a static locator instead of using a passed
      * in value on the constructor
      */
     override get locator(): Locator {
-        return By.css('html')
-    };
+        return By.css('html');
+    }
 
     /* begin: widgets */
     async content(): Promise<HerokuContentWidget> {
-        return await this.getFacet(HerokuContentWidget);
+        return await this.getComponent(HerokuContentWidget);
     }
     async messages(): Promise<HerokuMessagesWidget> {
-        return await this.getFacet(HerokuMessagesWidget, {maxWaitMs: 20000});
+        return await this.getComponent(HerokuMessagesWidget);
     }
     /* end: widgets */
 
     async navigateTo(): Promise<void> {
         try {
-            await this.session.goTo('https://the-internet.herokuapp.com/login');
+            await this.driver.navigate().to('https://the-internet.herokuapp.com/login');
         } catch (e) {
             return Promise.reject(e);
         }

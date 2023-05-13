@@ -1,14 +1,14 @@
-import { MobileAppFacet } from "aft-ui-mobile-apps";
-import { Element, ElementArray } from "webdriverio";
+import { SeleniumComponent } from "aft-ui-selenium";
+import { By, Locator, WebElement } from "selenium-webdriver";
 
-export class WikipediaView extends MobileAppFacet {
-    override get locator(): string {
-        return '//*';
+export class WikipediaView extends SeleniumComponent {
+    override get locator(): Locator {
+        return By.xpath('//*');
     }
 
-    private _searchButton = async (): Promise<Element<'async'>> => await this.getElement({locator: "~Search Wikipedia", maxWaitMs: 10000});
-    private _searchInput = async (): Promise<Element<'async'>> => await this.session.driver.$('android=new UiSelector().resourceId("org.wikipedia.alpha:id/search_src_text")');
-    private _searchResults = async (): Promise<ElementArray> => await this.getElements({locator: "android.widget.TextView", maxWaitMs: 10000});
+    private _searchButton = async (): Promise<WebElement> => (await this.getRoot()).findElement(By.js("~Search Wikipedia"));
+    private _searchInput = async (): Promise<WebElement> => await this.driver.findElement(By.js('android=new UiSelector().resourceId("org.wikipedia.alpha:id/search_src_text")'));
+    private _searchResults = async (): Promise<Array<WebElement>> => (await this.getRoot()).findElements(By.js("android.widget.TextView"));
 
     async searchFor(term: string): Promise<string[]> {
         await this.logMgr.info("tapping on 'SearchButton'");
@@ -19,16 +19,16 @@ export class WikipediaView extends MobileAppFacet {
 
     async sendTextToSearch(text: string): Promise<void> {
         await this.logMgr.info(`setting 'SearchInput' to '${text}'...`);
-        await this._searchInput().then(i => i.addValue(text));
+        await this._searchInput().then(i => i.sendKeys(text));
     }
 
     async getResults(): Promise<string[]> {
         await this.logMgr.info("getting text from 'SearchResults' to return as 'string[]'");
         let resultsText: string[] = [];
 
-        var searchResults: ElementArray = await this._searchResults();
+        var searchResults = await this._searchResults();
         for (var i=0; i<searchResults.length; i++) {
-            let res: Element<'async'> = searchResults[i];
+            let res = searchResults[i];
             let txt: string = await res.getText().catch(err => err);
             resultsText.push(txt);
         }

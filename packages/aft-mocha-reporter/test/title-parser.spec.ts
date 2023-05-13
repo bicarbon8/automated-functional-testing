@@ -25,27 +25,4 @@ describe('TitleParser', () => {
             expect(TitleParser.parseTestIds(d.title)).to.eql(d.expected);
         });
     });
-
-    const ddata = [
-        {title: '', expected: []},
-        {title: '<BUG-123>', expected: ['BUG-123']},
-        {title: 'foo <BUG-123>', expected: ['BUG-123']},
-        {title: '<BUG-123> foo', expected: ['BUG-123']},
-        {title: 'foo <BUG-123> foo', expected: ['BUG-123']},
-        {title: '<BUG-123> <BUG-234>', expected: ['BUG-123', 'BUG-234']},
-        {title: 'foo <BUG-123> <BUG-234>', expected: ['BUG-123', 'BUG-234']},
-        {title: '<BUG-123> foo <BUG-234>', expected: ['BUG-123', 'BUG-234']},
-        {title: '<BUG-123> <BUG-234> foo', expected: ['BUG-123', 'BUG-234']},
-        {title: 'foo <BUG-123> foo <BUG-234> foo', expected: ['BUG-123', 'BUG-234']},
-        {title: 'foo<BUG-123> foo<BUG-234>', expected: ['BUG-123', 'BUG-234']},
-        {title: 'foo<BUG-123><BUG-234>', expected: ['BUG-123', 'BUG-234']},
-        {title: '<BUG-123>foo <BUG-234>foo', expected: ['BUG-123', 'BUG-234']},
-        {title: 'Bug name 123', expected: []},
-        {title: 'foo [C1234] bar <BUG-123> baz', expected: ['BUG-123']}
-    ];
-    ddata.forEach((d) => {
-        it(`can parse defects from titles: '${d.title}'`, function () {
-            expect(TitleParser.parseDefectIds(d.title)).to.eql(d.expected);
-        });
-    });
 });

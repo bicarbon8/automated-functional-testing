@@ -3,12 +3,12 @@ import { UiSessionGeneratorManager } from "aft-ui";
 import { WebDriver } from "selenium-webdriver";
 import { SeleniumVerifier, verifyWithSelenium } from "../../src";
 
-describe('BrowserVerifier', () => {
+describe('SeleniumVerifier', () => {
     it('calls UiSessionGeneratorManager.getSession when run', async () => {
         const sessionMgr = new UiSessionGeneratorManager();
-        spyOn(sessionMgr, 'getSession').and.callFake((id: string, aftCfg?: AftConfig) => Promise.resolve({}));
+        spyOn(sessionMgr, 'getSession').and.callFake((opts?: Record<string, any>) => Promise.resolve({}));
         await verifyWithSelenium(async (bv: SeleniumVerifier) => {
-            expect(bv.driver).withContext('BrowserVerifier should create a new driver').toBeDefined();
+            expect(bv.driver).withContext('SeleniumVerifier should create a new driver').toBeDefined();
         }).internals.usingUiSessionGeneratorManager(sessionMgr);
 
         expect(sessionMgr.getSession).toHaveBeenCalledTimes(1);
@@ -24,7 +24,7 @@ describe('BrowserVerifier', () => {
                 }
             }
         }));
-        spyOn(sessionMgr, 'getSession').and.callFake((id: string, aftCfg?: AftConfig) => Promise.resolve({}));
+        spyOn(sessionMgr, 'getSession').and.callFake((opts?: Record<string, any>) => Promise.resolve({}));
 
         await verifyWithSelenium((bv: SeleniumVerifier) => {
             expect(bv.driver).toBeDefined();
@@ -39,7 +39,7 @@ describe('BrowserVerifier', () => {
         let driver: WebDriver = jasmine.createSpyObj('WebDriver', {
             'quit': Promise.resolve()
         });
-        spyOn(sessionMgr, 'getSession').and.callFake((id: string, aftCfg?: AftConfig) => Promise.resolve(driver));
+        spyOn(sessionMgr, 'getSession').and.callFake((opts?: Record<string, any>) => Promise.resolve(driver));
         
         await verifyWithSelenium((bv: SeleniumVerifier) => {
             expect(bv.driver).toBeDefined();
@@ -51,7 +51,7 @@ describe('BrowserVerifier', () => {
 
     it('no BrowserSession is created if assertion should not be run', async () => {
         const sessionMgr = new UiSessionGeneratorManager();
-        spyOn(sessionMgr, 'getSession').and.callFake((id: string, aftCfg?: AftConfig) => Promise.resolve({}));
+        spyOn(sessionMgr, 'getSession').and.callFake((opts?: Record<string, any>) => Promise.resolve({}));
         let tcMgr: PolicyEngineManager = new PolicyEngineManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string) => Promise.resolve({result: false}));
         

@@ -1,7 +1,7 @@
+import { SeleniumComponent } from "aft-ui-selenium";
 import { By, Locator, WebElement } from "selenium-webdriver";
-import { BrowserFacet } from "../../../../../aft-ui-browsers/src";
 
-export class HerokuMessagesWidget extends BrowserFacet {
+export class HerokuMessagesWidget extends SeleniumComponent {
     /**
      * this Facet sets a static locator instead of using a passed
      * in value on the constructor
@@ -11,7 +11,7 @@ export class HerokuMessagesWidget extends BrowserFacet {
     }
 
     private async message(): Promise<WebElement> {
-        let elements: WebElement[] = await this.getElements({ locator: By.id('flash') });
+        let elements: WebElement[] = await (await this.getRoot()).findElements(By.id('flash'));
         return elements[0];
     }
     

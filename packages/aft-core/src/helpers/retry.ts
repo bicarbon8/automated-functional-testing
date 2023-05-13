@@ -18,13 +18,13 @@ export class RetryConfig {
 export class Retry<T> implements PromiseLike<T> {
     private readonly _aftCfg: AftConfig;
     private readonly _retryable: Func<void, T | PromiseLike<T>>;
-    private readonly _delay: number;
-    private readonly _backOffType: RetryBackOffType;
-    private readonly _maxAttempts: number;
-    private readonly _maxDuration: number;
-    private readonly _reject: boolean;
     
     private _condition: Func<T, boolean | PromiseLike<boolean>>;
+    private _delay: number;
+    private _backOffType: RetryBackOffType;
+    private _maxAttempts: number;
+    private _maxDuration: number;
+    private _reject: boolean;
     private _currentDelay: number;
     private _result: T;
     private _success: boolean;
@@ -99,6 +99,31 @@ export class Retry<T> implements PromiseLike<T> {
      */
     until(condition: Func<T, boolean | PromiseLike<boolean>>): this {
         this._condition = condition;
+        return this;
+    }
+
+    withDelay(milliseconds: number): this {
+        this._delay = milliseconds;
+        return this;
+    }
+
+    withBackOff(backOffType: RetryBackOffType): this {
+        this._backOffType = backOffType;
+        return this;
+    }
+
+    withMaxDuration(milliseconds: number): this {
+        this._maxDuration = milliseconds;
+        return this;
+    }
+
+    withMaxAttempts(attempts: number): this {
+        this._maxAttempts = attempts;
+        return this;
+    }
+
+    withRejectOnFail(reject: boolean): this {
+        this._reject = reject;
         return this;
     }
 

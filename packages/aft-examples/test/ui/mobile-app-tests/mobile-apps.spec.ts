@@ -50,7 +50,7 @@ describe('Functional Mobile App Tests using AFT-UI-MOBILE-APPS', () => {
                 }
             }
         }).withMobileAppSessionOptions({app: customId})
-        .and.withLogManager(aft.logMgr)
+        .internals.usingLogManager(aft.logMgr)
         .returns(true);
     });
 });

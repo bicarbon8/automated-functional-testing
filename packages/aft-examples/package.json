@@ -35,7 +35,7 @@
     "aft-logging-filesystem": "^9.0.0",
     "aft-logging-html": "^9.0.0",
     "aft-testrail": "^9.0.0",
-    "aft-ui-browsers": "^9.0.0",
+    "aft-ui-selenium": "^9.0.0",
     "aft-ui-mobile-apps": "^9.0.0"
   },
   "devDependencies": {

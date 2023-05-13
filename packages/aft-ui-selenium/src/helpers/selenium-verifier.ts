@@ -3,7 +3,7 @@ import { Class, Err, Func, Verifier } from "aft-core";
 import { WebDriver } from "selenium-webdriver";
 import { UiComponentOptions, UiPlatform, UiSessionConfig, UiSessionGeneratorManager } from "aft-ui";
 import { SeleniumVerifierInternals } from "./selenium-verifier-internals";
-import { BrowserComponent } from "../components/browser-component";
+import { SeleniumComponent } from "../components/selenium-component";
 
 export class SeleniumVerifier extends Verifier {
     protected override _assertion: Func<SeleniumVerifier, any>;
@@ -94,7 +94,7 @@ export class SeleniumVerifier extends Verifier {
         return this;
     }
 
-    getComponent<T extends BrowserComponent>(componentType: Class<T>, opts?: UiComponentOptions): T {
+    getComponent<T extends SeleniumComponent>(componentType: Class<T>, opts?: UiComponentOptions): T {
         opts ??= {} as UiComponentOptions;
         opts.aftCfg ??= this.aftCfg;
         opts.driver ??= this.driver;

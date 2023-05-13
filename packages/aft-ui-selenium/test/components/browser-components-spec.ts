@@ -1,5 +1,5 @@
 import { By, WebDriver, WebElement, WebElementPromise } from "selenium-webdriver"
-import { BrowserComponent } from "../../src/components/browser-component";
+import { SeleniumComponent } from "../../src/components/selenium-component";
 
 describe('BrowserComponent', () => {
     it('uses the driver if no parent present', async () => {
@@ -10,7 +10,7 @@ describe('BrowserComponent', () => {
         const mockDriver = jasmine.createSpyObj<WebDriver>({
             findElement: Promise.resolve(mockElement) as WebElementPromise
         });
-        const compo = new BrowserComponent({
+        const compo = new SeleniumComponent({
             driver: mockDriver,
             locator: By.css('fake.css')
         });
@@ -28,7 +28,7 @@ describe('BrowserComponent', () => {
         const mockDriver = jasmine.createSpyObj<WebDriver>({
             findElement: Promise.resolve(mockElement) as WebElementPromise
         });
-        const compo = new BrowserComponent({
+        const compo = new SeleniumComponent({
             driver: mockDriver,
             locator: By.css('fake.css'),
             parent: () => Promise.resolve(mockElement)

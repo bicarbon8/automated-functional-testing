@@ -39,12 +39,12 @@ export abstract class UiComponent {
 
     abstract getRoot(): Promise<unknown>;
 
-    async getFacet<F extends UiComponent>(facetType: Class<F>, options?: Partial<UiComponentOptions>): Promise<F> {
+    async getComponent<F extends UiComponent>(componentType: Class<F>, options?: Partial<UiComponentOptions>): Promise<F> {
         options ??= {} as UiComponentOptions;
         options.driver ??= this.driver;
         options.aftCfg ??= this.aftCfg;
         options.logMgr ??= this.logMgr;
         options.parent ??= this.getRoot;
-        return new facetType(options);
+        return new componentType(options);
     }
 }
