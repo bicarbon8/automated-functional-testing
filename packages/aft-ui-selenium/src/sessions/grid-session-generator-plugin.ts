@@ -5,7 +5,6 @@ import { AftConfig, Err, LogManager } from "aft-core";
 export class GridSessionConfig {
     url: string = 'http://127.0.0.1:4444/wd/hub';
     implicitTimeoutMs: number = 1000;
-    capabilities: Record<string, any> = {};
 }
 
 export class GridSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
@@ -14,15 +13,13 @@ export class GridSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
         super(aftCfg);
         this._logMgr = new LogManager(this.constructor.name, this.aftCfg);
     }
-    override getSession = async (identifier: string, aftCfg?: AftConfig): Promise<WebDriver> => {
-        aftCfg ??= this.aftCfg;
-        const driver = await this.createDriver(aftCfg);
+    override getSession = async (sessionOptions?: Record<string, any>): Promise<WebDriver> => {
+        const driver = await this.createDriver(sessionOptions);
         return driver;
     }
-    private async createDriver(aftCfg: AftConfig): Promise<WebDriver> {
-        aftCfg ??= this.aftCfg;
-        const cfg = aftCfg.getSection(GridSessionConfig);
-        const caps: Capabilities = await this.getCapabilities(aftCfg);
+    private async createDriver(sessionOptions: Record<string, any>): Promise<WebDriver> {
+        const cfg = this.aftCfg.getSection(GridSessionConfig);
+        const caps: Capabilities = await this.getCapabilities(sessionOptions);
         if (caps) {
             try {
                 const driver: WebDriver = await new Builder()
@@ -44,10 +41,9 @@ export class GridSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
         }
         return null;
     }
-    async getCapabilities(aftCfg?: AftConfig): Promise<Capabilities> {
-        aftCfg ??= this.aftCfg;
-        const uisc = aftCfg.getSection(UiSessionConfig);
-        const sgc = aftCfg.getSection(GridSessionConfig);
+    async getCapabilities(sessionOptions?: Record<string, any>): Promise<Capabilities> {
+        const uisc = this.aftCfg.getSection(UiSessionConfig);
+        const sgc = this.aftCfg.getSection(GridSessionConfig);
         let capabilities: Capabilities = new Capabilities();
         const platform: UiPlatform = uisc.uiplatform;
         let osVersion = '';
@@ -61,7 +57,7 @@ export class GridSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
         capabilities.set('platform', `${platform.os}${osVersion}`); // results in "windows11" or "osx10" type values
         capabilities.set('browserName', `${platform.browser}${browserVersion}`); // results in "chrome113" or "firefox73" type values
         // overwrite the above with passed in capabilities if any
-        const optCaps: Capabilities = new Capabilities(sgc.capabilities);
+        const optCaps: Capabilities = new Capabilities(sessionOptions);
         capabilities = capabilities.merge(optCaps);
         return capabilities;
     }

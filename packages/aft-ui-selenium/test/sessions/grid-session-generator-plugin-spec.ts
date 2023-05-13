@@ -1,6 +1,6 @@
 import { AftConfig, rand } from "aft-core";
 import { By, Capabilities } from "selenium-webdriver";
-import { GridSessionConfig, GridSessionGeneratorPlugin } from "../../src";
+import { GridSessionGeneratorPlugin } from "../../src";
 import { BrowserComponent } from "../../src/components/browser-component";
 
 describe('GridSessionGeneratorPlugin', () => {
@@ -42,12 +42,10 @@ describe('GridSessionGeneratorPlugin', () => {
      * - selenium_grid_url
      */
     xit('can create a session on Selenium Grid', async () => {
-        let platform: string = 'windows_10_chrome';
         const uiplatform = {
-            os: 'os-' + rand.getString(10),
-            osVersion: 'osVersion-' + rand.getString(2, false, true),
-            browser: 'browser-' + rand.getString(15),
-            browserVersion: 'browserVersion-' + rand.getString(2, false, true)
+            os: 'windows',
+            osVersion: '11',
+            browser: 'chrome'
         };
         const aftCfg = new AftConfig({
             UiSessionConfig: {
@@ -55,7 +53,7 @@ describe('GridSessionGeneratorPlugin', () => {
             }
         });
         const plugin: GridSessionGeneratorPlugin = new GridSessionGeneratorPlugin();
-        const session = await plugin.getSession('local', aftCfg);
+        const session = await plugin.getSession();
         try {
             let expectedUrl: string = 'https://the-internet.herokuapp.com/login';
             await session.navigate().to(expectedUrl);

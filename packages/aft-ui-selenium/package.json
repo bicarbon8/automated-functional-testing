@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "@types/jasmine": "^3.6.10",
+    "@types/lodash": "^4.14.194",
     "@types/node": "^15.0.1",
     "@types/selenium-webdriver": "^4.0.12",
     "jasmine": "^3.7.0",

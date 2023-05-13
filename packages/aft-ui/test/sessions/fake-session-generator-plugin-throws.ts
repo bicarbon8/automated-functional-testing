@@ -1,8 +1,7 @@
-import { AftConfig } from "aft-core";
 import { UiSessionGeneratorPlugin } from "../../src";
 
 export class FakeSessionGeneratorPluginThrows extends UiSessionGeneratorPlugin {
-    override getSession = async (identifier: string, aftCfg?: AftConfig): Promise<unknown> => {
+    override getSession = async (sessionOptions?: Record<string, any>): Promise<unknown> => {
         throw 'fake-exception';
     }
 }

@@ -3,8 +3,9 @@ import { UiSessionGeneratorPlugin } from "./ui-session-generator-plugin";
 import { UiPlatform } from "../configuration/ui-platform";
 
 export class UiSessionConfig {
-    sessionGeneratorName: string;
+    generatorName: string;
     uiplatform: UiPlatform;
+    options: Record<string, any> = {};
 }
 
 /**
@@ -13,18 +14,21 @@ export class UiSessionConfig {
  * ```
  * {
  *   "pluginNames": [
- *     "selenium-grid-session-generator-plugin",
+ *     "grid-session-generator-plugin",
  *     "local-browser-session-generator-plugin"
  *   ]
  *   ...
  *   "UiSessionConfig": {
- *     "sessionGeneratorName": "selenium-grid-session-generator-plugin",
+ *     "generatorName": "grid-session-generator-plugin",
  *     "uiplatform": {
  *       "os": "android",
  *       "osValue": "13",
  *       "browser": "chrome",
  *       "browserVersion": "112",
  *       "deviceName": "Samsung Galaxy S23"
+ *     },
+ *     "options": {
+ *       "browserName": "chrome"
  *     }
  *   }
  *   ...
@@ -45,12 +49,11 @@ export class UiSessionGeneratorManager {
      * instantiates a new Session using the `sessionGeneratorName` specified in 
      * `UiSessionConfig`
      */
-    async getSession(identifier: string, aftCfg?: AftConfig): Promise<unknown> {
-        aftCfg ??= this.aftCfg;
-        const uic = aftCfg.getSection(UiSessionConfig);
+    async getSession(sessionOptions?: Record<string, any>): Promise<unknown> {
+        const uic = this.aftCfg.getSection(UiSessionConfig);
         try {
-            const plugin = pluginLoader.getPluginByName<UiSessionGeneratorPlugin>(uic.sessionGeneratorName, this.aftCfg);
-            return await plugin.getSession(identifier, aftCfg);
+            const plugin = pluginLoader.getPluginByName<UiSessionGeneratorPlugin>(uic.generatorName, this.aftCfg);
+            return await plugin.getSession(sessionOptions);
         } catch (e) {
             const err = `unable to generate UI session due to: ${Err.short(e)}`;
             this._logMgr?.error(err);

@@ -1,3 +1,4 @@
+import { merge } from "lodash";
 import { Class, Err, Func, Verifier } from "aft-core";
 import { WebDriver } from "selenium-webdriver";
 import { UiComponentOptions, UiPlatform, UiSessionConfig, UiSessionGeneratorManager } from "aft-ui";
@@ -8,6 +9,7 @@ export class SeleniumVerifier extends Verifier {
     protected override _assertion: Func<SeleniumVerifier, any>;
     protected _driver: unknown;
     protected _sessionMgr: UiSessionGeneratorManager;
+    private _sessionOptions: Record<string, any> = {};
 
     /**
      * a {UiSessionGeneratorManager} instance used to generate new
@@ -45,6 +47,53 @@ export class SeleniumVerifier extends Verifier {
         return baseInternals;
     }
 
+    /**
+     * allows specifying additional session options to be merged with those
+     * specified in your `aftconfig.json` file under the `UiSessionConfig.options`
+     * property. for example, if your `aftconfig.json` already contained the 
+     * following options:
+     * ```json
+     * // aftconfig.json
+     * {
+     *   "UiSessionConfig": {
+     *     "generatorName": "foo-bar-baz",
+     *     "uiplatform": { "os": "windows", "browser": "firefox" },
+     *     "options": {
+     *       "bstack:options": {
+     *         "user": "foo1234",
+     *         "key": "klajsdflk1241234"
+     *       }
+     *     }
+     *   }
+     * }
+     * ```
+     * and you provided the following via `opts` here:
+     * ```typescript
+     * verifyWithSelenium(...).withAdditionalSessionOptions({
+     *     "bstack:options": {
+     *         "sessionName": "FooBarBaz"
+     *     }
+     * });
+     * ```
+     * your resulting options passed to the {UiSessionGeneratorManager} would
+     * look like:
+     * ```typescript
+     * {
+     *   "bstack:options": {
+     *     "user": "foo1234",
+     *     "key": "klajsdflk1241234",
+     *     "sessionName": "FooBarBaz"
+     *   }
+     * }
+     * ```
+     * @param opts a {Record<string, any>} containing capabilities to be used
+     * @returns a reference to {this}
+     */
+    withAdditionalSessionOptions(opts: Record<string, any>): this {
+        this._sessionOptions = merge(this._sessionOptions, opts);
+        return this;
+    }
+
     getComponent<T extends BrowserComponent>(componentType: Class<T>, opts?: UiComponentOptions): T {
         opts ??= {} as UiComponentOptions;
         opts.aftCfg ??= this.aftCfg;
@@ -54,7 +103,7 @@ export class SeleniumVerifier extends Verifier {
     }
 
     protected override async _resolveAssertion(): Promise<void> {
-        this._driver = await this.sessionGeneratorManager.getSession(this._logMgr.logName, this.aftCfg);
+        this._driver = await this.sessionGeneratorManager.getSession(this._sessionOptions);
         try {
             await super._resolveAssertion();
         } finally {
@@ -65,20 +114,20 @@ export class SeleniumVerifier extends Verifier {
 }
 
 /**
- * creates a new `BrowserVerifier` instace to be used for executing some Functional
+ * creates a new `SeleniumVerifier` instace to be used for executing some Functional
  * Test Assertion.
  * ex:
  * ```
- * await verifyWithBrowser(async (v: BrowserVerifier) => {
+ * await verifyWithSelenium(async (v: SeleniumVerifier) => {
  *   let facet: MyFacet = await v.getComponent(MyFacet);
  *   return await facet.returnExpectedValue();
- * }).withDescription('example usage for BrowserVerifier')
+ * }).withDescription('example usage for SeleniumVerifier')
  * .and.withTestId('C1234')
  * .returns('expected value');
  * ```
- * @param assertion the {Func<BrowserVerifier, any>} function to be executed by this `BrowserVerifier`
- * @returns a new `BrowserVerifier` instance
+ * @param assertion the {Func<SeleniumVerifier, any>} function to be executed by this `SeleniumVerifier`
+ * @returns a new `SeleniumVerifier` instance
  */
-export const verifyWithBrowser = (assertion: Func<SeleniumVerifier, any>): SeleniumVerifier => {
+export const verifyWithSelenium = (assertion: Func<SeleniumVerifier, any>): SeleniumVerifier => {
     return new SeleniumVerifier().verify(assertion);
 }

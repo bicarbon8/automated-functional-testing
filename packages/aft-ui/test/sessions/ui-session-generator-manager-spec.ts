@@ -18,7 +18,7 @@ describe('UiSessionGeneratorManager', () => {
         const byNameSpy = spyOn(pluginLoader, 'getPluginByName').and.callThrough();
 
         expect(manager).toBeDefined();
-        expect(await manager.getSession(rand.getString(22))).not.toBeNull();
+        expect(await manager.getSession()).not.toBeNull();
         expect(byNameSpy).toHaveBeenCalledTimes(1);
     });
 
@@ -30,6 +30,7 @@ describe('UiSessionGeneratorManager', () => {
         const manager = new UiSessionGeneratorManager(aftCfg);
 
         expect(manager).toBeDefined();
-        expect(async () => await manager.getSession(rand.getString(22))).toThrowError(/(unable to generate UI session due to:).*/);
+        expect(async () => await manager.getSession())
+            .toThrowError(/(unable to generate UI session due to:).*/);
     });
 });
