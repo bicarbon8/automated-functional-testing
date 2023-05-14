@@ -90,7 +90,7 @@ export class SeleniumVerifier extends Verifier {
      * @returns a reference to {this}
      */
     withAdditionalSessionOptions(opts: Record<string, any>): this {
-        this._sessionOptions = merge(this._sessionOptions, opts);
+        this._sessionOptions = opts;
         return this;
     }
 

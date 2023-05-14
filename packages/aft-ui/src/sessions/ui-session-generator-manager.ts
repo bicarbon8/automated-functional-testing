@@ -1,3 +1,4 @@
+import { merge } from "lodash";
 import { AftConfig, Err, LogManager, aftConfig, pluginLoader } from "aft-core";
 import { UiSessionGeneratorPlugin } from "./ui-session-generator-plugin";
 import { UiPlatform } from "../configuration/ui-platform";
@@ -51,6 +52,8 @@ export class UiSessionGeneratorManager {
      */
     async getSession(sessionOptions?: Record<string, any>): Promise<unknown> {
         const uic = this.aftCfg.getSection(UiSessionConfig);
+        sessionOptions ??= {};
+        sessionOptions = merge(uic.options, sessionOptions);
         try {
             const plugin = pluginLoader.getPluginByName<UiSessionGeneratorPlugin>(uic.generatorName, this.aftCfg);
             return await plugin.getSession(sessionOptions);

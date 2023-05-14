@@ -19,10 +19,6 @@ export class GridSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
         return this._logMgr;
     }
     override getSession = async (sessionOptions?: Record<string, any>): Promise<WebDriver> => {
-        const driver = await this.createDriver(sessionOptions);
-        return driver;
-    }
-    private async createDriver(sessionOptions: Record<string, any>): Promise<WebDriver> {
         const cfg = this.aftCfg.getSection(GridSessionConfig);
         const caps: Capabilities = await this.getCapabilities(sessionOptions);
         if (caps) {

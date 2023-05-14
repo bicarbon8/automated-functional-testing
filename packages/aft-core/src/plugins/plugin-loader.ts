@@ -85,8 +85,7 @@ class PluginLoader {
      */
     getPluginByName<T extends Plugin>(pluginName: string, aftCfg?: AftConfig): T {
         this._load(aftCfg);
-        let name = convert.toSafeString(pluginName, [{exclude: /[-_.\s\d]/gi, replaceWith: ''}]);
-        return this._pluginsMap.get(name) as T;
+        return this._pluginsMap.get(pluginName) as T;
     }
 
     /**

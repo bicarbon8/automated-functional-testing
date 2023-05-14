@@ -5,10 +5,10 @@ import { HerokuLoginPage } from "./page-objects/heroku-login-page";
 import { UiPlatform, UiSessionConfig } from "aft-ui";
 
 describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
-    it('can access websites using AFT and BrowserComponents', async function() {
+    it.only('can access websites using AFT and BrowserComponents', async function() {
         const aft = new AftLog(this);
         await verifyWithSelenium(async (tw: SeleniumVerifier) => {
-            let loginPage: HerokuLoginPage = await tw.getComponent(HerokuLoginPage);
+            let loginPage: HerokuLoginPage = tw.getComponent(HerokuLoginPage);
             
             await tw.logMgr.step('navigate to LoginPage...');
             await loginPage.navigateTo();

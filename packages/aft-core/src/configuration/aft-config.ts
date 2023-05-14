@@ -1,7 +1,6 @@
 import * as dotenv from "dotenv";
-import { Class, JsonObject, JsonValue, RetryBackOffType } from "../helpers/custom-types";
+import { Class, JsonObject, JsonValue } from "../helpers/custom-types";
 import { fileio } from "../helpers/file-io";
-import { LogLevel } from "../plugins/logging/log-level";
 
 export class AftConfig {
     private readonly _cfg: JsonObject;
