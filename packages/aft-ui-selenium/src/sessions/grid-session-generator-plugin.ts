@@ -8,10 +8,15 @@ export class GridSessionConfig {
 }
 
 export class GridSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
-    private readonly _logMgr: LogManager;
+    private _logMgr: LogManager;
     constructor(aftCfg?: AftConfig) {
         super(aftCfg);
-        this._logMgr = new LogManager(this.constructor.name, this.aftCfg);
+    }
+    get logMgr(): LogManager {
+        if (!this._logMgr) {
+            this._logMgr = new LogManager(this.constructor.name, this.aftCfg);
+        }
+        return this._logMgr;
     }
     override getSession = async (sessionOptions?: Record<string, any>): Promise<WebDriver> => {
         const driver = await this.createDriver(sessionOptions);
@@ -27,16 +32,16 @@ export class GridSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
                     .withCapabilities(caps)
                     .build();
                 await Err.handle(() => driver.manage().setTimeouts({implicit: cfg.implicitTimeoutMs}), {
-                    logger: this._logMgr,
+                    logger: this.logMgr,
                     errLevel: 'debug'
                 });
                 await Err.handle(() => driver.manage().window().maximize(), {
-                    logger: this._logMgr,
+                    logger: this.logMgr,
                     errLevel: 'debug'
                 });
                 return driver;
             } catch (e) {
-                this._logMgr.warn(`error in creating WebDriver due to: ${Err.full(e)}`);
+                this.logMgr.warn(`error in creating WebDriver due to: ${Err.full(e)}`);
             }
         }
         return null;

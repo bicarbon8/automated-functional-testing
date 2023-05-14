@@ -8,6 +8,7 @@
     "references": [
         { "path": "../aft-ui-selenium" },
         { "path": "../aft-logging-awskinesis" },
+        { "path": "../aft-logging-filesystem" },
         { "path": "../aft-logging-html" },
         { "path": "../aft-testrail" }
     ]
