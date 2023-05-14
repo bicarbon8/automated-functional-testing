@@ -1,11 +1,9 @@
 import { merge } from "lodash";
 import { AftConfig, Err, LogManager, aftConfig, pluginLoader } from "aft-core";
 import { UiSessionGeneratorPlugin } from "./ui-session-generator-plugin";
-import { UiPlatform } from "../configuration/ui-platform";
 
 export class UiSessionConfig {
     generatorName: string;
-    uiplatform: UiPlatform;
     options: Record<string, any> = {};
 }
 
@@ -30,6 +28,11 @@ export class UiSessionConfig {
  *     },
  *     "options": {
  *       "browserName": "chrome"
+ *       "bstack:options": {
+ *         "userName": "lkjsdlak",
+ *         "accessKey": "laksdjf12312",
+ *         "debug": true
+ *       }
  *     }
  *   }
  *   ...

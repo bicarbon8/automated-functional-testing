@@ -1,7 +1,7 @@
 import { By, WebDriver, WebElement, WebElementPromise } from "selenium-webdriver"
 import { SeleniumComponent } from "../../src/components/selenium-component";
 
-describe('BrowserComponent', () => {
+describe('SeleniumComponent', () => {
     it('uses the driver if no parent present', async () => {
         let mockElement: WebElement;
         mockElement = jasmine.createSpyObj<WebElement>({

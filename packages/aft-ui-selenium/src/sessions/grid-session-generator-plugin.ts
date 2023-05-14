@@ -1,5 +1,5 @@
 import { Builder, Capabilities, WebDriver } from "selenium-webdriver";
-import { UiSessionGeneratorPlugin, UiSessionConfig, UiPlatform } from "aft-ui";
+import { UiSessionGeneratorPlugin } from "aft-ui";
 import { AftConfig, Err, LogManager } from "aft-core";
 
 export class GridSessionConfig {
@@ -43,23 +43,7 @@ export class GridSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
         return null;
     }
     async getCapabilities(sessionOptions?: Record<string, any>): Promise<Capabilities> {
-        const uisc = this.aftCfg.getSection(UiSessionConfig);
-        const sgc = this.aftCfg.getSection(GridSessionConfig);
-        let capabilities: Capabilities = new Capabilities();
-        const platform: UiPlatform = uisc.uiplatform;
-        let osVersion = '';
-        if (platform.osVersion) {
-            osVersion = ' ' + platform.osVersion;
-        }
-        let browserVersion = '';
-        if (platform.browserVersion) {
-            browserVersion = ' ' + platform.browserVersion;
-        }
-        capabilities.set('platform', `${platform.os}${osVersion}`); // results in "windows11" or "osx10" type values
-        capabilities.set('browserName', `${platform.browser}${browserVersion}`); // results in "chrome113" or "firefox73" type values
-        // overwrite the above with passed in capabilities if any
-        const optCaps: Capabilities = new Capabilities(sessionOptions);
-        capabilities = capabilities.merge(optCaps);
+        let capabilities: Capabilities = new Capabilities(sessionOptions);
         return capabilities;
     }
 }

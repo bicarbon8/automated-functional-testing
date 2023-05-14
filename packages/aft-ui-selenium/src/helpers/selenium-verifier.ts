@@ -1,7 +1,6 @@
-import { merge } from "lodash";
 import { Class, Err, Func, Verifier } from "aft-core";
 import { WebDriver } from "selenium-webdriver";
-import { UiComponentOptions, UiPlatform, UiSessionConfig, UiSessionGeneratorManager } from "aft-ui";
+import { UiComponentOptions, UiSessionGeneratorManager } from "aft-ui";
 import { SeleniumVerifierInternals } from "./selenium-verifier-internals";
 import { SeleniumComponent } from "../components/selenium-component";
 
@@ -28,14 +27,6 @@ export class SeleniumVerifier extends Verifier {
      */
     get driver(): WebDriver {
         return this._driver as WebDriver;
-    }
-
-    /**
-     * returns a {UiPlatform} from the value set in your {UiSessionConfig}
-     * in `aftconfig.json` or the provided {AftConfig} instance
-     */
-    get uiPlatform(): UiPlatform {
-        return this.aftCfg.getSection(UiSessionConfig).uiplatform;
     }
 
     override get internals(): SeleniumVerifierInternals {

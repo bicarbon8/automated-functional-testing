@@ -5,33 +5,22 @@ import { SeleniumComponent } from "../../src/components/selenium-component";
 
 describe('GridSessionGeneratorPlugin', () => {
     it('can generate capabilities from the passed in options', async () => {
-        const uiplatform = {
-            os: 'os-' + rand.getString(10),
-            osVersion: 'osVersion-' + rand.getString(2, false, true),
-            browser: 'browser-' + rand.getString(15),
-            browserVersion: 'browserVersion-' + rand.getString(2, false, true)
-        };
-        const gsc = {
-            capabilities: {
-                "foo": true,
-                "bar": 1234,
-                "baz": rand.getString(5)
-            }
+        const sessionOpts = {
+            "foo": true,
+            "bar": 1234,
+            "baz": rand.getString(5)
         };
         const aftCfg = new AftConfig({
             UiSessionConfig: {
-                uiplatform: uiplatform
-            },
-            GridSessionConfig: gsc
+                options: sessionOpts
+            }
         });
         const plugin: GridSessionGeneratorPlugin = new GridSessionGeneratorPlugin();
         const capabilities: Capabilities = await plugin.getCapabilities(aftCfg);
 
-        expect(capabilities.get('platform')).toEqual(`${uiplatform.os} ${uiplatform.osVersion}`);
-        expect(capabilities.get('browserName')).toEqual(`${uiplatform.browser} ${uiplatform.browserVersion}`);
-        expect(capabilities.get('foo')).toEqual(gsc.capabilities.foo);
-        expect(capabilities.get('bar')).toEqual(gsc.capabilities.bar);
-        expect(capabilities.get('baz')).toEqual(gsc.capabilities.baz);
+        expect(capabilities.get('foo')).toEqual(sessionOpts.foo);
+        expect(capabilities.get('bar')).toEqual(sessionOpts.bar);
+        expect(capabilities.get('baz')).toEqual(sessionOpts.baz);
     });
     
     /**
@@ -42,14 +31,12 @@ describe('GridSessionGeneratorPlugin', () => {
      * - selenium_grid_url
      */
     xit('can create a session on Selenium Grid', async () => {
-        const uiplatform = {
-            os: 'windows',
-            osVersion: '11',
-            browser: 'chrome'
-        };
         const aftCfg = new AftConfig({
             UiSessionConfig: {
-                uiplatform: uiplatform
+                options: {
+                    platform: 'windows',
+                    browserName: 'chrome'
+                }
             }
         });
         const plugin: GridSessionGeneratorPlugin = new GridSessionGeneratorPlugin();

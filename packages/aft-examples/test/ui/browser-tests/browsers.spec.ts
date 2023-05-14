@@ -2,7 +2,7 @@ import { AftConfig, containing, retry, Verifier, verify } from "aft-core";
 import { AftLog, AftTest } from "aft-mocha-reporter";
 import { SeleniumVerifier, verifyWithSelenium } from "aft-ui-selenium";
 import { HerokuLoginPage } from "./page-objects/heroku-login-page";
-import { UiPlatform, UiSessionConfig } from "aft-ui";
+import { UiSessionConfig } from "aft-ui";
 
 describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
     it('can access websites using AFT and BrowserComponents', async function() {
@@ -25,6 +25,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
             await tw.logMgr.step('get message...');
             return await loginPage.getMessage();
         }).withAdditionalSessionOptions({
+            browserName: 'chrome',
             "bstack:options": {
                 "sessionName": aft.logMgr.logName
             }
@@ -66,20 +67,22 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                 await loginPage.content().then(c => c.getLoginButton()).then(button => button.click());
                 await tw.logMgr.info('no exception thrown on click');
             }).internals.usingLogManager(tw.logMgr).and.withTestIds('C7890');
+        }).withAdditionalSessionOptions({
+            browserName: 'chrome',
+            "bstack:options": {
+                "sessionName": aft.logMgr.logName
+            }
         }).internals.usingLogManager(aft.logMgr);
     });
 
     const uiplatforms = [
-        'osx_+_safari_latest',
-        'windows_11_firefox',
-        'windows_11_edge_+_+'
+        { browser: 'safari', os: 'osx', osV: null },
+        { browser: 'firefox', os: 'windows', osV: '11' },
+        { browser: 'edge', os: 'windows', osV: '11' },
     ];
     for (var uiplatform of uiplatforms) {
         it(`can run with multiple uiplatforms: ${uiplatform}`, async function() {
-            const aftCfg = new AftConfig();
-            const uisc = aftCfg.getSection(UiSessionConfig);
-            uisc.uiplatform = UiPlatform.parse(uiplatform);
-            const aft = new AftLog(this, aftCfg);
+            const aft = new AftLog(this);
             await verifyWithSelenium(async (tw: SeleniumVerifier) => {
                 let loginPage: HerokuLoginPage = tw.getComponent(HerokuLoginPage);
                 await loginPage.navigateTo();
@@ -90,8 +93,11 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                     .withMaxDuration(20000)
                     .until((res: boolean) => res);
                 return await loginPage.getMessage();
-            }).internals.usingAftConfig(aftCfg)
-            .and.internals.usingLogManager(aft.logMgr)
+            }).withAdditionalSessionOptions({
+                browserName: uiplatform.browser,
+                platform: uiplatform.os,
+                "os_version": uiplatform.osV
+            }).and.internals.usingLogManager(aft.logMgr)
             .returns(containing("You logged into a secure area!"));
         });
     }

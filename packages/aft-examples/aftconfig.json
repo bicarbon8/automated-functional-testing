@@ -22,11 +22,6 @@
         "logLevel": "none"
     },
     "UiSessionConfig": {
-        "uiplatform": {
-            "os": "windows",
-            "osVersion": "11",
-            "browser": "chrome"
-        },
         "generatorName": "grid-session-generator-plugin",
         "options": {
             "bstack:options": {

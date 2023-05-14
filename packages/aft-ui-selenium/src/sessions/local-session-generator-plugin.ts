@@ -4,10 +4,9 @@ import { UiSessionGeneratorPlugin, UiSessionConfig } from "aft-ui";
 export class LocalSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
     override getSession = async (sessionOptions?: Record<string, any>): Promise<WebDriver> => {
         const uisc = this.aftCfg.getSection(UiSessionConfig);
-        const platform = uisc.uiplatform;
         const caps = await this.getCapabilities(sessionOptions);
         const driver = new Builder()
-            .forBrowser(platform.browser)
+            .forBrowser(sessionOptions.browser ?? sessionOptions.browserName)
             .withCapabilities(caps)
             .build();
         return driver;

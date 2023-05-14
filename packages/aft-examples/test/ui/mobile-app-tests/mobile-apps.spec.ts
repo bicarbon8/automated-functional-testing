@@ -1,10 +1,12 @@
 import * as path from "path";
-import { aftConfig, rand } from "aft-core";
+import * as fs from "fs";
+import * as FormData from "form-data";
+import { AftConfig, aftConfig, rand } from "aft-core";
 import { WikipediaView } from "./page-objects/wikipedia-view";
 import { assert } from "chai";
 import { AftTest } from "aft-mocha-reporter";
 import { SeleniumVerifier, verifyWithSelenium } from "aft-ui-selenium";
-import { httpService } from "aft-web-services";
+import { httpService, httpData } from "aft-web-services";
 import { UiSessionConfig } from "aft-ui";
 
 var customId: string;
@@ -12,7 +14,7 @@ var customId: string;
 describe('Functional Mobile App Tests using AFT-UI-MOBILE-APPS', () => {
     before(async () => {
         const uisc = aftConfig.getSection(UiSessionConfig);
-        const auth = `basic ${btoa(`${uisc.options["bstack:options"]?.user}:${uisc.options["bstack:options"]?.key}`)}`
+        const auth = `basic ${btoa(`${uisc.options["bstack:options"]?.userName}:${uisc.options["bstack:options"]?.accessKey}`)}`
         const resp = await httpService.performRequest({
             url: "https://api-cloud.browserstack.com/app-automate/recent_group_apps",
             headers: {
@@ -20,34 +22,35 @@ describe('Functional Mobile App Tests using AFT-UI-MOBILE-APPS', () => {
             }
         });
         let app: any;
-        for (var i=0; i<resp?.["apps"]?.length; i++) {
-            let a = resp["apps"][i];
+        const uploadedApps = httpData.as<Array<any>>(resp);
+        for (var i=0; i<uploadedApps?.length; i++) {
+            let a = uploadedApps[i];
             if (a.app_name == 'WikipediaSample.apk') {
                 app = a;
                 break;
             }
         }
         if (!app) {
-            let data = {
-                file: path.join(process.cwd(), './test/ui/mobile-app-tests/mobile-apps/WikipediaSample.apk'),
-                custom_id: rand.getString(15)
-            };
-            let result: any = await httpService.performRequest({
+            const formData = new FormData();
+            formData.append('custom_id', 'AFT.WikipediaApp');
+            formData.append('file', fs.createReadStream(path.join(process.cwd(), './test/ui/mobile-app-tests/mobile-apps/WikipediaSample.apk')));
+            const result: any = await httpService.performRequest({
                 url: "https://api-cloud.browserstack.com/app-automate/upload",
-                postData: JSON.stringify(data),
+                postData: formData,
                 method: 'POST',
                 headers: {
                     "Authorization": auth
-                }
+                },
+                multipart: true
             });
-            customId = result?.custom_id;
-        } else {
-            customId = app.shareable_id || app.custom_id || app.app_url;
+            app = httpData.as<{}>(result);
         }
+        customId = app.shareable_id ?? app.custom_id ?? app.app_url;
     });
 
     it('can search in Wikipedia App', async function() {
-        const aft = new AftTest(this);
+        const aftCfg = new AftConfig();
+        const aft = new AftTest(this, aftCfg);
         const shouldRun = await aft.shouldRun();
         if (!shouldRun) {
             this.skip();
@@ -66,11 +69,16 @@ describe('Functional Mobile App Tests using AFT-UI-MOBILE-APPS', () => {
                 }
             }
         }).withAdditionalSessionOptions({
+            browserName: 'chrome',
+            platformName: 'android',
+            "appium:platformVersion": '13.0',
+            "appium:deviceName": 'Samsung Galaxy S23',
+            "appium:app": customId,
             "bstack:options": {
-                "sessionName": aft.logMgr.logName,
-                app: customId
+                "sessionName": aft.logMgr.logName
             }
-        }).internals.usingLogManager(aft.logMgr)
+        }).internals.usingAftConfig(aftCfg)
+        .internals.usingLogManager(aft.logMgr)
         .returns(true);
     });
 });

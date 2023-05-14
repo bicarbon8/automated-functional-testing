@@ -14,6 +14,6 @@ export class SeleniumComponent extends UiComponent {
     }
     override async getRoot(): Promise<WebElement> {
         const searchContext = (this.parent != null) ? await this.parent() : this.driver;
-        return searchContext.findElement(this.locator);
+        return await searchContext.findElement(this.locator);
     }
 }

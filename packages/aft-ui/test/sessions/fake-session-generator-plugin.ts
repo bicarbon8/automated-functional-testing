@@ -5,8 +5,7 @@ export class FakeSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
         const uisc = this.aftCfg.getSection(UiSessionConfig);
         return {
             foo: 'bar',
-            uiplatform: uisc.uiplatform,
-            capabilities: sessionOptions
+            opts: sessionOptions
         };
     }
 }

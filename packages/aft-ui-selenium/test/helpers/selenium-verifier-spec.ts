@@ -28,7 +28,6 @@ describe('SeleniumVerifier', () => {
 
         await verifyWithSelenium((bv: SeleniumVerifier) => {
             expect(bv.driver).toBeDefined();
-            expect(bv.uiPlatform.toString()).toEqual('windows_8.1_firefox_+_+');
         }).internals.usingUiSessionGeneratorManager(sessionMgr);
 
         expect(sessionMgr.getSession).toHaveBeenCalledTimes(1);
