@@ -1,17 +1,18 @@
-import { cfgmgr, IConfigProvider, IHasConfig, IHasOptions, optmgr } from "aft-core";
 import * as http from 'http';
 import * as https from 'https';
 import * as FormData from "form-data";
 import { HttpMethod, HttpRequest, HttpResponse } from "./http-custom-types";
+import { AftConfig, aftConfig } from 'aft-core';
+import { OutgoingHttpHeaders } from 'http2';
 
-export type HttpServiceOptions = {
-    defaultUrl?: string;
-    defaultHeaders?: object;
-    defaultMethod?: string;
-    defaultAllowRedirect?: boolean;
-    defaultPostData?: string;
-    defaultMultipart?: boolean;
-};
+export class HttpServiceConfig {
+    defaultUrl: string = 'http://127.0.0.1';
+    defaultHeaders: OutgoingHttpHeaders = {};
+    defaultMethod: HttpMethod = 'GET';
+    defaultAllowRedirect: boolean = true;
+    defaultPostData: string;
+    defaultMultipart: boolean = false;
+}
 
 /**
  * supports performing requests over http / https returning the response as a
@@ -46,25 +47,11 @@ export type HttpServiceOptions = {
  * });
  * ```
  */
-export class HttpService implements IHasConfig<HttpServiceOptions>, IHasOptions<HttpServiceOptions> {
-    private _config: IConfigProvider<HttpServiceOptions>;
-    private _opts: HttpServiceOptions;
+export class HttpService {
+    private readonly aftCfg: AftConfig;
 
-    constructor(options?: HttpServiceOptions) {
-        options = options || {} as HttpServiceOptions;
-        this._opts = optmgr.process(options);
-    }
-
-    option<K extends keyof HttpServiceOptions, V extends HttpServiceOptions[K]>(key: K, defaultVal?: V): V {
-        const result: V = this._opts[key] as V;
-        return (result === undefined) ? defaultVal : result;
-    }
-
-    config<K extends keyof HttpServiceOptions, V extends HttpServiceOptions[K]>(key: K, defaultVal?: V): Promise<V> {
-        if (!this._config) {
-            this._config = cfgmgr.get(this.constructor.name, this._opts);
-        }
-        return this._config.get(key, defaultVal);
+    constructor(aftCfg?: AftConfig) {
+        this.aftCfg = aftCfg ?? aftConfig;
     }
 
     /**
@@ -119,13 +106,14 @@ export class HttpService implements IHasConfig<HttpServiceOptions>, IHasOptions<
     }
 
     private async setRequestDefaults(req?: HttpRequest): Promise<HttpRequest> {
+        const hsc = this.aftCfg.getSection(HttpServiceConfig)
         req ??=  {} as HttpRequest;
-        req.url ??= await this.config('defaultUrl', 'http://127.0.0.1');
-        req.headers ??= await this.config('defaultHeaders', {});
-        req.method ??= await this.config<any, HttpMethod>('defaultMethod', 'GET');
-        req.allowAutoRedirect ??= await this.config('defaultAllowRedirect', true);
-        req.postData ??= await this.config('defaultPostData');
-        req.multipart ??= await this.config('defaultMultipart', false);
+        req.url ??= hsc.defaultUrl;
+        req.headers ??= hsc.defaultHeaders ?? {};
+        req.method ??= hsc.defaultMethod;
+        req.allowAutoRedirect ??= hsc.defaultAllowRedirect;
+        req.postData ??= hsc.defaultPostData;
+        req.multipart ??= hsc.defaultMultipart;
         return req;
     }
 

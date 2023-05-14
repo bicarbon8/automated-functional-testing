@@ -17,7 +17,7 @@ describe('REST Request', () => {
                 url: 'https://reqres.in/api/users?page=2',
                 logMgr: tw.logMgr
             })).until((res: HttpResponse) => res.statusCode >= 200 && res.statusCode < 400)
-            .withStartDelayBetweenAttempts(100)
+            .withDelay(100)
             .withBackOff('exponential')
             .withMaxDuration(20000);
 
@@ -26,7 +26,7 @@ describe('REST Request', () => {
                 await tw.logMgr.error(r.lastError);
             }
             return r.totalDuration;
-        }).withLogManager(aft.logMgr)
+        }).internals.usingLogManager(aft.logMgr)
         .and.withDescription('takes less than 10sec')
         .and.withTestIds('C2217763')
         .returns(lessThan(10000));
@@ -38,7 +38,7 @@ describe('REST Request', () => {
             await tw.logMgr.info('response status code: ' + response.statusCode);
             await tw.logMgr.step('confirm response.data is not null...');
             return response.data;
-        }).withLogManager(aft.logMgr)
+        }).internals.usingLogManager(aft.logMgr)
         .and.withDescription('returns a valid response object')
         .and.withTestIds('C3131')
         .returns(havingValue());
@@ -50,7 +50,7 @@ describe('REST Request', () => {
             await tw.logMgr.info('confirmed can deserialise response.data into typed object.');
             await tw.logMgr.step('confirm object data property contains more than one result...');
             return obj.data.length;
-        }).withLogManager(aft.logMgr)
+        }).internals.usingLogManager(aft.logMgr)
         .and.withDescription('receives more than 0 results in the data array')
         .and.withTestIds('C2217764')
         .returns(greaterThan(0));

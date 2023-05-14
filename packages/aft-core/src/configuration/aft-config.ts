@@ -127,7 +127,7 @@ export class AftConfig {
                     if (typeof val === "string") {
                         val = this.processEnvVars(val);
                     } else if (typeof val === "object") {
-                        val = this.processEnvVars(val);
+                        val = this.processProperties(val);
                     }
                     input[prop] = val;
                 }
@@ -144,7 +144,7 @@ export class AftConfig {
      * @returns the value of the environment variable
      */
     processEnvVars(input: string): string {
-        if (input) {
+        if (input && typeof input === 'string') {
             let regx = /^%(.*)%$/;
             if ((input?.match(regx)?.length ?? 0) > 0) {
                 var envVarKey = input.match(regx)?.[1];

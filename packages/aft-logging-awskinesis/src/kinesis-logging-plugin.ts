@@ -19,6 +19,7 @@ type CheckAndSendOptions = {
 /**
  * NOTE: this plugin accepts the following options:
  * ```json
+ * // aftconfig.json
  * {
  *     "KinesisLoggingPluginConfig": {
  *       "logLevel": "info",

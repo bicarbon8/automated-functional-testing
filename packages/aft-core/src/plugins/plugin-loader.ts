@@ -137,7 +137,7 @@ class PluginLoader {
                     this._pluginsMap.set(pluginName, p);
                 }
             } catch (e) {
-                throw new Error(`unable to create instance of loaded plugin '${pluginName}' due to: ${Err.short(e)}`);
+                throw new Error(`unable to create instance of loaded plugin '${pluginName}' due to: ${e}`);
             }
         }
     }

@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { TestCase, PolicyEngineManager } from 'aft-core';
+import { PolicyEngineManager, AftConfig } from 'aft-core';
 import { httpService } from 'aft-web-services';
-import { TestRailConfig, TestRailTestCasePlugin, TestRailTestCasePluginOptions } from "../../src";
+import { TestRailConfig, TestRailTestCasePlugin } from "../../src";
 import { TestRailApi } from '../../src/api/testrail-api';
 import { TestRailCase, TestRailTest } from '../../src/api/testrail-custom-types';
 import { statusConverter } from '../../src/helpers/status-converter';
@@ -21,46 +21,46 @@ describe('TestRailTestCasePlugin', () => {
     });
 
     it('can lookup a test case in an existing plan by case id', async () => {
-        const opts: TestRailTestCasePluginOptions = {
-            config: new TestRailConfig({
+        const aftCfg = new AftConfig({
+            TestRailConfig: {
                 url: 'http://127.0.0.1',
                 user: 'fake@fake.fake',
                 accesskey: 'fake_key',
                 planid: 1234
-            })
-        };
-        opts.api = new TestRailApi({config: opts.config});
+            }
+        });
+        const api = new TestRailApi(aftCfg);
         let expected: TestRailTest = {
             id: 1,
             case_id: 1234,
             priority_id: 2,
             title: 'fake test title',
             run_id: 2,
-            status_id: statusConverter.toTestRailStatus('Passed')
+            status_id: statusConverter.toTestRailStatus('passed')
         };
-        spyOn(opts.api, 'getTestsInRuns').and.returnValue(Promise.resolve([expected]));
-        const plugin: TestRailTestCasePlugin = new TestRailTestCasePlugin(opts);
+        spyOn(api, 'getTestsInRuns').and.returnValue(Promise.resolve([expected]));
+        const plugin: TestRailTestCasePlugin = new TestRailTestCasePlugin(aftCfg, api);
         
-        const actual: TestCase = await plugin.getTestCase('C1234');
+        const actual: TestRailTest = await plugin.getTestCase('C1234');
 
         expect(actual).toBeDefined();
-        expect(actual.id).toBe('1');
-        expect(actual.status).toBe(statusConverter.fromTestRailStatus(expected.status_id));
+        expect(actual.id).toBe(1);
+        expect(actual.status_id).toBe(expected.status_id);
         expect(actual.title).toBe(expected.title);
-        expect(opts.api.getTestsInRuns).toHaveBeenCalledTimes(1);
+        expect(api.getTestsInRuns).toHaveBeenCalledTimes(1);
     });
 
     it('can lookup a test case in a supplied project and suite by case id', async () => {
-        const opts: TestRailTestCasePluginOptions = {
-            config: new TestRailConfig({
+        const aftCfg = new AftConfig({
+            TestRailConfig: {
                 url: 'http://127.0.0.1',
                 user: 'fake@fake.fake',
                 accesskey: 'fake_key',
                 projectid: 4,
                 suiteids: [12, 15]
-            })
-        };
-        opts.api = new TestRailApi({config: opts.config});
+            }
+        });
+        const api = new TestRailApi(aftCfg);
         let expected: TestRailCase = {
             id: 1234,
             priority_id: 2,
@@ -68,25 +68,24 @@ describe('TestRailTestCasePlugin', () => {
             suite_id: 1122,
             created_on: Date.now()
         } as TestRailCase;
-        spyOn(opts.api, 'getCasesInSuites').and.returnValue(Promise.resolve([expected]));
-        let plugin: TestRailTestCasePlugin = new TestRailTestCasePlugin(opts);
+        spyOn(api, 'getCasesInSuites').and.returnValue(Promise.resolve([expected]));
+        let plugin: TestRailTestCasePlugin = new TestRailTestCasePlugin(aftCfg, api);
         
-        let actual: TestCase = await plugin.getTestCase('C1234');
+        let actual: TestRailCase = await plugin.getTestCase('C1234');
 
         expect(actual).toBeDefined();
-        expect(actual.id).toBe(`C${expected.id}`);
-        expect(actual.status.valueOf()).toBe('Untested');
+        expect(actual.id).toBe(expected.id);
         expect(actual.title).toBe(expected.title);
-        expect(actual.created).toEqual(expected.created_on);
-        expect(opts.api.getCasesInSuites).toHaveBeenCalledTimes(1);
+        expect(actual.created_on).toEqual(expected.created_on);
+        expect(api.getCasesInSuites).toHaveBeenCalledTimes(1);
     });
 
     it('can be loaded by the testcasemanager', async () => {
-        const config = {
-            plugins: ['testrail-test-case-plugin']
-        };
-        let mgr: PolicyEngineManager = new PolicyEngineManager(config);
-        let plugin = await mgr.first();
+        const aftCfg = new AftConfig({
+            pluginNames: ['testrail-test-case-plugin']
+        });
+        let mgr: PolicyEngineManager = new PolicyEngineManager(aftCfg);
+        let plugin = await mgr.plugins[0];
 
         expect(plugin).toBeDefined();
         expect(plugin.constructor.name).toEqual('TestRailTestCasePlugin');

@@ -1,7 +1,7 @@
-import { convert, rand, retry } from "aft-core";
+import { AftConfig, convert, rand, retry } from "aft-core";
 import * as FormData from "form-data";
 import { httpService, HttpRequest, HttpResponse, httpData } from "../../src";
-import { HttpService } from "../../src/http/http-service";
+import { HttpService, HttpServiceConfig } from "../../src/http/http-service";
 
 describe('HttpService', () => {
     it('will set default request values if not passed in to performRequest', async () => {
@@ -23,14 +23,16 @@ describe('HttpService', () => {
     });
 
     it('can override default request values via constructor options if not passed in to performRequest', async () => {
-        const options = {
-            defaultUrl: 'https://fake.url/test',
-            defaultHeaders: {"Authorization": "basic a098dfasd09/=="},
-            defaultAllowRedirect: true,
-            defaultMethod: 'DELETE',
-            defaultPostData: 'some-fake-post-data'
-        };
-        let svc: HttpService = new HttpService(options);
+        const aftCfg = new AftConfig({
+            HttpServiceConfig: {
+                defaultUrl: 'https://fake.url/test',
+                defaultHeaders: {"Authorization": "basic a098dfasd09/=="},
+                defaultAllowRedirect: true,
+                defaultMethod: 'DELETE',
+                defaultPostData: 'some-fake-post-data'
+            }
+        });
+        let svc: HttpService = new HttpService(aftCfg);
         let actual: HttpRequest;
         spyOn<any>(svc, '_request').and.callFake((req: HttpRequest) => {
             actual = req;
@@ -38,13 +40,13 @@ describe('HttpService', () => {
         spyOn<any>(svc, '_response').and.returnValue({});
 
         await svc.performRequest();
-
+        const hsc = aftCfg.getSection(HttpServiceConfig);
         expect(actual).toBeDefined();
-        expect(actual.url).toEqual(options.defaultUrl);
-        expect(actual.headers).toEqual(options.defaultHeaders);
-        expect(actual.allowAutoRedirect).toEqual(options.defaultAllowRedirect);
-        expect(actual.method).toEqual(options.defaultMethod);
-        expect(actual.postData).toEqual(options.defaultPostData);
+        expect(actual.url).toEqual(hsc.defaultUrl);
+        expect(actual.headers).toEqual(hsc.defaultHeaders);
+        expect(actual.allowAutoRedirect).toEqual(hsc.defaultAllowRedirect);
+        expect(actual.method).toEqual(hsc.defaultMethod);
+        expect(actual.postData).toEqual(hsc.defaultPostData);
     });
 
     it('can send GET request', async () => {

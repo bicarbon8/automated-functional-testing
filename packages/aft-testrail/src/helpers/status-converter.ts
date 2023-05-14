@@ -8,16 +8,16 @@ class StatusConverter {
      */
     toTestRailStatus(status: TestStatus): number {
         switch (status) {
-            case 'Skipped':
+            case 'skipped':
                 return 9;
-            case 'Untested':
+            case 'untested':
                 return 3;
-            case 'Blocked':
+            case 'blocked':
                 return 2;
-            case 'Passed':
+            case 'passed':
                 return 1;
-            case 'Failed':
-            case 'Retest':
+            case 'failed':
+            case 'retest':
             default:
                 return 4;
         }
@@ -31,16 +31,16 @@ class StatusConverter {
     fromTestRailStatus(trStatus: number): TestStatus {
         switch (trStatus) {
             case 1:
-                return 'Passed';
+                return 'passed';
             case 2:
-                return 'Blocked';
+                return 'blocked';
             case 3:
-                return 'Untested';
+                return 'untested';
             case 5:
-                return 'Failed';
+                return 'failed';
             case 4:
             default:
-                return 'Retest';
+                return 'retest';
         }
     }
 }

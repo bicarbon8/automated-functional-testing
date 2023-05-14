@@ -30,13 +30,12 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-mocha-reporter": "^9.0.0",
     "aft-logging-awskinesis": "^9.0.0",
     "aft-logging-filesystem": "^9.0.0",
     "aft-logging-html": "^9.0.0",
+    "aft-mocha-reporter": "^9.0.0",
     "aft-testrail": "^9.0.0",
-    "aft-ui-selenium": "^9.0.0",
-    "aft-ui-mobile-apps": "^9.0.0"
+    "aft-ui-selenium": "^9.0.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.17",

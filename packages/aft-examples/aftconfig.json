@@ -1,93 +1,42 @@
 {
-    "LogManager": {
-        "level": "info",
-        "plugins": [{
-            "name": "testrail-logging-plugin",
-            "searchDirectory": "../",
-            "options": {
-                "level": "warn",
-                "enabled": false
-            }
-        },{
-            "name": "kinesis-logging-plugin",
-            "searchDirectory": "../",
-            "options": {
-                "level": "trace",
-                "batch": true,
-                "batchSize": 10,
-                "enabled": false
-            }
-        },{
-            "name": "html-logging-plugin",
-            "searchDirectory": "../",
-            "options": {
-                "level": "warn"
-            }
-        }, {
-            "name": "filesystem-logging-plugin",
-            "searchDirectory": "../",
-            "options": {
-                "level": "trace"
-            }
-        }]
-    },
-    "TestCaseManager": {
-        "plugins": [{
-            "name": "testrail-test-case-plugin",
-            "searchDirectory": "../",
-            "options": {
-                "enabled": false
-            }
-        }]
-    },
+    "pluginNames": [
+        "testrail-logging-plugin",
+        "testrail-test-case-plugin",
+        "kinesis-logging-plugin",
+        "html-logging-plugin",
+        "filesystem-logging-plugin",
+        "grid-session-generator-plugin",
+        "local-session-generator-plugin"
+    ],
+    "pluginsSearchDir": "../",
     "TestRailConfig": {
         "url": "%testrail_url%",
         "user": "%testrail_user%",
         "access_key": "%testrail_pass%",
         "project_id": 3,
-        "suite_ids": [744]
+        "suite_ids": [744],
+        "logLevel": "none",
+        "policyEngineEnabled": false
     },
-    "BrowserSessionGeneratorManager": {
-        "uiplatform": "windows_10_chrome",
-        "plugins": [{
-            "name": "browserstack-browser-session-generator-plugin",
-            "searchDirectory": "../",
-            "options": {
+    "KinesisLoggingPluginConfig": {
+        "logLevel": "none"
+    },
+    "UiSessionConfig": {
+        "uiplatform": {
+            "os": "windows",
+            "osVersion": "11",
+            "browser": "chrome"
+        },
+        "generatorName": "grid-session-generator-plugin",
+        "options": {
+            "bstack:options": {
                 "user": "%browserstack_user%",
                 "key": "%browserstack_key%",
                 "debug": true
             }
-        }, {
-            "name": "sauce-labs-browser-session-generator-plugin",
-            "searchDirectory": "../",
-            "options": {
-                "username": "%saucelabs_username%",
-                "accessKey": "%saucelabs_accessKey%",
-                "enabled": false
-            }
-        }]
+        }
     },
-    "MobileAppSessionGeneratorManager": {
-        "uiplatform": "android_11_+_+_Google Pixel 5",
-        "plugins": [{
-            "name": "browserstack-mobile-app-session-generator-plugin",
-            "searchDirectory": "../",
-            "options": {
-                "user": "%browserstack_user%",
-                "key": "%browserstack_key%",
-                "debug": true,
-                "remoteOptions": {
-                    "logLevel": "silent"
-                }
-            }
-        }, {
-            "name": "sauce-labs-mobile-app-session-generator-plugin",
-            "searchDirectory": "../",
-            "options": {
-                "username": "%saucelabs_username%",
-                "accessKey": "%saucelabs_accessKey%",
-                "enabled": false
-            }
-        }]
+    "GridSessionConfig": {
+        "url": "https://hub-cloud.browserstack.com/wd/hub"
     }
 }

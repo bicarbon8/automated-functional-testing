@@ -1,11 +1,11 @@
 import * as fs from "fs";
 import * as path from "path";
-import { TestRailLoggingPlugin, TestRailLoggingPluginOptions } from "../../src/logging/testrail-logging-plugin";
-import { rand, TestResult, ellide, AftLog } from "aft-core";
+import { rand, TestResult, ellide, LogManager, AftConfig } from "aft-core";
 import { TestRailApi } from "../../src/api/testrail-api";
 import { TestRailConfig } from "../../src/configuration/testrail-config";
 import { httpService } from "aft-web-services";
 import { TestRailPlan, TestRailResult, TestRailResultRequest, TestRailTest } from "../../src/api/testrail-custom-types";
+import { TestRailLoggingPlugin } from "../../src";
 
 describe('TestRailLoggingPlugin', () => {
     beforeEach(() => {
@@ -27,149 +27,150 @@ describe('TestRailLoggingPlugin', () => {
     });
 
     it('keeps the last 250 characters logged', async () => {
-        const opts: TestRailLoggingPluginOptions = {
-            level: 'info',
-            maxLogCharacters: 250,
-            config: new TestRailConfig({
+        const aftCfg = new AftConfig({
+            TestRailConfig: {
                 url: 'https://127.0.0.1/', 
                 user: 'fake@fake.fake', 
-                accesskey: 'fake-key'
-            })
-        };
-        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(opts);
+                accesskey: 'fake-key',
+                logLevel: 'info',
+                maxLogCharacters: 250
+            }
+        });
+        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(aftCfg);
 
         let expected: string = rand.getString(250, true, true);
         const logName = 'keeps the last 250 characters logged';
-        await plugin.log({level: 'info', message: expected, name: logName});
+        await plugin.log(logName, 'info', expected);
 
         let actual: string = plugin.logs(logName);
         expect(actual).toEqual(expected);
     });
 
     it('removes logs for a given logName on call to dispose', async () => {
-        const opts: TestRailLoggingPluginOptions = {
-            level: 'info',
-            maxLogCharacters: 250,
-            config: new TestRailConfig({
+        const aftCfg = new AftConfig({
+            TestRailConfig: {
                 url: 'https://127.0.0.1/', 
                 user: 'fake@fake.fake', 
-                accesskey: 'fake-key'
-            })
-        };
-        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(opts);
+                accesskey: 'fake-key',
+                logLevel: 'info',
+                maxLogCharacters: 250
+            }
+        });
+        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(aftCfg);
 
         let expected: string = rand.getString(250, true, true);
         const logName = rand.getString(15);
         
-        await plugin.log({level: 'info', message: expected, name: logName});
+        await plugin.log(logName, 'info', expected);
 
         let actual: string = plugin.logs(logName);
         expect(actual).toEqual(expected);
 
-        await plugin.dispose(logName);
+        await plugin.finalise(logName);
         actual = plugin.logs(logName);
         expect(actual).toEqual('');
     });
 
     it('logging over 250 characters is ellided from beginning of string', async () => {
-        const opts: TestRailLoggingPluginOptions = {
-            level: 'info',
-            maxLogCharacters: 250,
-            config: new TestRailConfig({
+        const aftCfg = new AftConfig({
+            TestRailConfig: {
                 url: 'https://127.0.0.1/', 
                 user: 'fake@fake.fake', 
-                accesskey: 'fake-key'
-            })
-        };
-        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(opts);
+                accesskey: 'fake-key',
+                logLevel: 'info',
+                maxLogCharacters: 250
+            }
+        });
+        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(aftCfg);
         let notExpected: string = rand.getString(200, true, true);
         let expected: string = rand.getString(250, true, true);
         
         const logName = rand.getString(60);
-        await plugin.log({level: 'info', message: notExpected, name: logName});
-        await plugin.log({level: 'info', message: expected, name: logName});
+        await plugin.log(logName, 'info', notExpected);
+        await plugin.log(logName, 'info', expected);
 
         let actual: string = plugin.logs(logName);
         expect(actual).toEqual(ellide(`${notExpected}${expected}`, 250, 'beginning'));
     });
 
     it('converts a Failed result to Retry', async () => {
-        const opts: TestRailLoggingPluginOptions = {
-            level: 'info',
-            config: new TestRailConfig({
+        const aftCfg = new AftConfig({
+            TestRailConfig: {
                 url: 'https://127.0.0.1/', 
                 user: 'fake@fake.fake', 
-                accesskey: 'fake-key'
-            })
-        };
-        opts.api = new TestRailApi({config: opts.config});
-        spyOn(opts.api, 'addResult').and.callFake(async (caseId: string, planId: number, request: TestRailResultRequest): Promise<TestRailResult[]> => {
+                accesskey: 'fake-key',
+                logLevel: 'info'
+            }
+        });
+        const api = new TestRailApi(aftCfg);
+        spyOn(api, 'addResult').and.callFake(async (caseId: string, planId: number, request: TestRailResultRequest): Promise<TestRailResult[]> => {
             TestStore.caseId = caseId;
             TestStore.request = request;
             TestStore.planId = planId;
             return [];
         });
-        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(opts);
+        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(aftCfg, api);
         
         let result: TestResult = {
+            testName: 'converts a Failed result to Retry',
             testId: 'C' + rand.getInt(99, 999),
-            status: 'Failed',
+            status: 'failed',
             resultId: rand.guid,
             created: Date.now(),
             metadata: {"durationMs": 1000}
         };
-        await plugin.logResult('converts a Failed result to Retry', result);
+        await plugin.submitResult(result);
 
-        expect(opts.api.addResult).toHaveBeenCalledTimes(1);
+        expect(api.addResult).toHaveBeenCalledTimes(1);
         expect(TestStore.request.status_id).toEqual(4); // 4 is Retest
         expect(TestStore.caseId).toEqual(result.testId);
         expect(TestStore.planId).toBeDefined();
     });
 
     it('creates a new TestRail plan in a shared FileSystemMap if none exists', async () => {
-        const opts: TestRailLoggingPluginOptions = {
-            level: 'info',
-            config: new TestRailConfig({
+        const aftCfg = new AftConfig({
+            TestRailConfig: {
                 url: 'https://127.0.0.1/', 
                 user: 'fake@fake.fake', 
                 accesskey: 'fake-key',
                 projectid: 3,
-                suiteids: [12, 15]
-            })
-        };
-        opts.api = new TestRailApi({config: opts.config});
+                suiteids: [12, 15],
+                logLevel: 'info'
+            }
+        });
+        const api = new TestRailApi(aftCfg);
         const planId: number = rand.getInt(1000, 10000);
-        spyOn(opts.api, 'createPlan').and.callFake(async (projectId: number, suiteIds: number[], name?: string): Promise<TestRailPlan> => {
+        spyOn(api, 'createPlan').and.callFake(async (projectId: number, suiteIds: number[], name?: string): Promise<TestRailPlan> => {
             return {id: planId};
         });
-        spyOn(opts.api, 'getTestByCaseId').and.callFake(async (caseId: string, planId: number): Promise<TestRailTest> => {
+        spyOn(api, 'getTestByCaseId').and.callFake(async (caseId: string, planId: number): Promise<TestRailTest> => {
             return {
                 id: rand.getInt(1000, 10000)
             };
         });
-        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(opts);
+        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(aftCfg, api);
         
         let result: TestResult = {
+            testName: 'creates a new TestRail plan in a shared FileSystemMap if none exists',
             testId: 'C' + rand.getInt(99, 999),
-            status: 'Failed',
+            status: 'failed',
             resultId: rand.guid,
             created: Date.now(),
             metadata: {"durationMs": 1000}
         };
-        await plugin.logResult('creates a new TestRail plan in a shared FileSystemMap if none exists', result);
+        await plugin.submitResult(result);
 
-        expect(opts.api.createPlan).toHaveBeenCalledTimes(1);
+        expect(api.createPlan).toHaveBeenCalledTimes(1);
         const sharedCacheFile: string = path.join(process.cwd(), 'FileSystemMap', 'TestRailConfig.json');
         expect(fs.existsSync(sharedCacheFile)).toBeTrue();
     });
 
     it('can be loaded by the LogManager', async () => {
-        const conf = {
-            logName: 'can be loaded by the LogManager',
-            plugins: ['testrail-logging-plugin']
-        };
-        let mgr: AftLog = new AftLog(conf);
-        let plugin = await mgr.first();
+        const aftCfg = new AftConfig({
+            pluginNames: ['testrail-logging-plugin']
+        });
+        let mgr: LogManager = new LogManager('can be loaded by the LogManager', aftCfg);
+        let plugin = mgr.plugins[0];
 
         expect(plugin).toBeDefined();
         expect(plugin.constructor.name).toEqual('TestRailLoggingPlugin');
@@ -183,31 +184,32 @@ describe('TestRailLoggingPlugin', () => {
      * `suite_ids` and `ITestResult.testId` should be updated to value values
      */
     xit('sends actual TestResult to TestRail', async () => {
-        const opts: TestRailLoggingPluginOptions = {
-            config: new TestRailConfig({
+        const aftCfg = new AftConfig({
+            TestRailConfig: {
                 url: '%testrail_url%', 
                 user: '%testrail_user%', 
                 accesskey: '%testrail_pass%',
                 projectid: 3,
-                suiteids: [1219]
-            }),
-            level: 'trace'
-        };
-        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(opts);
+                suiteids: [1219],
+                logLevel: 'trace'
+            }
+        });
+        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(aftCfg);
         
         const logName = 'sends actual TestResult to TestRail';
-        await plugin.log({level: 'error', message: rand.getString(100), name: logName});
+        await plugin.log(logName, 'error', rand.getString(100));
         
         let testResult: TestResult = {
+            testName: logName,
             testId: 'C4663085', // must be an existing TestRail Case ID
-            status: 'Failed',
+            status: 'failed',
             resultMessage: rand.getString(100),
             created: Date.now(),
             resultId: rand.guid,
             metadata: {"durationMs": 300000}
         };
 
-        await plugin.logResult(logName, testResult);
+        await plugin.submitResult(testResult);
     }, 300000);
 });
 

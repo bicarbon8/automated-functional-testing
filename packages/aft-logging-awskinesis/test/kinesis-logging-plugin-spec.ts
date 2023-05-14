@@ -1,5 +1,5 @@
 import { KinesisLoggingPlugin, KinesisLoggingPluginConfig } from "../src/kinesis-logging-plugin";
-import { AftLog, ConfigManager, machineInfo, pluginLoader, rand, TestResult } from "aft-core";
+import { AftConfig, LogManager, machineInfo, pluginLoader, rand, TestResult } from "aft-core";
 import * as pkg from "../package.json";
 import * as Firehose from "aws-sdk/clients/firehose";
 import { KinesisLogRecord } from "../src/kinesis-log-record";
@@ -7,7 +7,7 @@ import AWS = require("aws-sdk");
 
 describe('KinesisLoggingPlugin', () => {
     it('can batch messages for sending', async () => {
-        const cfgMgr = new ConfigManager();
+        const cfgMgr = new AftConfig();
         const config = cfgMgr.getSection(KinesisLoggingPluginConfig);
         config.logLevel = 'info';
         config.batch = true;
@@ -29,7 +29,7 @@ describe('KinesisLoggingPlugin', () => {
         const logName = rand.getString(10);
         for (var i=0; i<20; i++) {
             let logMessage: string = rand.getString(99, true, true);
-            await plugin.log({level: 'warn', message: logMessage, name: logName});
+            await plugin.log(logName, 'warn', logMessage);
         }
 
         expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(20);
@@ -38,7 +38,7 @@ describe('KinesisLoggingPlugin', () => {
     });
 
     it('can disable batch sending of messages', async () => {
-        const cfgMgr = new ConfigManager();
+        const cfgMgr = new AftConfig();
         const config = cfgMgr.getSection(KinesisLoggingPluginConfig);
         config.logLevel = 'info';
         config.batch = false
@@ -59,7 +59,7 @@ describe('KinesisLoggingPlugin', () => {
 
         for (var i=0; i<20; i++) {
             let logMessage: string = rand.getString(99, true, true);
-            await plugin.log({level: 'warn', message: logMessage, name: rand.getString(10)});
+            await plugin.log(rand.getString(10), 'warn', logMessage);
         }
 
         expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(20);
@@ -68,7 +68,7 @@ describe('KinesisLoggingPlugin', () => {
     });
 
     it('sends any unsent batched logs on dispose', async () => {
-        const cfgMgr = new ConfigManager();
+        const cfgMgr = new AftConfig();
         const config = cfgMgr.getSection(KinesisLoggingPluginConfig);
         config.logLevel = 'info';
         config.batch = true;
@@ -90,7 +90,7 @@ describe('KinesisLoggingPlugin', () => {
         const logName = rand.getString(10);
         for (var i=0; i<9; i++) {
             let logMessage: string = rand.getString(99, true, true);
-            await plugin.log({level: 'warn', message: logMessage, name: logName});
+            await plugin.log(logName, 'warn', logMessage);
         }
 
         expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(9);
@@ -106,7 +106,7 @@ describe('KinesisLoggingPlugin', () => {
     });
 
     it('only sends messages of the appropriate level', async () => {
-        const cfgMgr = new ConfigManager();
+        const cfgMgr = new AftConfig();
         const config = cfgMgr.getSection(KinesisLoggingPluginConfig);
         config.logLevel = 'info';
         config.batch = false;
@@ -125,9 +125,9 @@ describe('KinesisLoggingPlugin', () => {
             /* do nothing */
         });
 
-        await plugin.log({level: 'debug', message: rand.guid, name: rand.getString(10)});
-        await plugin.log({level: 'info', message: rand.guid, name: rand.getString(10)});
-        await plugin.log({level: 'warn', message: rand.guid, name: rand.getString(10)});
+        await plugin.log(rand.getString(10), 'debug', rand.guid);
+        await plugin.log(rand.getString(10), 'info', rand.guid);
+        await plugin.log(rand.getString(10), 'warn', rand.guid);
 
         expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(2);
         expect(spySendBatch).toHaveBeenCalledTimes(0);
@@ -135,7 +135,7 @@ describe('KinesisLoggingPlugin', () => {
     });
 
     it('adds expected fields to the log record', async () => {
-        const cfgMgr = new ConfigManager();
+        const cfgMgr = new AftConfig();
         const config = cfgMgr.getSection(KinesisLoggingPluginConfig);
         config.logLevel = 'info';
         config.batch = false;
@@ -152,7 +152,7 @@ describe('KinesisLoggingPlugin', () => {
         });
 
         let expectedMessage: string = rand.guid;
-        await plugin.log({level: 'warn', message: expectedMessage, name: 'adds expected fields to the log record'});
+        await plugin.log('adds expected fields to the log record', 'warn', expectedMessage);
 
         let logRecord: Firehose.Record = store.get('_send');
         let data: KinesisLogRecord = JSON.parse(logRecord.Data.toString()) as KinesisLogRecord;
@@ -169,27 +169,26 @@ describe('KinesisLoggingPlugin', () => {
      * only for use in debugging issues locally
      */
     xit('can send real logs and ITestResult objects', async () => {
-        const cfgMgr = new ConfigManager();
+        const cfgMgr = new AftConfig();
         const config = cfgMgr.getSection(KinesisLoggingPluginConfig);
         config.logLevel = 'trace';
         config.batch = true;
         config.batchSize = 10;
         config.deliveryStream = '%kinesis_deliverystream%';
         config.region = '%AWS_REGION%';
-        let plugin: KinesisLoggingPlugin = new KinesisLoggingPlugin(cfgMgr);
-
-        let result: TestResult = {
+        const plugin: KinesisLoggingPlugin = new KinesisLoggingPlugin(cfgMgr);
+        const logName = rand.getString(10, true, true, true, true);
+        const result: TestResult = {
             resultId: rand.guid,
             created: Date.now(),
             testId: 'C' + rand.getInt(100, 9999),
             resultMessage: rand.getString(100),
-            status: 'Skipped'
+            status: 'skipped',
+            testName: logName
         };
-        let message: string = rand.getString(250);
-
-        const logName = rand.getString(10, true, true, true, true);
-        await plugin.log({level: 'info', message: message, name: logName});
-        await plugin.logResult(logName, result);
+        const message: string = rand.getString(250);
+        await plugin.log(logName, 'info', message);
+        await plugin.submitResult(result);
         await plugin.finalise(logName);
     });
 
@@ -205,9 +204,9 @@ describe('KinesisLoggingPlugin', () => {
                 batch: false
             }
         };
-        const cfgMgr = new ConfigManager(config);
+        const cfgMgr = new AftConfig(config);
         pluginLoader.reset();
-        const mgr: AftLog = new AftLog(rand.getString(20), cfgMgr);
+        const mgr: LogManager = new LogManager(rand.getString(20), cfgMgr);
         const plugins = mgr.plugins;
         const plugin = plugins[0];
 

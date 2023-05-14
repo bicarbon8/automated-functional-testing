@@ -15,16 +15,16 @@ export class TestRailTestCasePlugin extends PolicyEnginePlugin {
     
     private readonly _api: TestRailApi;
 
-    constructor(aftCfg?: AftConfig) {
+    constructor(aftCfg?: AftConfig, api?: TestRailApi) {
         super(aftCfg);
         const cfg = this.aftCfg.getSection(TestRailConfig);
         this.enabled = cfg.policyEngineEnabled ?? true;
         if (this.enabled) {
-            this._api = new TestRailApi(this.aftCfg);
+            this._api = api ?? new TestRailApi(this.aftCfg);
         }
     }
 
-    private async _getTestCase(caseId: string): Promise<TestRailCase> {
+    async getTestCase(caseId: string): Promise<TestRailCase | TestRailTest> {
         if (caseId && caseId.startsWith('C')) {
             caseId = caseId.replace('C', '');
         }
@@ -36,7 +36,7 @@ export class TestRailTestCasePlugin extends PolicyEnginePlugin {
             // use Project and Suite IDs
             searchTerm = `id=${caseId}`;
         }
-        const tests: Array<TestRailCase> = await this._findTestCases(searchTerm);
+        const tests: Array<TestRailCase | TestRailTest> = await this.findTestCases(searchTerm);
         if (tests && tests.length > 0) {
             return tests[0];
         }
@@ -49,7 +49,7 @@ export class TestRailTestCasePlugin extends PolicyEnginePlugin {
      * value to be found for said `key`
      * @param searchTerm a string containing a key and a value to be used to locate tests
      */
-    private async _findTestCases(searchTerm: string): Promise<TestRailCase[]> {
+    async findTestCases(searchTerm: string): Promise<Array<TestRailCase | TestRailTest>> {
         if (searchTerm) {
             let keyVal: string[] = searchTerm.split('=');
             if (keyVal && keyVal.length > 1) {
@@ -71,7 +71,7 @@ export class TestRailTestCasePlugin extends PolicyEnginePlugin {
     override shouldRun = async (caseId: string): Promise<ProcessingResult<boolean>> => {
         if (this.enabled) {
             const cfg = this.aftCfg.getSection(TestRailConfig);
-            let test: TestRailCase = await this._getTestCase(caseId);
+            let test: TestRailCase = await this.getTestCase(caseId);
             if (test) {
                 if (test['status_id']) {
                     if (statusConverter.fromTestRailStatus(test['status_id']) != 'passed') {

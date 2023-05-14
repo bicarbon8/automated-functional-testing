@@ -2,8 +2,9 @@ import * as fs from "fs";
 import * as path from "path";
 import { TestRailApi } from "../../src/api/testrail-api";
 import { HttpRequest, HttpResponse, httpService } from "aft-web-services";
-import { TestRailConfig, TestRailConfigOptions } from "../../src";
+import { TestRailConfig } from "../../src";
 import { TestRailPlan, TestRailPlanEntry } from "../../src/api/testrail-custom-types";
+import { AftConfig } from "aft-core";
 
 describe('TestRailApi', () => {
     beforeEach(() => {
@@ -32,13 +33,14 @@ describe('TestRailApi', () => {
             return response;
         });
 
-        const opts: TestRailConfigOptions = {
-            url: 'http://127.0.0.1/',
-            user: 'fake@fake.fake',
-            accesskey: 'fake_key'
-        };
-        let config: TestRailConfig = new TestRailConfig(opts);
-        let api: TestRailApi = new TestRailApi({config: config});
+        const aftCfg = new AftConfig({
+            TestRailConfig: {
+                url: 'http://127.0.0.1/',
+                user: 'fake@fake.fake',
+                accesskey: 'fake_key'
+            }
+        });
+        let api: TestRailApi = new TestRailApi(aftCfg);
 
         try {
             await api.addResult('C1234', 1234, {});
@@ -68,13 +70,14 @@ describe('TestRailApi', () => {
             return response;
         });
 
-        const opts: TestRailConfigOptions = {
-            url: 'http://127.0.0.1/',
-            user: 'fake@fake.fake',
-            accesskey: 'fake_key'
-        };
-        let config: TestRailConfig = new TestRailConfig(opts);
-        let api: TestRailApi = new TestRailApi({config: config});
+        const aftCfg = new AftConfig({
+            TestRailConfig: {
+                url: 'http://127.0.0.1/',
+                user: 'fake@fake.fake',
+                accesskey: 'fake_key'
+            }
+        });
+        let api: TestRailApi = new TestRailApi(aftCfg);
         let plan: TestRailPlan = await api.getPlan(123);
 
         expect(plan).toBeDefined();
@@ -102,13 +105,14 @@ describe('TestRailApi', () => {
             return response;
         });
 
-        const opts: TestRailConfigOptions = {
-            url: 'http://127.0.0.1/',
-            user: 'fake@fake.fake',
-            accesskey: 'fake_key'
-        };
-        let config: TestRailConfig = new TestRailConfig(opts);
-        let api: TestRailApi = new TestRailApi({config: config});
+        const aftCfg = new AftConfig({
+            TestRailConfig: {
+                url: 'http://127.0.0.1/',
+                user: 'fake@fake.fake',
+                accesskey: 'fake_key'
+            }
+        });
+        let api: TestRailApi = new TestRailApi(aftCfg);
         let test: any = await api.getPlan(123);
 
         expect(test).not.toBeNull();
@@ -139,13 +143,14 @@ describe('TestRailApi', () => {
             return response;
         });
 
-        const opts: TestRailConfigOptions = {
-            url: 'http://127.0.0.1/',
-            user: 'fake@fake.fake',
-            accesskey: 'fake_key'
-        };
-        let config: TestRailConfig = new TestRailConfig(opts);
-        let api: TestRailApi = new TestRailApi({config: config});
+        const aftCfg = new AftConfig({
+            TestRailConfig: {
+                url: 'http://127.0.0.1/',
+                user: 'fake@fake.fake',
+                accesskey: 'fake_key'
+            }
+        });
+        let api: TestRailApi = new TestRailApi(aftCfg);
         let plan: TestRailPlan = await api.createPlan(1, [2, 3]);
 
         expect(plan).toBeDefined();
