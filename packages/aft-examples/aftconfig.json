@@ -30,8 +30,8 @@
         "generatorName": "grid-session-generator-plugin",
         "options": {
             "bstack:options": {
-                "user": "%browserstack_user%",
-                "key": "%browserstack_key%",
+                "userName": "%browserstack_user%",
+                "accessKey": "%browserstack_key%",
                 "debug": true
             }
         }

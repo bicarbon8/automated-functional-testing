@@ -5,7 +5,7 @@ import { HerokuLoginPage } from "./page-objects/heroku-login-page";
 import { UiPlatform, UiSessionConfig } from "aft-ui";
 
 describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
-    it.only('can access websites using AFT and BrowserComponents', async function() {
+    it('can access websites using AFT and BrowserComponents', async function() {
         const aft = new AftLog(this);
         await verifyWithSelenium(async (tw: SeleniumVerifier) => {
             let loginPage: HerokuLoginPage = tw.getComponent(HerokuLoginPage);
@@ -24,6 +24,10 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
             
             await tw.logMgr.step('get message...');
             return await loginPage.getMessage();
+        }).withAdditionalSessionOptions({
+            "bstack:options": {
+                "sessionName": aft.logMgr.logName
+            }
         }).internals.usingLogManager(aft.logMgr)
         .and.withTestIds('C3456').and.withTestIds('C2345').and.withTestIds('C1234')
         .returns(containing("You logged into a secure area!"));
