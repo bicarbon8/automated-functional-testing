@@ -55,7 +55,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
             
             await verify(async (v: Verifier) => {
                 await v.logMgr.step('click login button...');
-                await loginPage.content().then(c => c.getLoginButton()).then(button => button.click());
+                await loginPage.content.getLoginButton().then(button => button.click());
                 await v.logMgr.info('no exception thrown on click');
             }).internals.usingLogManager(tw.logMgr).and.withTestIds('C5678');
 
@@ -67,7 +67,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
 
             await verify(async (v: Verifier) => {
                 await tw.logMgr.step('click login button after refresh...');
-                await loginPage.content().then(c => c.getLoginButton()).then(button => button.click());
+                await loginPage.content.getLoginButton().then(button => button.click());
                 await tw.logMgr.info('no exception thrown on click');
             }).internals.usingLogManager(tw.logMgr).and.withTestIds('C7890');
         }).withAdditionalSessionOptions({

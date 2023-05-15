@@ -11,27 +11,32 @@ export class HerokuMessagesWidget extends SeleniumComponent {
     }
 
     private async message(): Promise<WebElement> {
-        let elements: WebElement[] = await (await this.getRoot()).findElements(By.id('flash'));
-        return elements[0];
+        let elements: WebElement[];
+        try {
+            elements = await this.getRoot()
+                .then(r => r.findElements(By.id('flash')))
+                .catch((err) => []);
+        } catch (e) {
+            return null;
+        }
+        if (elements.length > 0) {
+            return elements[0];
+        }
+        return null;
     }
     
     async hasMessage(): Promise<boolean> {
-        return await this.message()
-        .then((message) => {
-            return message !== undefined;
-        }).catch((err: Error) => {
-            return false;
-        });
+        const message = await this.message();
+        if (message != null) {
+            return true;
+        }
+        return false;
     }
 
     async getMessage(): Promise<string> {
         if (await this.hasMessage()) {
-            return await this.message()
-            .then(message => {
-                return message.getText();
-            }).catch((err) => {
-                return null;
-            });
+            const messageEl = await this.message();
+            return await messageEl.getText();
         }
         return null;
     }

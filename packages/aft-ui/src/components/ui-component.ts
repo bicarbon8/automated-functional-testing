@@ -39,12 +39,12 @@ export abstract class UiComponent {
 
     abstract getRoot(): Promise<unknown>;
 
-    async getComponent<F extends UiComponent>(componentType: Class<F>, options?: Partial<UiComponentOptions>): Promise<F> {
+    getComponent<F extends UiComponent>(componentType: Class<F>, options?: Partial<UiComponentOptions>): F {
         options ??= {} as UiComponentOptions;
         options.driver ??= this.driver;
         options.aftCfg ??= this.aftCfg;
         options.logMgr ??= this.logMgr;
-        options.parent ??= this.getRoot;
+        options.parent ??= () => this.getRoot();
         return new componentType(options);
     }
 }

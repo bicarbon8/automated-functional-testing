@@ -11,13 +11,19 @@ export class HerokuContentWidget extends SeleniumComponent {
     }
 
     private async usernameInput(): Promise<WebElement> {
-        return await (await this.getRoot()).findElement(By.id("username"));
+        return this.getRoot()
+            .then(r => r.findElement(By.id("username")))
+            .catch((err) => null);
     }
     private async passwordInput(): Promise<WebElement> {
-        return await (await this.getRoot()).findElement(By.id('password'));
+        return this.getRoot()
+            .then(r => r.findElement(By.id('password')))
+            .catch((err) => null);
     }
     private async loginButton(): Promise<WebElement> {
-        return await (await this.getRoot()).findElement(By.css('button.radius'));
+        return this.getRoot()
+            .then(r => r.findElement(By.css('button.radius')))
+            .catch((err) => null);
     }
 
     async login(username: string, password: string): Promise<void> {

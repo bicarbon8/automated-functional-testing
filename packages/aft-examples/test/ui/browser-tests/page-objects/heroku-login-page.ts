@@ -2,6 +2,7 @@ import { By, Locator } from 'selenium-webdriver';
 import { HerokuContentWidget } from './heroku-content-widget';
 import { HerokuMessagesWidget } from './heroku-messages-widget';
 import { SeleniumComponent } from 'aft-ui-selenium';
+import { Err } from 'aft-core';
 
 export class HerokuLoginPage extends SeleniumComponent {
     /**
@@ -13,36 +14,32 @@ export class HerokuLoginPage extends SeleniumComponent {
     }
 
     /* begin: widgets */
-    async content(): Promise<HerokuContentWidget> {
-        return await this.getComponent(HerokuContentWidget);
+    get content(): HerokuContentWidget {
+        return this.getComponent(HerokuContentWidget);
     }
-    async messages(): Promise<HerokuMessagesWidget> {
-        return await this.getComponent(HerokuMessagesWidget);
+    get messages(): HerokuMessagesWidget {
+        return this.getComponent(HerokuMessagesWidget);
     }
     /* end: widgets */
 
     async navigateTo(): Promise<void> {
-        try {
-            await this.driver.navigate().to('https://the-internet.herokuapp.com/login');
-        } catch (e) {
-            return Promise.reject(e);
-        }
+        await Err.handleAsync(async () => await this.driver.navigate().to('https://the-internet.herokuapp.com/login'), {
+            logger: this.logMgr,
+            errLevel: 'error'
+        });
     }
 
     /* begin: page actions */
     async login(username: string, password: string): Promise<void> {
-        let hc: HerokuContentWidget = await this.content();
-        return hc.login(username, password);
+        return await this.content.login(username, password);
     }
 
     async hasMessage(): Promise<boolean> {
-        let hm: HerokuMessagesWidget = await this.messages();
-        return hm.hasMessage();
+        return await this.messages.hasMessage();
     }
 
     async getMessage(): Promise<string> {
-        let hm: HerokuMessagesWidget = await this.messages();
-        return hm.getMessage();
+        return await this.messages.getMessage();
     }
     /* end: page actions */
 }
