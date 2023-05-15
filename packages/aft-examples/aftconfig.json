@@ -13,9 +13,9 @@
     "TestRailConfig": {
         "url": "%testrail_url%",
         "user": "%testrail_user%",
-        "access_key": "%testrail_pass%",
-        "project_id": 3,
-        "suite_ids": [744],
+        "accessKey": "%testrail_pass%",
+        "projectId": 3,
+        "suiteIds": [744],
         "logLevel": "none",
         "policyEngineEnabled": false
     },
