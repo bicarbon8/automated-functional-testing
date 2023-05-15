@@ -1,9 +1,8 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as FormData from "form-data";
-import { AftConfig, aftConfig, rand } from "aft-core";
+import { AftConfig, aftConfig } from "aft-core";
 import { WikipediaView } from "./page-objects/wikipedia-view";
-import { assert } from "chai";
 import { AftTest } from "aft-mocha-reporter";
 import { SeleniumVerifier, verifyWithSelenium } from "aft-ui-selenium";
 import { httpService, httpData } from "aft-web-services";
@@ -11,7 +10,7 @@ import { UiSessionConfig } from "aft-ui";
 
 var customId: string;
 
-describe('Functional Mobile App Tests using AFT-UI-MOBILE-APPS', () => {
+describe('Functional Mobile App Tests using AFT-UI-SELENIUM', () => {
     before(async () => {
         const uisc = aftConfig.getSection(UiSessionConfig);
         const auth = `basic ${btoa(`${uisc.options["bstack:options"]?.userName}:${uisc.options["bstack:options"]?.accessKey}`)}`
@@ -69,13 +68,15 @@ describe('Functional Mobile App Tests using AFT-UI-MOBILE-APPS', () => {
                 }
             }
         }).withAdditionalSessionOptions({
-            browserName: 'chrome',
-            platformName: 'android',
-            "appium:platformVersion": '13.0',
-            "appium:deviceName": 'Samsung Galaxy S23',
-            "appium:app": customId,
-            "bstack:options": {
-                "sessionName": aft.logMgr.logName
+            capabilities: {
+                browserName: 'chrome',
+                platformName: 'android',
+                "appium:platformVersion": '13.0',
+                "appium:deviceName": 'Samsung Galaxy S23',
+                "appium:app": customId,
+                "bstack:options": {
+                    "sessionName": aft.logMgr.logName
+                }
             }
         }).internals.usingAftConfig(aftCfg)
         .internals.usingLogManager(aft.logMgr)

@@ -1,4 +1,4 @@
-import { AftConfig, containing, retry, Verifier, verify } from "aft-core";
+import { containing, retry, Verifier, verify } from "aft-core";
 import { AftLog, AftTest } from "aft-mocha-reporter";
 import { SeleniumVerifier, verifyWithSelenium } from "aft-ui-selenium";
 import { HerokuLoginPage } from "./page-objects/heroku-login-page";
@@ -24,9 +24,13 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
             await tw.logMgr.step('get message...');
             return await loginPage.getMessage();
         }).withAdditionalSessionOptions({
-            browserName: 'chrome',
-            "bstack:options": {
-                "sessionName": aft.logMgr.logName
+            capabilities: {
+                browserName: 'chrome',
+                "bstack:options": {
+                    sessionName: aft.logMgr.logName,
+                    os: 'windows',
+                    osVersion: '11'
+                }
             }
         }).internals.usingLogManager(aft.logMgr)
         .and.withTestIds('C3456').and.withTestIds('C2345').and.withTestIds('C1234')
@@ -40,7 +44,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
             this.skip();
         }
         await verifyWithSelenium(async (tw: SeleniumVerifier) => {
-            let loginPage: HerokuLoginPage = await tw.getComponent(HerokuLoginPage);
+            let loginPage: HerokuLoginPage = tw.getComponent(HerokuLoginPage);
             
             await verify(async (v: Verifier) => {
                 await v.logMgr.step('navigate to LoginPage');
@@ -67,9 +71,13 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                 await tw.logMgr.info('no exception thrown on click');
             }).internals.usingLogManager(tw.logMgr).and.withTestIds('C7890');
         }).withAdditionalSessionOptions({
-            browserName: 'chrome',
-            "bstack:options": {
-                "sessionName": aft.logMgr.logName
+            capabilities: {
+                browserName: 'chrome',
+                "bstack:options": {
+                    sessionName: aft.logMgr.logName,
+                    os: 'windows',
+                    osVersion: '11'
+                }
             }
         }).internals.usingLogManager(aft.logMgr);
     });
@@ -80,7 +88,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
         { browser: 'edge', os: 'windows', osV: '11' },
     ];
     for (var uiplatform of uiplatforms) {
-        it(`can run with multiple uiplatforms: ${uiplatform}`, async function() {
+        it(`can run with multiple uiplatforms: ${JSON.stringify(uiplatform)}`, async function() {
             const aft = new AftLog(this);
             await verifyWithSelenium(async (tw: SeleniumVerifier) => {
                 let loginPage: HerokuLoginPage = tw.getComponent(HerokuLoginPage);
@@ -93,9 +101,14 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                     .until((res: boolean) => res);
                 return await loginPage.getMessage();
             }).withAdditionalSessionOptions({
-                browserName: uiplatform.browser,
-                platform: uiplatform.os,
-                "os_version": uiplatform.osV
+                capabilities: {
+                    browserName: uiplatform.browser,
+                    "bstack:options": {
+                        sessionName: aft.logMgr.logName,
+                        os: uiplatform.os,
+                        osVersion: uiplatform.osV
+                    }
+                }
             }).and.internals.usingLogManager(aft.logMgr)
             .returns(containing("You logged into a secure area!"));
         });
