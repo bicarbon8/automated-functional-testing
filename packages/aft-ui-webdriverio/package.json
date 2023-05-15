@@ -1,11 +1,7 @@
 {
-  "name": "aft-logging-awskinesis",
+  "name": "aft-ui-webdriverio",
   "version": "9.0.0",
-  "description": "Automated Functional Testing (AFT) logging plugin package supporting test reporting to AWS Kinesis Firehose",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/bicarbon8/automated-functional-testing.git"
-  },
+  "description": "Automated Functional Testing (AFT) package supporting UI testing in mobile apps with support for BrowserStack, Sauce Labs and Local Appium",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "scripts": {
@@ -14,14 +10,21 @@
     "test": "jasmine-ts ./test/**/*-spec.ts",
     "coverage": "nyc npm run test"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bicarbon8/automated-functional-testing.git"
+  },
   "keywords": [
     "aft",
     "automation",
     "e2e",
     "integration",
     "functional",
-    "aws",
-    "kinesis-firehose"
+    "ui",
+    "browser",
+    "appium",
+    "browserstack",
+    "saucelabs"
   ],
   "author": "Jason Holt Smith <bicarbon8@gmail.com>",
   "license": "MIT",
@@ -30,11 +33,10 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-core": "^9.0.0",
-    "aws-sdk": "^2.1151.0"
+    "aft-ui": "^9.0.0",
+    "webdriverio": "^7.5.7"
   },
   "devDependencies": {
-    "@aws-sdk/types": "^3.78.0",
     "@types/jasmine": "^3.6.10",
     "@types/node": "^15.0.1",
     "jasmine": "^3.7.0",

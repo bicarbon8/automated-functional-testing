@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./logs && rimraf ./FileSystemMap && rimraf ./testresults.html",
-    "build-e2e": "npm run clean && tsc --build",
-    "test-e2e": "npm run build-e2e && mocha"
+    "build": "npm run clean && tsc --build",
+    "test:e2e": "npm run build && mocha"
   },
   "repository": {
     "type": "git",
@@ -30,12 +30,13 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-logging-awskinesis": "^9.0.0",
+    "aft-logging-aws-kinesis-firehose": "^9.0.0",
     "aft-logging-filesystem": "^9.0.0",
     "aft-logging-html": "^9.0.0",
     "aft-mocha-reporter": "^9.0.0",
     "aft-testrail": "^9.0.0",
-    "aft-ui-selenium": "^9.0.0"
+    "aft-ui-selenium": "^9.0.0",
+    "aft-ui-webdriverio": "^9.0.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.17",

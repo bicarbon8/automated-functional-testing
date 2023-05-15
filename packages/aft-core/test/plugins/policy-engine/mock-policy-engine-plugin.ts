@@ -1,4 +1,4 @@
-import { PolicyEnginePlugin, AftConfig, aftConfig, ProcessingResult } from "../../../src";
+import { PolicyEnginePlugin, AftConfig, ProcessingResult } from "../../../src";
 
 export class MockPolicyEnginePluginConfig {
     enabled: boolean = false;
@@ -6,13 +6,15 @@ export class MockPolicyEnginePluginConfig {
 }
 
 export class MockPolicyEnginePlugin extends PolicyEnginePlugin {
-    public readonly implements: Array<string> = ['IPolicyEnginePlugin'];
-    public override readonly enabled: boolean;
+    private readonly _enabled: boolean;
+    public override get enabled(): boolean {
+        return this._enabled;
+    }
     private readonly _tests: Map<string, ProcessingResult<boolean>>;
     constructor(aftCfg?: AftConfig) {
         super(aftCfg);
         const cfg = this.aftCfg.getSection(MockPolicyEnginePluginConfig);
-        this.enabled = cfg.enabled ?? false;
+        this._enabled = cfg.enabled ?? false;
         if (this.enabled) {
             this._tests = cfg.expectedResults ?? new Map<string, ProcessingResult<boolean>>();
         }

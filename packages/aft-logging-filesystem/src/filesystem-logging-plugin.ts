@@ -1,28 +1,29 @@
 import * as path from "path";
-import { AftConfig, convert, Err, fileio, LoggingPlugin, LogLevel, LogManagerConfig, LogMessageData, ResultsPlugin, TestResult } from "aft-core";
+import { AftConfig, convert, Err, fileio, LoggingPlugin, LoggingPluginConfig, LogLevel, LogManagerConfig, LogMessageData, ResultsPlugin, TestResult } from "aft-core";
 import * as date from "date-and-time";
 
-export class FilesystemLoggingPluginConfig {
-    logLevel: LogLevel = 'trace';
+export class FilesystemLoggingPluginConfig extends LoggingPluginConfig {
+    override logLevel: LogLevel = 'trace';
     outputPath: string = 'logs';
     includeResults: boolean = true;
     dateFormat: string = 'YYYY-MM-DD HH:mm:ss.SSS';
 };
 
 export class FilesystemLoggingPlugin extends LoggingPlugin implements ResultsPlugin {
-    public override readonly logLevel: LogLevel;
-    public override readonly enabled: boolean;
+    public override get logLevel(): LogLevel {
+        return this._level;
+    }
 
     private readonly _outputPath: string;
     private readonly _includeResults: boolean;
     private readonly _dateFormat: string;
+    private readonly _level: LogLevel;
 
     constructor(aftCfg?: AftConfig) {
         super(aftCfg);
         const fslpc = aftCfg.getSection(FilesystemLoggingPluginConfig);
-        this.logLevel = fslpc.logLevel ?? aftCfg.getSection(LogManagerConfig).logLevel
+        this._level = fslpc.logLevel ?? aftCfg.getSection(LogManagerConfig).logLevel
             ?? 'trace';
-        this.enabled = this.logLevel != 'none';
         if (this.enabled) {
             if (!path.isAbsolute(fslpc.outputPath)) {
                 this._outputPath = path.join(process.cwd(), fslpc.outputPath);

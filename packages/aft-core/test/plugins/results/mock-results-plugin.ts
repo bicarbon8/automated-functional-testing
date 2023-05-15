@@ -5,15 +5,17 @@ export class MockResultsPluginConfig {
 }
 
 export class MockResultsPlugin extends ResultsPlugin {
-    public override readonly enabled: boolean;
-    public readonly implements: string[] = ['IResultsPlugin'];
+    private readonly _enabled: boolean;
+    public override get enabled(): boolean {
+        return this._enabled;
+    }
 
     public readonly results: Array<TestResult>;
 
     constructor(aftCfg?: AftConfig) {
         super(aftCfg);
         const cfg = this.aftCfg.getSection(MockResultsPluginConfig);
-        this.enabled = cfg.enabled;
+        this._enabled = cfg.enabled;
         if (this.enabled) {
             this.results = new Array<TestResult>();
         }

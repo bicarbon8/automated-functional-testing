@@ -1,5 +1,10 @@
-import { Plugin } from "aft-core";
+import { Plugin, convert } from "aft-core";
+import { UiSessionConfig } from "./ui-session-generator-manager";
 
 export class UiSessionGeneratorPlugin extends Plugin {
+    override get enabled(): boolean {
+        const safeName = convert.toSafeString(this.aftCfg.getSection(UiSessionConfig).generatorName, [{exclude: /[-_.\s\d]/gi, replaceWith: ''}]);
+        return safeName.toLocaleLowerCase() === this.constructor.name.toLocaleLowerCase();
+    }
     getSession = async (sessionOptions?: Record<string, any>): Promise<unknown> => null;
 }

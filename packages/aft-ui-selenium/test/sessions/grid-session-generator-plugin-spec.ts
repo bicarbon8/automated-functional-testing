@@ -1,28 +1,9 @@
 import { AftConfig, rand } from "aft-core";
-import { By, Capabilities } from "selenium-webdriver";
+import { By } from "selenium-webdriver";
 import { GridSessionGeneratorPlugin } from "../../src";
 import { SeleniumComponent } from "../../src/components/selenium-component";
 
 describe('GridSessionGeneratorPlugin', () => {
-    it('can generate capabilities from the passed in options', async () => {
-        const sessionOpts = {
-            "foo": true,
-            "bar": 1234,
-            "baz": rand.getString(5)
-        };
-        const aftCfg = new AftConfig({
-            UiSessionConfig: {
-                options: sessionOpts
-            }
-        });
-        const plugin: GridSessionGeneratorPlugin = new GridSessionGeneratorPlugin();
-        const capabilities: Capabilities = await plugin.getCapabilities(aftCfg);
-
-        expect(capabilities.get('foo')).toEqual(sessionOpts.foo);
-        expect(capabilities.get('bar')).toEqual(sessionOpts.bar);
-        expect(capabilities.get('baz')).toEqual(sessionOpts.baz);
-    });
-    
     /**
      * WARNING: this test will attempt to create an actual session on your own Selenium Grid
      * it should only be used for local debugging.
@@ -34,8 +15,10 @@ describe('GridSessionGeneratorPlugin', () => {
         const aftCfg = new AftConfig({
             UiSessionConfig: {
                 options: {
-                    platform: 'windows',
-                    browserName: 'chrome'
+                    capabilities: {
+                        platform: 'windows',
+                        browserName: 'chrome'
+                    }
                 }
             }
         });

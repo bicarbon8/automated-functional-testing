@@ -11,14 +11,17 @@ import { PlanId } from '../helpers/plan-id';
  * section of your `aftconfig.json` file
  */
 export class TestRailTestCasePlugin extends PolicyEnginePlugin {
-    public override readonly enabled: boolean;
+    private readonly _enabled: boolean;
+    public override get enabled(): boolean {
+        return this._enabled;
+    }
     
     private readonly _api: TestRailApi;
 
     constructor(aftCfg?: AftConfig, api?: TestRailApi) {
         super(aftCfg);
         const cfg = this.aftCfg.getSection(TestRailConfig);
-        this.enabled = cfg.policyEngineEnabled ?? true;
+        this._enabled = cfg.policyEngineEnabled ?? true;
         if (this.enabled) {
             this._api = api ?? new TestRailApi(this.aftCfg);
         }

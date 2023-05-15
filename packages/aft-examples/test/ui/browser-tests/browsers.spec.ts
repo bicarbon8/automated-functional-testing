@@ -2,7 +2,6 @@ import { AftConfig, containing, retry, Verifier, verify } from "aft-core";
 import { AftLog, AftTest } from "aft-mocha-reporter";
 import { SeleniumVerifier, verifyWithSelenium } from "aft-ui-selenium";
 import { HerokuLoginPage } from "./page-objects/heroku-login-page";
-import { UiSessionConfig } from "aft-ui";
 
 describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
     it('can access websites using AFT and BrowserComponents', async function() {

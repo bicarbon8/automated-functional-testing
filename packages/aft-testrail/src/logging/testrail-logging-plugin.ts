@@ -26,8 +26,10 @@ import { PlanId } from "../helpers/plan-id";
  * configuration keys
  */
 export class TestRailLoggingPlugin extends LoggingPlugin implements ResultsPlugin {
-    public override readonly logLevel: LogLevel;
-    public override readonly enabled: boolean;
+    private readonly _level: LogLevel;
+    public override get logLevel(): LogLevel {
+        return this._level;
+    }
 
     private readonly _fsm: FileSystemMap<string, string | number>;
     private readonly _logs: Map<string, string>;
@@ -37,8 +39,7 @@ export class TestRailLoggingPlugin extends LoggingPlugin implements ResultsPlugi
     constructor(aftCfg?: AftConfig, api?: TestRailApi) {
         super(aftCfg);
         const cfg = this.aftCfg.getSection(TestRailConfig);
-        this.logLevel = cfg.logLevel ?? this.aftCfg.getSection(LogManagerConfig).logLevel ?? 'warn';
-        this.enabled = this.logLevel != 'none';
+        this._level = cfg.logLevel ?? this.aftCfg.getSection(LogManagerConfig).logLevel ?? 'warn';
         if (this.enabled) {
             this._fsm = new FileSystemMap<string, string | number>(TestRailConfig.name);
             this._logs = new Map<string, string>();

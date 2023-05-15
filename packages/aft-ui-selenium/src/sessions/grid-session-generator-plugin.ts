@@ -1,17 +1,15 @@
 import { Builder, Capabilities, WebDriver } from "selenium-webdriver";
 import { UiSessionGeneratorPlugin } from "aft-ui";
-import { AftConfig, Err, LogManager } from "aft-core";
+import { Err, LogManager } from "aft-core";
 
-export class GridSessionConfig {
-    url: string = 'http://127.0.0.1:4444/wd/hub';
-    implicitTimeoutMs: number = 1000;
+type GridSessionOptions = {
+    url: string;
+    implicitTimeoutMs: number;
+    capabilities: Record<string, any>;
 }
 
 export class GridSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
     private _logMgr: LogManager;
-    constructor(aftCfg?: AftConfig) {
-        super(aftCfg);
-    }
     get logMgr(): LogManager {
         if (!this._logMgr) {
             this._logMgr = new LogManager(this.constructor.name, this.aftCfg);
@@ -19,31 +17,27 @@ export class GridSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
         return this._logMgr;
     }
     override getSession = async (sessionOptions?: Record<string, any>): Promise<WebDriver> => {
-        const cfg = this.aftCfg.getSection(GridSessionConfig);
-        const caps: Capabilities = await this.getCapabilities(sessionOptions);
+        const gso: GridSessionOptions = {...sessionOptions} as GridSessionOptions;
+        const caps: Capabilities = new Capabilities(gso.capabilities);
+        let driver: WebDriver;
         if (caps) {
             try {
-                const driver: WebDriver = await new Builder()
-                    .usingServer(cfg.url)
+                driver = await new Builder()
+                    .usingServer(gso.url ?? 'http://127.0.0.1:4444/wd/hub')
                     .withCapabilities(caps)
                     .build();
-                await Err.handle(() => driver.manage().setTimeouts({implicit: cfg.implicitTimeoutMs}), {
+                await Err.handleAsync(async () => await driver.manage().setTimeouts({implicit: gso.implicitTimeoutMs ?? 1000}), {
                     logger: this.logMgr,
                     errLevel: 'debug'
                 });
-                await Err.handle(() => driver.manage().window().maximize(), {
+                await Err.handleAsync(async () => await driver.manage().window().maximize(), {
                     logger: this.logMgr,
                     errLevel: 'debug'
                 });
-                return driver;
             } catch (e) {
                 this.logMgr.warn(`error in creating WebDriver due to: ${Err.full(e)}`);
             }
         }
-        return null;
-    }
-    async getCapabilities(sessionOptions?: Record<string, any>): Promise<Capabilities> {
-        let capabilities: Capabilities = new Capabilities(sessionOptions);
-        return capabilities;
+        return driver;
     }
 }

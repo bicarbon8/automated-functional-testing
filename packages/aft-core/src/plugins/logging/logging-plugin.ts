@@ -1,7 +1,14 @@
-import { Plugin } from "../plugin";
+import { Plugin, PluginConfig } from "../plugin";
 import { LogLevel } from "./log-level";
 
+export class LoggingPluginConfig extends PluginConfig {
+    logLevel: LogLevel = 'none';
+}
+
 export class LoggingPlugin extends Plugin {
+    override get enabled(): boolean {
+        return this.logLevel != 'none';
+    }
     /**
      * allows for filtering out of erroneous information from logs by assigning
      * values to different types of logging. the purpose of each log level is
@@ -16,7 +23,9 @@ export class LoggingPlugin extends Plugin {
      * - `error` - used for unexpected errors that are **not** recoverable
      * - `none` - used when no logging is desired (disables logging)
      */
-    logLevel = 'none';
+    get logLevel(): LogLevel {
+        return 'none';
+    }
     /**
      * called by the parent `AftLog` on load to allow any plugins to configure
      * themselves for a new logger

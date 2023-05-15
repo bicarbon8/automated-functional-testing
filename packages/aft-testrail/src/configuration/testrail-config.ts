@@ -1,4 +1,4 @@
-import { LogLevel } from "aft-core";
+import { LogLevel, LoggingPluginConfig } from "aft-core";
 
 /**
  * reads configuration from either the passed in `TestRailConfigOptions`
@@ -21,7 +21,7 @@ import { LogLevel } from "aft-core";
  * TestRail plan will be created and the value stored in a shared file for access
  * by other processes and subsequent test executions
  */
-export class TestRailConfig {
+export class TestRailConfig extends LoggingPluginConfig {
     public url: string;
     public user: string;
     public accessKey: string;
@@ -29,7 +29,7 @@ export class TestRailConfig {
     public suiteIds: number[] = [];
     public planId: number = -1;
     public cacheDuration: number = 300000;
-    public logLevel: LogLevel = 'warn';
+    public override logLevel: LogLevel = 'warn';
     public maxLogCharacters: number = 250;
     public policyEngineEnabled: boolean = true;
 }

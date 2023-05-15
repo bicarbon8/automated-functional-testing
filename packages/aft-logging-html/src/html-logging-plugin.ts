@@ -1,31 +1,32 @@
 import * as path from "path";
-import { LoggingPlugin, LogLevel, TestResult, fileio, ExpiringFileLock, FileSystemMap, LogMessageData, convert, AftConfig, LogManagerConfig, ResultsPlugin } from "aft-core";
+import { LoggingPlugin, LogLevel, TestResult, fileio, ExpiringFileLock, FileSystemMap, convert, AftConfig, LogManagerConfig, ResultsPlugin, LoggingPluginConfig } from "aft-core";
 import { HtmlTestResult } from "./html-test-result";
 import { HtmlResult } from "./html-result";
 import { htmlTemplate } from "./templates/html-template";
 
-export class HtmlLoggingPluginConfig {
+export class HtmlLoggingPluginConfig extends LoggingPluginConfig {
     fileName: string;
     outputDir: string;
     maxLogLines: number;
-    logLevel: LogLevel = 'warn';
+    override logLevel: LogLevel = 'warn';
 }
 
 export class HtmlLoggingPlugin extends LoggingPlugin implements ResultsPlugin {
-    public override readonly enabled: boolean;
-    public override readonly logLevel: LogLevel;
+    public override get logLevel(): LogLevel {
+        return this._level;
+    }
 
     private readonly _results: FileSystemMap<string, Array<HtmlTestResult>>;
     private readonly _logs: FileSystemMap<string, Array<string>>;
     private readonly _fileName: string;
     private readonly _outputDir: string;
     private readonly _maxLogLines: number;
+    private readonly _level: LogLevel;
     
     constructor(aftCfg?: AftConfig) {
         super(aftCfg);
         const cfg = this.aftCfg.getSection(HtmlLoggingPluginConfig);
-        this.logLevel = cfg.logLevel ?? this.aftCfg.getSection(LogManagerConfig).logLevel ?? 'warn';
-        this.enabled = this.logLevel != 'none';
+        this._level = cfg.logLevel ?? this.aftCfg.getSection(LogManagerConfig).logLevel ?? 'warn';
         if (this.enabled) {
             this._results = new FileSystemMap<string, Array<HtmlTestResult>>('htmlSharedResults');
             this._logs = new FileSystemMap<string, Array<string>>('htmlSharedLogs');

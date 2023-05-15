@@ -1,12 +1,21 @@
 import { AftConfig, aftConfig } from "../configuration/aft-config";
 
+export class PluginConfig {
+    enabled: boolean = false;
+}
+
 /**
  * abstract class to be implemented by any `Plugin` implementation
  */
 export class Plugin {
-    readonly aftCfg: AftConfig;
-    enabled = false;
+    private readonly _aftCfg: AftConfig;
+    get aftCfg(): AftConfig {
+        return aftConfig;
+    }
+    get enabled(): boolean {
+        return false;
+    }
     constructor(aftCfg?: AftConfig) {
-        this.aftCfg = aftCfg ?? aftConfig;
+        this._aftCfg = aftCfg ?? aftConfig;
     }
 }

@@ -1,19 +1,25 @@
-import { Builder, Capabilities, WebDriver } from "selenium-webdriver";
-import { UiSessionGeneratorPlugin, UiSessionConfig } from "aft-ui";
+import { Builder, WebDriver } from "selenium-webdriver";
+import { UiSessionGeneratorPlugin } from "aft-ui";
+import { LogManager } from "aft-core";
+
+type LocalSessionOptions = {
+    browserName: string;
+    capabilities: Record<string, any>;
+};
 
 export class LocalSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
     override getSession = async (sessionOptions?: Record<string, any>): Promise<WebDriver> => {
-        const uisc = this.aftCfg.getSection(UiSessionConfig);
-        const caps = await this.getCapabilities(sessionOptions);
-        const driver = new Builder()
-            .forBrowser(sessionOptions.browser ?? sessionOptions.browserName)
-            .withCapabilities(caps)
-            .build();
+        const lso = {...sessionOptions} as LocalSessionOptions;
+        const caps = lso.capabilities ?? {};
+        let driver: WebDriver;
+        try {
+            driver = new Builder()
+                .forBrowser(lso.browserName ?? 'chrome')
+                .withCapabilities(caps)
+                .build();
+        } catch (e) {
+            LogManager.toConsole({name: this.constructor.name, level: 'error', message: e});
+        }
         return driver;
-    }
-
-    async getCapabilities(sessionOptions?: Record<string, any>): Promise<Capabilities> {
-        let capabilities: Capabilities = new Capabilities(sessionOptions);
-        return capabilities;
     }
 }

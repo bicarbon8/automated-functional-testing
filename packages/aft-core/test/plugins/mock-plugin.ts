@@ -1,15 +1,16 @@
-import { AftConfig, Plugin, aftConfig } from "../../src";
+import { AftConfig, Plugin, PluginConfig } from "../../src";
 
-export class MockPluginConfig {
-    enabled: boolean = false;
-}
+export class MockPluginConfig extends PluginConfig {}
 
 export class MockPlugin extends Plugin {
-    public override readonly enabled: boolean;
+    private readonly _enabled: boolean;
+    public override get enabled(): boolean {
+        return this._enabled;
+    }
     public readonly implements: string = 'mock';
     constructor(aftCfg?: AftConfig) {
         super(aftCfg);
         const cfg = this.aftCfg.getSection(MockPluginConfig);
-        this.enabled = cfg.enabled;
+        this._enabled = cfg.enabled;
     }
 }

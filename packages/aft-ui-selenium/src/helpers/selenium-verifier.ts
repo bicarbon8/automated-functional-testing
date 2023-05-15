@@ -48,7 +48,6 @@ export class SeleniumVerifier extends Verifier {
      * {
      *   "UiSessionConfig": {
      *     "generatorName": "foo-bar-baz",
-     *     "uiplatform": { "os": "windows", "browser": "firefox" },
      *     "options": {
      *       "bstack:options": {
      *         "user": "foo1234",

@@ -1,19 +1,18 @@
-import { LoggingPlugin, LogLevel, TestResult, machineInfo, LogManager, LogMessageData, pluginLoader, BuildInfoPlugin, AftConfig, LogManagerConfig, ResultsPlugin } from "aft-core";
+import { LoggingPlugin, LogLevel, TestResult, machineInfo, LogManager, AftConfig, LogManagerConfig, ResultsPlugin, BuildInfoManager, LoggingPluginConfig } from "aft-core";
 import * as AWS from "aws-sdk";
 import * as pkg from "../package.json";
 import { KinesisLogRecord } from "./kinesis-log-record";
 
-export class KinesisLoggingPluginConfig {
-    logLevel: LogLevel;
-    region: string;
-    deliveryStream: string;
-    batch: boolean;
-    batchSize: number;
-};
-
 type CheckAndSendOptions = {
     override?: boolean;
     logName: string;
+};
+
+export class KinesisLoggingPluginConfig extends LoggingPluginConfig {
+    region: string;
+    deliveryStream: string;
+    batch: boolean = true;
+    batchSize: number = 10;
 };
 
 /**
@@ -41,24 +40,23 @@ type CheckAndSendOptions = {
  */
 export class KinesisLoggingPlugin extends LoggingPlugin implements ResultsPlugin {
     private readonly _logs: Map<string, AWS.Firehose.Record[]>;
-    private readonly _buildInfo: BuildInfoPlugin;
+    private readonly _buildInfo: BuildInfoManager;
+    private readonly _level: LogLevel;
 
     private _client: AWS.Firehose;
 
-    public readonly implements: 'logging';
-    public override readonly logLevel: LogLevel;
-    public override readonly enabled: boolean;
+    public override get logLevel(): LogLevel {
+        return this._level;
+    }
     
     constructor(aftCfg?: AftConfig, client?: AWS.Firehose) {
         super(aftCfg);
         this._client = client;
         this._logs = new Map<string, AWS.Firehose.Record[]>();
-        this.logLevel = this.aftCfg.getSection(KinesisLoggingPluginConfig).logLevel
+        this._level = this.aftCfg.getSection(KinesisLoggingPluginConfig).logLevel
             ?? this.aftCfg.getSection(LogManagerConfig).logLevel ?? 'warn';
-        this.enabled = this.logLevel != 'none';
         if (this.enabled) {
-            this._buildInfo = pluginLoader.getPluginsByType(BuildInfoPlugin, this.aftCfg)
-                ?.find(p => p?.enabled);
+            this._buildInfo = new BuildInfoManager(this.aftCfg);
         }
     }
 
@@ -150,6 +148,10 @@ export class KinesisLoggingPlugin extends LoggingPlugin implements ResultsPlugin
         }
     }
 
+    /**
+     * implementation of the {ResultsPlugin} class used to submit results
+     * @param result a {TestResult} to send to Kinesis Firehose
+     */
     submitResult = async (result: TestResult): Promise<void> => {
         if (this.enabled) {
             const name = result?.testName;

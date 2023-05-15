@@ -3,14 +3,14 @@
         { "path": "./packages/aft-core" },
         { "path": "./packages/aft-examples" },
         { "path": "./packages/aft-jasmine-reporter" },
-        { "path": "./packages/aft-logging-awskinesis" },
+        { "path": "./packages/aft-logging-aws-kinesis-firehose" },
         { "path": "./packages/aft-logging-filesystem" },
         { "path": "./packages/aft-logging-html" },
         { "path": "./packages/aft-mocha-reporter" },
         { "path": "./packages/aft-testrail" },
         { "path": "./packages/aft-ui" },
-        { "path": "./packages/aft-ui-browsers" },
-        { "path": "./packages/aft-ui-mobile-apps" },
+        { "path": "./packages/aft-ui-selenium" },
+        { "path": "./packages/aft-ui-webdriverio" },
         { "path": "./packages/aft-web-services" }
     ],
     "files": []

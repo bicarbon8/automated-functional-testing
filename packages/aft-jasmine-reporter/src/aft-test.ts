@@ -1,4 +1,4 @@
-import { buildinfo, ProcessingResult, rand, TestResult, TestStatus, Err } from "aft-core";
+import { rand, TestResult, TestStatus, Err, AftConfig, ResultsManager, BuildInfoManager } from "aft-core";
 import { AftLog } from "./aft-log";
 import { shouldRun } from "./should-run";
 import { TitleParser } from "./title-parser";
@@ -9,15 +9,26 @@ import { TitleParser } from "./title-parser";
  */
 export class AftTest extends AftLog {
     private _testcases: Array<string>;
-    private _defects: Array<string>;
+    private readonly _resultsMgr: ResultsManager;
+    private readonly _buildMgr: BuildInfoManager;
 
     /**
      * expects to be passed the scope from an executing Mocha
      * test (i.e. the `this` argument)
      * @param scope the `this` scope from within a Mocha `it`
      */
-    constructor(scope?: any) {
-        super(scope);
+    constructor(scope?: any, aftCfg?: AftConfig) {
+        super(scope, aftCfg);
+        this._resultsMgr = new ResultsManager(this.aftCfg);
+        this._buildMgr = new BuildInfoManager(this.aftCfg);
+    }
+
+    get resultsMgr(): ResultsManager {
+        return this._resultsMgr;
+    }
+
+    get buildInfoMgr(): BuildInfoManager {
+        return this._buildMgr;
     }
 
     get testcases(): Array<string> {
@@ -27,15 +38,8 @@ export class AftTest extends AftLog {
         return this._testcases;
     }
 
-    get defects(): Array<string> {
-        if (!this._defects) {
-            this._defects = TitleParser.parseDefectIds(this.fullName);
-        }
-        return this._defects;
-    }
-
     async pass(): Promise<void> {
-        await this._logResult('Passed');
+        await this._logResult('passed');
     }
 
     async fail(): Promise<void> {
@@ -43,31 +47,16 @@ export class AftTest extends AftLog {
         if (this.test?.failedExpectations) {
             err = this.test.failedExpectations.map(e => `${e.message}\n${e.stack}`).join('\n');
         }
-        await this._logResult('Failed', err);
+        await this._logResult('failed', err);
     }
 
     async pending(): Promise<void> {
-        await this._logResult('Skipped', 'test skipped');
+        await this._logResult('skipped', 'test skipped');
     }
 
     async shouldRun(): Promise<boolean> {
-        let result: boolean = true;
-
-        const should: Array<ProcessingResult> = await Promise.all([
-            shouldRun.tests(...this.testcases),
-            shouldRun.defects(...this.defects)
-        ]).catch(async (err) => {
-            await this.logMgr.warn(err);
-            return [];
-        });
-        if (should?.length) {
-            if (!should.map(s => s.success).reduce((prev, curr) => prev && curr)) {
-                result = false;
-                await this.logMgr.warn(should.filter(s => !s.success).map(s => s.message).join('; '));
-            }
-        }
-
-        return result;
+        const should = await shouldRun.tests(...this.testcases);
+        return should.result;
     }
 
     async dispose(): Promise<void> {
@@ -82,7 +71,7 @@ export class AftTest extends AftLog {
      */
      protected async _logResult(status: TestStatus, message?: string): Promise<void> {
         try {
-            status = status || 'Untested';
+            status = status || 'untested';
             if (this.testcases.length) {
                 this.testcases.forEach(async (testId: string) => {
                     if (message) {
@@ -99,7 +88,7 @@ export class AftTest extends AftLog {
             for (var i=0; i<results.length; i++) {
                 let result: TestResult = results[i];
                 try {
-                    await this.logMgr.logResult(result);
+                    await this.resultsMgr.submitResult(result);
                 } catch (e) {
                     await this.logMgr.warn(`unable to log test result for test '${result.testId || result.resultId}' due to: ${Err.short(e)}`);
                 }
@@ -112,16 +101,16 @@ export class AftTest extends AftLog {
     protected async _logMessage(status: TestStatus, message?: string): Promise<void> {
         message = message || this.logMgr.logName;
         switch (status) {
-            case 'Blocked':
-            case 'Retest':
-            case 'Skipped':
-            case 'Untested':
+            case 'blocked':
+            case 'retest':
+            case 'skipped':
+            case 'untested':
                 await this.logMgr.warn(message);
                 break;
-            case 'Failed':
+            case 'failed':
                 await this.logMgr.fail(message);
                 break;
-            case 'Passed':
+            case 'passed':
             default:
                 await this.logMgr.pass(message);
                 break;
@@ -144,7 +133,7 @@ export class AftTest extends AftLog {
     }
 
     protected async _generateTestResult(status: TestStatus, logMessage: string, testId?: string): Promise<TestResult> {
-        let result: TestResult = {
+        const result: TestResult = {
             testId: testId,
             created: Date.now(),
             resultId: rand.guid,
@@ -152,8 +141,8 @@ export class AftTest extends AftLog {
             status: status,
             metadata: {
                 durationMs: this.test.duration || 0,
-                buildName: await buildinfo.buildName() || 'unknown',
-                buildNumber: await buildinfo.buildNumber() || 'unknown'
+                buildName: await this.buildInfoMgr.buildName() || 'unknown',
+                buildNumber: await this.buildInfoMgr.buildNumber() || 'unknown'
             }
         };
         return result;

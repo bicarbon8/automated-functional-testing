@@ -6,10 +6,12 @@
     },
     "include": ["test"],
     "references": [
-        { "path": "../aft-ui-selenium" },
-        { "path": "../aft-logging-awskinesis" },
+        { "path": "../aft-mocha-reporter" },
+        { "path": "../aft-logging-aws-kinesis-firehose" },
         { "path": "../aft-logging-filesystem" },
         { "path": "../aft-logging-html" },
-        { "path": "../aft-testrail" }
+        { "path": "../aft-testrail" },
+        { "path": "../aft-ui-selenium" },
+        { "path": "../aft-ui-webdriverio" }
     ]
 }

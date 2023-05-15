@@ -6,7 +6,8 @@
         "html-logging-plugin",
         "filesystem-logging-plugin",
         "grid-session-generator-plugin",
-        "local-session-generator-plugin"
+        "local-session-generator-plugin",
+        "webdriverio-remote-session-generator-plugin"
     ],
     "pluginsSearchDir": "../",
     "TestRailConfig": {
@@ -19,19 +20,21 @@
         "policyEngineEnabled": false
     },
     "KinesisLoggingPluginConfig": {
-        "logLevel": "none"
+        "logLevel": "none",
+        "region": "eu-west-1",
+        "deliveryStream": "%aws_kinesis_delivery_stream%"
     },
     "UiSessionConfig": {
         "generatorName": "grid-session-generator-plugin",
         "options": {
-            "bstack:options": {
-                "userName": "%browserstack_user%",
-                "accessKey": "%browserstack_key%",
-                "debug": true
+            "url": "https://hub-cloud.browserstack.com/wd/hub",
+            "capabilities": {
+                "bstack:options": {
+                    "userName": "%browserstack_user%",
+                    "accessKey": "%browserstack_key%",
+                    "debug": true
+                }
             }
         }
-    },
-    "GridSessionConfig": {
-        "url": "https://hub-cloud.browserstack.com/wd/hub"
     }
 }
