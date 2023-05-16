@@ -1,4 +1,4 @@
-import { ProcessingResult, rand, TestResult, TestStatus, Err, AftConfig, ResultsManager, BuildInfoManager, PolicyEngineManager, Func, Verifier, Class } from "aft-core";
+import { rand, TestResult, TestStatus, Err, AftConfig, ResultsManager, BuildInfoManager, Func, Verifier, Class } from "aft-core";
 import { AftLog } from "./aft-log";
 import { TitleParser } from "./title-parser";
 
@@ -10,7 +10,6 @@ export class AftTest extends AftLog {
     private readonly _testcases: Array<string>;
     private readonly _resMgr: ResultsManager;
     private readonly _buildMgr: BuildInfoManager;
-    private readonly _policyMgr: PolicyEngineManager;
 
     /**
      * expects to be passed the scope from an executing Mocha
@@ -21,7 +20,6 @@ export class AftTest extends AftLog {
         super(scope, aftCfg);
         this._resMgr = new ResultsManager(this.aftCfg);
         this._buildMgr = new BuildInfoManager(this.aftCfg);
-        this._policyMgr = new PolicyEngineManager(this.aftCfg);
         this._testcases = TitleParser.parseTestIds(this.fullTitle);
     }
 
@@ -76,7 +74,8 @@ export class AftTest extends AftLog {
             .internals.usingLogManager(this.logMgr)
             .internals.usingAftConfig(this.aftCfg)
             .withDescription(this.fullTitle)
-            .withTestIds(...this.testcases) as T;
+            .withTestIds(...this.testcases)
+            .on('skipped', () => this.test.skip()) as T;
     }
 
     /**

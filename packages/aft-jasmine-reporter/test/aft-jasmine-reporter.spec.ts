@@ -1,3 +1,4 @@
+import { Verifier, equaling } from "aft-core";
 import { AftTest } from "../src";
 import { AftLog } from "../src/aft-log";
 
@@ -29,5 +30,13 @@ describe('AftJasmineReporter', () => {
         }
 
         expect(true).toBeFalse();
+    });
+
+    it('provides a Verifier instance for use in test control', async () => {
+        const t = new AftTest(this);
+        await t.verify(async (v: Verifier) => {
+            await v.logMgr.warn('returning logName');
+            return v.logMgr.logName;
+        }).returns(equaling(t.logMgr.logName));
     });
 });

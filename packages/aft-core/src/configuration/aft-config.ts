@@ -1,7 +1,6 @@
 import * as dotenv from "dotenv";
 import { Class, JsonObject, JsonValue, RetryBackOffType } from "../helpers/custom-types";
 import { fileio } from "../helpers/file-io";
-import { FileSystemMap } from "../helpers/file-system-map";
 import { LogLevel } from "../plugins/logging/log-level";
 
 export class AftConfig {
@@ -10,7 +9,14 @@ export class AftConfig {
     private readonly _sectionCache: Map<string, {}>;
 
     constructor(config?: JsonObject) {
-        this._cfg = config ?? fileio.readAs<JsonObject>('aftconfig.json') ?? {};
+        this._cfg = config;
+        if (!this._cfg) {
+            try {
+                this._cfg = fileio.readAs<JsonObject>('aftconfig.json');
+            } catch {
+                this._cfg = {};
+            }
+        }
         this._valueCache = new Map<string, JsonValue>();
         this._sectionCache = new Map<string, {}>();
         dotenv.config();

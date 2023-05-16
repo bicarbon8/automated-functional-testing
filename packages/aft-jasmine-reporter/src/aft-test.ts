@@ -1,4 +1,4 @@
-import { rand, TestResult, TestStatus, Err, AftConfig, ResultsManager, BuildInfoManager, ProcessingResult, PolicyEngineManager } from "aft-core";
+import { rand, TestResult, TestStatus, Err, AftConfig, ResultsManager, BuildInfoManager, Verifier, Func, Class } from "aft-core";
 import { AftLog } from "./aft-log";
 import { TitleParser } from "./title-parser";
 
@@ -10,7 +10,6 @@ export class AftTest extends AftLog {
     private _testcases: Array<string>;
     private readonly _resultsMgr: ResultsManager;
     private readonly _buildMgr: BuildInfoManager;
-    private readonly _policyMgr: PolicyEngineManager;
 
     /**
      * expects to be passed the scope from an executing Mocha
@@ -21,7 +20,6 @@ export class AftTest extends AftLog {
         super(scope, aftCfg);
         this._resultsMgr = new ResultsManager(this.aftCfg);
         this._buildMgr = new BuildInfoManager(this.aftCfg);
-        this._policyMgr = new PolicyEngineManager(this.aftCfg);
     }
 
     get resultsMgr(): ResultsManager {
@@ -55,30 +53,37 @@ export class AftTest extends AftLog {
         await this._logResult('skipped', 'test skipped');
     }
 
+    /**
+     * determines if any of the referenced Test Case ID's should be run according to the
+     * loaded `PolicyEnginePlugin` implementations' `shouldRun` methods
+     * @returns `true` if test should be run, otherwise `false`
+     */
     async shouldRun(): Promise<boolean> {
-        const shouldRunTests = new Array<string>();
-        const shouldNotRunTests = new Array<string>();
-        if (this.testcases?.length) {
-            for (var i=0; i<this.testcases.length; i++) {
-                let testId: string = this.testcases[i];
-                let result: ProcessingResult<boolean> = await this._policyMgr.shouldRun(testId);
-                if (result.result === true) {
-                    shouldRunTests.push(testId);
-                } else {
-                    shouldNotRunTests.push(testId);
-                }
-            }
-            if (shouldRunTests.length === 0) {
-                this.logMgr.info(`none of the supplied tests should be run: [${this.testcases.join(', ')}]`);
-                return false;
-            }
-            this.logMgr.debug(`the following supplied tests should be run: [${shouldRunTests.join(', ')}]`);
-            return true;
-        } else if (this._policyMgr.plugins?.filter(p => Err.handle(() => p?.enabled)).length > 0) {
-            this.logMgr.info(`no associated testIds found for test, but enabled 'PolicyEnginePlugins' exist so test should not be run`);
-            return false;
-        }
-        return true;
+        const shouldRun = await this._getVerifier(Verifier).shouldRun();
+        return shouldRun.result;
+    }
+
+    /**
+     * creates a new {Verifier} that will run the passed in `assertion` if the `shouldRun` function
+     * returns `true` otherwise it will bypass execution
+     * @param assertion a function that performs test actions and will accept a {Verifier} instance
+     * for use during the test actions' execution
+     * @param verifierType an optional {Verifier} class to use instead of the base {Verifier} type
+     * @returns a {Verifier} instance already configured with test cases, description, logger and config
+     */
+    verify<T extends Verifier>(assertion: Func<T, any>, verifierType?: Class<T>): T {
+        return this._getVerifier<T>(verifierType)
+            .verify(assertion) as T;
+    }
+
+    protected _getVerifier<T extends Verifier>(verifierType?: Class<T>): T {
+        verifierType ??= Verifier as Class<T>;
+        return new verifierType()
+            .internals.usingLogManager(this.logMgr)
+            .internals.usingAftConfig(this.aftCfg)
+            .withDescription(this.fullName)
+            .withTestIds(...this.testcases)
+            .on('skipped', () => pending()) as T;
     }
 
     async dispose(): Promise<void> {

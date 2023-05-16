@@ -3,7 +3,7 @@ import { TestResult } from "../plugins/results/test-result";
 import { PolicyEngineManager } from "../plugins/policy-engine/policy-engine-manager";
 import { TestStatus } from "../plugins/results/test-status";
 import { convert } from "./convert";
-import { Func, ProcessingResult } from "./custom-types";
+import { Action, Func, ProcessingResult } from "./custom-types";
 import { rand } from "./rand";
 import { equaling, VerifierMatcher } from "./verifier-matcher";
 import { Err } from "./err";
@@ -11,6 +11,8 @@ import { BuildInfoManager } from "../plugins/build-info/build-info-manager";
 import { AftConfig, aftConfig } from "../configuration/aft-config";
 import { ResultsManager } from "../plugins/results/results-manager";
 import { VerifierInternals } from "./verifier-internals";
+
+export type VerifierEvent = 'skipped' | 'started' | 'done';
 
 /**
  * class to be used for executing some Functional Test Assertion after checking with any
@@ -43,10 +45,12 @@ export class Verifier implements PromiseLike<void> {
     protected _policyEngMgr: PolicyEngineManager;
     protected _buildInfoMgr: BuildInfoManager;
     protected _resMgr: ResultsManager;
+    protected _actionMap: Map<VerifierEvent, Action<void>>;
 
     constructor() {
         this._startTime = new Date().getTime();
         this._testIds = new Set<string>();
+        this._actionMap = new Map<VerifierEvent, Action<void>>();
     }
 
     get aftCfg(): AftConfig {
@@ -100,7 +104,7 @@ export class Verifier implements PromiseLike<void> {
 
     async then<TResult1 = Verifier, TResult2 = never>(onfulfilled?: (value: void) => TResult1 | PromiseLike<TResult1>, onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2> {
         return this._getInnerPromise()
-        .then(onfulfilled, onrejected);
+            .then(onfulfilled, onrejected);
     }
 
     protected async _getInnerPromise(): Promise<void> {
@@ -109,16 +113,37 @@ export class Verifier implements PromiseLike<void> {
                 try {
                     const shouldRun = await this.shouldRun();
                     if (shouldRun.result === true) {
+                        const action = this._actionMap.get('started');
+                        if (action) {
+                            Err.handle(() => action(), {
+                                errLevel: 'warn',
+                                logger: this.logMgr
+                            });
+                        }
                         await this._resolveAssertion();
                         await this._logResult('passed');
                     } else {
                         await this._logResult('skipped', shouldRun.message);
+                        const action = this._actionMap.get('skipped');
+                        if (action) {
+                            Err.handle(() => action(), {
+                                errLevel: 'warn',
+                                logger: this.logMgr
+                            });
+                        }
                     }
                     resolve();
                 } catch(e) {
                     await this._logResult('failed', e);
                     reject(e);
                 }
+            });
+        }
+        const action = this._actionMap.get('done');
+        if (action) {
+            Err.handle(() => action(), {
+                errLevel: 'warn',
+                logger: this.logMgr
             });
         }
         return this._innerPromise;
@@ -137,6 +162,17 @@ export class Verifier implements PromiseLike<void> {
      * a syntactic way of connecting fluent functions for the Verifier
      */
     get and(): this {
+        return this;
+    }
+
+    /**
+     * allows for specifying actions to be called on certain events
+     * @param event an event trigger
+     * @param action the action to be run on the event
+     * @returns a reference to this {Verifier} instance
+     */
+    on(event: VerifierEvent, action: Action<void>): this {
+        this._actionMap.set(event, action);
         return this;
     }
 
