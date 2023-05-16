@@ -90,3 +90,20 @@ export class ExpiringFileLock {
         return lockFileDescriptor;
     }
 }
+
+export module ExpiringFileLock {
+    /**
+     * creates a new {ExpiringFileLock} that can be used to ensure separate processes cannot cause
+     * a race condition when accessing a shared resource
+     * @param name the name of the lock file
+     * @param wait the number of milliseconds to wait for a lock to be acquired
+     * @param hold the number of milliseconds that a lock can be held before it automatically releases
+     * @returns an {ExpiringFileLock} instance
+     */
+    export function get(name: string, wait?: number, hold?: number): ExpiringFileLock {
+        const aftCfg = new AftConfig();
+        aftCfg.set('fileLockMaxHold', hold ?? aftCfg.fileLockMaxHold);
+        aftCfg.set('fileLockMaxWait', wait ?? aftCfg.fileLockMaxWait);
+        return new ExpiringFileLock(name, aftCfg);
+    }
+}

@@ -1,8 +1,7 @@
 import { AftConfig, aftConfig } from "../../configuration/aft-config";
+import { AftLogger, LogMessageData, aftLogger } from "../../helpers/aft-logger";
 import { ProcessingResult } from "../../helpers/custom-types";
 import { Err } from "../../helpers/err";
-import { LogManager } from "../logging/log-manager";
-import { LogMessageData } from "../logging/log-message-data";
 import { pluginLoader } from "../plugin-loader";
 import { PolicyEnginePlugin } from "./policy-engine-plugin";
 
@@ -10,8 +9,11 @@ export class PolicyEngineManager {
     public readonly aftCfg: AftConfig;
     public readonly plugins: Array<PolicyEnginePlugin>;
 
+    private readonly _aftLogger: AftLogger;
+
     constructor(aftCfg?: AftConfig) {
         this.aftCfg = aftCfg ?? aftConfig;
+        this._aftLogger = (aftCfg) ? new AftLogger(aftCfg) : aftLogger;
         this.plugins = pluginLoader.getPluginsByType(PolicyEnginePlugin, this.aftCfg);
     }
 
@@ -35,7 +37,7 @@ export class PolicyEngineManager {
                         level: 'warn',
                         message: `error calling '${plugins.constructor.name}.shouldRun(${testId})': ${Err.short(e)}`
                     };
-                    LogManager.toConsole(logData);
+                    this._aftLogger.log(logData);
                     return { result: true, message: logData.message };
                 }
             }));

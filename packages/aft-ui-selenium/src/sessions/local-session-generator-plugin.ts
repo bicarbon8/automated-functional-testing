@@ -1,6 +1,5 @@
 import { Builder, WebDriver } from "selenium-webdriver";
 import { UiSessionGeneratorPlugin } from "aft-ui";
-import { LogManager } from "aft-core";
 
 type LocalSessionOptions = {
     browserName: string;
@@ -18,7 +17,7 @@ export class LocalSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
                 .withCapabilities(caps)
                 .build();
         } catch (e) {
-            LogManager.toConsole({name: this.constructor.name, level: 'error', message: e});
+            this.aftLogger.log({name: this.constructor.name, level: 'error', message: e});
         }
         return driver;
     }

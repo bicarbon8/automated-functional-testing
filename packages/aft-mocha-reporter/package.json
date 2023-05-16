@@ -7,7 +7,7 @@
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./logs && rimraf ./FileSystemMap && rimraf ./testresults.html",
     "build": "npm run clean && tsc --build",
-    "test": "npm run build && mocha",
+    "test": "npm run build && npx mocha",
     "coverage": "nyc npm run test"
   },
   "repository": {

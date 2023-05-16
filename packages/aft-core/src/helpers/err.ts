@@ -1,5 +1,6 @@
 import { LogLevel } from '../plugins/logging/log-level';
-import { LogManager, aftLog } from '../plugins/logging/log-manager';
+import { LogManager } from '../plugins/logging/log-manager';
+import { AftLogger, aftLogger } from './aft-logger';
 import { convert } from './convert';
 import { Func } from './custom-types';
 import { ellide } from './ellide';
@@ -190,10 +191,18 @@ export module Err {
             return func();
         } catch (e) {
             opts ??= {};
-            opts.logger ??= aftLog;
-            opts.verbosity ??= 'full';
+            opts.verbosity ??= 'short';
+            opts.errLevel ??= 'warn';
             const err = new Err(e).setVerbosity(opts.verbosity);
-            opts.logger[opts?.errLevel ?? 'warn'](e.toString());
+            if (opts.logger) {
+                opts.logger[opts?.errLevel](e.toString());
+            } else {
+                aftLogger.log({
+                    name: this.constructor.name,
+                    level: opts.errLevel,
+                    message: e.toString()
+                });
+            }
             return null as T;
         }
     }
@@ -209,10 +218,18 @@ export module Err {
             .then(func)
             .catch(async (err) => {
                 opts ??= {};
-                opts.logger ??= aftLog;
-                opts.verbosity ??= 'full';
+                opts.verbosity ??= 'short';
+                opts.errLevel ??= 'warn';
                 const e = new Err(err).setVerbosity(opts?.verbosity);
-                await opts.logger[opts?.errLevel ?? 'warn'](e.toString());
+                if (opts.logger) {
+                    await opts.logger[opts?.errLevel ?? 'warn'](e.toString());
+                } else {
+                    aftLogger.log({
+                        name: this.constructor.name,
+                        level: opts.errLevel,
+                        message: e.toString()
+                    });
+                }
                 return null as T;
             });
     }

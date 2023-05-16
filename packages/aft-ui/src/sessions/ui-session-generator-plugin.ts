@@ -1,5 +1,5 @@
 import { Plugin, convert } from "aft-core";
-import { UiSessionConfig } from "./ui-session-generator-manager";
+import { UiSessionConfig } from "../configuration/ui-session-config";
 
 export class UiSessionGeneratorPlugin extends Plugin {
     override get enabled(): boolean {

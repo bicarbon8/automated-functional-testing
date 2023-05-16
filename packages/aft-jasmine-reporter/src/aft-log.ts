@@ -8,7 +8,7 @@ export class AftLog {
     
     constructor(scope?: any, aftCfg?: AftConfig) {
         this._aftCfg = aftCfg ?? aftConfig;
-        this._testNames = new FileSystemMap<string, any>('AftJasmineReporter');
+        this._testNames = new FileSystemMap<string, any>('AftJasmineReporter', [], this._aftCfg);
         if (!scope) {
             const names: Array<string> = Array.from(this._testNames.keys());
             scope = (names?.length > 0) ? names[0] : undefined;

@@ -1,4 +1,4 @@
-import { LoggingPlugin, LogLevel, TestResult, machineInfo, LogManager, AftConfig, ResultsPlugin, BuildInfoManager, LoggingPluginConfig } from "aft-core";
+import { LoggingPlugin, LogLevel, TestResult, machineInfo, AftConfig, ResultsPlugin, BuildInfoManager, LoggingPluginConfig } from "aft-core";
 import * as AWS from "aws-sdk";
 import * as pkg from "../package.json";
 import { KinesisLogRecord } from "./kinesis-log-record";
@@ -108,7 +108,7 @@ export class KinesisLoggingPlugin extends LoggingPlugin implements ResultsPlugin
                 () => new AWS.ProcessCredentials()
             ]).resolvePromise();    
         } catch (e) {
-            LogManager.toConsole({name: this.constructor.name, message: e, level: 'warn'});
+            this.aftLogger.log({name: this.constructor.name, message: e, level: 'warn'});
             return null;
         }
         return creds;

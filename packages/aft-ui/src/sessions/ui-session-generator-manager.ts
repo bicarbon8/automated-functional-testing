@@ -1,11 +1,7 @@
 import { merge } from "lodash";
 import { AftConfig, Err, LogManager, aftConfig, pluginLoader } from "aft-core";
 import { UiSessionGeneratorPlugin } from "./ui-session-generator-plugin";
-
-export class UiSessionConfig {
-    generatorName: string;
-    options: Record<string, any> = {};
-}
+import { UiSessionConfig } from "../configuration/ui-session-config";
 
 /**
  * class will get a UI Session Generator Plugin by name listed in `UiSessionConfig.sessionGeneratorName`

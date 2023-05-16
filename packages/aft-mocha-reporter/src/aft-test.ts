@@ -1,4 +1,4 @@
-import { ProcessingResult, rand, TestResult, TestStatus, Err, AftConfig, ResultsManager, BuildInfoManager, PolicyEngineManager } from "aft-core";
+import { ProcessingResult, rand, TestResult, TestStatus, Err, AftConfig, ResultsManager, BuildInfoManager, PolicyEngineManager, Func, Verifier, Class } from "aft-core";
 import { AftLog } from "./aft-log";
 import { TitleParser } from "./title-parser";
 
@@ -53,29 +53,30 @@ export class AftTest extends AftLog {
      * @returns `true` if test should be run, otherwise `false`
      */
     async shouldRun(): Promise<boolean> {
-        const shouldRunTests = new Array<string>();
-        const shouldNotRunTests = new Array<string>();
-        if (this.testcases?.length) {
-            for (var i=0; i<this.testcases.length; i++) {
-                let testId: string = this.testcases[i];
-                let result: ProcessingResult<boolean> = await this._policyMgr.shouldRun(testId);
-                if (result.result === true) {
-                    shouldRunTests.push(testId);
-                } else {
-                    shouldNotRunTests.push(testId);
-                }
-            }
-            if (shouldRunTests.length === 0) {
-                this.logMgr.info(`none of the supplied tests should be run: [${this.testcases.join(', ')}]`);
-                return false;
-            }
-            this.logMgr.debug(`the following supplied tests should be run: [${shouldRunTests.join(', ')}]`);
-            return true;
-        } else if (this._policyMgr.plugins?.filter(p => Err.handle(() => p?.enabled)).length > 0) {
-            this.logMgr.info(`no associated testIds found for test, but enabled 'IPolicyEnginePlugins' exist so test should not be run`);
-            return false;
-        }
-        return true;
+        const shouldRun = await this._getVerifier(Verifier).shouldRun();
+        return shouldRun.result;
+    }
+
+    /**
+     * creates a new {Verifier} that will run the passed in `assertion` if the `shouldRun` function
+     * returns `true` otherwise it will bypass execution
+     * @param assertion a function that performs test actions and will accept a {Verifier} instance
+     * for use during the test actions' execution
+     * @param verifierType an optional {Verifier} class to use instead of the base {Verifier} type
+     * @returns a {Verifier} instance already configured with test cases, description, logger and config
+     */
+    verify<T extends Verifier>(assertion: Func<T, any>, verifierType?: Class<T>): T {
+        return this._getVerifier<T>(verifierType)
+            .verify(assertion) as T;
+    }
+
+    protected _getVerifier<T extends Verifier>(verifierType?: Class<T>): T {
+        verifierType ??= Verifier as Class<T>;
+        return new verifierType()
+            .internals.usingLogManager(this.logMgr)
+            .internals.usingAftConfig(this.aftCfg)
+            .withDescription(this.fullTitle)
+            .withTestIds(...this.testcases) as T;
     }
 
     /**
@@ -84,7 +85,7 @@ export class AftTest extends AftLog {
      * @param result an `IProcessingResult` returned from executing the 
      * expectation
      */
-     protected async _logResult(status: TestStatus, message?: string): Promise<void> {
+    protected async _logResult(status: TestStatus, message?: string): Promise<void> {
         try {
             status = status || 'untested';
             if (this.testcases.length) {

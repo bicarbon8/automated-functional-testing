@@ -97,7 +97,7 @@ export class FileSystemMap<Tkey extends JsonKey, Tval extends JsonValue> impleme
     }
 
     private _writeToFile(): void {
-        const lock: ExpiringFileLock = fileio.getExpiringFileLock(this.filename, this._aftCfg);
+        const lock: ExpiringFileLock = new ExpiringFileLock(this.filename, this._aftCfg);
         try {
             fileio.write(this.filename, convert.mapToString(this._memoryMap));
         } finally {
@@ -107,7 +107,7 @@ export class FileSystemMap<Tkey extends JsonKey, Tval extends JsonValue> impleme
 
     private _updateMemoryMap(): void {
         let fileMapData: Map<Tkey, Tval>;
-        const lock: ExpiringFileLock = fileio.getExpiringFileLock(this.filename, this._aftCfg);
+        const lock: ExpiringFileLock = new ExpiringFileLock(this.filename, this._aftCfg);
         try {
             fileMapData = fileio.readAs<Map<Tkey, Tval>>(this.filename, convert.stringToMap);
         } catch (e) {

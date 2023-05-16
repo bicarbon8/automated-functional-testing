@@ -1,8 +1,8 @@
 import { AftConfig, aftConfig } from "../../configuration/aft-config";
+import { AftLogger, aftLogger } from "../../helpers/aft-logger";
 import { SafeStringOption, convert } from "../../helpers/convert";
 import { Err } from "../../helpers/err";
 import { MachineInfoData, machineInfo } from "../../helpers/machine-info";
-import { LogManager } from "../logging/log-manager";
 import { pluginLoader } from "../plugin-loader";
 import { BuildInfoPlugin } from "./build-info-plugin";
 
@@ -10,10 +10,12 @@ export class BuildInfoManager {
     public readonly aftCfg: AftConfig;
     public readonly plugins: Array<BuildInfoPlugin>
 
-    private readonly safeStrOpt: SafeStringOption[] = [{exclude: /[\()\;\\\/\|\<\>""'*&^%$#@!,.\-\+_=\?]/gi, replaceWith: ''}];
+    private readonly _safeStrOpt: SafeStringOption[] = [{exclude: /[\()\;\\\/\|\<\>""'*&^%$#@!,.\-\+_=\?]/gi, replaceWith: ''}];
+    private readonly _aftLogger: AftLogger;
     
     constructor(aftCfg?: AftConfig) {
         this.aftCfg = aftCfg ?? aftConfig;
+        this._aftLogger = (aftCfg) ? new AftLogger(aftCfg) : aftLogger;
         this.plugins = pluginLoader.getPluginsByType(BuildInfoPlugin, this.aftCfg);
     }
 
@@ -42,7 +44,7 @@ export class BuildInfoManager {
             try {
                 return plugin.buildName();
             } catch (e) {
-                LogManager.toConsole({
+                this._aftLogger.log({
                     name: this.constructor.name,
                     level: 'warn',
                     message: `error calling '${plugin.constructor.name}.buildName': ${Err.short(e)}`
@@ -50,8 +52,8 @@ export class BuildInfoManager {
             }
         }
         let mi: MachineInfoData = machineInfo.data;
-        let username: string = convert.toSafeString(mi.user, this.safeStrOpt);
-        let machine: string = convert.toSafeString(mi.hostname, this.safeStrOpt);
+        let username: string = convert.toSafeString(mi.user, this._safeStrOpt);
+        let machine: string = convert.toSafeString(mi.hostname, this._safeStrOpt);
         return `${username.toLocaleUpperCase()}_${machine.toLocaleUpperCase()}`;
     }
 
@@ -67,7 +69,7 @@ export class BuildInfoManager {
             try {
                 return plugin.buildNumber();
             } catch (e) {
-                LogManager.toConsole({
+                this._aftLogger.log({
                     name: this.constructor.name,
                     level: 'warn',
                     message: `error calling '${plugin.constructor.name}.buildNumber': ${Err.short(e)}`
@@ -85,7 +87,7 @@ export class BuildInfoManager {
         if (day < 10) {
             dayStr = '0' + day;
         }
-        let now: string = convert.toSafeString(`${d.getUTCFullYear()}${monthStr}${dayStr}`, this.safeStrOpt);
+        let now: string = convert.toSafeString(`${d.getUTCFullYear()}${monthStr}${dayStr}`, this._safeStrOpt);
         return now;
     }
 }

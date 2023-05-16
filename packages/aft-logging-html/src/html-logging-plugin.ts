@@ -134,7 +134,7 @@ export class HtmlLoggingPlugin extends LoggingPlugin implements ResultsPlugin {
 
     private async _regenerateHtmlFile(results: HtmlResult[]): Promise<void> {
         const fullPathAndFile = this.fullPathAndFile;
-        const lock: ExpiringFileLock = fileio.getExpiringFileLock(fullPathAndFile, this.aftCfg);
+        const lock: ExpiringFileLock = new ExpiringFileLock(fullPathAndFile, this.aftCfg);
         try {
             fileio.write(fullPathAndFile, htmlTemplate.emit(...results));
         } finally {

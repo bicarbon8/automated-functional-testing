@@ -10,7 +10,7 @@ export module PlanId {
         api ??= new TestRailApi(aftCfg);
         const trc = aftCfg.getSection(TestRailConfig);
         const key = `${this.constructor.name}-p${trc.projectId}-s${trc.suiteIds.join('_')}`;
-        const lock: ExpiringFileLock = fileio.getExpiringFileLock(key, this._aftCfg);
+        const lock: ExpiringFileLock = new ExpiringFileLock(key, this._aftCfg);
         try {
             // create new Test Plan if one doesn't already exist
             planId = (this._fsm.get('planId') as number) ?? trc.planId;

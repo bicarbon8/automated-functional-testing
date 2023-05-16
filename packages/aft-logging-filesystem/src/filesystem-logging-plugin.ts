@@ -1,5 +1,5 @@
 import * as path from "path";
-import { AftConfig, convert, Err, fileio, LoggingPlugin, LoggingPluginConfig, LogLevel, LogMessageData, ResultsPlugin, TestResult } from "aft-core";
+import { AftConfig, convert, Err, ExpiringFileLock, fileio, LoggingPlugin, LoggingPluginConfig, LogLevel, LogMessageData, ResultsPlugin, TestResult } from "aft-core";
 import * as date from "date-and-time";
 
 export class FilesystemLoggingPluginConfig extends LoggingPluginConfig {
@@ -83,7 +83,7 @@ export class FilesystemLoggingPlugin extends LoggingPlugin implements ResultsPlu
         if (LogLevel.toValue(data.level) >= LogLevel.toValue(this.logLevel) && data.level != 'none') {
             const filename = convert.toSafeString(data.name);
             const fullPath = path.join(this._outputPath, `${filename}.log`);
-            const lock = fileio.getExpiringFileLock(fullPath, this.aftCfg);
+            const lock = new ExpiringFileLock(fullPath, this.aftCfg);
             try {
                 fileio.append(fullPath, `${this._format(data)}\n`);
             } finally {
@@ -93,9 +93,9 @@ export class FilesystemLoggingPlugin extends LoggingPlugin implements ResultsPlu
     }
 
     private _format(data: LogMessageData): string {
-        data = data || {};
-        if (!data.message) { data.message = ''; }
-        if (!data.level) { data.level = 'none' }
+        data = data || {} as LogMessageData;
+        data.message ??= '';
+        data.level ??= 'none';
         let d: string = date.format(new Date(), this._dateFormat);
         let out: string = `[${d}] - ${data.level.toUpperCase()} - ${data.message}`;
         return out;

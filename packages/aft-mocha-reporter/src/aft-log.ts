@@ -1,4 +1,4 @@
-import { AftConfig, FileSystemMap, LogManager, aftConfig } from "aft-core";
+import { AftConfig, LogManager, aftConfig } from "aft-core";
 
 export class AftLog {
     private _logMgr: LogManager;

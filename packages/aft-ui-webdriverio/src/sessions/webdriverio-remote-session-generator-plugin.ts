@@ -1,4 +1,3 @@
-import { LogManager } from "aft-core";
 import { UiSessionGeneratorPlugin } from "aft-ui";
 import { Browser, remote, RemoteOptions } from "webdriverio";
 
@@ -9,7 +8,7 @@ export class WebdriverIoRemoteSessionGeneratorPlugin extends UiSessionGeneratorP
         try {
             browser = await remote(ro);
         } catch (e) {
-            LogManager.toConsole({name: this.constructor.name, level: 'error', message: e});
+            this.aftLogger.log({name: this.constructor.name, level: 'error', message: e});
         }
         return browser;
     }

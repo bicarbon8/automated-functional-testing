@@ -1,19 +1,8 @@
 {
-    "LogManager": {
-        "level": "info",
-        "plugins": [{
-            "name": "html-logging-plugin",
-            "searchDirectory": "../",
-            "options": {
-                "level": "warn"
-            }
-        }, {
-            "name": "filesystem-logging-plugin",
-            "searchDirectory": "../",
-            "options": {
-                "includeResults": false,
-                "level": "trace"
-            }
-        }]
-    }
+    "pluginNames": [
+        "html-logging-plugin",
+        "filesystem-logging-plugin"
+    ],
+    "pluginsSearchDir": "../",
+    "logLevel": "debug"
 }

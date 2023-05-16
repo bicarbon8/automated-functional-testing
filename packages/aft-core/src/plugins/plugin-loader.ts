@@ -1,16 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { convert } from '../helpers/convert';
-import { LogManager } from './logging/log-manager';
 import { Plugin } from './plugin';
 import { AftConfig, aftConfig } from '../configuration/aft-config';
-import { Err } from '../helpers/err';
 import { Class } from '../helpers/custom-types';
 
 class PluginLoader {
     private readonly _pluginsMap: Map<string, Plugin>;
     private _loaded: boolean;
-
+    
     constructor() {
         this._pluginsMap = new Map<string, Plugin>();
         this._loaded = false;
@@ -103,18 +101,16 @@ class PluginLoader {
 
     private _findAndInstantiatePlugin(pluginName: string, searchRoot: string, aftCfg: AftConfig): void {
         let plugin: Plugin;
-        
+        let pathToPlugin: string;
         try {
-            // LogManager.toConsole({name: this.constructor.name, message: `searching for plugin '${pluginName}' starting at: ${searchRoot}`, level: 'trace'});
-            let pathToPlugin: string = this._findPlugin(searchRoot, new RegExp(`^${pluginName}\.js$`));
+            pathToPlugin = this._findPlugin(searchRoot, new RegExp(`^${pluginName}\.js$`));
             if (pathToPlugin) {
-                // LogManager.toConsole({name: this.constructor.name, message: `found plugin '${pluginName}' at: ${pathToPlugin}`, level: 'trace'});
                 plugin = require(pathToPlugin);
             } else {
                 throw new Error(`plugin could not be located`);
             }
         } catch (ee) {
-            throw new Error(`unable to load plugin: '${pluginName}' from within directory '${searchRoot}' due to: ${ee}`);
+            throw new Error(`unable to load plugin: '${pluginName}' from '${pathToPlugin ?? searchRoot}' due to: ${ee}`);
         }
 
         if (plugin) {
@@ -122,11 +118,9 @@ class PluginLoader {
                 let constructorName: string;
                 let keys: string[] = Object.keys(plugin);
                 const name = convert.toSafeString(pluginName, [{exclude: /[-_.\s\d]/gi, replaceWith: ''}]);
-                // LogManager.toConsole({name: this.constructor.name, message: `searching for plugin constructor name for ${pluginName}...`, level: 'trace'});
                 for (var i=0; i<keys.length; i++) {
                     let key: string = keys[i];
                     if (name.toLowerCase() == key.toLowerCase()) {
-                        // LogManager.toConsole({name: this.constructor.name, message: `found constructor name of ${key} for ${pluginName}`, level: 'trace'});
                         constructorName = key;
                         break;
                     }
@@ -142,7 +136,6 @@ class PluginLoader {
     }
 
     private _findPlugin(dir: string, name: string | RegExp): string {
-        // LogManager.toConsole({name: this.constructor.name, message: `searching '${dir}' for '${name}'`, level: 'debug'});
         let filePath: string;
         try {
             const filesOrDirectories: string[] = fs.readdirSync(dir);
@@ -167,7 +160,7 @@ class PluginLoader {
                 throw `no files found at path: '${dir}'`;
             }
         } catch (e) {
-            LogManager.toConsole({name: this.constructor.name, message: e, level: 'warn'});
+            /* ignore */
         }
         return filePath;
     }
@@ -178,7 +171,7 @@ class PluginLoader {
             const stats: fs.Stats = fs.statSync(fullFileAndPath);
             isDir = stats?.isDirectory() || false;
         } catch (e) {
-            LogManager.toConsole({name: this.constructor.name, message: e, level: 'warn'});
+            /* ignore */
         }
         return isDir;
     }
@@ -187,7 +180,7 @@ class PluginLoader {
 /**
  * attempts to load plugins by name and optional path.
  * 
- * ```typescript
+ * ```json
  * // aftconfig.json
  * {
  *   "pluginsSearchDir": "../",
@@ -206,8 +199,5 @@ class PluginLoader {
  * and searching all subdirectories, for a file named `custom-plugin.js` 
  * which, if found, will be imported and a new instance will be created 
  * and added to the internal cache and the array to be returned
- * @param cfgMgr the `AftConfig` instace containing a `pluginsSearchDir` string
- * and a `pluginNames` array used to locate and load plugins
- * used to locate and instantiate the plugins
  */
 export const pluginLoader = new PluginLoader();

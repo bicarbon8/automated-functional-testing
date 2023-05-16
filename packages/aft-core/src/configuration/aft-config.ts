@@ -72,7 +72,7 @@ export class AftConfig {
      * @default 'FileSystemMap'
      */
     get fsMapDirectory(): string {
-        return this.get('fsMapDirectory', FileSystemMap.name);
+        return this.get('fsMapDirectory', 'FileSystemMap');
     }
     /** 
      * used by `retry` to set the maximum number of attempts 

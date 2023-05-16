@@ -5,5 +5,9 @@
         "composite": true
     },
     "include": ["src", "test"],
-    "references": [{ "path": "../aft-core" }]
+    "references": [
+        { "path": "../aft-core" },
+        { "path": "../aft-logging-html" },
+        { "path": "../aft-logging-filesystem" }
+    ]
 }

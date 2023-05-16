@@ -1,3 +1,5 @@
+/* configuration */
+export * from './configuration/ui-session-config';
 /* components */
 export * from './components/ui-component';
 /* sessions */

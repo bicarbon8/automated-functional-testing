@@ -107,7 +107,7 @@ export class Verifier implements PromiseLike<void> {
         if (!this._innerPromise) {
             this._innerPromise = new Promise(async (resolve, reject) => {
                 try {
-                    const shouldRun = await this._shouldRunTests(...Array.from(this._testIds));
+                    const shouldRun = await this.shouldRun();
                     if (shouldRun.result === true) {
                         await this._resolveAssertion();
                         await this._logResult('passed');
@@ -280,9 +280,10 @@ export class Verifier implements PromiseLike<void> {
      * if any should be run and returns `true` if any should be run, otherwise `false`
      * @returns a `ProcessingResult<boolean>` indicating if the testing should proceed
      */
-    protected async _shouldRunTests(...testIds: string[]): Promise<ProcessingResult<boolean>> {
+    async shouldRun(): Promise<ProcessingResult<boolean>> {
         const shouldRunTests = new Array<string>();
         const shouldNotRunTests = new Array<string>();
+        const testIds = Array.from(this._testIds.keys());
         if (testIds?.length) {
             for (var i=0; i<testIds.length; i++) {
                 let testId: string = testIds[i];

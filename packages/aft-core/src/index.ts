@@ -1,6 +1,7 @@
 /** configuration */
 export * from './configuration/aft-config';
 /** helpers */
+export * from './helpers/aft-logger';
 export * from './helpers/cache-map';
 export * from './helpers/custom-types';
 export * from './helpers/convert';
@@ -28,7 +29,6 @@ export * from './plugins/build-info/build-info-plugin';
 export * from './plugins/logging/logging-plugin';
 export * from './plugins/logging/log-level';
 export * from './plugins/logging/log-manager';
-export * from './plugins/logging/log-message-data';
 /** plugins/policy-engine */
 export * from './plugins/policy-engine/policy-engine-plugin';
 export * from './plugins/policy-engine/policy-engine-manager';
