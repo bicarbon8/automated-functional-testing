@@ -1,5 +1,5 @@
 import * as path from "path";
-import { AftConfig, convert, Err, fileio, LoggingPlugin, LoggingPluginConfig, LogLevel, LogManagerConfig, LogMessageData, ResultsPlugin, TestResult } from "aft-core";
+import { AftConfig, convert, Err, fileio, LoggingPlugin, LoggingPluginConfig, LogLevel, LogMessageData, ResultsPlugin, TestResult } from "aft-core";
 import * as date from "date-and-time";
 
 export class FilesystemLoggingPluginConfig extends LoggingPluginConfig {
@@ -21,8 +21,8 @@ export class FilesystemLoggingPlugin extends LoggingPlugin implements ResultsPlu
 
     constructor(aftCfg?: AftConfig) {
         super(aftCfg);
-        const fslpc = aftCfg.getSection(FilesystemLoggingPluginConfig);
-        this._level = fslpc.logLevel ?? aftCfg.getSection(LogManagerConfig).logLevel
+        const fslpc = this.aftCfg.getSection(FilesystemLoggingPluginConfig);
+        this._level = fslpc.logLevel ?? this.aftCfg.logLevel
             ?? 'trace';
         if (this.enabled) {
             if (!path.isAbsolute(fslpc.outputPath)) {

@@ -1,4 +1,4 @@
-import { AftConfig, LogManagerConfig, PolicyEnginePlugin, ProcessingResult } from 'aft-core';
+import { AftConfig, PolicyEnginePlugin, ProcessingResult } from 'aft-core';
 import { TestRailApi } from '../api/testrail-api';
 import { TestRailCase, TestRailRun, TestRailTest } from '../api/testrail-custom-types';
 import { TestRailConfig } from '../configuration/testrail-config';
@@ -92,7 +92,7 @@ export class TestRailTestCasePlugin extends PolicyEnginePlugin {
     private async _findTestsByField(field: string, val: string): Promise<Array<TestRailCase | TestRailTest>> {
         const cfg = this.aftCfg.getSection(TestRailConfig);
         let tests = new Array<TestRailCase | TestRailTest>();
-        if ((cfg.logLevel ?? this.aftCfg.getSection(LogManagerConfig).logLevel ?? 'warn') !== 'none') {
+        if ((cfg.logLevel ?? this.aftCfg.logLevel ?? 'warn') !== 'none') {
             // look for TestRailTests in TestRail Plan
             let planId: number = await PlanId.get(this.aftCfg, this._api);
             let trRuns: TestRailRun[] = await this._api.getRunsInPlan(planId);

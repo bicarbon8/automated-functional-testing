@@ -3,14 +3,6 @@ import { convert } from "./convert";
 import { Func, RetryBackOffType } from "./custom-types";
 import { wait } from "./wait";
 
-export class RetryConfig {
-    maxAttempts: number = Infinity;
-    backOffType: RetryBackOffType = 'constant';
-    delayMs: number = 1;
-    maxDurationMs: number = Infinity;
-    rejectOnFail: boolean = true;
-}
-
 /**
  * function will execute a passed in `Func<void, T | PromiseLike<T>>` and await a result, repeating execution at the passed
  * in `delay` interval (using the specified `backOffType` back-off) until the `condition` succeeds (returns `true`)
@@ -36,15 +28,14 @@ export class Retry<T> implements PromiseLike<T> {
     constructor(retryable: Func<void, T | PromiseLike<T>>, aftCfg?: AftConfig) {
         this._retryable = retryable;
         this._aftCfg = aftCfg ?? aftConfig;
-        const cfg = this._aftCfg.getSection(RetryConfig);
-        this._delay = cfg.delayMs;
+        this._delay = this._aftCfg.retryDelayMs;
         this._currentDelay = this._delay;
-        this._backOffType = cfg.backOffType;
-        this._maxAttempts = cfg.maxAttempts;
+        this._backOffType = this._aftCfg.retryBackOffType;
+        this._maxAttempts = this._aftCfg.retryMaxAttempts;
         this._totalAttempts = 0;
         this._condition = (result: T) => result != null;
-        this._maxDuration = cfg.maxDurationMs;
-        this._reject = cfg.rejectOnFail;
+        this._maxDuration = this._aftCfg.retryMaxDurationMs;
+        this._reject = this._aftCfg.retryRejectOnFail;
     }
 
     /**

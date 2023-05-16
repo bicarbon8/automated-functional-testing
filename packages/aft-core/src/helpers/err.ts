@@ -1,5 +1,5 @@
 import { LogLevel } from '../plugins/logging/log-level';
-import { LogManager } from '../plugins/logging/log-manager';
+import { LogManager, aftLog } from '../plugins/logging/log-manager';
 import { convert } from './convert';
 import { Func } from './custom-types';
 import { ellide } from './ellide';
@@ -11,34 +11,36 @@ export type ErrOptions = {
      * an optional `LogManager` instance to use in logging the error message
      * and stack
      */
-    logger?: LogManager;
+    logger: LogManager;
     /**
      * the `LogLevel` to use when logging any caught `Error`. defaults to
      * `warn`
      */
-    errLevel?: LogLevel;
+    errLevel: LogLevel;
     /**
      * the amount of detail to include in the output message. defaults to
      * `full`
      */
-    verbosity?: ErrVerbosity;
+    verbosity: ErrVerbosity;
 }
 
 /**
  * provides a standardised way of generating log-friendly exception details
  * in either short or full formatting. Usage would look like:
  * ```typescript
- * const logger = new LogManager('foo');
- * const result = await Err.handle(functionThatThrowsTypeError, {
- *     logger: logger,
- *     errLevel: 'debug',
- *     verbosity: 'short'
- * });
+ * const result1 = Err.handle(() => functionThatThrowsTypeError());
+ * const result2 = await Err.handleAsync(async () => asyncFunctionThatThrowsArgumentError());
  * ```
  * which would output:
  * ```text
- * YYYYMMDD - [foo] - DEBUG - TypeError: [max 100 characters of message...] --- [max 300 characters of the ... first line of stack trace]
+ * YYYYMMDD - [AFT] - WARN  - TypeError: [max 100 characters of message...] --- [max 300 characters...of the stack trace]
+ * YYYYMMDD - [AFT] - WARN  - ArgumentError: [max 100 characters of message...] --- [max 300 characters...of the stack trace]
  * ```
+ * 
+ * > NOTE: an optional `Partial<ErrorOptions>` object can be passed to the `handle` and `handleAsync` functions allowing
+ * you to control the `LogLevel` used _(defaults to `'warn'`)_, the verbosity _(defaults to `'short'`)_, and the 
+ * `LogManager` instance used _(defaults to `aftLog` global instance)_
+ * 
  * and:
  * ```typescript
  * const logger = new LogManager('AFT');
@@ -51,8 +53,8 @@ export type ErrOptions = {
  * ```
  * which outputs:
  * ```text
- * YYYYMMDD - [AFT] - WARN - TypeError: [max 100 characters of message...] --- [max 300 characters of the ... first line of stack trace]
- * YYYYMMDD - [AFT] - DEBUG - TypeError: [full type error description message]
+ * YYYYMMDD - [AFT] - WARN - TypeError: [max 100 characters of message...] --- [max 300 characters...of the stack trace]
+ * YYYYMMDD - [AFT] - DEBUG - TypeError: [full type error message and stack trace]
  * [full stack trace of as much as the Error contained]
  * ```
  */
@@ -70,26 +72,26 @@ export class Err {
 
     get verbosity(): ErrVerbosity {
         if (!this._verbosity) {
-            this._verbosity = 'full';
+            this._verbosity = 'short';
         }
         return this._verbosity;
     }
 
     setVerbosity(v: ErrVerbosity): this {
-        this._verbosity = (['full', 'short'].includes(v)) ? v : 'full';
+        this._verbosity = (['full', 'short'].includes(v)) ? v : 'short';
         return this;
     }
 
     get type(): string {
-        return this.err?.name || 'Error';
+        return this.err?.name ?? 'Error';
     }
 
     get message(): string {
-        return this.err?.message || 'unknown';
+        return this.err?.message ?? 'unknown';
     }
 
     get stack(): string {
-        return this.err?.stack || 'unknown';
+        return this.err?.stack ?? 'unknown';
     }
 
     toString(): string {
@@ -183,12 +185,15 @@ export module Err {
      * @param opts an `ErrOptions` object containing options for this call to `handle`
      * @returns the result of the passed in `func` or `null` if an error is thrown
      */
-    export function handle<T>(func: Func<void, T>, opts?: ErrOptions): T {
+    export function handle<T>(func: Func<void, T>, opts?: Partial<ErrOptions>): T {
         try {
             return func();
         } catch (e) {
-            const err = new Err(e).setVerbosity(opts?.verbosity);
-            opts?.logger?.[opts?.errLevel || 'warn'](e.toString());
+            opts ??= {};
+            opts.logger ??= aftLog;
+            opts.verbosity ??= 'full';
+            const err = new Err(e).setVerbosity(opts.verbosity);
+            opts.logger[opts?.errLevel ?? 'warn'](e.toString());
             return null as T;
         }
     }
@@ -199,12 +204,15 @@ export module Err {
      * @param opts an `ErrOptions` object containing options for this call to `handle`
      * @returns the result of the passed in `func` or `null` if an error is thrown
      */
-    export async function handleAsync<T>(func: Func<void, PromiseLike<T>>, opts?: ErrOptions): Promise<T> {
+    export async function handleAsync<T>(func: Func<void, PromiseLike<T>>, opts?: Partial<ErrOptions>): Promise<T> {
         return await Promise.resolve()
             .then(func)
             .catch(async (err) => {
+                opts ??= {};
+                opts.logger ??= aftLog;
+                opts.verbosity ??= 'full';
                 const e = new Err(err).setVerbosity(opts?.verbosity);
-                await opts?.logger?.[opts?.errLevel || 'warn'](e.toString());
+                await opts.logger[opts?.errLevel ?? 'warn'](e.toString());
                 return null as T;
             });
     }

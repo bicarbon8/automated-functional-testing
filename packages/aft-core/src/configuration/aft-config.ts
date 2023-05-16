@@ -1,6 +1,8 @@
 import * as dotenv from "dotenv";
-import { Class, JsonObject, JsonValue } from "../helpers/custom-types";
+import { Class, JsonObject, JsonValue, RetryBackOffType } from "../helpers/custom-types";
 import { fileio } from "../helpers/file-io";
+import { FileSystemMap } from "../helpers/file-system-map";
+import { LogLevel } from "../plugins/logging/log-level";
 
 export class AftConfig {
     private readonly _cfg: JsonObject;
@@ -14,11 +16,99 @@ export class AftConfig {
         dotenv.config();
     }
     
+    /**
+     * the relative path from `process.cwd()` to begin searching for plugins
+     * @default process.cwd()
+     */
     get pluginsSearchDir(): string {
         return this.get('pluginsSearchDir', process.cwd());
     }
+    /**
+     * an array of plugin filenames (these must also match the lowercase plugin class name minus
+     * any `-`, `_` and `.` characters) to load via the `pluginLoader`
+     * 
+     * ex:
+     * ```json
+     * // aftconfig.json
+     * {
+     *     "pluginNames": ["my-plugin"]
+     * }
+     * ```
+     * would match with the following plugin class
+     * ```javascript
+     * // my-plugin.js
+     * export class MyPlugin extends Plugin {
+     *     doStuff = () => 'stuff';
+     * }
+     * ```
+     * @default []
+     */
     get pluginNames(): Array<string> {
         return this.get('pluginNames', new Array<string>());
+    }
+    /** 
+     * used by `LogManager` 
+     * @default 'warn'
+     */
+    get logLevel(): LogLevel {
+        return this.get<LogLevel>('logLevel', 'warn');
+    }
+    /** 
+     * used by `ExpiringFileLock` to set the number of milliseconds to wait for a lock to become available
+     * @default 10000
+     */
+    get fileLockMaxWait(): number {
+        return this.get('fileLockMaxWait', 10000);
+    }
+    /** 
+     * used by `ExpiringFileLock` to set the number of milliseconds to hold a lock 
+     * @default 10000
+     */
+    get fileLockMaxHold(): number {
+        return this.get('fileLockMaxHold', 10000);
+    }
+    /** 
+     * used by `FileSystemMap` to set the directory where the data is written to the file system 
+     * @default 'FileSystemMap'
+     */
+    get fsMapDirectory(): string {
+        return this.get('fsMapDirectory', FileSystemMap.name);
+    }
+    /** 
+     * used by `retry` to set the maximum number of attempts 
+     * @default Infinity
+     */
+    get retryMaxAttempts(): number {
+        return this.get('retryMaxAttempts', Infinity);
+    }
+    /** 
+     * used by `retry` to set the retry delay back off type 
+     * @default 'constant'
+     */
+    get retryBackOffType(): RetryBackOffType {
+        return this.get<RetryBackOffType>('retryBackOffType', 'constant');
+    }
+    /** 
+     * used by `retry` to set the starting millisecond delay between each retry attempt 
+     * @default 1
+     */
+    get retryDelayMs(): number {
+        return this.get('retryDelayMs', 1);
+    }
+    /** 
+     * used by `retry` to set the maximum duration in milliseconds to attempt retries
+     * @default Infinity
+     */
+    get retryMaxDurationMs(): number {
+        return this.get('retryMaxDurationMs', Infinity);
+    }
+    /** 
+     * used by `retry` to indicate if a failure to get success should result in a `Promise.reject`
+     * on completion or simply returning `null`
+     * @default true
+     */
+    get retryRejectOnFail(): boolean {
+        return this.get('retryRejectOnFail', true);
     }
 
     /**

@@ -1,4 +1,4 @@
-import { LoggingPlugin, LogLevel, TestResult, machineInfo, LogManager, AftConfig, LogManagerConfig, ResultsPlugin, BuildInfoManager, LoggingPluginConfig } from "aft-core";
+import { LoggingPlugin, LogLevel, TestResult, machineInfo, LogManager, AftConfig, ResultsPlugin, BuildInfoManager, LoggingPluginConfig } from "aft-core";
 import * as AWS from "aws-sdk";
 import * as pkg from "../package.json";
 import { KinesisLogRecord } from "./kinesis-log-record";
@@ -54,7 +54,7 @@ export class KinesisLoggingPlugin extends LoggingPlugin implements ResultsPlugin
         this._client = client;
         this._logs = new Map<string, AWS.Firehose.Record[]>();
         this._level = this.aftCfg.getSection(KinesisLoggingPluginConfig).logLevel
-            ?? this.aftCfg.getSection(LogManagerConfig).logLevel ?? 'warn';
+            ?? this.aftCfg.logLevel ?? 'warn';
         if (this.enabled) {
             this._buildInfo = new BuildInfoManager(this.aftCfg);
         }

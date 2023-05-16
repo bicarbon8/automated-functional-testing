@@ -5,10 +5,6 @@ import { ExpiringFileLock } from "./expiring-file-lock";
 import { fileio } from "./file-io";
 import { AftConfig, aftConfig } from "../configuration/aft-config";
 
-export class FileSystemMapConfig {
-    directory: string = FileSystemMap.name;
-}
-
 /**
  * an implementation of `Map` that stores all its data on the filesystem allowing
  * the data to be shared among multiple running node processes or to persist for
@@ -34,8 +30,7 @@ export class FileSystemMap<Tkey extends JsonKey, Tval extends JsonValue> impleme
         }
         this._aftCfg = aftCfg ?? aftConfig;
         this._memoryMap = new Map<Tkey, Tval>();
-        const fsmc = this._aftCfg.getSection(FileSystemMapConfig);
-        const dir = fsmc.directory;
+        const dir = this._aftCfg.fsMapDirectory;
         this.filename = path.join(process.cwd(), dir, `${convert.toSafeString(filename)}.json`);
         this._updateMemoryMap();
         if (entries?.length > 0) {

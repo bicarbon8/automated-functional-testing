@@ -1,4 +1,4 @@
-import { TestResult, LogManager, rand, LogMessageData, pluginLoader, AftConfig, LogLevel } from "../../../src";
+import { LogManager, rand, LogMessageData, pluginLoader, AftConfig, LogLevel } from "../../../src";
 import { MockLoggingPlugin } from "./mock-logging-plugin";
 
 const consoleLog = console.log;
@@ -54,9 +54,7 @@ describe('LogManager', () => {
     it('will not output if level set to LogLevel of none', async () => {
         const logName = 'will not output if level set to LogLevel of none';
         const logger: LogManager = new LogManager(logName, new AftConfig({
-            LogManagerConfig: {
-                logLevel: 'none'
-            },
+            logLevel: 'none',
             pluginNames: []
         }));
         const consoleSpy = spyOn(console, 'log').and.callThrough();

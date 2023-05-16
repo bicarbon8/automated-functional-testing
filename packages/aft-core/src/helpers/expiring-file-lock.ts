@@ -6,11 +6,6 @@ import { convert } from "./convert";
 import { ellide } from "./ellide";
 import { AftConfig, aftConfig } from "../configuration/aft-config";
 
-export class ExpriringFileLockConfig {
-    maxWaitMs: number = 1000;
-    maxHoldMs: number = 1000;
-}
-
 /**
  * class will create a new (or use existing) lockfile locking 
  * it using an exclusive `flock` that automatically will release
@@ -20,12 +15,17 @@ export class ExpriringFileLockConfig {
  * throwing an exception
  * 
  * Ex:
+ * ```json
+ * // aftconfig.json
+ * {
+ *     fileLockMaxWait: 10000,
+ *     fileLockMaxHold: 5000
+ * }
  * ```
- * const maxWait = 10000; // 10 seconds
- * const maxHold = 5000; // 5 seconds
+ * ```typescript
  * // wait a maximum of 10 seconds to aquire lock and then hold
  * // lock for maximum of 5 seconds or until `unlock` is called
- * const lock = new ExpiringFileLock('unique_name', maxWait, maxHold);
+ * const lock = new ExpiringFileLock('unique_name');
  * try {
  *     // perform action on shared resource...
  * } finally {
@@ -47,9 +47,8 @@ export class ExpiringFileLock {
             throw `[${this.constructor.name}] - lockFileName must be set`;
         }
         this.aftCfg = aftCfg ?? aftConfig;
-        const eflc = this.aftCfg.getSection(ExpriringFileLockConfig);
-        this.lockDuration = Math.abs(eflc?.maxHoldMs); // ensure positive value; defaults to 1 s
-        this.waitDuration = Math.abs(eflc?.maxWaitMs); // ensure positive value; defaults to 1 s
+        this.lockDuration = Math.abs(this.aftCfg.fileLockMaxHold ?? 10000); // ensure positive value; defaults to 10 s
+        this.waitDuration = Math.abs(this.aftCfg.fileLockMaxWait ?? 10000); // ensure positive value; defaults to 10 s
         this.lockName = path.join(os.tmpdir(), ellide(convert.toSafeString(lockFileName), 255, 'beginning', ''));
         this._lockFileDescriptor = this._waitForLock();
         this._timeout = setTimeout(() => flockSync(this._lockFileDescriptor, 'un'), this.lockDuration);

@@ -1,4 +1,4 @@
-import { LoggingPlugin, LogLevel, TestResult, ellide, ResultsPlugin, AftConfig, LogManagerConfig, FileSystemMap } from "aft-core";
+import { LoggingPlugin, LogLevel, TestResult, ellide, ResultsPlugin, AftConfig, FileSystemMap } from "aft-core";
 import { TestRailApi } from "../api/testrail-api";
 import { TestRailResultRequest } from "../api/testrail-custom-types";
 import { TestRailConfig } from "../configuration/testrail-config";
@@ -39,7 +39,7 @@ export class TestRailLoggingPlugin extends LoggingPlugin implements ResultsPlugi
     constructor(aftCfg?: AftConfig, api?: TestRailApi) {
         super(aftCfg);
         const cfg = this.aftCfg.getSection(TestRailConfig);
-        this._level = cfg.logLevel ?? this.aftCfg.getSection(LogManagerConfig).logLevel ?? 'warn';
+        this._level = cfg.logLevel ?? this.aftCfg.logLevel ?? 'warn';
         if (this.enabled) {
             this._fsm = new FileSystemMap<string, string | number>(TestRailConfig.name);
             this._logs = new Map<string, string>();

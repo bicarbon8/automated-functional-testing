@@ -1,4 +1,4 @@
-import { LoggingPlugin, LogLevel, AftConfig, LogManagerConfig, LoggingPluginConfig } from "../../../src";
+import { LoggingPlugin, LogLevel, AftConfig, LoggingPluginConfig } from "../../../src";
 
 export class MockLoggingPluginConfig extends LoggingPluginConfig {
     mockConfigKey: string;
@@ -12,8 +12,7 @@ export class MockLoggingPlugin extends LoggingPlugin {
     constructor(aftCfg?: AftConfig) {
         super(aftCfg);
         var cfg = this.aftCfg.getSection(MockLoggingPluginConfig);
-        this._level = cfg.logLevel ?? this.aftCfg.getSection(LogManagerConfig)
-            .logLevel ?? 'warn';
+        this._level = cfg.logLevel ?? this.aftCfg.logLevel ?? 'warn';
     }
     override initialise = async (logName: string): Promise<void> => {
         return Promise.resolve();

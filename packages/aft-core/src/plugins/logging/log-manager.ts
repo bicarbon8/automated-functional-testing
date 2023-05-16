@@ -7,10 +7,6 @@ import { AftConfig, aftConfig } from "../../configuration/aft-config";
 import { pluginLoader } from "../plugin-loader";
 import { Err } from "../../helpers/err";
 
-export class LogManagerConfig {
-    logLevel: LogLevel = 'warn';
-}
-
 /**
  * a logging class that uses configuration to determine what
  * should be logged to the console and formats the logging output
@@ -22,7 +18,7 @@ export class LogManagerConfig {
  * ```
  * {
  *   ...
- *   "LogManagerConfig": {
+ *   "CoreConfig": {
  *     "logLevel": "info"
  *   }
  *   ...
@@ -64,8 +60,7 @@ export class LogManager {
     constructor(logName: string, aftCfg?: AftConfig) {
         this.logName = logName ?? 'AFT';
         this._aftCfg = aftCfg ?? aftConfig;
-        const lmc = this._aftCfg.getSection(LogManagerConfig);
-        this.logLevel = lmc.logLevel;
+        this.logLevel = this._aftCfg.logLevel;
         this.plugins = pluginLoader.getPluginsByType(LoggingPlugin, this._aftCfg);
         this.plugins.filter(p => Err.handle(() => p?.enabled)).forEach((p: LoggingPlugin) => {
             p?.initialise(logName)?.catch((err) => LogManager.toConsole({
@@ -249,3 +244,5 @@ export module LogManager {
         }
     }
 }
+
+export const aftLog = new LogManager('AFT');
