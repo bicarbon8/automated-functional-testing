@@ -4,9 +4,9 @@ import * as FormData from "form-data";
 import { AftConfig, BuildInfoManager, aftConfig } from "aft-core";
 import { WikipediaView } from "./page-objects/wikipedia-view";
 import { AftTest } from "aft-mocha-reporter";
-import { SeleniumVerifier, verifyWithSelenium } from "aft-ui-selenium";
 import { httpService, httpData } from "aft-web-services";
 import { UiSessionConfig } from "aft-ui";
+import { WebdriverIoVerifier } from "aft-ui-webdriverio";
 
 var customId: string;
 
@@ -44,15 +44,15 @@ describe('Functional Mobile App Tests using AFT-UI-SELENIUM', () => {
             });
             app = httpData.as<{}>(result);
         }
-        customId = app.shareable_id ?? app.custom_id ?? app.app_url;
+        customId = app.shareable_id ?? app.custom_id ?? app.app_url ?? 'AFT.WikipediaApp';
     });
 
-    it('can search in Wikipedia App', async function() {
+    it.only('can search in Wikipedia App', async function() {
         const aftCfg = new AftConfig();
         const aft = new AftTest(this, aftCfg);
-        await aft.verify(async (tw: SeleniumVerifier) => {
+        await aft.verify(async (tw: WebdriverIoVerifier) => {
             await tw.logMgr.step('get the WikipediaView Facet from the Session...');
-            let view: WikipediaView = await tw.getComponent(WikipediaView);
+            let view: WikipediaView = tw.getComponent(WikipediaView);
             await tw.logMgr.step('enter a search term...');
             await view.searchFor('pizza');
             await tw.logMgr.step('get the results and ensure they contain the search term...');
@@ -63,9 +63,9 @@ describe('Functional Mobile App Tests using AFT-UI-SELENIUM', () => {
                     return true;
                 }
             }
-        }, SeleniumVerifier).withAdditionalSessionOptions({
+        }, WebdriverIoVerifier).withAdditionalSessionOptions({
             capabilities: {
-                browserName: 'chrome',
+                browserName: 'android',
                 platformName: 'android',
                 "appium:platformVersion": '13.0',
                 "appium:deviceName": 'Samsung Galaxy S23',

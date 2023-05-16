@@ -1,14 +1,14 @@
-import { SeleniumComponent } from "aft-ui-selenium";
-import { By, Locator, WebElement } from "selenium-webdriver";
+import { WebdriverIoComponent } from "aft-ui-webdriverio";
+import { Element } from "webdriverio";
 
-export class WikipediaView extends SeleniumComponent {
-    override get locator(): Locator {
-        return By.xpath('//*');
+export class WikipediaView extends WebdriverIoComponent {
+    override get locator(): string {
+        return '//*';
     }
 
-    private _searchButton = async (): Promise<WebElement> => (await this.getRoot()).findElement(By.js("~Search Wikipedia"));
-    private _searchInput = async (): Promise<WebElement> => await this.driver.findElement(By.js('android=new UiSelector().resourceId("org.wikipedia.alpha:id/search_src_text")'));
-    private _searchResults = async (): Promise<Array<WebElement>> => (await this.getRoot()).findElements(By.js("android.widget.TextView"));
+    private _searchButton = async (): Promise<Element<'async'>> => (await this.getRoot()).$("~Search Wikipedia");
+    private _searchInput = async (): Promise<Element<'async'>> => await this.driver.$('android=new UiSelector().resourceId("org.wikipedia.alpha:id/search_src_text")');
+    private _searchResults = async (): Promise<Array<Element<'async'>>> => (await this.getRoot()).$$("android.widget.TextView");
 
     async searchFor(term: string): Promise<string[]> {
         await this.logMgr.info("tapping on 'SearchButton'");
@@ -19,7 +19,7 @@ export class WikipediaView extends SeleniumComponent {
 
     async sendTextToSearch(text: string): Promise<void> {
         await this.logMgr.info(`setting 'SearchInput' to '${text}'...`);
-        await this._searchInput().then(i => i.sendKeys(text));
+        await this._searchInput().then(i => i.addValue(text));
     }
 
     async getResults(): Promise<string[]> {
