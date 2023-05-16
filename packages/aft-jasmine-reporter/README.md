@@ -38,23 +38,24 @@ and which would output the following to your console and any AFT `LoggingPlugin`
 ```
 
 ### `AftTest`
-the `AftTest` class extends from the `AftLog` adding the ability to parse the Spec name for any referenced Test or Defect IDs. each Test ID must be surrounded with square brackets `[ABC123]` and each Defect ID with less than and greater than symbols `<ABC123>`. additionally you can then call the `AftTest.shouldRun()` async function which will determine if your test should be run based on any AFT `TestCasePlugin` and `DefectPlugin` instances referenced in your `aftconfig.json` file. using the `AftTest` class would look like the following:
+the `AftTest` class extends from the `AftLog` adding the ability to parse the Spec name for any referenced Test. each Test ID must be surrounded with square brackets `[ABC123]`. additionally you can then call the `AftTest.shouldRun()` async function or use `AftTest.verify(assertion)` which will determine if your test should be run based on any AFT `PolicyEnginePlugin` instances referenced in your `aftconfig.json` file. using the `AftTest` class would look like the following:
 ```javascript
 describe('YourTestSuite', () => {
-    it('can check if test [C1234] with known defect <BUG-123> should be run', async () => {
+    it('can check if test [C1234] should be run', async () => {
         const aft = new AftTest();
-        const shouldRun = await aft.shouldRun();
-        if (!shouldRun) {
-            pending();
-        }
-        await aft.logMgr.step('we should never get here if C1234 should not be run or BUG-123 is open');
+        await aft.verify(async (v: Verifier) => {
+            // `verify` calls `pending()` if should not be run which marks test as skipped
+            await aft.logMgr.step('we should never get here if C1234 should not be run');
+            const result = await doStuff();
+            return result;
+        }).returns(equaling('stuff'));
     });
 });
 ```
 which would output the following to your console and any AFT `LoggingPlugin` instances referenced in your `aftconfig.json` if the test ID should not be run:
 ```text
-17:52:45 - [YourTestSuite can check if test [C1234] with known defect <BUG-123> should be run] - WARN - none of the supplied tests should be run: [C1234]
-17:52:45 - [YourTestSuite can check if test [C1234] with known defect <BUG-123> should be run] - WARN - test skipped
+17:52:45 - [YourTestSuite can check if test [C1234] should be run] - WARN - none of the supplied tests should be run: [C1234]
+17:52:45 - [YourTestSuite can check if test [C1234] should be run] - WARN - test skipped
 ```
 
 ## NOTES
@@ -62,10 +63,7 @@ which would output the following to your console and any AFT `LoggingPlugin` ins
 - you can use the AFT `Verifier` in combination with the `AftLog` or `AftTest` classes like follows:
 ```javascript
 const aft = new AftTest();
-await verify(() => {
+await aft.verify(() => {
     /* perform testing here */
-}).withLogManager(aft.logMgr)
-.and.withTestIds(...aft.testcases)
-.and.withKnownDefectIds(...aft.defects)
-.returns(expected);
+}).returns(expected);
 ```

@@ -32,7 +32,8 @@
                 "bstack:options": {
                     "userName": "%browserstack_user%",
                     "accessKey": "%browserstack_key%",
-                    "debug": true
+                    "debug": true,
+                    "projectName": "AFT-Examples"
                 }
             }
         }

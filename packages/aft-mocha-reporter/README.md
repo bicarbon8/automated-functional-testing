@@ -49,6 +49,7 @@ describe('YourTestSuite', () => {
     it('can check if test [C1234] should be run', async function() {
         const aft = new AftTest(this);
         await aft.verify(async (v: Verifier) => {
+            // `verify` calls `v.test.skip()` if should not be run
             await v.logMgr.error('we should never get here if C1234 should not be run');
             const result = await doStuff();
             return result;

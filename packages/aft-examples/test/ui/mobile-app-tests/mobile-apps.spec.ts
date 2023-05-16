@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as FormData from "form-data";
-import { AftConfig, aftConfig } from "aft-core";
+import { AftConfig, BuildInfoManager, aftConfig } from "aft-core";
 import { WikipediaView } from "./page-objects/wikipedia-view";
 import { AftTest } from "aft-mocha-reporter";
 import { SeleniumVerifier, verifyWithSelenium } from "aft-ui-selenium";
@@ -50,11 +50,7 @@ describe('Functional Mobile App Tests using AFT-UI-SELENIUM', () => {
     it('can search in Wikipedia App', async function() {
         const aftCfg = new AftConfig();
         const aft = new AftTest(this, aftCfg);
-        const shouldRun = await aft.shouldRun();
-        if (!shouldRun) {
-            this.skip();
-        }
-        await verifyWithSelenium(async (tw: SeleniumVerifier) => {
+        await aft.verify(async (tw: SeleniumVerifier) => {
             await tw.logMgr.step('get the WikipediaView Facet from the Session...');
             let view: WikipediaView = await tw.getComponent(WikipediaView);
             await tw.logMgr.step('enter a search term...');
@@ -67,7 +63,7 @@ describe('Functional Mobile App Tests using AFT-UI-SELENIUM', () => {
                     return true;
                 }
             }
-        }).withAdditionalSessionOptions({
+        }, SeleniumVerifier).withAdditionalSessionOptions({
             capabilities: {
                 browserName: 'chrome',
                 platformName: 'android',
@@ -75,11 +71,10 @@ describe('Functional Mobile App Tests using AFT-UI-SELENIUM', () => {
                 "appium:deviceName": 'Samsung Galaxy S23',
                 "appium:app": customId,
                 "bstack:options": {
-                    "sessionName": aft.logMgr.logName
+                    "sessionName": aft.logMgr.logName,
+                    buildName: await new BuildInfoManager(aftCfg).get()
                 }
             }
-        }).internals.usingAftConfig(aftCfg)
-        .internals.usingLogManager(aft.logMgr)
-        .returns(true);
+        }).returns(true);
     });
 });

@@ -5,8 +5,9 @@ library providing a framework for creating Functional Test Automation supporting
 ### Example Jasmine Test:
 ```typescript
 describe('Sample Test', () => {
-    it('can perform a demonstration of AFT', async () => {
-        let feature: FeatureObj = new FeatureObj();
+    it('[C1234] can perform a demonstration of AFT', async () => {
+        const aft = new AftTest();
+        const feature: FeatureObj = new FeatureObj();
         /**
          * the `verify(assertion).returns(expectation)` function
          * checks any specified `AbstractTestCasePlugin`
@@ -16,27 +17,25 @@ describe('Sample Test', () => {
          * with an `ITestResult` indicating the success,
          * failure or skipped status
          */
-        await verify(async () => await feature.performAction())
-        .withTestId('C1234')
-        .and.withKnownDefectId('DEFECT-123')
-        .and.withDescription('expect that performAction will return \'result of action\'')
-        .returns('result of action');
+        await aft.verify(async () => await feature.performAction())
+            .returns('result of action');
     });
 });
 ```
 the above results in the following console output if the expectation does not return false or throw an exception:
 ```
-5:29:55 PM - expect that performAction will return 'result of action' - PASS  - C1234
+5:29:55 PM - [[C1234] can perform a demonstration of AFT] - PASS  - C1234
 ```
 in more complex scenarios you can perform multiple actions inside the _expectation_ like in the following example:
 ```typescript
 describe('Sample Test', () => {
-    it('can perform a more complex demonstration of AFT', async () => {
+    it('[C2345][C3344] can perform a more complex demonstration of AFT', async () => {
+        const aft = new AftTest();
         /**
          * the passed in expectation can accept a `Verifier` which can be used
          * during more complex actions
          */
-        await verify(async (v: Verifier) => {
+        await aft.verify(async (v: Verifier) => {
             await v.logMgr.step('creating instance of FeatureObj');
             let feature: FeatureObj = new FeatureObj();
             await v.logMgr.step('about to call performAction');
@@ -44,20 +43,18 @@ describe('Sample Test', () => {
             await v.logMgr.info(`result of performAction was '${result}'`);
             await v.logMgr.trace('successfully executed expectation');
             return result;
-        }).withTestId('C2345').and.withTestId('C3344')
-        .and.withDescription('more complex expectation actions')
-        .returns(containing('result of action'));
+        }).returns(containing('result of action'));
     });
 });
 ```
 which would output the following logs:
 ```
-5:29:54 PM - more complex expectation actions - STEP  - 1: creating instance of FeatureObj
-5:29:55 PM - more complex expectation actions - STEP  - 2: about to call performAction
-5:29:55 PM - more complex expectation actions - INFO  - result of performAction was 'result of action'
-5:29:56 PM - more complex expectation actions - TRACE - successfully executed expectation
-5:29:56 PM - more complex expectation actions - PASS  - C2345
-5:29:56 PM - more complex expectation actions - PASS  - C3344
+5:29:54 PM - [[C2345][C3344] can perform a more complex demonstration of AFT] - STEP  - 1: creating instance of FeatureObj
+5:29:55 PM - [[C2345][C3344] can perform a more complex demonstration of AFT] - STEP  - 2: about to call performAction
+5:29:55 PM - [[C2345][C3344] can perform a more complex demonstration of AFT] - INFO  - result of performAction was 'result of action'
+5:29:56 PM - [[C2345][C3344] can perform a more complex demonstration of AFT] - TRACE - successfully executed expectation
+5:29:56 PM - [[C2345][C3344] can perform a more complex demonstration of AFT] - PASS  - C2345
+5:29:56 PM - [[C2345][C3344] can perform a more complex demonstration of AFT] - PASS  - C3344
 ```
 > WARNING: Jasmine's _expect_ calls do not return a boolean as their type definitions would make you think and failed `expect` calls will only throw exceptions if the stop on failure option is enabled: 
 ```typescript
@@ -72,61 +69,64 @@ verify(() => {throw new Error('failure');}) // AFT will report as 'failed'
 - [`aft-core`](./packages/aft-core/README.md) - base library containing helpers and configuration and plugin managers
 - [`aft-examples`](./packages/aft-examples/README.md) - provides real-world examples of how the AFT libraries can be used in functional tests
 - [`aft-jasmine-reporter`](./packages/aft-jasmine-reporter/README.md) - a Jasmine Reporter Plugin that integrates with AFT to simplify logging and test execution via AFT
-- [`aft-logging-awskinesis`](./packages/aft-logging-awskinesis/README.md) - logging plugin supporting logging to AWS Kinesis Firehose
+- [`aft-logging-aws-kinesis-firehose`](./packages/aft-logging-aws-kinesis-firehose/README.md) - logging plugin supporting logging to AWS Kinesis Firehose
 - [`aft-logging-filesystem`](./packages/aft-logging-filesystem/README.md) - logging plugin supporting logging to .log files for all log output
 - [`aft-logging-html`](./packages/aft-logging-html/README.md) - logging plugin supporting logging to a HTML results file
 - [`aft-mocha-reporter`](./packages/aft-mocha-reporter/README.md) - provides Mocha Reporter Plugin that integrates with AFT to simplify logging and test execution via AFT
-- [`aft-testrail`](./packages/aft-testrail/README.md) - logging and test case management plugins supporting logging test results and filtering test execution based on TestRail Projects, Suites and Plans
+- [`aft-testrail`](./packages/aft-testrail/README.md) - logging, results and policy-engine plugins supporting logging test results and filtering test execution based on TestRail Projects, Suites and Plans
 - [`aft-ui`](./packages/aft-ui/README.md) - base library supporting development of UI testing packages
-- [`aft-ui-browsers`](./packages/aft-ui-browsers/README.md) - adds support for Selenium-based UI testing using BrowserStack, Sauce Labs or your own Selenium Grid
-- [`aft-ui-mobile-apps`](./packages/aft-ui-mobile-apps/README.md) - adds support for Appium-based UI testing using BrowserStack, Sauce Labs or your own Appium Grid
+- [`aft-ui-selenium`](./packages/aft-ui-selenium/README.md) - adds support for Selenium-based UI testing
+- [`aft-ui-webdriverio`](./packages/aft-ui-webdriverio/README.md) - adds support for WebdriverIO-based UI testing
 - [`aft-web-services`](./packages/aft-web-services/README.md) - adds support for testing REST-based services
 
 ## Plugins
-the primary benefit of using AFT comes from the plugins and the `Verifier`. Because logging using AFT's `LogManager` will also send to any registered logging plugins, it is easy to create logging plugins that send to any external system such as TestRail or to log results to Elasticsearch. Additionally, before running any _assertion_ passed to a `verify(assertion)` function, AFT will confirm if the _assertion_ should actually be run based on the results of queries to any supplied `TestCasePlugin` implementations and a subsequent queries to any supplied `DefectPlugin` implementations. 
+the primary benefit of using AFT comes from the plugins and the `Verifier`. Because logging using AFT's `LogManager` will also send to any registered logging plugins, it is easy to create logging plugins that send to any external system such as TestRail or to log results to Elasticsearch. Additionally, before running any _assertion_ passed to a `verify(assertion)` function, AFT will confirm if the _assertion_ should actually be run based on the results of queries to any supplied `PolicyEnginePlugin` implementations.
 
-### Logging Plugins
-`aft-core` provides a `LoggingPlugin` abstract class which can be extended to create custom loggers which are then loaded by adding their filenames to the `plugins` array under the `logmanager` section of your `aftconfig.json`
+### LoggingPlugin
+`aft-core` provides a `LoggingPlugin` class which can be extended from to create custom loggers which are then loaded by adding their filenames to the `pluginNames` array under in your `aftconfig.json`
 ```json
+// aftconfig.json
 {
-    "LogManager": {
-        "plugins": [
-            {
-                "name": "testrail-logging-plugin",
-                "searchDirectory": "../node_modules",
-                "options": {
-                    "level": "info",
-                    "enabled": false
-                }
-            },
-            "html-logging-plugin"
-        ]
+    "pluginsSearchDir": "../node_modules",
+    "pluginNames": [
+        "testrail-logging-plugin",
+        "html-logging-plugin"
+    ],
+    "TestRailConfig": {
+        "url": "https://your.testrail.io",
+        "user": "you@your.domain",
+        "accessKey": "yourTestRailApiKey",
+        "projectId": 123,
+        "suiteIds": [1234, 5678],
+        "planId": 123456,
+        "policyEngineEnabled": true,
+        "logLevel": "error"
+    },
+    "HtmlLoggingPluginConfig": {
+        "outputDir": "../Results",
+        "logLevel": "debug"
     }
 }
 ```
-> NOTE: you can either specify a `string` containing the plugin filename or an `object` containing the `name`, `searchDirectory` and `options` fields within the `plugins` array configuration to specify a root directory to use when searching for logging plugin implementations
 
-### Test Case Plugin
-the purpose of a `TestCasePlugin` implementation is to provide execution control over any expectations by way of supplied _Test IDs_. to specify an implementation of the plugin to load you can add the following to your `aftconfig.json` (where plugins `testrail-test-case-plugin.js` is contained within the test execution directory or a subdirectory of it):
+### PolicyEnginePlugin
+the purpose of a `PolicyEnginePlugin` implementation is to provide execution control over any expectations by way of supplied _Test IDs_. to specify an implementation of the plugin to load you can add the following to your `aftconfig.json` (where plugins `testrail-test-case-plugin.js` is contained within the test execution directory or a subdirectory of it):
 ```json
+// aftconfig.json
 {
-    "TestCaseManager": {
-        "plugins": ["testrail-test-case-plugin"]
-    }
+    "pluginNames": ["testrail-test-case-plugin"]
 }
 ```
-> NOTE: if no plugin is specified then external Test Case Management integration will be disabled and _assertions_ will be executed without checking their status before execution
+> NOTE: if no plugin is specified then external Policy Engine integration will be disabled and _assertions_ will be executed without first checking that they should be run based on associated Test IDs
 
-### Defect Plugin
-the purpose of a `DefectPlugin` implementation is to provide execution control over any expectations by way of supplied _Test IDs_ referenced in an external ticket tracking system like Bugzilla or Jira. to specify an implementation of the plugin to load you can add the following to your `aftconfig.json` (where plugins `defect-plugin.js` is contained within the test execution directory or a subdirectory of it):
+### ResultsPlugin
+the purpose of a `ResultsPlugin` implementation is to handle test and assertion results such as logging results to TestRail or creating / updating Jira defects based on a failed test result. to specify an implementation of the plugin to load you can add the following to your `aftconfig.json` (where plugins `jira-results-plugin` is contained within the test execution directory of a subdirectory of it):
 ```json
+// aftconfig.json
 {
-    "DefectManager": {
-        "plugins": ["defect-plugin"]
-    }
+    "pluginNames": ["jira-results-plugin"]
 }
 ```
-> NOTE: if no plugin is specified then external Defect Management integration will be disabled and _assertions_ will be executed without checking their status before execution, however if a Defect Management plugin is specified, the execution of any _assertions_ passed into a `verify(assertion)` function will be halted if any non-closed defects are found when searching for defects that contain reference to the values passed in via `withTestId(caseId)` or via direct reference to defect using `withKnownDefectId(defectId)`
 
 ## Example Test Project
 - [`aft-examples`](./packages/aft-examples/README.md) - a demonstration of how to develop UI and REST based functional test automation using AFT is located under `./packages/aft-examples`
