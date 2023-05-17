@@ -10,11 +10,10 @@ describe('Sample Test', () => {
         const feature: FeatureObj = new FeatureObj();
         /**
          * the `verify(assertion).returns(expectation)` function
-         * checks any specified `AbstractTestCasePlugin`
-         * and `AbstractDefectPlugin` implementations
+         * checks any specified `TestExecutionPolicyPlugin` implementations
          * to ensure the test should be run. It will then
-         * report to any `AbstractReportingPlugin` implementations
-         * with an `ITestResult` indicating the success,
+         * report to any `ReportingPlugin` implementations
+         * with an `TestResult` indicating the success,
          * failure or skipped status
          */
         await aft.verify(async () => await feature.performAction())
@@ -110,11 +109,11 @@ the primary benefit of using AFT comes from the plugins and the `Verifier`. Beca
 ```
 
 ### TestExecutionPolicyPlugin
-the purpose of a `TestExecutionPolicyPlugin` implementation is to provide execution control over any expectations by way of supplied _Test IDs_. to specify an implementation of the plugin to load you can add the following to your `aftconfig.json` (where plugins `testrail-test-case-plugin.js` is contained within the test execution directory or a subdirectory of it):
+the purpose of a `TestExecutionPolicyPlugin` implementation is to provide execution control over any expectations by way of supplied _Test IDs_. to specify an implementation of the plugin to load you can add the following to your `aftconfig.json` (where plugins `testrail-test-execution-policy-plugin.js` is contained within the test execution directory or a subdirectory of it):
 ```json
 // aftconfig.json
 {
-    "pluginNames": ["testrail-test-case-plugin"]
+    "pluginNames": ["testrail-test-execution-policy-plugin"]
 }
 ```
 > NOTE: if no plugin is specified then external Policy Engine integration will be disabled and _assertions_ will be executed without first checking that they should be run based on associated Test IDs

@@ -209,7 +209,7 @@ describe('Sample Test', () => {
         let feature: FeatureObj = new FeatureObj();
         /**
          * the `verify(assertion).returns(expectation)` function
-         * checks any specified `TestCasePlugin`
+         * checks any specified `TestExecutionPolicyPlugin`
          * and `DefectPlugin` implementations
          * to ensure the test should be run. It will then
          * report to any `ReportingPlugin` implementations
@@ -224,8 +224,8 @@ describe('Sample Test', () => {
     });
 });
 ```
-in the above example, the `await feature.performAction()` call will only be run if a `TestCasePlugin` is loaded and returns `true` from it's `shouldRun(testId: string)` function (or no `TestCasePlugin` is loaded) and if a `DefectPlugin` is loaded and returns either no defect or a `closed` defect from it's `getDefect(defectId: string)` function (or no `DefectPlugin` is loaded). additionally, any logs associated with the above `verify` call will use a `logName` of `"expect_that_performAction_will_return_result_of_action"` resulting in log lines like the following:
+in the above example, the `await feature.performAction()` call will only be run if a `TestExecutionPolicyPlugin` is loaded and returns `true` from it's `shouldRun(testId: string)` function (or no `TestExecutionPolicyPlugin` is loaded) and if a `DefectPlugin` is loaded and returns either no defect or a `closed` defect from it's `getDefect(defectId: string)` function (or no `DefectPlugin` is loaded). additionally, any logs associated with the above `verify` call will use a `logName` of `"expect_that_performAction_will_return_result_of_action"` resulting in log lines like the following:
 ```
-09:14:01 - [expect that performAction will return 'result of action'] - TRACE - no TestCasePlugin in use so run all tests
+09:14:01 - [expect that performAction will return 'result of action'] - TRACE - no TestExecutionPolicyPlugin in use so run all tests
 09:14:02 - [expect that performAction will return 'result of action'] - TRACE - no DefectPlugin in use so run all tests
 ```

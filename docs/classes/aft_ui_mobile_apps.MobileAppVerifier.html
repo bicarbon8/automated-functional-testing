@@ -653,7 +653,7 @@ set then the global <code>TestCaseManager.instance()</code> will be used</p>
 <div class="tsd-comment tsd-typography"><p>allows for setting a <code>testId</code> to be checked before executing the <code>assertion</code>
 and to be reported to from any connected logging plugins that connect to
 your test case management system. if all the referenced <code>testId</code> values should not be
-run (as returned by your <code>AbstractTestCasePlugin.shouldRun(testId)</code>) then
+run (as returned by your <code>AbstractTestExecutionPolicyPlugin.shouldRun(testId)</code>) then
 the <code>assertion</code> will not be run.
 NOTE: multiple <code>testId</code> values can be chained together</p>
 
@@ -664,7 +664,7 @@ NOTE: multiple <code>testId</code> values can be chained together</p>
 <ul class="tsd-parameter-list">
 <li>
 <h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span>testIds: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
-<div class="tsd-comment tsd-typography"><p>a test identifier for your connected <code>AbstractTestCasePlugin</code></p>
+<div class="tsd-comment tsd-typography"><p>a test identifier for your connected <code>AbstractTestExecutionPolicyPlugin</code></p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="aft_ui_mobile_apps.MobileAppVerifier.html" class="tsd-signature-type" data-tsd-kind="Class">MobileAppVerifier</a></h4><aside class="tsd-sources">
 <p>Inherited from Verifier.withTestIds</p>

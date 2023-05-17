@@ -4,7 +4,7 @@
         "level": "info"
     },
     "testcasemanager": {
-        "pluginNames": ["testrail-test-case-plugin"]
+        "pluginNames": ["testrail-test-execution-policy-plugin"]
     },
     "testrailconfig": {
         "url": "%testrail_url%",

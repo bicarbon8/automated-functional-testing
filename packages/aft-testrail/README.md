@@ -1,5 +1,5 @@
 # AFT-TestRail
-provides TestRail result logging as well as test execution filtering for users of `aft-core` by implementing plugins for the `AbstractReportingPlugin` and `AbstractTestCasePlugin` plugin base classes.
+provides TestRail result logging as well as test execution filtering for users of `aft-core` by implementing plugins for the `ReportingPlugin` and `TestExecutionPolicyPlugin` plugin base classes.
 
 ## TestRailReportingPlugin
 the `TestRailReportingPlugin` extends from `ReportingPlugin` in `aft-core`. if enabled, this plugin will log test results to test cases in a TestRail Plan (if no plan is specified a new one is created the first time one is attempted to be accessed by the plugin). it can be enabled by including the following in your `aftconfig.json` file:
@@ -30,14 +30,14 @@ the `TestRailReportingPlugin` extends from `ReportingPlugin` in `aft-core`. if e
 - **level** - [OPTIONAL] `string` value of `none`, `error`, `warn`, `step`, `info`, `debug`, or `trace` _(defaults to value set on `Reporter`)_
 - **maxLogCharacters** - [OPTIONAL] `number` for the maximum number of additional log characters to send to TestRail when logging a `TestResult` _(defaults to 250)_
 
-## TestRailTestCasePlugin
-the `TestRailTestCasePlugin` extends from `TestCasePlugin` interface in `aft-core`. if enabled this plugin will lookup the status of TestRail tests based on their case ID from the set of IDs passed in to a `Verifier.withTestId` function. it can be enabled by including the following in your `aftconfig.json` file:
+## TestRailTestExecutionPolicyPlugin
+the `TestRailTestExecutionPolicyPlugin` extends from `TestExecutionPolicyPlugin` interface in `aft-core`. if enabled this plugin will lookup the status of TestRail tests based on their case ID from the set of IDs passed in to a `Verifier.withTestId` function. it can be enabled by including the following in your `aftconfig.json` file:
 ```json
 {
     "TestCaseManager": {
         "pluginNames": [
             {
-                "name": "testrail-test-case-plugin",
+                "name": "testrail-test-execution-policy-plugin",
                 "options": {
                     "enabled": true
                 }

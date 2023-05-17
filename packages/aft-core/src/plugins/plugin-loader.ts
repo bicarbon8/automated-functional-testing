@@ -30,11 +30,11 @@ class PluginLoader {
 
     /**
      * iterates over all plugins listed in `AftConfig.pluginNames` looking for any that 
-     * extend the passed in `typeName` and returns those that do as an array of objects.
+     * extend the passed in `clazz` and returns those that do as an array of objects.
      * ex: 
      * ```typescript
-     * let ReportingPlugins = pluginloader.getPluginsByType(ReportingPlugin);
-     * // ReportingPlugins will all extend from ReportingPlugin abstract class
+     * const reportingPlugins = pluginloader.getPluginsByType(ReportingPlugin);
+     * // ReportingPlugins will all extend from ReportingPlugin base class
      * ```
      * 
      * NOTE: if this is the first time the `pluginloader` is being called then plugins will
@@ -43,7 +43,7 @@ class PluginLoader {
      * by any of the objects returned by this call
      * @param aftCfg an optional `AftConfig` instance to use when loading plugins if not
      * already loaded
-     * @returns an array of plugin objects that all extend the passed in `typeName` class
+     * @returns an array of plugin objects that all extend the passed in `clazz` class
      */
     getPluginsByType<T extends Plugin>(clazz: Class<T>, aftCfg?: AftConfig): Array<T> {
         this._load(aftCfg);
@@ -70,8 +70,8 @@ class PluginLoader {
      * returns a plugin by it's name
      * ex: 
      * ```typescript
-     * let testCasePlugin = pluginloader.getPluginByName<TestRailTestCasePlugin>('testrail-test-case-plugin');
-     * // testCasePlugin will be `undefined` if not found
+     * let TestExecutionPolicyPlugin = pluginloader.getPluginByName<TestRailTestExecutionPolicyPlugin>('testrail-test-execution-policy-plugin');
+     * // TestExecutionPolicyPlugin will be `undefined` if not found
      * ```
      * 
      * NOTE: if this is the first time the `pluginloader` is being called then plugins will
@@ -186,14 +186,14 @@ class PluginLoader {
  *   "pluginsSearchDir": "../",
  *   "pluginNames": [
  *     "testrail-reporting-plugin",
- *     "testrail-test-case-plugin"
+ *     "testrail-test-execution-policy-plugin"
  *     "html-reporting-plugin"
  *   ]
  * }
  * ```
  * 
  * **NOTE:** the above will attempt to load a `testrail-reporting-plugin`,
- * `testrail-test-case-plugin` and `html-reporting-plugin` class. if loading
+ * `testrail-test-execution-policy-plugin` and `html-reporting-plugin` class. if loading
  * fails then it will search the filesystem, starting at the relative
  * `pluginsSearchDir` path (relative to current nodejs execution dir)
  * and searching all subdirectories, for a file named `custom-plugin.js` 

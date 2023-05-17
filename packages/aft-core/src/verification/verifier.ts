@@ -15,7 +15,7 @@ export type VerifierEvent = 'skipped' | 'started' | 'done';
 
 /**
  * class to be used for executing some Functional Test Assertion after checking with any
- * `TestCasePlugin` and `DefectPlugin` instances that have been loaded to confirm that the
+ * `TestExecutionPolicyPlugin` and `DefectPlugin` instances that have been loaded to confirm that the
  * assertion should be executed based on referenced Test ID(s) or Defect ID(s)
  * 
  * Ex:
@@ -25,7 +25,7 @@ export type VerifierEvent = 'skipped' | 'started' | 'done';
  *   let feature = new FeatureObj();
  *   return await feature.returnExpectedValue();
  * }).withDescription('example usage for Verifier')
- * .and.withTestIds('C1234') // if TestCasePlugin.shouldRun('C1234') returns `false` the assertion is not run
+ * .and.withTestIds('C1234') // if TestExecutionPolicyPlugin.shouldRun('C1234') returns `false` the assertion is not run
  * .and.withKnownDefectIds('AUTO-123') // if DefectPlugin.getDefect('AUTO-123').status === 'open' the assertion is not run
  * .returns('expected value');
  * ```
@@ -203,10 +203,10 @@ export class Verifier implements PromiseLike<void> {
      * allows for setting a `testId` to be checked before executing the `assertion`
      * and to be reported to from any connected logging plugins that connect to
      * your test case management system. if all the referenced `testId` values should not be
-     * run (as returned by your `AbstractTestCasePlugin.shouldRun(testId)`) then
+     * run (as returned by your `TestExecutionPolicyPlugin.shouldRun(testId)`) then
      * the `assertion` will not be run.
      * NOTE: multiple `testId` values can be chained together
-     * @param testIds a test identifier for your connected `AbstractTestCasePlugin`
+     * @param testIds a test identifier for your connected `TestExecutionPolicyPlugin`
      * @returns this `Verifier` instance
      */
     withTestIds(...testIds: string[]): this {

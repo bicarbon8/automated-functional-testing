@@ -6,7 +6,7 @@ export class PluginConfig {
 }
 
 /**
- * abstract class to be implemented by any `Plugin` implementation
+ * class to be extended by any `Plugin` implementation
  */
 export class Plugin {
     private readonly _aftCfg: AftConfig;

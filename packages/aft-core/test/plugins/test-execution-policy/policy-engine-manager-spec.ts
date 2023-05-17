@@ -13,7 +13,7 @@ describe('TestExecutionPolicyManager', () => {
     it('can load a specified ITestExecutionPolicyPlugin', async () => {
         let tcm: TestExecutionPolicyManager = new TestExecutionPolicyManager(new AftConfig({
             pluginNames: ['mock-policy-engine-plugin'],
-            MockTestCasePluginConfig: {
+            MockTestExecutionPolicyPluginConfig: {
                 enabled: true
             }
         }));

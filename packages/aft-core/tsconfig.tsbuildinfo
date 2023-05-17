@@ -311,12 +311,12 @@
         "signature": "93da6e20ede459aea80c271457a033c0c32709ae00d4da6fd26f37b2b6a95302",
         "affectsGlobalScope": false
       },
-      "./src/plugins/test-cases/abstract-test-case-plugin.ts": {
+      "./src/plugins/test-cases/abstract-test-execution-policy-plugin.ts": {
         "version": "976edf4bd15f400d069ce4a4456a7338c0c713f9c856faded85e10c6feb94dfa",
         "signature": "4fd96cfa9844c789bcaf697684dee4cb394aa7584259861b5fb448ad11f77afb",
         "affectsGlobalScope": false
       },
-      "./src/plugins/test-cases/test-case-plugin-manager.ts": {
+      "./src/plugins/test-cases/test-execution-policy-plugin-manager.ts": {
         "version": "ace96968030a00718e6477ffb1ebf042676b2ee918f04d04e944115cd2f5b0bd",
         "signature": "03432fb7ba12653e228986044d8619a7d2623d66242b32b5f497083f73ce3690",
         "affectsGlobalScope": false
@@ -927,10 +927,10 @@
         "./src/plugins/logging/logging-level.ts",
         "./src/plugins/logging/logging-plugin-manager.ts",
         "./src/plugins/plugin-loader.ts",
-        "./src/plugins/test-cases/abstract-test-case-plugin.ts",
+        "./src/plugins/test-cases/abstract-test-execution-policy-plugin.ts",
         "./src/plugins/test-cases/itest-case.ts",
         "./src/plugins/test-cases/itest-result.ts",
-        "./src/plugins/test-cases/test-case-plugin-manager.ts",
+        "./src/plugins/test-cases/test-execution-policy-plugin-manager.ts",
         "./src/plugins/test-cases/test-exception.ts",
         "./src/plugins/test-cases/test-status.ts",
         "./src/wrappers/should.ts",
@@ -1003,7 +1003,7 @@
         "../../node_modules/@types/node/path.d.ts",
         "./src/plugins/abstract-plugin.ts"
       ],
-      "./src/plugins/test-cases/abstract-test-case-plugin.ts": [
+      "./src/plugins/test-cases/abstract-test-execution-policy-plugin.ts": [
         "./src/helpers/processing-result.ts",
         "./src/plugins/abstract-plugin.ts",
         "./src/plugins/test-cases/itest-case.ts"
@@ -1016,12 +1016,12 @@
         "./src/plugins/defects/idefect.ts",
         "./src/plugins/test-cases/test-status.ts"
       ],
-      "./src/plugins/test-cases/test-case-plugin-manager.ts": [
+      "./src/plugins/test-cases/test-execution-policy-plugin-manager.ts": [
         "../../node_modules/ts-simple-nameof/index.d.ts",
         "./src/helpers/processing-result.ts",
         "./src/plugins/abstract-plugin-manager.ts",
         "./src/plugins/logging/logging-plugin-manager.ts",
-        "./src/plugins/test-cases/abstract-test-case-plugin.ts",
+        "./src/plugins/test-cases/abstract-test-execution-policy-plugin.ts",
         "./src/plugins/test-cases/itest-case.ts"
       ],
       "./src/plugins/test-cases/test-exception.ts": [
@@ -1043,7 +1043,7 @@
         "./src/plugins/defects/idefect.ts",
         "./src/plugins/logging/logging-plugin-manager.ts",
         "./src/plugins/test-cases/itest-result.ts",
-        "./src/plugins/test-cases/test-case-plugin-manager.ts",
+        "./src/plugins/test-cases/test-execution-policy-plugin-manager.ts",
         "./src/plugins/test-cases/test-status.ts"
       ]
     },
@@ -1340,10 +1340,10 @@
         "./src/plugins/logging/logging-level.ts",
         "./src/plugins/logging/logging-plugin-manager.ts",
         "./src/plugins/plugin-loader.ts",
-        "./src/plugins/test-cases/abstract-test-case-plugin.ts",
+        "./src/plugins/test-cases/abstract-test-execution-policy-plugin.ts",
         "./src/plugins/test-cases/itest-case.ts",
         "./src/plugins/test-cases/itest-result.ts",
-        "./src/plugins/test-cases/test-case-plugin-manager.ts",
+        "./src/plugins/test-cases/test-execution-policy-plugin-manager.ts",
         "./src/plugins/test-cases/test-exception.ts",
         "./src/plugins/test-cases/test-status.ts",
         "./src/wrappers/should.ts",
@@ -1401,7 +1401,7 @@
       "./src/plugins/plugin-loader.ts": [
         "./src/plugins/abstract-plugin.ts"
       ],
-      "./src/plugins/test-cases/abstract-test-case-plugin.ts": [
+      "./src/plugins/test-cases/abstract-test-execution-policy-plugin.ts": [
         "./src/helpers/processing-result.ts",
         "./src/plugins/abstract-plugin.ts",
         "./src/plugins/test-cases/itest-case.ts"
@@ -1414,11 +1414,11 @@
         "./src/plugins/defects/idefect.ts",
         "./src/plugins/test-cases/test-status.ts"
       ],
-      "./src/plugins/test-cases/test-case-plugin-manager.ts": [
+      "./src/plugins/test-cases/test-execution-policy-plugin-manager.ts": [
         "./src/helpers/processing-result.ts",
         "./src/plugins/abstract-plugin-manager.ts",
         "./src/plugins/logging/logging-plugin-manager.ts",
-        "./src/plugins/test-cases/abstract-test-case-plugin.ts",
+        "./src/plugins/test-cases/abstract-test-execution-policy-plugin.ts",
         "./src/plugins/test-cases/itest-case.ts"
       ],
       "./src/wrappers/should.ts": [
@@ -1431,7 +1431,7 @@
         "./src/plugins/build-info/build-info-plugin-manager.ts",
         "./src/plugins/defects/defect-plugin-manager.ts",
         "./src/plugins/logging/logging-plugin-manager.ts",
-        "./src/plugins/test-cases/test-case-plugin-manager.ts"
+        "./src/plugins/test-cases/test-execution-policy-plugin-manager.ts"
       ]
     },
     "semanticDiagnosticsPerFile": [
@@ -1546,10 +1546,10 @@
       "./src/plugins/logging/logging-level.ts",
       "./src/plugins/logging/logging-plugin-manager.ts",
       "./src/plugins/plugin-loader.ts",
-      "./src/plugins/test-cases/abstract-test-case-plugin.ts",
+      "./src/plugins/test-cases/abstract-test-execution-policy-plugin.ts",
       "./src/plugins/test-cases/itest-case.ts",
       "./src/plugins/test-cases/itest-result.ts",
-      "./src/plugins/test-cases/test-case-plugin-manager.ts",
+      "./src/plugins/test-cases/test-execution-policy-plugin-manager.ts",
       "./src/plugins/test-cases/test-exception.ts",
       "./src/plugins/test-cases/test-status.ts",
       "./src/wrappers/should.ts",

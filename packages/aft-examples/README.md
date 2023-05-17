@@ -10,7 +10,7 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
 {
     "pluginNames": [
         "testrail-reporting-plugin",
-        "testrail-test-case-plugin",
+        "testrail-test-execution-policy-plugin",
         "kinesis-reporting-plugin",
         "html-reporting-plugin",
         "filesystem-reporting-plugin",

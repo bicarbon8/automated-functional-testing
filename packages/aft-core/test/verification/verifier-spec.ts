@@ -1,4 +1,4 @@
-import { Reporter, rand, TestExecutionPolicyManager, Verifier, verify, TestResult, LogLevel, ProcessingResult, AftConfig, pluginLoader, ResultsManager, containing, equaling } from "../../src";
+import { Reporter, rand, TestExecutionPolicyManager, Verifier, verify, TestResult, LogLevel, ProcessingResult, AftConfig, pluginLoader, containing, equaling } from "../../src";
 
 var consoleLog = console.log;
 describe('Verifier', () => {
@@ -37,9 +37,8 @@ describe('Verifier', () => {
     });
     
     it('can execute a passing expectation', async () => {
-        const resMgr = new ResultsManager();
-        spyOn(resMgr, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         const reporter = new Reporter('can execute a passing expectation');
+        spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'pass').and.callThrough();
         const peMgr = new TestExecutionPolicyManager();
@@ -51,19 +50,17 @@ describe('Verifier', () => {
         .returns('foo')
         .internals.usingReporter(reporter)
         .internals.usingTestExecutionPolicyManager(peMgr)
-        .internals.usingResultsManager(resMgr)
         .and.withDescription('true should be true')
         .and.withTestIds('C1234','C2345');
 
         expect(peMgr.shouldRun).toHaveBeenCalledTimes(2);
-        expect(resMgr.submitResult).toHaveBeenCalledTimes(2);
+        expect(reporter.submitResult).toHaveBeenCalledTimes(2);
         expect(reporter.pass).toHaveBeenCalledTimes(2);
     });
 
     it('accepts a VerifierMatcher in the returns function', async () => {
-        const resMgr = new ResultsManager();
-        spyOn(resMgr, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         const reporter = new Reporter('accepts a VerifierMatcher in the returns function');
+        spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'pass').and.callThrough();
         const peMgr = new TestExecutionPolicyManager();
@@ -75,19 +72,17 @@ describe('Verifier', () => {
         .returns(containing('bar'))
         .internals.usingReporter(reporter)
         .internals.usingTestExecutionPolicyManager(peMgr)
-        .internals.usingResultsManager(resMgr)
         .and.withDescription('array contains "bar"')
         .and.withTestIds('C1234','C2345');
 
         expect(peMgr.shouldRun).toHaveBeenCalledTimes(2);
-        expect(resMgr.submitResult).toHaveBeenCalledTimes(2);
+        expect(reporter.submitResult).toHaveBeenCalledTimes(2);
         expect(reporter.pass).toHaveBeenCalledTimes(2);
     });
 
     it('throws on exception in assertion', async () => {
-        const resMgr = new ResultsManager();
-        spyOn(resMgr, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         const reporter = new Reporter('throws on exception in assertion');
+        spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'fail').and.callThrough();
         const peMgr = new TestExecutionPolicyManager();
@@ -101,8 +96,7 @@ describe('Verifier', () => {
             })
             .internals.usingReporter(reporter)
             .internals.usingTestExecutionPolicyManager(peMgr)
-            .internals.usingResultsManager(resMgr)
-            .withDescription('true should be true')
+                .withDescription('true should be true')
             .and.withTestIds('C1234').and.withTestIds('C2345');
 
             expect(true).toBe(false); // force failure
@@ -111,14 +105,13 @@ describe('Verifier', () => {
         }
 
         expect(peMgr.shouldRun).toHaveBeenCalledTimes(2);
-        expect(resMgr.submitResult).toHaveBeenCalledTimes(2);
+        expect(reporter.submitResult).toHaveBeenCalledTimes(2);
         expect(reporter.fail).toHaveBeenCalledTimes(2);
     });
 
     it('throws on failed comparison with expected result', async () => {
-        const resMgr = new ResultsManager();
-        spyOn(resMgr, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         const reporter = new Reporter('throws on failed comparison with expected result');
+        spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'fail').and.callThrough();
         const peMgr = new TestExecutionPolicyManager();
@@ -131,8 +124,7 @@ describe('Verifier', () => {
             .returns(false)
             .internals.usingReporter(reporter)
             .internals.usingTestExecutionPolicyManager(peMgr)
-            .internals.usingResultsManager(resMgr)
-            .and.withDescription('failure expected due to true not being false')
+                .and.withDescription('failure expected due to true not being false')
             .and.withTestIds('C1234').and.withTestIds('C2345');
 
             expect('foo').toBe('bar'); // force failure
@@ -141,14 +133,13 @@ describe('Verifier', () => {
         }
 
         expect(peMgr.shouldRun).toHaveBeenCalledTimes(2);
-        expect(resMgr.submitResult).toHaveBeenCalledTimes(2);
+        expect(reporter.submitResult).toHaveBeenCalledTimes(2);
         expect(reporter.fail).toHaveBeenCalledTimes(2);
     });
 
     it('will not execute expectation if TestExecutionPolicyManager says should not run for all cases', async () => {
-        const resMgr = new ResultsManager();
-        spyOn(resMgr, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         const reporter = new Reporter('will not execute expectation if TestExecutionPolicyManager says should not run for all cases');
+        spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'warn').and.callThrough();
         const peMgr = new TestExecutionPolicyManager();
@@ -161,19 +152,17 @@ describe('Verifier', () => {
         })
         .internals.usingReporter(reporter)
         .internals.usingTestExecutionPolicyManager(peMgr)
-        .internals.usingResultsManager(resMgr)
         .and.withTestIds('C1234','C2345');
 
         expect(peMgr.shouldRun).toHaveBeenCalledTimes(2);
         expect(testStore.has('executed')).toBeFalse();
-        expect(resMgr.submitResult).toHaveBeenCalledTimes(2);
+        expect(reporter.submitResult).toHaveBeenCalledTimes(2);
         expect(reporter.warn).toHaveBeenCalledTimes(2);
     });
 
     it('will execute expectation if TestExecutionPolicyManager says any cases should be run', async () => {
-        const resMgr = new ResultsManager();
-        spyOn(resMgr, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         const reporter = new Reporter('will execute expectation if TestExecutionPolicyManager says any cases should be run');
+        spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'pass').and.callThrough();
         const peMgr = new TestExecutionPolicyManager();
@@ -190,20 +179,18 @@ describe('Verifier', () => {
         })
         .internals.usingReporter(reporter)
         .internals.usingTestExecutionPolicyManager(peMgr)
-        .internals.usingResultsManager(resMgr)
         .and.withTestIds('C1234','C2345');
 
         expect(peMgr.shouldRun).toHaveBeenCalledWith('C1234');
         expect(peMgr.shouldRun).toHaveBeenCalledWith('C2345');
         expect(testStore.has('executed')).toBeTrue();
-        expect(resMgr.submitResult).toHaveBeenCalledTimes(2);
+        expect(reporter.submitResult).toHaveBeenCalledTimes(2);
         expect(reporter.pass).toHaveBeenCalledTimes(2);
     });
 
     it('will not execute expectation if no associated testIds and TestExecutionPolicyManager has enabled plugins', async () => {
-        const resMgr = new ResultsManager();
-        spyOn(resMgr, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         const reporter = new Reporter('will not execute expectation if no associated testIds and TestExecutionPolicyManager has enabled plugins');
+        spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'warn').and.callThrough();
         pluginLoader.reset();
@@ -218,12 +205,11 @@ describe('Verifier', () => {
             testStore.set('executed', true);
         })
         .internals.usingReporter(reporter)
-        .internals.usingTestExecutionPolicyManager(peMgr)
-        .internals.usingResultsManager(resMgr);
+        .internals.usingTestExecutionPolicyManager(peMgr);
 
         expect(peMgr.plugins.length).toEqual(1);
         expect(testStore.has('executed')).toBeFalse();
-        expect(resMgr.submitResult).toHaveBeenCalledTimes(1);
+        expect(reporter.submitResult).toHaveBeenCalledTimes(1);
         expect(reporter.warn).toHaveBeenCalledTimes(1);
     });
 
