@@ -34,7 +34,7 @@ describe('YourTestSuite', () => {
     });
 });
 ```
-and which would output the following to your console and any AFT `LoggingPlugin` instances referenced in your `aftconfig.json` (assuming your test expectations all pass)
+and which would output the following to your console and any AFT `ReportingPlugin` instances referenced in your `aftconfig.json` (assuming your test expectations all pass)
 ```text
 17:52:45 - [YourTestSuite allows you to log using AFT Reporter] - STEP - starting test...
 17:54:02 - [YourTestSuite allows you to log using AFT Reporter] - STEP - test is complete
@@ -42,7 +42,7 @@ and which would output the following to your console and any AFT `LoggingPlugin`
 ```
 
 ### `AftTest`
-the `AftTest` class extends from the `AftLog` adding the ability to parse the Spec name for any referenced Test. each Test ID must be surrounded with square brackets `[ABC123]`. you can then either directly call the `AftTest.shouldRun()` async function which will determine if your test should be run based on any AFT `PolicyEnginePlugin` instances referenced in your `aftconfig.json` file or you can call `AftTest.verify(assertion)` which will perform the `AftTest.shouldRun()` call and mark the test as skipped if it should not be run. using the `AftTest` class would look like the following:
+the `AftTest` class extends from the `AftLog` adding the ability to parse the Spec name for any referenced Test. each Test ID must be surrounded with square brackets `[ABC123]`. you can then either directly call the `AftTest.shouldRun()` async function which will determine if your test should be run based on any AFT `TestExecutionPolicyPlugin` instances referenced in your `aftconfig.json` file or you can call `AftTest.verify(assertion)` which will perform the `AftTest.shouldRun()` call and mark the test as skipped if it should not be run. using the `AftTest` class would look like the following:
 > **!!WARNING!!** using arrow functions in your Spec definition **IS NOT SUPPORTED** if using `AftTest` because it removes the `this` scope
 ```javascript
 describe('YourTestSuite', () => {
@@ -57,7 +57,7 @@ describe('YourTestSuite', () => {
     });
 });
 ```
-which would output the following to your console and any AFT `LoggingPlugin` instances referenced in your `aftconfig.json` if the test ID should not be run:
+which would output the following to your console and any AFT `ReportingPlugin` instances referenced in your `aftconfig.json` if the test ID should not be run:
 ```text
 17:52:45 - [YourTestSuite can check if test [C1234] should be run] - WARN - none of the supplied tests should be run: [C1234]
 17:52:45 - [YourTestSuite can check if test [C1234] should be run] - WARN - test skipped

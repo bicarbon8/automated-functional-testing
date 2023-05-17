@@ -138,7 +138,7 @@ export class Reporter {
 
     /**
      * function will send the `LogLevel` and `message` on to any 
-     * loaded `LoggingPlugin` objects
+     * loaded `ReportingPlugin` objects
      * @param level the `LogLevel` of this message
      * @param message the string to be logged
      * @param data an array of additional data to be included in the logs
@@ -189,7 +189,7 @@ export class Reporter {
     }
 
     /**
-     * loops through any loaded `LoggingPlugin` objects and calls
+     * loops through any loaded `ReportingPlugin` objects and calls
      * their `dispose` function. This should be called upon completion
      * of any logging actions before destroying the `AftLogger` instance
      */

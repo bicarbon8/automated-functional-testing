@@ -1,7 +1,7 @@
 import { AftConfig, TestExecutionPolicyManager, ProcessingResult, pluginLoader } from "../../../src";
-import { MockPolicyEnginePlugin } from "./mock-policy-engine-plugin";
+import { MockTestExecutionPolicyPlugin } from "./mock-policy-engine-plugin";
 
-describe('PolicyEngineManager', () => {
+describe('TestExecutionPolicyManager', () => {
     beforeEach(() => {
         pluginLoader.reset();
     })
@@ -10,7 +10,7 @@ describe('PolicyEngineManager', () => {
         pluginLoader.reset();
     })
 
-    it('can load a specified IPolicyEnginePlugin', async () => {
+    it('can load a specified ITestExecutionPolicyPlugin', async () => {
         let tcm: TestExecutionPolicyManager = new TestExecutionPolicyManager(new AftConfig({
             pluginNames: ['mock-policy-engine-plugin'],
             MockTestCasePluginConfig: {
@@ -22,7 +22,7 @@ describe('PolicyEngineManager', () => {
         expect(actual).toBeDefined();
         expect(actual.length).withContext('plugins array length').toBe(1);
         expect(actual[0]).toBeDefined();
-        expect(actual[0].constructor.name).withContext('plugin should be instance of MockPolicyEnginePlugin').toEqual(MockPolicyEnginePlugin.name);
+        expect(actual[0].constructor.name).withContext('plugin should be instance of MockTestExecutionPolicyPlugin').toEqual(MockTestExecutionPolicyPlugin.name);
     });
 
     describe('shouldRun', () => {
@@ -43,7 +43,7 @@ describe('PolicyEngineManager', () => {
             }));
             let plugins = tcm.plugins;
             expect(plugins.length).toBe(1);
-            expect(plugins[0].constructor.name).toEqual(MockPolicyEnginePlugin.name);
+            expect(plugins[0].constructor.name).toEqual(MockTestExecutionPolicyPlugin.name);
 
             const actual: ProcessingResult<boolean> = await tcm.shouldRun('C1234');
 

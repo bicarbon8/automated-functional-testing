@@ -17,7 +17,7 @@ import { LogLevel, ReportingPluginConfig } from "aft-core";
  * ```
  * NOTE:
  * - `projectid` and `suiteids` are only used if no `planid` is specified
- * - if 'TestRailLoggingPlugin` is in use and no `planid` is specified a new
+ * - if 'TestRailReportingPlugin` is in use and no `planid` is specified a new
  * TestRail plan will be created and the value stored in a shared file for access
  * by other processes and subsequent test executions
  */

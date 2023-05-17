@@ -1,15 +1,15 @@
 # AFT-TestRail
-provides TestRail result logging as well as test execution filtering for users of `aft-core` by implementing plugins for the `AbstractLoggingPlugin` and `AbstractTestCasePlugin` plugin base classes.
+provides TestRail result logging as well as test execution filtering for users of `aft-core` by implementing plugins for the `AbstractReportingPlugin` and `AbstractTestCasePlugin` plugin base classes.
 
-## TestRailLoggingPlugin
-the `TestRailLoggingPlugin` extends from `LoggingPlugin` in `aft-core`. if enabled, this plugin will log test results to test cases in a TestRail Plan (if no plan is specified a new one is created the first time one is attempted to be accessed by the plugin). it can be enabled by including the following in your `aftconfig.json` file:
+## TestRailReportingPlugin
+the `TestRailReportingPlugin` extends from `ReportingPlugin` in `aft-core`. if enabled, this plugin will log test results to test cases in a TestRail Plan (if no plan is specified a new one is created the first time one is attempted to be accessed by the plugin). it can be enabled by including the following in your `aftconfig.json` file:
 ```json
 {
     "Reporter": {
         "level": "info",
         "plugins": [
             {
-                "name": "testrail-logging-plugin",
+                "name": "testrail-reporting-plugin",
                 "options": {
                     "enabled": true,
                     "level": "error",
@@ -72,7 +72,7 @@ to submit results to or filter test execution based on existence and status of t
 - **accesskey** - [REQUIRED] the access key (or password) for the above user
 - **projectid** - the TestRail project containing test suites to be used in test execution. _(Required only if `planid` is not set)_
 - **suiteids** - an array of TestRail suites containing test cases to be used in test execution. _(Required only if `planid` is not set)_
-- **planid** - an existing TestRail Plan to be used for logging test results if `testrail-logging-plugin` is referenced and enabled and used for controlling execution of tests. _(NOTE: if no value is specified for `planid` and `testrail-logging-plugin` is enabled, a new TestRail Plan will be created using the suites specified in `suiteids` and the `projectid`)_
+- **planid** - an existing TestRail Plan to be used for logging test results if `testrail-reporting-plugin` is referenced and enabled and used for controlling execution of tests. _(NOTE: if no value is specified for `planid` and `testrail-reporting-plugin` is enabled, a new TestRail Plan will be created using the suites specified in `suiteids` and the `projectid`)_
 - **cacheDurationMs** - the maximum number of milliseconds to cache responses from TestRail's API _(defaults to 300000)_
 
 ## Usage

@@ -1,1 +1,1 @@
-export * from './html-logging-plugin';
+export * from './html-reporting-plugin';

@@ -1,8 +1,8 @@
-# AFT-Logging-AWSKinesis
+# AFT-reporting-AWSKinesis
 an Automated Functional Testing (AFT) library providing logging to an AWS Kinesis Firehose endpoint for any `TestResult` objects logged via the `aft-core.Reporter`
 
 ## Installation
-`> npm i aft-logging-awskinesis`
+`> npm i aft-reporting-awskinesis`
 
 ## Configuration
 to send values to AWS Kinesis Firehose endpoints you must specify the AWS Credentials, the AWS Region Endpoint and the AWS Kinesis Delivery Stream. These take the following form in your `aftconfig.json`:
@@ -11,7 +11,7 @@ to send values to AWS Kinesis Firehose endpoints you must specify the AWS Creden
   "Reporter": {
     "level": "none",
     "plugins": [{
-      "name": "kinesis-logging-plugin",
+      "name": "kinesis-reporting-plugin",
       "searchDirectory": "../",
       "options": {
         "enabled": true,
@@ -28,7 +28,7 @@ to send values to AWS Kinesis Firehose endpoints you must specify the AWS Creden
   }
 }
 ```
-- **name** - a `string` containing `kinesis-logging-plugin` instructing the `pluginloader` to load this plugin
+- **name** - a `string` containing `kinesis-reporting-plugin` instructing the `pluginloader` to load this plugin
 - **searchDirectory** - an optional `string` containing the root directory to begin searching for this plugin when first attempting to load it _(defaults to current working directory)_
 - **options** - an optional `object` containing options for the plugin when it is first loaded. accepted values are as follows:
   - **enabled** - an optional `boolean` indicating if this plugin should be used or not _(defaults to `true`)_
@@ -47,7 +47,7 @@ to send values to AWS Kinesis Firehose endpoints you must specify the AWS Creden
 - Shared Ini File: read from the host system
 - ECS Credentials: similar to the EC2 Metadata, but on ECS
 - Process Credentials: any credentials set on the current process
-- Options: read from passed in `KinesisLoggingPluginOptions`
+- Options: read from passed in `KinesisReportingPluginOptions`
 
 ## Format of log records
 the log record that is sent to your AWS Kinesis Firehose endpoint will have the following format:
@@ -70,7 +70,7 @@ the log record that is sent to your AWS Kinesis Firehose endpoint will have the 
 - **logName** - the `logName` passed to this plugin when loaded from the `Reporter`
 - **message** - the `string` being logged by some component
 - **level** - a `string` value from one of the `aft-core.LoggingLevel` values based on the level of the message being logged
-- **version** - the current version of the `KinesisLoggingPlugin`
+- **version** - the current version of the `KinesisReportingPlugin`
 - **buildName** - a `string` retrieved from the `BuildInfoManager.getBuildName` function
 - **buildNumber** - a `string` retrieved from the `BuildInfoManager.getBuildNumber` function
 - **machineInfo** - an `aft-core.MachineInfoData` object containing the following:
@@ -116,7 +116,7 @@ the log record that is sent to your AWS Kinesis Firehose endpoint will have the 
   - **created** - a `number` containing the date and time the `TestResult` was created as milliseconds since the epoch
   - **defects** - an array of `aft-core.Defect` objects
   - **metadata** - an `object` that can contain additional data for the `TestResult`
-- **version** - the current version of the `KinesisLoggingPlugin`
+- **version** - the current version of the `KinesisReportingPlugin`
 - **buildName** - a `string` retrieved from the `BuildInfoManager.getBuildName` function
 - **buildNumber** - a `string` retrieved from the `BuildInfoManager.getBuildNumber` function
 - **machineInfo** - an `aft-core.MachineInfoData` object containing the following:

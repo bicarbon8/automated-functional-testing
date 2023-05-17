@@ -25,7 +25,7 @@ import { PlanId } from "../helpers/plan-id";
  * then a new TestRail Plan will be created from the specified `projectId` and `suiteIds`
  * configuration keys
  */
-export class TestRailLoggingPlugin extends ReportingPlugin {
+export class TestRailReportingPlugin extends ReportingPlugin {
     private readonly _level: LogLevel;
     public override get logLevel(): LogLevel {
         return this._level;

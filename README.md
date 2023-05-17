@@ -13,7 +13,7 @@ describe('Sample Test', () => {
          * checks any specified `AbstractTestCasePlugin`
          * and `AbstractDefectPlugin` implementations
          * to ensure the test should be run. It will then
-         * report to any `AbstractLoggingPlugin` implementations
+         * report to any `AbstractReportingPlugin` implementations
          * with an `ITestResult` indicating the success,
          * failure or skipped status
          */
@@ -69,28 +69,28 @@ verify(() => {throw new Error('failure');}) // AFT will report as 'failed'
 - [`aft-core`](./packages/aft-core/README.md) - base library containing helpers and configuration and plugin managers
 - [`aft-examples`](./packages/aft-examples/README.md) - provides real-world examples of how the AFT libraries can be used in functional tests
 - [`aft-jasmine-reporter`](./packages/aft-jasmine-reporter/README.md) - a Jasmine Reporter Plugin that integrates with AFT to simplify logging and test execution via AFT
-- [`aft-logging-aws-kinesis-firehose`](./packages/aft-logging-aws-kinesis-firehose/README.md) - logging plugin supporting logging to AWS Kinesis Firehose
-- [`aft-logging-filesystem`](./packages/aft-logging-filesystem/README.md) - logging plugin supporting logging to .log files for all log output
-- [`aft-logging-html`](./packages/aft-logging-html/README.md) - logging plugin supporting logging to a HTML results file
+- [`aft-reporting-aws-kinesis-firehose`](./packages/aft-reporting-aws-kinesis-firehose/README.md) - reporting plugin supporting logging to AWS Kinesis Firehose
+- [`aft-reporting-filesystem`](./packages/aft-reporting-filesystem/README.md) - reporting plugin supporting logging to .log files for all log output
+- [`aft-reporting-html`](./packages/aft-reporting-html/README.md) - reporting plugin supporting logging to a HTML results file
 - [`aft-mocha-reporter`](./packages/aft-mocha-reporter/README.md) - provides Mocha Reporter Plugin that integrates with AFT to simplify logging and test execution via AFT
-- [`aft-testrail`](./packages/aft-testrail/README.md) - logging, results and policy-engine plugins supporting logging test results and filtering test execution based on TestRail Projects, Suites and Plans
+- [`aft-testrail`](./packages/aft-testrail/README.md) - reporting and test execution policy plugins supporting logging test results and filtering test execution based on TestRail Projects, Suites and Plans
 - [`aft-ui`](./packages/aft-ui/README.md) - base library supporting development of UI testing packages
 - [`aft-ui-selenium`](./packages/aft-ui-selenium/README.md) - adds support for Selenium-based UI testing
 - [`aft-ui-webdriverio`](./packages/aft-ui-webdriverio/README.md) - adds support for WebdriverIO-based UI testing
 - [`aft-web-services`](./packages/aft-web-services/README.md) - adds support for testing REST-based services
 
 ## Plugins
-the primary benefit of using AFT comes from the plugins and the `Verifier`. Because logging using AFT's `Reporter` will also send to any registered logging plugins, it is easy to create logging plugins that send to any external system such as TestRail or to log results to Elasticsearch. Additionally, before running any _assertion_ passed to a `verify(assertion)` function, AFT will confirm if the _assertion_ should actually be run based on the results of queries to any supplied `PolicyEnginePlugin` implementations.
+the primary benefit of using AFT comes from the plugins and the `Verifier`. Because logging using AFT's `Reporter` will also send to any registered logging plugins, it is easy to create logging plugins that send to any external system such as TestRail or to log results to Elasticsearch. Additionally, before running any _assertion_ passed to a `verify(assertion)` function, AFT will confirm if the _assertion_ should actually be run based on the results of queries to any supplied `TestExecutionPolicyPlugin` implementations.
 
-### LoggingPlugin
-`aft-core` provides a `LoggingPlugin` class which can be extended from to create custom loggers which are then loaded by adding their filenames to the `pluginNames` array under in your `aftconfig.json`
+### ReportingPlugin
+`aft-core` provides a `ReportingPlugin` class which can be extended from to create custom loggers which are then loaded by adding their filenames to the `pluginNames` array under in your `aftconfig.json`
 ```json
 // aftconfig.json
 {
     "pluginsSearchDir": "../node_modules",
     "pluginNames": [
-        "testrail-logging-plugin",
-        "html-logging-plugin"
+        "testrail-reporting-plugin",
+        "html-reporting-plugin"
     ],
     "TestRailConfig": {
         "url": "https://your.testrail.io",
@@ -102,15 +102,15 @@ the primary benefit of using AFT comes from the plugins and the `Verifier`. Beca
         "policyEngineEnabled": true,
         "logLevel": "error"
     },
-    "HtmlLoggingPluginConfig": {
+    "HtmlReportingPluginConfig": {
         "outputDir": "../Results",
         "logLevel": "debug"
     }
 }
 ```
 
-### PolicyEnginePlugin
-the purpose of a `PolicyEnginePlugin` implementation is to provide execution control over any expectations by way of supplied _Test IDs_. to specify an implementation of the plugin to load you can add the following to your `aftconfig.json` (where plugins `testrail-test-case-plugin.js` is contained within the test execution directory or a subdirectory of it):
+### TestExecutionPolicyPlugin
+the purpose of a `TestExecutionPolicyPlugin` implementation is to provide execution control over any expectations by way of supplied _Test IDs_. to specify an implementation of the plugin to load you can add the following to your `aftconfig.json` (where plugins `testrail-test-case-plugin.js` is contained within the test execution directory or a subdirectory of it):
 ```json
 // aftconfig.json
 {

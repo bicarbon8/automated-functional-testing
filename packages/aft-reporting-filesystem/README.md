@@ -1,8 +1,8 @@
-# AFT-Logging-Filesystem
+# AFT-reporting-Filesystem
 Automated Functional Testing (AFT) package providing a Filesystem Logging Plugin that generates .log files based on the `Reporter.logName` and appends log lines using a customisable date format
 
 ## Installation
-`> npm i aft-logging-filesystem`
+`> npm i aft-reporting-filesystem`
 
 ## Configuration
 this plugin accepts configuration options in the following format:
@@ -14,7 +14,7 @@ this plugin accepts configuration options in the following format:
     "Reporter": {
         "level": "info",
         "plugins": [{
-            "name": "filesystem-logging-plugin",
+            "name": "filesystem-reporting-plugin",
             "options": {
                 "level": "trace",
                 "enabled": true,

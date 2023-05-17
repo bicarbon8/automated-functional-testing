@@ -1,1 +1,1 @@
-export * from './kinesis-logging-plugin';
+export * from './kinesis-reporting-plugin';

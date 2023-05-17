@@ -9,18 +9,18 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
 ```json
 {
     "pluginNames": [
-        "testrail-logging-plugin",
+        "testrail-reporting-plugin",
         "testrail-test-case-plugin",
-        "kinesis-logging-plugin",
-        "html-logging-plugin",
-        "filesystem-logging-plugin",
+        "kinesis-reporting-plugin",
+        "html-reporting-plugin",
+        "filesystem-reporting-plugin",
         "grid-session-generator-plugin",
         "local-session-generator-plugin",
         "webdriverio-remote-session-generator-plugin"
     ],
     "pluginsSearchDir": "../",
     "logLevel": "info",
-    "KinesisLoggingPluginConfig": {
+    "KinesisReportingPluginConfig": {
         "logLevel": "warn",
         "region": "eu-west-1",
         "deliveryStream": "%aws_kinesis_delivery_stream%"
@@ -55,7 +55,7 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
 - **pluginNames** - `Array<string>` containing names that should match the filename and classname (if you remove characters like `-`, `_` and `.`) of the plugins to load
 - **pluginsSearchDir** - `string` containing a relative path (to `process.cwd()`) used to search for the plugins listed in the `pluginNames` array. _(defaults to `process.cwd()`)_
 - **logLevel** - `string` containing the minimum `LogLevel` where logs will be sent to the console. this value can also serve as a global fall-back for logging plugin implementations using `aftConfig.getSection(ReporterConfig).logLevel` if no value is specified for the given plugin. _(defaults to `'warn'`)_
-- **KinesisLoggingPluginConfig** - configuration for the `kinesis-logging-plugin`
+- **KinesisReportingPluginConfig** - configuration for the `kinesis-reporting-plugin`
   - **logLevel** - the minimum level where logs will be forwarded to your AWS Kinesis Firehose delivery stream. _(defaults to `'none'`)_
   - **region** - `string` containing an AWS Region System Name like `'eu-west-1'`
   - **deliveryStream** - `string` containing the Kinesis Firehose delivery stream to use
@@ -67,7 +67,7 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
   - **accessKey** - `string` containing your API access key used to access the TestRail API. see [here](https://www.gurock.com/testrail/docs/api/getting-started/accessing) for more info.
   - **projectId** - `number` containing the TestRail project you are referencing in your tests. _NOTE: this is not used if specifying a value for `planid`_
   - **suiteIds** - `Array<number>` containing a list of the TestRail suites you are referencing in your tests. _NOTE: this is not used if specifying a value for `planid`_
-  - **planId** - `number` containing the TestRail plan you are referencing in your tests. _NOTE: if not specified and the `testrail-logging-plugin` is using a `logLevel` of anything other than `'none'` a new TestRail plan will be created based on your `projectId` and `suiteIds`_
+  - **planId** - `number` containing the TestRail plan you are referencing in your tests. _NOTE: if not specified and the `testrail-reporting-plugin` is using a `logLevel` of anything other than `'none'` a new TestRail plan will be created based on your `projectId` and `suiteIds`_
   - **logLevel** - `string` containing the minimum `LogLevel` where logs will be captured and sent to TestRail on completion of a test. _NOTE: setting this to a value of `'none'` disabled sending results to TestRail, but you can still use TestRail to control test execution via the `policyEngineEnabled` configuration setting_
   - **policyEngineEnabled** - `boolean` indicating if TestRail should be used to control the execution of tests run within a `Verifier`
 - **UiSessionConfig** - configuration for the `UiSessionGeneratorManager` to use to determine which `UiSessionGeneratorPlugin` to use
@@ -93,7 +93,7 @@ executing the tests using `npm test` should result in the output like the follow
 ```
 
 ## TestRail Logging
-if using `testrail-logging-plugin` then you must ensure your `verify(assertion)`, `verifyWithSelenium(assertion)`, `verifyWithWebdriverIO(assertion)`, `Verifier`, `SeleniumVerifier`, or `WebdriverIoVerifier` instances have valid TestRail Case ID's referenced. The values specified for the `withTestId` function must be the TestRail Case ID's referenced by your existing TestRail Plan (not to be confused with the TestRail Test ID's that start with the letter _T_). Modifications will need to be made in two places per test:
+if using `testrail-reporting-plugin` then you must ensure your `verify(assertion)`, `verifyWithSelenium(assertion)`, `verifyWithWebdriverIO(assertion)`, `Verifier`, `SeleniumVerifier`, or `WebdriverIoVerifier` instances have valid TestRail Case ID's referenced. The values specified for the `withTestId` function must be the TestRail Case ID's referenced by your existing TestRail Plan (not to be confused with the TestRail Test ID's that start with the letter _T_). Modifications will need to be made in two places per test:
 
 ### Specifying Test IDs
 in the options object, set the following:

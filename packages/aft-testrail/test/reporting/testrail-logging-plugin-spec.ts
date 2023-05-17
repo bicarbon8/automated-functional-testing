@@ -4,9 +4,9 @@ import { rand, TestResult, ellide, Reporter, AftConfig } from "aft-core";
 import { TestRailApi } from "../../src/api/testrail-api";
 import { httpService } from "aft-web-services";
 import { TestRailPlan, TestRailResult, TestRailResultRequest, TestRailTest } from "../../src/api/testrail-custom-types";
-import { TestRailLoggingPlugin } from "../../src";
+import { TestRailReportingPlugin } from "../../src";
 
-describe('TestRailLoggingPlugin', () => {
+describe('TestRailReportingPlugin', () => {
     beforeEach(() => {
         spyOn(httpService, 'performRequest').and.returnValue(Promise.resolve({
             headers: {'content-type': 'application/json'},
@@ -35,7 +35,7 @@ describe('TestRailLoggingPlugin', () => {
                 maxLogCharacters: 250
             }
         });
-        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(aftCfg);
+        let plugin: TestRailReportingPlugin = new TestRailReportingPlugin(aftCfg);
 
         let expected: string = rand.getString(250, true, true);
         const logName = 'keeps the last 250 characters logged';
@@ -55,7 +55,7 @@ describe('TestRailLoggingPlugin', () => {
                 maxLogCharacters: 250
             }
         });
-        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(aftCfg);
+        let plugin: TestRailReportingPlugin = new TestRailReportingPlugin(aftCfg);
 
         let expected: string = rand.getString(250, true, true);
         const logName = rand.getString(15);
@@ -80,7 +80,7 @@ describe('TestRailLoggingPlugin', () => {
                 maxLogCharacters: 250
             }
         });
-        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(aftCfg);
+        let plugin: TestRailReportingPlugin = new TestRailReportingPlugin(aftCfg);
         let notExpected: string = rand.getString(200, true, true);
         let expected: string = rand.getString(250, true, true);
         
@@ -108,7 +108,7 @@ describe('TestRailLoggingPlugin', () => {
             TestStore.planId = planId;
             return [];
         });
-        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(aftCfg, api);
+        let plugin: TestRailReportingPlugin = new TestRailReportingPlugin(aftCfg, api);
         
         let result: TestResult = {
             testName: 'converts a Failed result to Retry',
@@ -147,7 +147,7 @@ describe('TestRailLoggingPlugin', () => {
                 id: rand.getInt(1000, 10000)
             };
         });
-        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(aftCfg, api);
+        let plugin: TestRailReportingPlugin = new TestRailReportingPlugin(aftCfg, api);
         
         let result: TestResult = {
             testName: 'creates a new TestRail plan in a shared FileSystemMap if none exists',
@@ -166,13 +166,13 @@ describe('TestRailLoggingPlugin', () => {
 
     it('can be loaded by the Reporter', async () => {
         const aftCfg = new AftConfig({
-            pluginNames: ['testrail-logging-plugin']
+            pluginNames: ['testrail-reporting-plugin']
         });
         let mgr: Reporter = new Reporter('can be loaded by the Reporter', aftCfg);
         let plugin = mgr.plugins[0];
 
         expect(plugin).toBeDefined();
-        expect(plugin.constructor.name).toEqual('TestRailLoggingPlugin');
+        expect(plugin.constructor.name).toEqual('TestRailReportingPlugin');
     });
 
     /**
@@ -193,7 +193,7 @@ describe('TestRailLoggingPlugin', () => {
                 logLevel: 'trace'
             }
         });
-        let plugin: TestRailLoggingPlugin = new TestRailLoggingPlugin(aftCfg);
+        let plugin: TestRailReportingPlugin = new TestRailReportingPlugin(aftCfg);
         
         const logName = 'sends actual TestResult to TestRail';
         await plugin.log(logName, 'error', rand.getString(100));

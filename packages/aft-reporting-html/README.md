@@ -1,8 +1,8 @@
-# AFT-Logging-HTML
+# AFT-reporting-HTML
 an Automated Functional Testing (AFT) library providing logging to an HTML file for any `TestResult` objects logged via the `aft-core.Reporter`
 
 ## Installation
-`> npm i aft-logging-html`
+`> npm i aft-reporting-html`
 
 ## Configuration
 to specify the filename and output directory for the generated HTML results add the following to your `aftconfig.json`:
@@ -12,7 +12,7 @@ to specify the filename and output directory for the generated HTML results add 
     "level": "info",
     "plugins": [
       {
-        "name": "html-logging-plugin",
+        "name": "html-reporting-plugin",
         "searchDirectory": "./node_modules/",
         "options": {
           "enabled": true,

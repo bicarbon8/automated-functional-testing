@@ -1,10 +1,10 @@
 import * as fs from "fs";
 import * as path from "path";
 import { AftConfig, Reporter, rand, TestResult } from "aft-core";
-import { HtmlLoggingPlugin } from "../src";
+import { HtmlReportingPlugin } from "../src";
 import { HtmlResult } from "../src/html-result";
 
-describe('HtmlLoggingPlugin', () => {
+describe('HtmlReportingPlugin', () => {
     beforeEach(() => {
         let c: string = path.join(process.cwd(), 'FileSystemMap', 'htmlSharedResults.json');
         if (fs.existsSync(c)) {fs.unlinkSync(c);}
@@ -19,8 +19,8 @@ describe('HtmlLoggingPlugin', () => {
             logLevel: 'info',
             maxLogLines: 14
         };
-        let plugin: HtmlLoggingPlugin = new HtmlLoggingPlugin(new AftConfig({
-            HtmlLoggingPluginConfig: config
+        let plugin: HtmlReportingPlugin = new HtmlReportingPlugin(new AftConfig({
+            HtmlReportingPluginConfig: config
         }));
         const logName = rand.getString(50);
         for (var i=0; i<25; i++) {
@@ -36,8 +36,8 @@ describe('HtmlLoggingPlugin', () => {
             logLevel: 'info',
             maxLogLines: 3
         };
-        let plugin: HtmlLoggingPlugin = new HtmlLoggingPlugin(new AftConfig({
-            HtmlLoggingPluginConfig: config
+        let plugin: HtmlReportingPlugin = new HtmlReportingPlugin(new AftConfig({
+            HtmlReportingPluginConfig: config
         }));
         const logName = rand.getString(50);
         for (var i=0; i<3; i++) {
@@ -60,8 +60,8 @@ describe('HtmlLoggingPlugin', () => {
             logLevel: 'step',
             maxLogLines: 14
         };
-        let plugin: HtmlLoggingPlugin = new HtmlLoggingPlugin(new AftConfig({
-            HtmlLoggingPluginConfig: config
+        let plugin: HtmlReportingPlugin = new HtmlReportingPlugin(new AftConfig({
+            HtmlReportingPluginConfig: config
         }));
         const logName = 'stores logs only when at or above the specified level';
         await plugin.log(logName, 'none', 'level none');
@@ -84,13 +84,13 @@ describe('HtmlLoggingPlugin', () => {
 
     it('can be loaded successfully from the Reporter', async () => {
         const aftCfg = new AftConfig({
-            pluginNames: ['html-logging-plugin']
+            pluginNames: ['html-reporting-plugin']
         });
         let reporter: Reporter = new Reporter('can be loaded successfully from the Reporter', aftCfg);
         let plugin = reporter.plugins[0];
 
         expect(plugin).toBeDefined();
-        expect(plugin.constructor.name).toEqual('HtmlLoggingPlugin');
+        expect(plugin.constructor.name).toEqual('HtmlReportingPlugin');
     });
 
     it('only attempts to write to HTML file on call to dispose', async () => {
@@ -98,8 +98,8 @@ describe('HtmlLoggingPlugin', () => {
             outputDir: './',
             fileName: 'testresults.html'
         };
-        let plugin: HtmlLoggingPlugin = new HtmlLoggingPlugin(new AftConfig({
-            HtmlLoggingPluginConfig: config
+        let plugin: HtmlReportingPlugin = new HtmlReportingPlugin(new AftConfig({
+            HtmlReportingPluginConfig: config
         }));
         const readSpy = spyOn(plugin, 'logs').and.returnValue(['foo', 'bar', 'baz']);
         const testResults: Array<TestResult> = new Array<TestResult>(
@@ -141,8 +141,8 @@ describe('HtmlLoggingPlugin', () => {
             outputDir: './',
             fileName: 'testresults.html'
         };
-        let plugin: HtmlLoggingPlugin = new HtmlLoggingPlugin(new AftConfig({
-            HtmlLoggingPluginConfig: config
+        let plugin: HtmlReportingPlugin = new HtmlReportingPlugin(new AftConfig({
+            HtmlReportingPluginConfig: config
         }));
         const readSpy = spyOn(plugin, 'logs').and.returnValue(['foo', 'bar', 'baz']);
         const testResults: Array<TestResult> = new Array<TestResult>(

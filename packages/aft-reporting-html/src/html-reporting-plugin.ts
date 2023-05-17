@@ -4,14 +4,14 @@ import { HtmlTestResult } from "./html-test-result";
 import { HtmlResult } from "./html-result";
 import { htmlTemplate } from "./templates/html-template";
 
-export class HtmlLoggingPluginConfig extends ReportingPluginConfig {
+export class HtmlReportingPluginConfig extends ReportingPluginConfig {
     fileName: string = 'testresults.html';
     outputDir: string = path.join(process.cwd(), 'logs');
     maxLogLines: number;
     override logLevel: LogLevel = 'warn';
 }
 
-export class HtmlLoggingPlugin extends ReportingPlugin {
+export class HtmlReportingPlugin extends ReportingPlugin {
     public override get logLevel(): LogLevel {
         return this._level;
     }
@@ -25,7 +25,7 @@ export class HtmlLoggingPlugin extends ReportingPlugin {
     
     constructor(aftCfg?: AftConfig) {
         super(aftCfg);
-        const cfg = this.aftCfg.getSection(HtmlLoggingPluginConfig);
+        const cfg = this.aftCfg.getSection(HtmlReportingPluginConfig);
         this._level = cfg.logLevel ?? this.aftCfg.logLevel ?? 'warn';
         if (this.enabled) {
             this._results = new FileSystemMap<string, Array<HtmlTestResult>>('htmlSharedResults');

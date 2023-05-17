@@ -89,7 +89,7 @@ export class OnDisposeConsoleLoggerConfig {
     maxLogLines: number = Infinity;
     logLevel: LogLevel = 'warn';
 };
-export class OnDisposeConsoleLogger extends LoggingPlugin {
+export class OnDisposeConsoleLogger extends ReportingPlugin {
     public override get logLevel(): LogLevel { return this._lvl; }
     private readonly _lvl: LogLevel;
     private readonly _logs: Map<string, Array<LogMessageData>>;
@@ -131,7 +131,7 @@ export class OnDisposeConsoleLogger extends LoggingPlugin {
 }
 ```
 
-### Example PolicyEnginePlugin (TestRail)
+### Example TestExecutionPolicyPlugin (TestRail)
 ```typescript
 export class TestRailConfig {
     username: string;
@@ -142,7 +142,7 @@ export class TestRailConfig {
     planId: number;
     enabled: boolean = false;
 }
-export class TestRailPolicyEnginePlugin extends PolicyEnginePlugin {
+export class TestRailTestExecutionPolicyPlugin extends TestExecutionPolicyPlugin {
     public override get enabled(): boolean { return this._enabled; }
     private readonly _client: TestRailClient;
     private readonly _enabled: boolean;
@@ -212,7 +212,7 @@ describe('Sample Test', () => {
          * checks any specified `TestCasePlugin`
          * and `DefectPlugin` implementations
          * to ensure the test should be run. It will then
-         * report to any `LoggingPlugin` implementations
+         * report to any `ReportingPlugin` implementations
          * with an `TestResult` indicating the success,
          * failure or skipped status
          */

@@ -19,7 +19,7 @@ export class TestExecutionPolicyManager {
     }
 
     /**
-     * iterates over all enabled `IPolicyEnginePlugin` implementations calling `shouldRun`
+     * iterates over all enabled `ITestExecutionPolicyPlugin` implementations calling `shouldRun`
      * and if any of the results return `false` then a `ShouldRunResult` containing `false`
      * and a reason comprised of all plugin reasons will be returned, otherwise `true`
      * @param testId the test case id to check

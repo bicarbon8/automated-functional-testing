@@ -19,8 +19,8 @@ describe('Reporter', () => {
         console.log = consoleLog;
     });
 
-    it('will send logs to any registered LoggingPlugin implementations', async () => {
-        const reporterName = 'will send logs to any registered LoggingPlugin implementations';
+    it('will send logs to any registered ReportingPlugin implementations', async () => {
+        const reporterName = 'will send logs to any registered ReportingPlugin implementations';
         const reporter: Reporter = new Reporter(reporterName, new AftConfig({
             logLevel: 'trace',
             pluginNames: ['mock-reporting-plugin']
@@ -65,8 +65,8 @@ describe('Reporter', () => {
         expect(consoleSpy).not.toHaveBeenCalled();
     });
 
-    it('will send cloned LogMessageData to any registered LoggingPlugin implementations', async () => {
-        const reporterName = 'will send cloned LogMessageData to any registered LoggingPlugin implementations';
+    it('will send cloned LogMessageData to any registered ReportingPlugin implementations', async () => {
+        const reporterName = 'will send cloned LogMessageData to any registered ReportingPlugin implementations';
         const reporter = new Reporter(reporterName, new AftConfig({
             pluginNames: ['mock-reporting-plugin'],
             logLevel: 'trace'
@@ -137,7 +137,7 @@ describe('Reporter', () => {
         const reporter: Reporter = new Reporter(reporterName, new AftConfig({
             logLevel: 'error',
             pluginNames: ['mock-reporting-plugin'], 
-            MockLoggingPluginConfig: {
+            MockReportingPluginConfig: {
                 logLevel: 'trace'
             }
         }));
@@ -152,7 +152,7 @@ describe('Reporter', () => {
         const logName = 'will not call any plugin methods if plugin is not enabled';
         const reporter: Reporter = new Reporter(logName, new AftConfig({
             pluginNames: ['mock-reporting-plugin'], 
-            MockLoggingPluginConfig: {
+            MockReportingPluginConfig: {
                 logLevel: 'none'
             }
         }));

@@ -1,9 +1,9 @@
 import * as fs from "fs";
 import * as path from "path";
 import { AftConfig, convert, rand } from "aft-core";
-import { FilesystemLoggingPlugin, FilesystemLoggingPluginConfig } from "../src/filesystem-logging-plugin";
+import { FilesystemReportingPlugin, FilesystemReportingPluginConfig } from "../src/filesystem-reporting-plugin";
 
-describe('FilesystemLoggingPlugin', () => {
+describe('FilesystemReportingPlugin', () => {
     beforeEach(() => {
         const logDir = path.join(process.cwd(), 'logs');
         if (fs.existsSync(logDir)) {
@@ -13,7 +13,7 @@ describe('FilesystemLoggingPlugin', () => {
 
     it('can create a file on the filesystem and write logs to it', async () => {
         const aftCfg = new AftConfig();
-        const plugin = new FilesystemLoggingPlugin(aftCfg);
+        const plugin = new FilesystemReportingPlugin(aftCfg);
         const logName = 'can create a file on the filesystem and write logs to it';
         await plugin.log(logName, 'trace', rand.getString(rand.getInt(100, 200)));
         await plugin.log(logName, 'info', rand.getString(rand.getInt(100, 200)));
@@ -55,11 +55,11 @@ describe('FilesystemLoggingPlugin', () => {
 
     it('will not write to file if level below specified value', async () => {
         const aftCfg = new AftConfig({
-            FilesystemLoggingPluginConfig: {
+            FilesystemReportingPluginConfig: {
                 logLevel: 'error'
             }
         });
-        const plugin = new FilesystemLoggingPlugin(aftCfg);
+        const plugin = new FilesystemReportingPlugin(aftCfg);
         const logName = 'will not write to file if level below specified value';
         await plugin.log(logName, 'trace', rand.getString(rand.getInt(100, 200)));
         await plugin.log(logName, 'debug', rand.getString(rand.getInt(100, 200)));
@@ -82,10 +82,10 @@ describe('FilesystemLoggingPlugin', () => {
     it('can change the date formatting', async () => {
         const logName = 'can change the date formatting';
         const aftCfg = new AftConfig();
-        const config = aftCfg.getSection(FilesystemLoggingPluginConfig);
+        const config = aftCfg.getSection(FilesystemReportingPluginConfig);
         config.logLevel = 'info';
         config.dateFormat = 'SSS';
-        const plugin = new FilesystemLoggingPlugin(aftCfg);
+        const plugin = new FilesystemReportingPlugin(aftCfg);
 
         await plugin.log(logName, 'warn', rand.getString(rand.getInt(100, 200)));
 
@@ -101,12 +101,12 @@ describe('FilesystemLoggingPlugin', () => {
     it('can disable output of TestResult objects', async () => {
         const logName = 'can disable output of TestResult objects';
         const aftCfg = new AftConfig({
-            FilesystemLoggingPluginConfig: {
+            FilesystemReportingPluginConfig: {
                 logLevel: 'trace',
                 includeResults: false
             }
         });
-        const plugin = new FilesystemLoggingPlugin(aftCfg);
+        const plugin = new FilesystemReportingPlugin(aftCfg);
 
         await plugin.submitResult(logName, {
             testName: logName,

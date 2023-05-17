@@ -1,6 +1,6 @@
 {
     "Reporter": {
-        "pluginNames": ["testrail-logging-plugin"],
+        "pluginNames": ["testrail-reporting-plugin"],
         "level": "info"
     },
     "testcasemanager": {
@@ -13,7 +13,7 @@
         "projectid": 3,
         "suiteids": [1219]
     },
-    "testrailloggingplugin": {
+    "testrailReportingPlugin": {
         "maxLogCharacters": 100
     }
 }

@@ -145,10 +145,10 @@ describe('Verifier', () => {
         expect(reporter.fail).toHaveBeenCalledTimes(2);
     });
 
-    it('will not execute expectation if PolicyEngineManager says should not run for all cases', async () => {
+    it('will not execute expectation if TestExecutionPolicyManager says should not run for all cases', async () => {
         const resMgr = new ResultsManager();
         spyOn(resMgr, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
-        const reporter = new Reporter('will not execute expectation if PolicyEngineManager says should not run for all cases');
+        const reporter = new Reporter('will not execute expectation if TestExecutionPolicyManager says should not run for all cases');
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'warn').and.callThrough();
         const peMgr = new TestExecutionPolicyManager();
@@ -170,10 +170,10 @@ describe('Verifier', () => {
         expect(reporter.warn).toHaveBeenCalledTimes(2);
     });
 
-    it('will execute expectation if PolicyEngineManager says any cases should be run', async () => {
+    it('will execute expectation if TestExecutionPolicyManager says any cases should be run', async () => {
         const resMgr = new ResultsManager();
         spyOn(resMgr, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
-        const reporter = new Reporter('will execute expectation if PolicyEngineManager says any cases should be run');
+        const reporter = new Reporter('will execute expectation if TestExecutionPolicyManager says any cases should be run');
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'pass').and.callThrough();
         const peMgr = new TestExecutionPolicyManager();
@@ -200,16 +200,16 @@ describe('Verifier', () => {
         expect(reporter.pass).toHaveBeenCalledTimes(2);
     });
 
-    it('will not execute expectation if no associated testIds and PolicyEngineManager has enabled plugins', async () => {
+    it('will not execute expectation if no associated testIds and TestExecutionPolicyManager has enabled plugins', async () => {
         const resMgr = new ResultsManager();
         spyOn(resMgr, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
-        const reporter = new Reporter('will not execute expectation if no associated testIds and PolicyEngineManager has enabled plugins');
+        const reporter = new Reporter('will not execute expectation if no associated testIds and TestExecutionPolicyManager has enabled plugins');
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'warn').and.callThrough();
         pluginLoader.reset();
         const peMgr = new TestExecutionPolicyManager(new AftConfig({
             pluginNames: ['mock-policy-engine-plugin'],
-            MockPolicyEnginePluginConfig: {
+            MockTestExecutionPolicyPluginConfig: {
                 enabled: true
             }
         }));

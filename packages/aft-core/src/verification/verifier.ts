@@ -239,7 +239,7 @@ export class Verifier implements PromiseLike<void> {
      * creates an object exposing internal functions allowing setting custom instances
      * to internal objects
      * @returns a `VerifierInternals` object containing functions allowing users to
-     * set values for the `Reporter`, `PolicyEngineManager`, `BuildInfoManager` and
+     * set values for the `Reporter`, `TestExecutionPolicyManager`, `BuildInfoManager` and
      * `ResultsManager`
      */
     get internals(): VerifierInternals {
@@ -266,9 +266,9 @@ export class Verifier implements PromiseLike<void> {
             },
 
             /**
-             * allows for using a specific `PolicyEngineManager` instance. if not
-             * set then the global `PolicyEngineManager.instance()` will be used
-             * @param policyMgr a `PolicyEngineManager` instance
+             * allows for using a specific `TestExecutionPolicyManager` instance. if not
+             * set then the global `TestExecutionPolicyManager.instance()` will be used
+             * @param policyMgr a `TestExecutionPolicyManager` instance
              * @returns this `Verifier` instance
              */
             usingTestExecutionPolicyManager: (policyMgr: TestExecutionPolicyManager): this => {
@@ -292,7 +292,7 @@ export class Verifier implements PromiseLike<void> {
     /**
      * checks if any of the supplied test ids should be run and returns `true` if at least
      * one of them should
-     * @param testIds iterates over all test ids checking the `PolicyEngineManager` to see
+     * @param testIds iterates over all test ids checking the `TestExecutionPolicyManager` to see
      * if any should be run and returns `true` if any should be run, otherwise `false`
      * @returns a `ProcessingResult<boolean>` indicating if the testing should proceed
      */
@@ -315,7 +315,7 @@ export class Verifier implements PromiseLike<void> {
             }
             return {result: true, message: `the following supplied tests should be run: [${shouldRunTests.join(', ')}]`};
         } else if (this.policyEngMgr.plugins?.filter(p => Err.handle(() => p?.enabled)).length > 0) {
-            return {result: false, message: `no associated testIds found for test, but enabled 'IPolicyEnginePlugins' exist so test should not be run`}
+            return {result: false, message: `no associated testIds found for test, but enabled 'ITestExecutionPolicyPlugins' exist so test should not be run`}
         }
         return {result: true};
     }
@@ -416,7 +416,7 @@ export class Verifier implements PromiseLike<void> {
  *   let feature = new FeatureObj();
  *   return await feature.returnExpectedValue();
  * }).withDescription('example usage for Verifier')
- * .and.withTestIds('C1234') // if PolicyEngineManager.shouldRun('C1234') returns `false` the assertion is not run
+ * .and.withTestIds('C1234') // if TestExecutionPolicyManager.shouldRun('C1234') returns `false` the assertion is not run
  * .returns('expected value');
  * ```
  * @param assertion the `Func<Verifier, any>` function to be executed by this `Verifier`

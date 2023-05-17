@@ -211,7 +211,7 @@
         "signature": "d15aa4b304f02574b4213cd59da4d0fac666764d52d495a8d736d7c4ed9d3a64",
         "affectsGlobalScope": false
       },
-      "./src/plugins/logging/abstract-logging-plugin.ts": {
+      "./src/plugins/logging/abstract-reporting-plugin.ts": {
         "version": "1e99291aae42f095eba90f5fffadcac0bf26991bbfe6ab9e91f383a95aed0edc",
         "signature": "55e9d5946701fecc14a73ff28a447fb4ad6bfcac3bbd90867036795daad92161",
         "affectsGlobalScope": false
@@ -301,7 +301,7 @@
         "signature": "a17e831d16c27cbe4d6f0bb238c1ded0d4a26c282009e431c68733be0b792f4f",
         "affectsGlobalScope": true
       },
-      "./src/plugins/logging/console-logging-plugin.ts": {
+      "./src/plugins/logging/console-reporting-plugin.ts": {
         "version": "9d197d6bfc56b1babc057b934c7ab58a0b00115e71b6f1ed108dcda547c0ca31",
         "signature": "ee01a1f1cba211c640ad1f8325cec55a362b979c7cc48805e0f65af1bad09b10",
         "affectsGlobalScope": false
@@ -921,8 +921,8 @@
         "./src/plugins/defects/defect-plugin-manager.ts",
         "./src/plugins/defects/defect-status.ts",
         "./src/plugins/defects/idefect.ts",
-        "./src/plugins/logging/abstract-logging-plugin.ts",
-        "./src/plugins/logging/console-logging-plugin.ts",
+        "./src/plugins/logging/abstract-reporting-plugin.ts",
+        "./src/plugins/logging/console-reporting-plugin.ts",
         "./src/plugins/logging/format-options.ts",
         "./src/plugins/logging/logging-level.ts",
         "./src/plugins/logging/logging-plugin-manager.ts",
@@ -971,17 +971,17 @@
       "./src/plugins/defects/idefect.ts": [
         "./src/plugins/defects/defect-status.ts"
       ],
-      "./src/plugins/logging/abstract-logging-plugin.ts": [
+      "./src/plugins/logging/abstract-reporting-plugin.ts": [
         "../../node_modules/ts-simple-nameof/index.d.ts",
         "./src/helpers/random-generator.ts",
         "./src/plugins/abstract-plugin.ts",
         "./src/plugins/logging/logging-level.ts",
         "./src/plugins/test-cases/itest-result.ts"
       ],
-      "./src/plugins/logging/console-logging-plugin.ts": [
+      "./src/plugins/logging/console-reporting-plugin.ts": [
         "../../node_modules/colors/index.d.ts",
         "../../node_modules/ts-simple-nameof/index.d.ts",
-        "./src/plugins/logging/abstract-logging-plugin.ts",
+        "./src/plugins/logging/abstract-reporting-plugin.ts",
         "./src/plugins/logging/logging-level.ts",
         "./src/plugins/test-cases/itest-result.ts"
       ],
@@ -993,7 +993,7 @@
         "./src/helpers/converter.ts",
         "./src/helpers/random-generator.ts",
         "./src/plugins/abstract-plugin-manager.ts",
-        "./src/plugins/logging/abstract-logging-plugin.ts",
+        "./src/plugins/logging/abstract-reporting-plugin.ts",
         "./src/plugins/logging/format-options.ts",
         "./src/plugins/logging/logging-level.ts",
         "./src/plugins/test-cases/itest-result.ts"
@@ -1334,8 +1334,8 @@
         "./src/plugins/defects/defect-plugin-manager.ts",
         "./src/plugins/defects/defect-status.ts",
         "./src/plugins/defects/idefect.ts",
-        "./src/plugins/logging/abstract-logging-plugin.ts",
-        "./src/plugins/logging/console-logging-plugin.ts",
+        "./src/plugins/logging/abstract-reporting-plugin.ts",
+        "./src/plugins/logging/console-reporting-plugin.ts",
         "./src/plugins/logging/format-options.ts",
         "./src/plugins/logging/logging-level.ts",
         "./src/plugins/logging/logging-plugin-manager.ts",
@@ -1378,13 +1378,13 @@
       "./src/plugins/defects/idefect.ts": [
         "./src/plugins/defects/defect-status.ts"
       ],
-      "./src/plugins/logging/abstract-logging-plugin.ts": [
+      "./src/plugins/logging/abstract-reporting-plugin.ts": [
         "./src/plugins/abstract-plugin.ts",
         "./src/plugins/logging/logging-level.ts",
         "./src/plugins/test-cases/itest-result.ts"
       ],
-      "./src/plugins/logging/console-logging-plugin.ts": [
-        "./src/plugins/logging/abstract-logging-plugin.ts",
+      "./src/plugins/logging/console-reporting-plugin.ts": [
+        "./src/plugins/logging/abstract-reporting-plugin.ts",
         "./src/plugins/logging/logging-level.ts",
         "./src/plugins/test-cases/itest-result.ts"
       ],
@@ -1393,7 +1393,7 @@
       ],
       "./src/plugins/logging/logging-plugin-manager.ts": [
         "./src/plugins/abstract-plugin-manager.ts",
-        "./src/plugins/logging/abstract-logging-plugin.ts",
+        "./src/plugins/logging/abstract-reporting-plugin.ts",
         "./src/plugins/logging/format-options.ts",
         "./src/plugins/logging/logging-level.ts",
         "./src/plugins/test-cases/itest-result.ts"
@@ -1540,8 +1540,8 @@
       "./src/plugins/defects/defect-plugin-manager.ts",
       "./src/plugins/defects/defect-status.ts",
       "./src/plugins/defects/idefect.ts",
-      "./src/plugins/logging/abstract-logging-plugin.ts",
-      "./src/plugins/logging/console-logging-plugin.ts",
+      "./src/plugins/logging/abstract-reporting-plugin.ts",
+      "./src/plugins/logging/console-reporting-plugin.ts",
       "./src/plugins/logging/format-options.ts",
       "./src/plugins/logging/logging-level.ts",
       "./src/plugins/logging/logging-plugin-manager.ts",

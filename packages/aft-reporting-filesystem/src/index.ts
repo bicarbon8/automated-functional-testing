@@ -1,1 +1,1 @@
-export * from "./filesystem-logging-plugin";
+export * from "./filesystem-reporting-plugin";

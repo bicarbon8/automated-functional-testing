@@ -49,7 +49,7 @@ export class AftTest extends AftLog {
 
     /**
      * determines if any of the referenced Test Case ID's should be run according to the
-     * loaded `PolicyEnginePlugin` implementations' `shouldRun` methods
+     * loaded `TestExecutionPolicyPlugin` implementations' `shouldRun` methods
      * @returns `true` if test should be run, otherwise `false`
      */
     async shouldRun(): Promise<boolean> {

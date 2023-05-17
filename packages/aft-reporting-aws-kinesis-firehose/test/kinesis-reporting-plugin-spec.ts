@@ -1,18 +1,18 @@
-import { KinesisLoggingPlugin, KinesisLoggingPluginConfig } from "../src/kinesis-logging-plugin";
+import { KinesisReportingPlugin, KinesisReportingPluginConfig } from "../src/kinesis-reporting-plugin";
 import { AftConfig, Reporter, machineInfo, pluginLoader, rand, TestResult } from "aft-core";
 import * as pkg from "../package.json";
 import * as Firehose from "aws-sdk/clients/firehose";
 import { KinesisLogRecord } from "../src/kinesis-log-record";
 import AWS = require("aws-sdk");
 
-describe('KinesisLoggingPlugin', () => {
+describe('KinesisReportingPlugin', () => {
     it('can batch messages for sending', async () => {
         const cfgMgr = new AftConfig();
-        const config = cfgMgr.getSection(KinesisLoggingPluginConfig);
+        const config = cfgMgr.getSection(KinesisReportingPluginConfig);
         config.logLevel = 'info';
         config.batch = true;
         config.batchSize = 10;
-        let plugin: KinesisLoggingPlugin = new KinesisLoggingPlugin(cfgMgr);
+        let plugin: KinesisReportingPlugin = new KinesisReportingPlugin(cfgMgr);
         spyOn(plugin, 'credentials').and.returnValue(Promise.resolve(new AWS.Credentials(
             rand.getString(25, true, true),
             rand.getString(35, true, true, true),
@@ -39,11 +39,11 @@ describe('KinesisLoggingPlugin', () => {
 
     it('can disable batch sending of messages', async () => {
         const cfgMgr = new AftConfig();
-        const config = cfgMgr.getSection(KinesisLoggingPluginConfig);
+        const config = cfgMgr.getSection(KinesisReportingPluginConfig);
         config.logLevel = 'info';
         config.batch = false
         config.batchSize = 10;
-        let plugin: KinesisLoggingPlugin = new KinesisLoggingPlugin(cfgMgr);
+        let plugin: KinesisReportingPlugin = new KinesisReportingPlugin(cfgMgr);
         spyOn(plugin, 'credentials').and.returnValue(Promise.resolve(new AWS.Credentials(
             rand.getString(25, true, true),
             rand.getString(35, true, true, true),
@@ -69,11 +69,11 @@ describe('KinesisLoggingPlugin', () => {
 
     it('sends any unsent batched logs on dispose', async () => {
         const cfgMgr = new AftConfig();
-        const config = cfgMgr.getSection(KinesisLoggingPluginConfig);
+        const config = cfgMgr.getSection(KinesisReportingPluginConfig);
         config.logLevel = 'info';
         config.batch = true;
         config.batchSize = 10;
-        let plugin: KinesisLoggingPlugin = new KinesisLoggingPlugin(cfgMgr);
+        let plugin: KinesisReportingPlugin = new KinesisReportingPlugin(cfgMgr);
         spyOn(plugin, 'credentials').and.returnValue(Promise.resolve(new AWS.Credentials(
             rand.getString(25, true, true),
             rand.getString(35, true, true, true),
@@ -107,11 +107,11 @@ describe('KinesisLoggingPlugin', () => {
 
     it('only sends messages of the appropriate level', async () => {
         const cfgMgr = new AftConfig();
-        const config = cfgMgr.getSection(KinesisLoggingPluginConfig);
+        const config = cfgMgr.getSection(KinesisReportingPluginConfig);
         config.logLevel = 'info';
         config.batch = false;
         config.batchSize = 10;
-        let plugin: KinesisLoggingPlugin = new KinesisLoggingPlugin(cfgMgr);
+        let plugin: KinesisReportingPlugin = new KinesisReportingPlugin(cfgMgr);
         spyOn(plugin, 'credentials').and.returnValue(Promise.resolve(new AWS.Credentials(
             rand.getString(25, true, true),
             rand.getString(35, true, true, true),
@@ -136,11 +136,11 @@ describe('KinesisLoggingPlugin', () => {
 
     it('adds expected fields to the log record', async () => {
         const cfgMgr = new AftConfig();
-        const config = cfgMgr.getSection(KinesisLoggingPluginConfig);
+        const config = cfgMgr.getSection(KinesisReportingPluginConfig);
         config.logLevel = 'info';
         config.batch = false;
         config.batchSize = 10;
-        let plugin: KinesisLoggingPlugin = new KinesisLoggingPlugin(cfgMgr);
+        let plugin: KinesisReportingPlugin = new KinesisReportingPlugin(cfgMgr);
         spyOn(plugin, 'credentials').and.returnValue(Promise.resolve(new AWS.Credentials(
             rand.getString(25, true, true),
             rand.getString(35, true, true, true),
@@ -170,13 +170,13 @@ describe('KinesisLoggingPlugin', () => {
      */
     xit('can send real logs and ITestResult objects', async () => {
         const cfgMgr = new AftConfig();
-        const config = cfgMgr.getSection(KinesisLoggingPluginConfig);
+        const config = cfgMgr.getSection(KinesisReportingPluginConfig);
         config.logLevel = 'trace';
         config.batch = true;
         config.batchSize = 10;
         config.deliveryStream = '%kinesis_deliverystream%';
         config.region = '%AWS_REGION%';
-        const plugin: KinesisLoggingPlugin = new KinesisLoggingPlugin(cfgMgr);
+        const plugin: KinesisReportingPlugin = new KinesisReportingPlugin(cfgMgr);
         const logName = rand.getString(10, true, true, true, true);
         const result: TestResult = {
             resultId: rand.guid,
@@ -196,10 +196,10 @@ describe('KinesisLoggingPlugin', () => {
         const config = {
             AftConfig: {
                 pluginNames: [
-                    'kinesis-logging-plugin'
+                    'kinesis-reporting-plugin'
                 ]
             },
-            KinesisLoggingPluginConfig: {
+            KinesisReportingPluginConfig: {
                 logLevel: 'none',
                 batch: false
             }
@@ -212,9 +212,9 @@ describe('KinesisLoggingPlugin', () => {
 
         expect(plugin).toBeDefined();
         expect(plugin.logLevel).toEqual('none');
-        expect((plugin as KinesisLoggingPlugin).batch).toBe(false);
-        expect(await (plugin as KinesisLoggingPlugin).client()).toBeDefined();
-        expect(plugin.constructor.name).toEqual('KinesisLoggingPlugin');
+        expect((plugin as KinesisReportingPlugin).batch).toBe(false);
+        expect(await (plugin as KinesisReportingPlugin).client()).toBeDefined();
+        expect(plugin.constructor.name).toEqual('KinesisReportingPlugin');
         expect(plugin.enabled).toBeFalse();
     });
 });

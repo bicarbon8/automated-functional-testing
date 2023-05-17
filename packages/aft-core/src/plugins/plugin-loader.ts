@@ -33,13 +33,13 @@ class PluginLoader {
      * extend the passed in `typeName` and returns those that do as an array of objects.
      * ex: 
      * ```typescript
-     * let loggingPlugins = pluginloader.getPluginsByType(LoggingPlugin);
-     * // loggingPlugins will all extend from LoggingPlugin abstract class
+     * let ReportingPlugins = pluginloader.getPluginsByType(ReportingPlugin);
+     * // ReportingPlugins will all extend from ReportingPlugin abstract class
      * ```
      * 
      * NOTE: if this is the first time the `pluginloader` is being called then plugins will
      * also be loaded
-     * @param clazz a `Class<T: Plugin>` base class like `LoggingPlugin` that must be extended
+     * @param clazz a `Class<T: Plugin>` base class like `ReportingPlugin` that must be extended
      * by any of the objects returned by this call
      * @param aftCfg an optional `AftConfig` instance to use when loading plugins if not
      * already loaded
@@ -76,7 +76,7 @@ class PluginLoader {
      * 
      * NOTE: if this is the first time the `pluginloader` is being called then plugins will
      * also be loaded
-     * @param pluginName the name of the plugin package or file like `html-logging-plugin`
+     * @param pluginName the name of the plugin package or file like `html-reporting-plugin`
      * @param aftCfg an optional `AftConfig` instance to use when loading plugins if not
      * already loaded
      * @returns the requested plugin or `undefined` if not found
@@ -185,15 +185,15 @@ class PluginLoader {
  * {
  *   "pluginsSearchDir": "../",
  *   "pluginNames": [
- *     "testrail-logging-plugin",
+ *     "testrail-reporting-plugin",
  *     "testrail-test-case-plugin"
- *     "html-logging-plugin"
+ *     "html-reporting-plugin"
  *   ]
  * }
  * ```
  * 
- * **NOTE:** the above will attempt to load a `testrail-logging-plugin`,
- * `testrail-test-case-plugin` and `html-logging-plugin` class. if loading
+ * **NOTE:** the above will attempt to load a `testrail-reporting-plugin`,
+ * `testrail-test-case-plugin` and `html-reporting-plugin` class. if loading
  * fails then it will search the filesystem, starting at the relative
  * `pluginsSearchDir` path (relative to current nodejs execution dir)
  * and searching all subdirectories, for a file named `custom-plugin.js` 

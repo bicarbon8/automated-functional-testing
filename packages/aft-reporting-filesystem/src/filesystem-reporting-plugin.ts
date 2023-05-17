@@ -2,14 +2,14 @@ import * as path from "path";
 import { AftConfig, convert, Err, ExpiringFileLock, fileio, ReportingPlugin, ReportingPluginConfig, LogLevel, LogMessageData, TestResult } from "aft-core";
 import * as date from "date-and-time";
 
-export class FilesystemLoggingPluginConfig extends ReportingPluginConfig {
+export class FilesystemReportingPluginConfig extends ReportingPluginConfig {
     override logLevel: LogLevel = 'trace';
     outputPath: string = path.join(process.cwd(), 'logs');
     includeResults: boolean = true;
     dateFormat: string = 'YYYY-MM-DD HH:mm:ss.SSS';
 };
 
-export class FilesystemLoggingPlugin extends ReportingPlugin {
+export class FilesystemReportingPlugin extends ReportingPlugin {
     public override get logLevel(): LogLevel {
         return this._level;
     }
@@ -21,7 +21,7 @@ export class FilesystemLoggingPlugin extends ReportingPlugin {
 
     constructor(aftCfg?: AftConfig) {
         super(aftCfg);
-        const fslpc = this.aftCfg.getSection(FilesystemLoggingPluginConfig);
+        const fslpc = this.aftCfg.getSection(FilesystemReportingPluginConfig);
         this._level = fslpc.logLevel ?? this.aftCfg.logLevel
             ?? 'trace';
         if (this.enabled) {

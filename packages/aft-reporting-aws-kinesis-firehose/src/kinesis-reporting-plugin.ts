@@ -8,7 +8,7 @@ type CheckAndSendOptions = {
     logName: string;
 };
 
-export class KinesisLoggingPluginConfig extends ReportingPluginConfig {
+export class KinesisReportingPluginConfig extends ReportingPluginConfig {
     region: string;
     deliveryStream: string;
     batch: boolean = true;
@@ -20,7 +20,7 @@ export class KinesisLoggingPluginConfig extends ReportingPluginConfig {
  * ```json
  * // aftconfig.json
  * {
- *     "KinesisLoggingPluginConfig": {
+ *     "KinesisReportingPluginConfig": {
  *       "logLevel": "info",
  *       "region": "us-west-1",
  *       "deliveryStream": "your-frehose-delivery-stream",
@@ -36,9 +36,9 @@ export class KinesisLoggingPluginConfig extends ReportingPluginConfig {
  * - Shared Ini File: read from the host system
  * - ECS Credentials: similar to the EC2 Metadata, but on ECS
  * - Process Credentials: any credentials set on the current process
- * - Options: read from passed in `KinesisLoggingPluginOptions`
+ * - Options: read from passed in `KinesisReportingPluginOptions`
  */
-export class KinesisLoggingPlugin extends ReportingPlugin {
+export class KinesisReportingPlugin extends ReportingPlugin {
     private readonly _logs: Map<string, AWS.Firehose.Record[]>;
     private readonly _buildInfo: BuildInfoManager;
     private readonly _level: LogLevel;
@@ -53,7 +53,7 @@ export class KinesisLoggingPlugin extends ReportingPlugin {
         super(aftCfg);
         this._client = client;
         this._logs = new Map<string, AWS.Firehose.Record[]>();
-        this._level = this.aftCfg.getSection(KinesisLoggingPluginConfig).logLevel
+        this._level = this.aftCfg.getSection(KinesisReportingPluginConfig).logLevel
             ?? this.aftCfg.logLevel ?? 'warn';
         if (this.enabled) {
             this._buildInfo = new BuildInfoManager(this.aftCfg);
@@ -71,25 +71,25 @@ export class KinesisLoggingPlugin extends ReportingPlugin {
     }
 
     get region(): string {
-        return this.aftCfg.getSection(KinesisLoggingPluginConfig).region;
+        return this.aftCfg.getSection(KinesisReportingPluginConfig).region;
     }
 
     get deliveryStream(): string {
-        return this.aftCfg.getSection(KinesisLoggingPluginConfig).deliveryStream;
+        return this.aftCfg.getSection(KinesisReportingPluginConfig).deliveryStream;
     }
 
     get batch(): boolean {
-        return this.aftCfg.getSection(KinesisLoggingPluginConfig).batch ?? true;
+        return this.aftCfg.getSection(KinesisReportingPluginConfig).batch ?? true;
     }
 
     get batchSize(): number {
-        return this.aftCfg.getSection(KinesisLoggingPluginConfig).batchSize ?? 10;
+        return this.aftCfg.getSection(KinesisReportingPluginConfig).batchSize ?? 10;
     }
 
     /**
      * generates a valid AWS Credentials object by checking the following
      * (in this order):
-     * - Options: read from passed in `KinesisLoggingPluginOptions`
+     * - Options: read from passed in `KinesisReportingPluginOptions`
      * - Environment Variables: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN
      * - EC2 Metadata: also known as instance profile credentials
      * - Shared Ini File: read from the host system
