@@ -10,7 +10,7 @@ import { PlanId } from '../helpers/plan-id';
  * all retrieved from `TestRailConfig` under the `TestRailConfig`
  * section of your `aftconfig.json` file
  */
-export class TestRailTestCasePlugin extends PolicyEnginePlugin {
+export class TestRailPolicyEnginePlugin extends PolicyEnginePlugin {
     private readonly _enabled: boolean;
     public override get enabled(): boolean {
         return this._enabled;

@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { PolicyEngineManager, AftConfig } from 'aft-core';
 import { httpService } from 'aft-web-services';
-import { TestRailConfig, TestRailTestCasePlugin } from "../../src";
+import { TestRailConfig, TestRailPolicyEnginePlugin } from "../../src";
 import { TestRailApi } from '../../src/api/testrail-api';
 import { TestRailCase, TestRailTest } from '../../src/api/testrail-custom-types';
 import { statusConverter } from '../../src/helpers/status-converter';
@@ -39,7 +39,7 @@ describe('TestRailTestCasePlugin', () => {
             status_id: statusConverter.toTestRailStatus('passed')
         };
         spyOn(api, 'getTestsInRuns').and.returnValue(Promise.resolve([expected]));
-        const plugin: TestRailTestCasePlugin = new TestRailTestCasePlugin(aftCfg, api);
+        const plugin: TestRailPolicyEnginePlugin = new TestRailPolicyEnginePlugin(aftCfg, api);
         
         const actual: TestRailTest = await plugin.getTestCase('C1234');
 
@@ -69,7 +69,7 @@ describe('TestRailTestCasePlugin', () => {
             created_on: Date.now()
         } as TestRailCase;
         spyOn(api, 'getCasesInSuites').and.returnValue(Promise.resolve([expected]));
-        let plugin: TestRailTestCasePlugin = new TestRailTestCasePlugin(aftCfg, api);
+        let plugin: TestRailPolicyEnginePlugin = new TestRailPolicyEnginePlugin(aftCfg, api);
         
         let actual: TestRailCase = await plugin.getTestCase('C1234');
 

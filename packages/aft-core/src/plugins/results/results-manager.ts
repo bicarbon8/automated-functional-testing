@@ -4,7 +4,7 @@ import { Err } from "../../helpers/err";
 import { pluginLoader } from "../plugin-loader";
 import { ResultsPlugin } from "./results-plugin";
 import { TestResult } from "./test-result";
-import { AftLogger, aftLogger } from "../../helpers/aft-logger";
+import { AftLogger, aftLogger } from "../../logging/aft-logger";
 
 export class ResultsManager {
     public readonly aftCfg: AftConfig;

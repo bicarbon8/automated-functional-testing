@@ -4,7 +4,7 @@ import * as date from "date-and-time";
 
 export class FilesystemLoggingPluginConfig extends LoggingPluginConfig {
     override logLevel: LogLevel = 'trace';
-    outputPath: string = 'logs';
+    outputPath: string = path.join(process.cwd(), 'logs');
     includeResults: boolean = true;
     dateFormat: string = 'YYYY-MM-DD HH:mm:ss.SSS';
 };

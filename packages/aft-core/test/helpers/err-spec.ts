@@ -1,6 +1,16 @@
 import { rand, Err, LogManager, LogLevel, AftConfig } from "../../src";
 
+const consolelog = console.log;
+
 describe('Err', () => {
+    beforeAll(() => {
+        console.log = (...data: any[]) => null;
+    })
+
+    afterAll(() => {
+        console.log = consolelog;
+    })
+
     it('exposes the original Error', () => {
         const err: Error = new Error(rand.getString(25));
 
@@ -8,17 +18,17 @@ describe('Err', () => {
 
         expect(actual.err).toBeDefined();
         expect(actual.err.message).toEqual(err.message);
-        expect(actual.verbosity).toEqual('full');
+        expect(actual.verbosity).toEqual('short');
     });
 
     it('verbosity can be set', () => {
         const err: Error = new Error(rand.getString(25));
 
-        const actual = new Err(err).setVerbosity('short');
+        const actual = new Err(err).setVerbosity('full');
 
         expect(actual.err).toBeDefined();
         expect(actual.err.message).toEqual(err.message);
-        expect(actual.verbosity).toEqual('short');
+        expect(actual.verbosity).toEqual('full');
     });
 
     describe('short', () => {

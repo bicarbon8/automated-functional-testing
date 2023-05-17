@@ -5,8 +5,8 @@ import { HtmlResult } from "./html-result";
 import { htmlTemplate } from "./templates/html-template";
 
 export class HtmlLoggingPluginConfig extends LoggingPluginConfig {
-    fileName: string;
-    outputDir: string;
+    fileName: string = 'testresults.html';
+    outputDir: string = path.join(process.cwd(), 'logs');
     maxLogLines: number;
     override logLevel: LogLevel = 'warn';
 }
@@ -31,7 +31,7 @@ export class HtmlLoggingPlugin extends LoggingPlugin implements ResultsPlugin {
             this._results = new FileSystemMap<string, Array<HtmlTestResult>>('htmlSharedResults');
             this._logs = new FileSystemMap<string, Array<string>>('htmlSharedLogs');
             this._fileName = cfg.fileName ?? 'testresults.html';
-            let dir = cfg.outputDir ?? process.cwd();
+            let dir = cfg.outputDir ?? path.join(process.cwd(), 'logs');
             if (path.isAbsolute(dir)) {
                 this._outputDir = dir;
             } else {

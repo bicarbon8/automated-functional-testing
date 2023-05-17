@@ -68,12 +68,13 @@ describe('LogManager', () => {
     it('will send cloned LogMessageData to any registered LoggingPlugin implementations', async () => {
         const logName = 'will send cloned LogMessageData to any registered LoggingPlugin implementations';
         const logger = new LogManager(logName, new AftConfig({
-            pluginNames: ['mock-logging-plugin']
+            pluginNames: ['mock-logging-plugin'],
+            logLevel: 'trace'
         }));
         const plugin = logger.plugins.find(p => p.enabled) as MockLoggingPlugin;
         const logs: LogMessageData[] = [];
         const logSpy = spyOn(plugin, 'log').and.callFake((name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => {
-            logs.push({name, level, message});
+            logs.push({name, level, message, args: data});
             return Promise.resolve();
         })
         const expected: string = rand.getString(25, true, true, true, true);
@@ -83,10 +84,11 @@ describe('LogManager', () => {
         expect(logs[0].message).toBe(expected);
     });
 
-    it('calls ILoggingPlugin.finalise on logger.dispose', async () => {
+    it('calls LoggingPlugin.finalise on logger.dispose', async () => {
         const logName = 'calls ILoggingPlugin.finalise on logger.dispose';
         const logger = new LogManager(logName, new AftConfig({
-            pluginNames: ['mock-logging-plugin']
+            pluginNames: ['mock-logging-plugin'],
+            logLevel: 'trace'
         }));
         const plugin = logger.plugins.find(p => p.enabled);
         const errors = new Array<LogMessageData>();
@@ -116,17 +118,18 @@ describe('LogManager', () => {
         expect(async () => await logger.dispose()).withContext('dispose').not.toThrow();
     });
 
-    it('passes manager LogLevel to plugins if not set in PluginConfig', async () => {
+    it('passes manager LogLevel to plugins if not set in PluginConfig', () => {
         const logName = 'passes manager LogLevel to plugins if not set in PluginConfig';
         const logger: LogManager = new LogManager(logName, new AftConfig({
             logLevel: 'error',
             pluginNames: ['mock-logging-plugin']
         }));
 
-        const plugin = logger.plugins.find(p => p.enabled);
+        expect(logger.plugins.length).withContext('expect at least 1 loaded plugin').toBeGreaterThan(0);
+        const plugin = logger.plugins[0];
 
         expect(plugin.logLevel).toEqual(logger.logLevel);
-        expect(plugin.enabled).toBe(true);
+        expect(plugin.enabled).withContext('expect plugin to be enabled').toBe(true);
     });
 
     it('allows setting config for plugins in their PluginConfig', async () => {

@@ -26,7 +26,7 @@ export class FileSystemMap<Tkey extends JsonKey, Tval extends JsonValue> impleme
 
     constructor(filename: string, entries?: readonly (readonly [Tkey, Tval])[] | null, aftCfg?: AftConfig) {
         if (!filename) {
-            throw 'filename argument must be defined';
+            throw `[${this.constructor.name}] filename argument must be defined'`;
         }
         this._aftCfg = aftCfg ?? aftConfig;
         this._memoryMap = new Map<Tkey, Tval>();

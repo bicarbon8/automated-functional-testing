@@ -1,4 +1,4 @@
-import { between, containing, equaling, exactly, greaterThan, havingValue, lessThan, not } from "../../src/helpers/verifier-matcher";
+import { between, containing, equaling, exactly, greaterThan, havingValue, lessThan, not } from "../../src";
 
 describe('VerifierMatcher', () => {
     describe('Equaling', () => {

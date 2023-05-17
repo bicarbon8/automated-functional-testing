@@ -11,7 +11,7 @@
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./.nyc_output && rimraf ./coverage",
     "build": "npm run clean && tsc --build",
-    "test": "npm run build && NODE_OPTIONS='-r source-map-support/register' jasmine --config=./jasmine.json",
+    "test": "npx jasmine-ts --config=./jasmine.json",
     "coverage": "nyc npm run test"
   },
   "keywords": [

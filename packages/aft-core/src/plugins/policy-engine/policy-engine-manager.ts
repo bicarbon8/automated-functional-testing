@@ -1,9 +1,10 @@
 import { AftConfig, aftConfig } from "../../configuration/aft-config";
-import { AftLogger, LogMessageData, aftLogger } from "../../helpers/aft-logger";
+import { AftLogger, aftLogger } from "../../logging/aft-logger";
 import { ProcessingResult } from "../../helpers/custom-types";
 import { Err } from "../../helpers/err";
 import { pluginLoader } from "../plugin-loader";
 import { PolicyEnginePlugin } from "./policy-engine-plugin";
+import { LogMessageData } from "../../logging/log-message-data";
 
 export class PolicyEngineManager {
     public readonly aftCfg: AftConfig;

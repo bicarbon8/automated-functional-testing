@@ -1,5 +1,5 @@
 import { AftConfig, aftConfig } from "../configuration/aft-config";
-import { AftLogger, aftLogger } from "../helpers/aft-logger";
+import { AftLogger, aftLogger } from "../logging/aft-logger";
 
 export class PluginConfig {
     enabled: boolean = false;

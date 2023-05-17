@@ -1,14 +1,8 @@
 import * as colors from "colors";
 import { AftConfig, aftConfig } from "../configuration/aft-config";
-import { LogLevel } from "../plugins/logging/log-level";
-import { ellide } from "./ellide";
-
-export type LogMessageData = {
-    name: string;
-    level: LogLevel;
-    message: string;
-    args?: Array<any>;
-};
+import { LogLevel } from "./log-level";
+import { ellide } from "../helpers/ellide";
+import { LogMessageData } from "./log-message-data";
 
 /**
  * a logging class that uses configuration to determine what
@@ -55,8 +49,8 @@ export class AftLogger {
     }
 
     /**
-     * function will check the `level` is greater or equal to the current `logLevel` and
-     * if it is, will send the `name`, `level` and `message` to the console. if any `data`
+     * function will check that the `level` is greater or equal to the current configured `logLevel`
+     * and if it is, will send the `name`, `level` and `message` to the console. if any `data`
      * is included it will be converted to a string using `JSON.stringify(...)` and appended
      * to the `message`
      * @param name the name of the system performing the log call
@@ -68,31 +62,7 @@ export class AftLogger {
         if (data?.level != 'none' && LogLevel.toValue(data?.level) >= LogLevel.toValue(this.logLevel)) {
             if (data?.message) {
                 const out: string = this.format(data);
-                switch (data?.level) {
-                    case 'error':
-                    case 'fail':
-                        console.log(colors.red(out));
-                        break;
-                    case 'warn':
-                        console.log(colors.yellow(out));
-                        break;
-                    case 'info':
-                        console.log(colors.white(out));
-                        break;
-                    case 'pass':
-                        console.log(colors.green(out));
-                        break;
-                    case 'step':
-                        console.log(colors.magenta(out));
-                        break;
-                    case 'trace':
-                    case 'debug':
-                        console.log(colors.blue(out));
-                        break;
-                    default:
-                        console.log(colors.gray(out));
-                        break;
-                }
+                this.toConsole(data.level, out);
             }
         }
     }
@@ -111,6 +81,43 @@ export class AftLogger {
         let d: string = new Date().toLocaleTimeString();
         let out: string = `${d} - [${data.name}] - ${ellide(data.level.toUpperCase(), 5, 'end', '')} - ${data.message}`;
         return out;
+    }
+
+    /**
+     * applies a colour based on the supplied `level` and outputs the `message`
+     * to the console using `console.log` in that colour
+     * > NOTE: calling this function directly will bypass checking the `level`
+     * to see if the `message` should actually be logged and simply outputs to
+     * the console
+     * @param level a valid {LogLevel} like 'warn' or 'trace'
+     * @param message the message string to log to console
+     */
+    toConsole(level: LogLevel, message: string): void {
+        switch (level) {
+            case 'error':
+            case 'fail':
+                console.log(colors.red(message));
+                break;
+            case 'warn':
+                console.log(colors.yellow(message));
+                break;
+            case 'info':
+                console.log(colors.white(message));
+                break;
+            case 'pass':
+                console.log(colors.green(message));
+                break;
+            case 'step':
+                console.log(colors.magenta(message));
+                break;
+            case 'trace':
+            case 'debug':
+                console.log(colors.blue(message));
+                break;
+            default:
+                console.log(colors.gray(message));
+                break;
+        }
     }
 }
 

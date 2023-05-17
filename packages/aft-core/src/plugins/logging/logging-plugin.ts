@@ -1,8 +1,8 @@
 import { Plugin, PluginConfig } from "../plugin";
-import { LogLevel } from "./log-level";
+import { LogLevel } from "../../logging/log-level";
 
 export class LoggingPluginConfig extends PluginConfig {
-    logLevel: LogLevel = 'none';
+    logLevel: LogLevel;
 }
 
 export class LoggingPlugin extends Plugin {
@@ -24,7 +24,7 @@ export class LoggingPlugin extends Plugin {
      * - `none` - used when no logging is desired (disables logging)
      */
     get logLevel(): LogLevel {
-        return 'none';
+        return this.aftLogger.logLevel;
     }
     /**
      * called by the parent `AftLog` on load to allow any plugins to configure

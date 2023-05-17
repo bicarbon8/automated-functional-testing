@@ -1,5 +1,4 @@
-import { LogManager, rand, PolicyEngineManager, Verifier, verify, TestResult, LogLevel, ProcessingResult, AftConfig, pluginLoader, ResultsManager } from "../../src";
-import { containing, equaling } from "../../src/helpers/verifier-matcher";
+import { LogManager, rand, PolicyEngineManager, Verifier, verify, TestResult, LogLevel, ProcessingResult, AftConfig, pluginLoader, ResultsManager, containing, equaling } from "../../src";
 
 var consoleLog = console.log;
 describe('Verifier', () => {

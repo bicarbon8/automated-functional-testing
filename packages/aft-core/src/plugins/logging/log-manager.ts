@@ -1,8 +1,8 @@
 import { LoggingPlugin } from "./logging-plugin";
-import { LogLevel } from "./log-level";
+import { LogLevel } from "../../logging/log-level";
 import { AftConfig } from "../../configuration/aft-config";
 import { pluginLoader } from "../plugin-loader";
-import { AftLogger, aftLogger } from "../../helpers/aft-logger";
+import { AftLogger, aftLogger } from "../../logging/aft-logger";
 
 /**
  * a logging class that manages logging plugins.

@@ -20,7 +20,7 @@ export class CacheMap<K extends JsonKey, V extends JsonValue> implements Map<K, 
     constructor(cacheDurationMs: number, useFileCache: boolean, filename?: string) {
         this._cacheDuration = cacheDurationMs;
         if (useFileCache && !filename) {
-            throw `when 'useFileCache' is set to 'true', 'filename' must be defined`
+            throw `[${this.constructor.name}] when 'useFileCache' is set to 'true', 'filename' must be defined`;
         }
         this._internalMap = (useFileCache) ? new FileSystemMap<K, CacheObject>(filename) : new Map<K, CacheObject>();
     }

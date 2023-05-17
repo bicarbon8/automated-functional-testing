@@ -1,6 +1,6 @@
-import { LogLevel } from '../plugins/logging/log-level';
+import { LogLevel } from '../logging/log-level';
 import { LogManager } from '../plugins/logging/log-manager';
-import { AftLogger, aftLogger } from './aft-logger';
+import { AftLogger, aftLogger } from '../logging/aft-logger';
 import { convert } from './convert';
 import { Func } from './custom-types';
 import { ellide } from './ellide';
