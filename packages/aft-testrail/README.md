@@ -5,50 +5,38 @@ provides TestRail result logging as well as test execution filtering for users o
 the `TestRailReportingPlugin` extends from `ReportingPlugin` in `aft-core`. if enabled, this plugin will log test results to test cases in a TestRail Plan (if no plan is specified a new one is created the first time one is attempted to be accessed by the plugin). it can be enabled by including the following in your `aftconfig.json` file:
 ```json
 {
-    "Reporter": {
-        "level": "info",
-        "plugins": [
-            {
-                "name": "testrail-reporting-plugin",
-                "options": {
-                    "enabled": true,
-                    "level": "error",
-                    "maxLogCharacters": 100
-                }
-            }
-        ]
-    },
+    "logLevel": "info",
+    "pluginNames": [
+        "testrail-reporting-plugin"
+    ],
     "TestRailConfig": {
         "url": "https://your.testrail.instance/",
         "user": "valid.user@testrail.instance",
         "accesskey": "your_access_key",
-        "planid": 12345
+        "planid": 12345,
+        "logLevel": "warn",
+        "maxLogCharacters": 250
     }
 }
 ```
-**PluginConfig**:
-- **level** - [OPTIONAL] `string` value of `none`, `error`, `warn`, `step`, `info`, `debug`, or `trace` _(defaults to value set on `Reporter`)_
+**TestRailConfig**:
+- **logLevel** - [OPTIONAL] `string` value of `none`, `error`, `warn`, `step`, `info`, `debug`, or `trace` _(defaults to value set on `aftConfig.logLevel`)_
 - **maxLogCharacters** - [OPTIONAL] `number` for the maximum number of additional log characters to send to TestRail when logging a `TestResult` _(defaults to 250)_
 
 ## TestRailTestExecutionPolicyPlugin
 the `TestRailTestExecutionPolicyPlugin` extends from `TestExecutionPolicyPlugin` interface in `aft-core`. if enabled this plugin will lookup the status of TestRail tests based on their case ID from the set of IDs passed in to a `Verifier.withTestId` function. it can be enabled by including the following in your `aftconfig.json` file:
 ```json
 {
-    "TestCaseManager": {
-        "pluginNames": [
-            {
-                "name": "testrail-test-execution-policy-plugin",
-                "options": {
-                    "enabled": true
-                }
-            }
-        ]
-    },
+    "logLevel": "info",
+    "pluginNames": [
+        "testrail-test-execution-policy-plugin"
+    ],
     "TestRailConfig": {
         "url": "https://your.testrail.instance/",
         "user": "valid.user@testrail.instance",
         "accesskey": "your_access_key",
-        "planid": 12345
+        "planid": 12345,
+        "policyEngineEnabled": true
     }
 }
 ```
@@ -56,14 +44,17 @@ the `TestRailTestExecutionPolicyPlugin` extends from `TestExecutionPolicyPlugin`
 to submit results to or filter test execution based on existence and status of tests in TestRail, you will need to have an account with write permissions in TestRail. These values can be specified in your `aftconfig.json` as follows:
 ```json
 {
-    "testrailconfig": {
+    "TestRailConfig": {
         "url": "http://fake.testrail.io",
         "user": "your.email@your.domain.com",
         "accesskey": "your_testrail_api_key_or_password",
         "projectid": 3,
         "suiteids": [1219, 744],
         "planid": 12345,
-        "cacheDurationMs": 1000000
+        "cacheDurationMs": 1000000,
+        "logLevel": "trace",
+        "maxLogCharacters": 250,
+        "policyEngineEnabled": true
     }
 }
 ```
@@ -76,15 +67,15 @@ to submit results to or filter test execution based on existence and status of t
 - **cacheDurationMs** - the maximum number of milliseconds to cache responses from TestRail's API _(defaults to 300000)_
 
 ## Usage
-you can submit results directly by calling the `aft-core.Reporter.logResult(result: TestResult)` function or results will automatically be submitted if using the `aft-core.verify(assertion)` with valid `testCases` specified in the `options` object. 
+you can submit results directly by calling the `aft-core.Reporter.submitResult(result: TestResult)` function or results will automatically be submitted if using the `aft-core.verify(assertion)` with valid `testCases` specified in the `options` object. 
 
 > NOTE: sending a `TestResult` with a `TestStatus` of `Failed` will be converted to a status of `Retest` before submitting to TestRail
 
 ### via `aft-core.Reporter`:
 ```typescript
 let reporter = new Reporter({logName: 'example'});
-await reporter.logResult({
-    testId: 'C3190', // must be an existing TestRail Case ID contained in your referenced TestRail Plan ID
+await reporter.submitResult({
+    testId: 'C3190', // must exist in TestRail plan or project and suites
     status: TestStatus.Failed,
     resultMessage: 'there was an error when running this test'
 });
@@ -92,12 +83,10 @@ await reporter.logResult({
 ### via `aft-core.verify` (`aft-core.Verifier`):
 ```typescript
 /** 
- * `TestStatus.Retest` result for `C3190`, `C2217763`, and `C3131` sent to TestRail
+ * `TestStatus.retest` result for `C3190`, `C2217763`, and `C3131` sent to TestRail
  * following execution because expectation fails
  */
 await verify(() => (1 + 1)).returns(3) 
-.withTestId('C3190')
-.and.withTestId('C2217763')
-.and.withTestId('C3131')
+.withTestIds('C3190', 'C2217763', 'C3131')
 .and.withDescription('expected to fail because 1+1 != 3');
 ```
