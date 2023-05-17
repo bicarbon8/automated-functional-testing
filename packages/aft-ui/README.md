@@ -45,19 +45,31 @@ export class BrowserStackAutomateSessionGeneratorPlugin extends UiSessionGenerat
 ```
 
 ## aftconfig.json keys and values supported by aft-selenium package
-this package is an abstract base to be extended by other packages providing support for UI testing so no configuration is expected. that said, the base options provided for packages extending this one will be:
 
-**UiSessionGeneratorPlugin**
+**GridSessionGeneratorPlugin Example using BrowserStack:**
 ```json
 // aftconfig.json
 {
-    "pluginNames": [
-        "selenium-grid-session-generator-plugin",
-        "local-browser-session-generator-plugin"
-    ]
-    "sessionGeneratorName": "local-browser-session-generator-plugin"
+    "UiSessionConfig": {
+        "generatorName": "grid-session-generator-plugin",
+        "options": {
+            "url": "https://hub-cloud.browserstack.com/wd/hub",
+            "capabilities": {
+                "browserName": "android",
+                "platformName": "android",
+                "appium:platformVersion": "13.0",
+                "appium:deviceName": "Samsung Galaxy S23",
+                "appium:app": "bs://some-identifier-for-your-uploaded-app",
+                "bstack:options": {
+                    "userName": "yourBrowserStackUser",
+                    "accessKey": "yourBrowserStackAccessKey",
+                    "debug": true
+                }
+            }
+        }
+    }
 }
 ```
-- **sessionGeneratorName** - a `string` containing the class name (optionally separated using `-` characters) that is used to get the specific `UiSessionGeneratorPlugin` implementation to be used
+- **generatorName** - a `string` containing the class name (optionally separated using `-` characters) that is used to get the specific `UiSessionGeneratorPlugin` implementation to be used
 
 > NOTE: if using the `LocalBrowserSessionGeneratorPlugin` you may also need to include npm package references to your Browser Driver package such as `ChromeDriver`

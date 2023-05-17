@@ -39,7 +39,7 @@ config.configField3; // returns ["foo", true, 10] as an array
 config.configField4; // returns "last_default_value"
 ```
 
-and if you wish to entirely disregarg the configuration specified in your `aftconfig.json` file you can use the following (still based on the above example):
+and if you wish to entirely disregard the configuration specified in your `aftconfig.json` file you can use the following (still based on the above example):
 ```typescript
 const config = new AftConfig({
     SomeCustomClassConfig: {
@@ -58,15 +58,13 @@ the `aft-core` package contains several helper and utility classes, interfaces a
 - **convert** - string manipulation like Base64 encode / decode and replacement
 - **ellide** - string elliding supporting beginning, middle and end ellipsis
 - **Err** - a `module` that can run functions in a `try-catch` with optional logging as well as provide formatted string outputs from `Error` objects
-- **wait** - continually retry some action until success or a maximum time elapses
 - **using** - automatically call the `dispose` function of a class that implements the `IDisposable` interface when done
-- **verify** - a function accepting an `assertion` function that simplifies usage of a `Verifier` within your _Jasmine_ or _Mocha_ tests
 - **MachineInfo** - get details of the host machine and user running the tests
 - **CacheMap** - a `Map` implementation that stores values with expirations where expired items will not be returned and are pruned from the `Map` automatically. The `CacheMap` can also optionally store its data on the filesystem allowing for other running node processes to read from the same cache data (e.g. sharded parallel testing)
 - **FileSystemMap** - a `Map` implementation that stores its values in a file on the filesystem allowing multiple node processes to share the map data or to persist the data over multiple iterations
-- **fileio** - a constant class providing file system `write`, `readAs<T>` and `getExpiringFileLock` functions to simplify file operations
+- **fileio** - a constant class providing file system `write` and `readAs<T>` functions to simplify file operations
 - **wait** - constant class providing `wait.forResult<T>(...): Promise<T>`, `wait.forDuration(number)`, and `wait.until(number | Date): Promise<void>` functions to allow for non-thread-locking waits
-- **retry** - constant class providing `retry(retryable): Promise<T>` async function
+- **retry** - constant class providing `retry(retryable): Promise<T>` async function that will retry a given `retryable` function until it succeeds or some condition such as number of attempts or elapsed time is exceeded
 - **verifier** - see: [Testing with the Verifier](#testing-with-the-verifier) section below
 
 ## Custom Types
@@ -85,127 +83,120 @@ the `aft-core` package contains several helper and utility classes, interfaces a
 ### Example Logging Plugin
 to create your own simple logging plugin that stores all logs until the `dispose` function is called you would implement the code below.
 
-> NOTE: configuration for the below can be added in a object in the `aftconfig.json` named `ondisposeconsolelogger` based on the `key` passed to the `LoggingPlugin` constructor
+> NOTE: configuration for the below can be added in a object in the `aftconfig.json` named `OnDisposeConsoleLoggerConfig` and optionally containing values for the supported properties of the `OnDisposeConsoleLoggerConfig` class
 ```typescript
 export class OnDisposeConsoleLoggerConfig {
-    maxLogLines: number = 100;
+    maxLogLines: number = Infinity;
     logLevel: LogLevel = 'warn';
 };
-export class OnDisposeConsoleLogger implements ILoggingPlugin {
-    public readonly aftCfg: AftConfig;
-    public readonly pluginType: 'logging' = 'logging';
-    public readonly logLevel: LogLevel;
-    public readonly enabled: boolean;
+export class OnDisposeConsoleLogger extends LoggingPlugin {
+    public override get logLevel(): LogLevel { return this._lvl; }
+    private readonly _lvl: LogLevel;
     private readonly _logs: Map<string, Array<LogMessageData>>;
     private readonly _maxLines: number;
     constructor(aftCfg?: AftConfig) {
-        this.aftCfg = aftCfg ?? aftConfig;
+        super(aftCfg);
         const cfg = this.aftCfg.getSection(OnDisposeConsoleLoggerConfig);
-        this.logLevel = cfg.logLevel ?? 'warn';
-        this.enabled = this.logLevel != 'none';
+        this._lvl = cfg.logLevel ?? 'warn';
         if (this.enabled) {
             this._logs = new Map<string, Array<LogMessageData>>();
         }
     }
-    async initialise(name: string): Promise<void> {
+    override initialise = async (name: string): Promise<void> => {
         if (!this._logs.has(name)) {
             this._logs.set(name, new Array<LogMessageData>());
         }
     }
-    async log(data: LogMessageData): Promise<void> {
+    override log = async (name: string, level: LogLevel, message: string, ...data: Array<any>): Promise<void> => {
         if (this.enabled) {
-            if (LogLevel.toValue(data.level) >= LogLevel.toValue(this.logLevel) && level != 'none') {
-                const namedLogs = this._logs.get(data.name);
-                namedLogs.push(data);
+            if (LogLevel.toValue(level) >= LogLevel.toValue(this.logLevel) && level != 'none') {
+                const namedLogs: Array<LogMessageData> = this._logs.get(name);
+                namedLogs.push({name, level, message, args: data});
                 while (namedLogs.length > this.maxLogLines) {
                     namedLogs.shift();
                 }
             }
         }
     }
-    async logResult(name: string, result: ITestResult): Promise<void> { 
-        if (this.enabled) {
-            if (result?.status == 'Passed') {
-                this.log(LoggingLevel.pass, JSON.stringify(result));
-            } else {
-                this.log(LogginLevel.fail, JSON.stringify(result));
-            }
-        }
-    }
-    async finalise(name: string): Promise<void> { 
+    override finalise = async (name: string): Promise<void> => { 
         if (this.enabled) {
             const namedLogs = this._logs.get(name);
             while (namedLogs?.length > 0) {
-                let message = namedLogs.shift();
-                LogManager.toConsole(message);
+                let data = namedLogs.shift();
+                aftLogger.log({name: data.name, level: data.level, message: data.message, args: data.args});
             });
-            LogManager.toConsole({name: this.name, level: 'debug', message: 'OnDisposeConsoleLogger is now disposed!'});
+            aftLogger.log({name: this.constructor.name, level: 'debug', message: `finalised '${name}'`});
         }
     }
 }
 ```
 
-### Example Test Case Plugin (TestRail)
+### Example PolicyEnginePlugin (TestRail)
 ```typescript
-export class TestRailTestCasePluginConfig {
+export class TestRailConfig {
     username: string;
     password: string;
     url: string = 'https://you.testrail.io';
-    readEnabled: boolean = true;
-    writeEnabled: boolean = false;
     projectId: number;
     suiteIds: Array<number> = new Array<number>();
     planId: number;
-};
-export class TestRailTestCasePlugin implements ITestCasePlugin {
-    public readonly aftCfg: AftConfig;
-    public readonly pluginType: 'testcase' = 'testcase';
-    public readonly enabled: boolean;
+    enabled: boolean = false;
+}
+export class TestRailPolicyEnginePlugin extends PolicyEnginePlugin {
+    public override get enabled(): boolean { return this._enabled; }
     private readonly _client: TestRailClient;
+    private readonly _enabled: boolean;
     constructor(aftCfg?: AftConfig) {
-        this.aftCfg = aftCfg ?? aftConfig;
-        const cfg = this.aftCfg.getSection(TestRailTestCasePluginConfig);
-        this.enabled = cfg.readEnabled || cfg.writeEnabled;
+        super(aftCfg);
+        const cfg = this.aftCfg.getSection(TestRailConfig);
+        this._enabled = cfg.enabled ?? false;
         if (this.enabled) {
-            this._client = new TestRailClient(cfg.url, cfg.username, cfg.password);
+            this._client = new TestRailClient(this.aftCfg);
         }
     }
-    async getTestCase(testId: string): Promise<TestCase> {
-        return await this._client.getTestCase(testId);
-    }
-    async findTestCases(searchCriteria: TestCase): Promise<TestCase[]> {
-        return await this._client.findTestCases(searchCriteria);
-    }
-    async shouldRun(testId: string): Promise<ProcessingResult> {
+    override shouldRun = async (testId: string): Promise<ProcessingResult> => {
         const result = await this._client.getLastTestResult(testId);
         if (result.status === 'Passed') {
-            return false;
+            return false; // test alraedy has passing result so don't run
         }
         return true;
     }
 }
 ```
-### Example Defect Plugin (Bugzilla)
+### Example ResultsPlugin (HTML Results File)
 ```typescript
-export type BugzillaDefectPluginOptions = Merge<DefectPluginOptions, {
-    client?: BugzillaClient;
-}>;
-
-export class BugzillaDefectPlugin extends DefectPlugin<BugzillaDefectPluginOptions> {
-    private _client: BugzillaClient;
-    get client(): TestRailClient {
-        if (!this._client) {
-            this._client = this.option('client') || new BugzillaClient();
+export class HtmlResultsPluginConfig {
+    directory: string = path.join(process.cwd(), 'Results');
+    fileName: string = 'testResults.html';
+    enabled: boolean = false;
+}
+export class HtmlResultsPlugin extends ResultsPlugin {
+    private readonly _dir: string;
+    private readonly _file: string;
+    private readonly _enabled: boolean;
+    private readonly _results: Array<TestResult>;
+    public override get enabled(): boolean { return this._enabled; }
+    constructor(aftCfg?: AftConfig) {
+        super(aftCfg);
+        const hrpc = this.aftCfg.getSection(HtmlResultsPluginConfig);
+        this._enabled = hrpc.enabled ?? false;
+        if (this.enabled) {
+            this._results = new Array<TestResult>();
+            this._dir = hrpc.directory;
+            this._file = hrpc.fileName ?? 'testResults.html';
         }
-        return this._client;
     }
-    async getDefect(defectId: string): Promise<IDefect> {
-        return await this.client.getDefect(defectId);
+    override submitResult = async (result: TestResult): Promise<void> => {
+        this._results.push(result);
+        const lock = ExpiringFileLock.get(this.constructor.name);
+        try {
+            const htmlTemplate = TEMPLATE_FILE;
+            htmlTemplate.replace('{results}', JSON.stringify(this._results))
+            fileio.write(path.join(this.dir, this.file), htmlTemplate);
+        } finally {
+            lock.unlock();
+        }
     }
-    async findDefects(searchTerm: string): Promise<IDefect[]> {
-        return await this.client.findDefects(searchTerm);
-    }
-    async dispose(error?: Error) { /* perform some action if needed */ }
 }
 ```
 
