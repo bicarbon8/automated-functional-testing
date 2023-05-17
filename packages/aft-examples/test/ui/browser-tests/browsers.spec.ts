@@ -81,7 +81,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
     });
 
     const uiplatforms = [
-        { browser: 'safari', os: 'osx', osV: null },
+        { browser: 'safari', os: 'osx', osV: 'latest' },
         { browser: 'firefox', os: 'windows', osV: '11' },
         { browser: 'edge', os: 'windows', osV: '11' },
     ];

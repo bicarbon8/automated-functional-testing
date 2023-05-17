@@ -190,9 +190,9 @@ function initialise(results) {
 }
 
 function addResult(result) {
-    var passing = getTestsWithStatus(/(Passed)/gi, result).length;
-    var failing = getTestsWithStatus(/(Failed|Retest)/gi, result).length;
-    var notRun = getTestsWithStatus(/(Untested|Blocked|Skipped)/gi, result).length;
+    var passing = getTestsWithStatus(/(passed)/gi, result).length;
+    var failing = getTestsWithStatus(/(failed|retest)/gi, result).length;
+    var notRun = getTestsWithStatus(/(untested|blocked|skipped)/gi, result).length;
     var container = document.querySelector('#resultsContainer');
     var section = \`
 <div class="card card-info" name="\${result.description}-ps-results">
@@ -237,12 +237,12 @@ function addTests(container, tests) {
         var result = tests[i];
         var statusClass, trClass;
         switch (result.status) {
-            case "Passed":
+            case "passed":
                 statusClass = "success";
                 trClass = "passing";
                 break;
-            case "Failed":
-            case "Retest":
+            case "failed":
+            case "retest":
                 statusClass = "danger";
                 trClass = "failing";
                 break;
