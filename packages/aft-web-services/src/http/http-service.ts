@@ -2,7 +2,7 @@ import * as http from 'http';
 import * as https from 'https';
 import * as FormData from "form-data";
 import { HttpMethod, HttpRequest, HttpResponse } from "./http-custom-types";
-import { AftConfig, aftConfig } from 'aft-core';
+import { AftConfig, aftConfig, aftLogger } from 'aft-core';
 import { OutgoingHttpHeaders } from 'http2';
 
 export class HttpServiceConfig {
@@ -92,12 +92,30 @@ export class HttpService {
         try {
             req = await this.setRequestDefaults(req);
 
-            await req.logMgr?.debug(`issuing '${req.method}' request to '${req.url}' with post body '${req.postData}' and headers '${JSON.stringify(req.headers)}'.`);
+            let logMessage = `issuing '${req.method}' request to '${req.url}' with post body '${req.postData}' and headers '${JSON.stringify(req.headers)}'.`;
+            if (req.logMgr) {
+                await req.logMgr.debug(logMessage);
+            } else {
+                aftLogger.log({
+                    name: this.constructor.name,
+                    level: 'debug',
+                    message: logMessage
+                });
+            }
             
             const message = await this._request(req);
             const resp = await this._response(message, req.allowAutoRedirect);
 
-            await req.logMgr?.debug(`received response data of '${resp?.data}' and headers '${JSON.stringify(resp?.headers)}'.`)
+            logMessage = `received response data of '${resp?.data}' and headers '${JSON.stringify(resp?.headers)}'.`;
+            if (req.logMgr) {
+                await req.logMgr.debug(logMessage);
+            } else {
+                aftLogger.log({
+                    name: this.constructor.name,
+                    level: 'debug',
+                    message: logMessage
+                });
+            }
             
             return resp;
         } catch (e) {
@@ -201,7 +219,7 @@ export class HttpService {
  * await httpService.performRequest({
  *     url: 'https://some.domain/path',
  *     allowAutoRedirect: false,
- *     headers: {"Authorization": "basic AS0978FASLKLJA/=="},
+ *     headers: {...HttpHeaders.Authorization.basic('myUser', 'myPass')},
  *     method: 'POST',
  *     postData: someObject,
  *     multipart: false
@@ -210,10 +228,11 @@ export class HttpService {
  * or multipart post as:
  * ```typescript
  * let formData = new FormData();
- * formData.append("Authorization": "basic AS0978FASLKLJA/==");
+ * formData.append('file', fs.createReadStream('/path/to/file.ext'));
  * await httpService.performRequest({
  *     url: 'https://some.domain/path',
  *     allowAutoRedirect: false,
+ *     headers: {...HttpHeaders.Authorization.basic('myUser', 'myPass')}
  *     method: 'POST',
  *     postData: formData,
  *     multipart: true

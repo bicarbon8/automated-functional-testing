@@ -1,5 +1,5 @@
 import { merge } from "lodash";
-import { AftConfig, Err, LogManager, aftConfig, pluginLoader } from "aft-core";
+import { AftConfig, Err, LogManager, aftConfig, aftLogger, pluginLoader } from "aft-core";
 import { UiSessionGeneratorPlugin } from "./ui-session-generator-plugin";
 import { UiSessionConfig } from "../configuration/ui-session-config";
 
@@ -23,11 +23,14 @@ import { UiSessionConfig } from "../configuration/ui-session-config";
  *       "deviceName": "Samsung Galaxy S23"
  *     },
  *     "options": {
- *       "browserName": "chrome"
- *       "bstack:options": {
- *         "userName": "lkjsdlak",
- *         "accessKey": "laksdjf12312",
- *         "debug": true
+ *       "url": "https://hub-cloud.browserstack.com/wd/hub"
+ *       "capabilities": {
+ *         "browserName": "chrome"
+ *         "bstack:options": {
+ *           "userName": "lkjsdlak",
+ *           "accessKey": "laksdjf12312",
+ *           "debug": true
+ *         }
  *       }
  *     }
  *   }
@@ -39,11 +42,8 @@ export class UiSessionGeneratorManager {
     public readonly aftCfg: AftConfig;
     public readonly plugins: Array<UiSessionGeneratorPlugin>;
 
-    private readonly _logMgr: LogManager;
-
     constructor(aftCfg?: AftConfig) {
         this.aftCfg = aftCfg ?? aftConfig;
-        this._logMgr = new LogManager(this.constructor.name, this.aftCfg);
         this.plugins = pluginLoader.getPluginsByType(UiSessionGeneratorPlugin, this.aftCfg);
     }
 
@@ -57,11 +57,19 @@ export class UiSessionGeneratorManager {
         sessionOptions = merge(uic.options, sessionOptions);
         try {
             const plugin = this.plugins.find(p => Err.handle(() => p?.enabled));
-            await this._logMgr.debug(`using plugin: '${plugin.constructor.name}' to generate new UI session`);
+            aftLogger.log({
+                name: this.constructor.name,
+                level: 'debug',
+                message: `using plugin: '${plugin.constructor.name}' to generate new UI session using options: ${JSON.stringify(sessionOptions)}`
+            });
             return await plugin.getSession(sessionOptions);
         } catch (e) {
             const err = `unable to generate UI session due to: ${Err.short(e)}`;
-            await this._logMgr?.error(err);
+            aftLogger.log({
+                name: this.constructor.name,
+                level: 'error',
+                message: err
+            });
             return Promise.reject(err);
         }
     }

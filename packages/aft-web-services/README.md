@@ -21,7 +21,7 @@ let respObj: ListUsersResponse = httpData.as<ListUsersResponse>(response);
 let response: HttpResponse = await httpService.performRequest({
     url: 'https://reqres.in/api/users',
     method: 'POST',
-    headers: {'content-type':'application/json'},
+    headers: {...HttpHeaders.ContentType.get(HttpHeaders.MimeType.applicationJson)},
     postData: JSON.stringify({name: 'morpheus', job: 'leader'})
 });
 
@@ -30,7 +30,7 @@ let respObj: CreateUserResponse = httpData.as<CreateUserResponse>(response);
 ```
 
 ## Advantages
-- using this package automatically logs the request and response details using a `aft-core.LogManager` that can be passed in as part of the `HttpRequest` to maintain the same `logName` within a single test
+- using this package can automatically log the request and response details using a `aft-core.LogManager` that can be passed in as part of the `HttpRequest` to maintain the same `logName` within a single test
 - the `aft-web-services` classes rely on asynchronous promises meaning no worrying about callbacks
 - built-in support for redirects (HTTP Status Code 302) and http or https requests
 - XML and JSON response data can be easily deserialised to objects using the `httpData.as<T>(response: HttpResponse)` function

@@ -36,7 +36,8 @@
     "aft-mocha-reporter": "^9.0.0",
     "aft-testrail": "^9.0.0",
     "aft-ui-selenium": "^9.0.0",
-    "aft-ui-webdriverio": "^9.0.0"
+    "aft-ui-webdriverio": "^9.0.0",
+    "aft-web-services": "^9.0.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.17",

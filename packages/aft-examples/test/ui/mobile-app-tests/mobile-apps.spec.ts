@@ -1,10 +1,10 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as FormData from "form-data";
-import { AftConfig, BuildInfoManager, aftConfig } from "aft-core";
+import { AftConfig, BuildInfoManager, LogManager, aftConfig } from "aft-core";
 import { WikipediaView } from "./page-objects/wikipedia-view";
 import { AftTest } from "aft-mocha-reporter";
-import { httpService, httpData } from "aft-web-services";
+import { httpService, httpData, HttpHeaders } from "aft-web-services";
 import { UiSessionConfig } from "aft-ui";
 import { WebdriverIoVerifier } from "aft-ui-webdriverio";
 
@@ -12,13 +12,16 @@ var customId: string;
 
 describe('Functional Mobile App Tests using AFT-UI-SELENIUM', () => {
     before(async () => {
+        const logger = new LogManager('MobileAppsSpec Before');
         const uisc = aftConfig.getSection(UiSessionConfig);
-        const auth = `basic ${btoa(`${uisc.options["bstack:options"]?.userName}:${uisc.options["bstack:options"]?.accessKey}`)}`
+        const username = uisc.options.capabilities?.["bstack:options"]?.userName;
+        const password = uisc.options.capabilities?.["bstack:options"]?.accessKey;
         const resp = await httpService.performRequest({
             url: "https://api-cloud.browserstack.com/app-automate/recent_group_apps",
             headers: {
-                "Authorization": auth
-            }
+                ...HttpHeaders.Authorization.basic(username, password)
+            },
+            logMgr: logger
         });
         let app: any;
         const uploadedApps = httpData.as<Array<any>>(resp);
@@ -38,16 +41,17 @@ describe('Functional Mobile App Tests using AFT-UI-SELENIUM', () => {
                 postData: formData,
                 method: 'POST',
                 headers: {
-                    "Authorization": auth
+                    ...HttpHeaders.Authorization.basic(username, password)
                 },
-                multipart: true
+                multipart: true,
+                logMgr: logger
             });
             app = httpData.as<{}>(result);
         }
         customId = app.shareable_id ?? app.custom_id ?? app.app_url ?? 'AFT.WikipediaApp';
     });
 
-    it.only('can search in Wikipedia App', async function() {
+    it('can search in Wikipedia App', async function() {
         const aftCfg = new AftConfig();
         const aft = new AftTest(this, aftCfg);
         await aft.verify(async (tw: WebdriverIoVerifier) => {

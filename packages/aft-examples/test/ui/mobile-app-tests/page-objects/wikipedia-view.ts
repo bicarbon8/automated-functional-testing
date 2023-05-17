@@ -6,9 +6,9 @@ export class WikipediaView extends WebdriverIoComponent {
         return '//*';
     }
 
-    private _searchButton = async (): Promise<Element<'async'>> => (await this.getRoot()).$("~Search Wikipedia");
+    private _searchButton = async (): Promise<Element<'async'>> => await (await this.getRoot()).$("~Search Wikipedia");
     private _searchInput = async (): Promise<Element<'async'>> => await this.driver.$('android=new UiSelector().resourceId("org.wikipedia.alpha:id/search_src_text")');
-    private _searchResults = async (): Promise<Array<Element<'async'>>> => (await this.getRoot()).$$("android.widget.TextView");
+    private _searchResults = async (): Promise<Array<Element<'async'>>> => await (await this.getRoot()).$$("android.widget.TextView");
 
     async searchFor(term: string): Promise<string[]> {
         await this.logMgr.info("tapping on 'SearchButton'");

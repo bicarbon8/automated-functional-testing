@@ -12,6 +12,7 @@
         { "path": "../aft-logging-html" },
         { "path": "../aft-testrail" },
         { "path": "../aft-ui-selenium" },
-        { "path": "../aft-ui-webdriverio" }
+        { "path": "../aft-ui-webdriverio" },
+        { "path": "../aft-web-services" }
     ]
 }
