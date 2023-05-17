@@ -19,7 +19,7 @@
     "integration",
     "functional",
     "ui",
-    "logging",
+    "http",
     "test",
     "examples"
   ],
@@ -30,9 +30,9 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-logging-aws-kinesis-firehose": "^9.0.0",
-    "aft-logging-filesystem": "^9.0.0",
-    "aft-logging-html": "^9.0.0",
+    "aft-reporting-aws-kinesis-firehose": "^9.0.0",
+    "aft-reporting-filesystem": "^9.0.0",
+    "aft-reporting-html": "^9.0.0",
     "aft-mocha-reporter": "^9.0.0",
     "aft-testrail": "^9.0.0",
     "aft-ui-selenium": "^9.0.0",

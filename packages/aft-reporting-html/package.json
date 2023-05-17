@@ -1,11 +1,7 @@
 {
-  "name": "aft-logging-aws-kinesis-firehose",
+  "name": "aft-reporting-html",
   "version": "9.0.0",
-  "description": "Automated Functional Testing (AFT) logging plugin package supporting test reporting to AWS Kinesis Firehose",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/bicarbon8/automated-functional-testing.git"
-  },
+  "description": "Automated Functional Testing (AFT) package that creates a HTML results file as a Reporting Plugin",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "scripts": {
@@ -14,14 +10,19 @@
     "test": "jasmine-ts ./test/**/*-spec.ts",
     "coverage": "nyc npm run test"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bicarbon8/automated-functional-testing.git"
+  },
   "keywords": [
     "aft",
     "automation",
     "e2e",
+    "unit",
     "integration",
     "functional",
-    "aws",
-    "kinesis-firehose"
+    "html",
+    "logging"
   ],
   "author": "Jason Holt Smith <bicarbon8@gmail.com>",
   "license": "MIT",
@@ -29,12 +30,7 @@
     "url": "https://github.com/bicarbon8/automated-functional-testing/issues"
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
-  "dependencies": {
-    "aft-core": "^9.0.0",
-    "aws-sdk": "^2.1151.0"
-  },
   "devDependencies": {
-    "@aws-sdk/types": "^3.78.0",
     "@types/jasmine": "^3.6.10",
     "@types/node": "^15.0.1",
     "jasmine": "^3.7.0",
@@ -43,5 +39,8 @@
     "rimraf": "^3.0.2",
     "ts-node": "^10.7.0",
     "typescript": "^4.3.2"
+  },
+  "dependencies": {
+    "aft-core": "^9.0.0"
   }
 }
