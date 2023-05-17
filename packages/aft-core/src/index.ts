@@ -24,17 +24,14 @@ export * from './plugins/plugin-loader';
 /** plugins/build-info */
 export * from './plugins/build-info/build-info-manager';
 export * from './plugins/build-info/build-info-plugin';
-/** plugins/logging */
-export * from './plugins/logging/logging-plugin';
-export * from './plugins/logging/log-manager';
-/** plugins/policy-engine */
-export * from './plugins/policy-engine/policy-engine-plugin';
-export * from './plugins/policy-engine/policy-engine-manager';
-/** plugins/results */
-export * from './plugins/results/results-plugin';
-export * from './plugins/results/results-manager';
-export * from './plugins/results/test-result';
-export * from './plugins/results/test-status';
+/** plugins/reporting */
+export * from './plugins/reporting/reporting-plugin';
+export * from './plugins/reporting/reporter';
+export * from './plugins/reporting/test-result';
+export * from './plugins/reporting/test-status';
+/** plugins/test-execution-policy */
+export * from './plugins/test-execution-policy/test-execution-policy-plugin';
+export * from './plugins/test-execution-policy/test-execution-policy-manager';
 /** verification */
 export * from './verification/verifier';
 export * from './verification/verifier-internals';

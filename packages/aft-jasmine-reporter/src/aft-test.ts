@@ -1,4 +1,4 @@
-import { rand, TestResult, TestStatus, Err, AftConfig, ResultsManager, BuildInfoManager, Verifier, Func, Class } from "aft-core";
+import { rand, TestResult, TestStatus, Err, AftConfig, BuildInfoManager, Verifier, Func, Class } from "aft-core";
 import { AftLog } from "./aft-log";
 import { TitleParser } from "./title-parser";
 
@@ -8,7 +8,6 @@ import { TitleParser } from "./title-parser";
  */
 export class AftTest extends AftLog {
     private _testcases: Array<string>;
-    private readonly _resultsMgr: ResultsManager;
     private readonly _buildMgr: BuildInfoManager;
 
     /**
@@ -18,12 +17,7 @@ export class AftTest extends AftLog {
      */
     constructor(scope?: any, aftCfg?: AftConfig) {
         super(scope, aftCfg);
-        this._resultsMgr = new ResultsManager(this.aftCfg);
         this._buildMgr = new BuildInfoManager(this.aftCfg);
-    }
-
-    get resultsMgr(): ResultsManager {
-        return this._resultsMgr;
     }
 
     get buildInfoMgr(): BuildInfoManager {
@@ -79,7 +73,7 @@ export class AftTest extends AftLog {
     protected _getVerifier<T extends Verifier>(verifierType?: Class<T>): T {
         verifierType ??= Verifier as Class<T>;
         return new verifierType()
-            .internals.usingLogManager(this.logMgr)
+            .internals.usingReporter(this.reporter)
             .internals.usingAftConfig(this.aftCfg)
             .withDescription(this.fullName)
             .withTestIds(...this.testcases)
@@ -87,12 +81,12 @@ export class AftTest extends AftLog {
     }
 
     async dispose(): Promise<void> {
-        await this.logMgr.dispose();
+        await this.reporter.dispose();
     }
 
     /**
      * creates `ITestResult` objects for each `testId` and sends these
-     * to the `LogManager.logResult` function
+     * to the `Reporter.logResult` function
      * @param result an `IProcessingResult` returned from executing the 
      * expectation
      */
@@ -115,31 +109,31 @@ export class AftTest extends AftLog {
             for (var i=0; i<results.length; i++) {
                 let result: TestResult = results[i];
                 try {
-                    await this.resultsMgr.submitResult(result);
+                    await this.reporter.submitResult(result);
                 } catch (e) {
-                    await this.logMgr.warn(`unable to log test result for test '${result.testId || result.resultId}' due to: ${Err.short(e)}`);
+                    await this.reporter.warn(`unable to log test result for test '${result.testId || result.resultId}' due to: ${Err.short(e)}`);
                 }
             }
         } finally {
-            await this.logMgr.dispose();
+            await this.reporter.dispose();
         }
     }
 
     protected async _logMessage(status: TestStatus, message?: string): Promise<void> {
-        message = message || this.logMgr.logName;
+        message = message || this.reporter.reporterName;
         switch (status) {
             case 'blocked':
             case 'retest':
             case 'skipped':
             case 'untested':
-                await this.logMgr.warn(message);
+                await this.reporter.warn(message);
                 break;
             case 'failed':
-                await this.logMgr.fail(message);
+                await this.reporter.fail(message);
                 break;
             case 'passed':
             default:
-                await this.logMgr.pass(message);
+                await this.reporter.pass(message);
                 break;
         }
     }

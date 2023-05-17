@@ -1,7 +1,7 @@
-import { AftConfig, FileSystemMap, LogManager, aftConfig } from "aft-core";
+import { AftConfig, FileSystemMap, Reporter, aftConfig } from "aft-core";
 
 export class AftLog {
-    private _logMgr: LogManager;
+    private _rep: Reporter;
     private readonly _aftCfg: AftConfig;
     private readonly _testNames: FileSystemMap<string, any>;
     public readonly test: jasmine.SpecResult;
@@ -31,10 +31,10 @@ export class AftLog {
         return this._aftCfg;
     }
 
-    get logMgr(): LogManager {
-        if (!this._logMgr) {
-            this._logMgr = new LogManager(this.fullName)
+    get reporter(): Reporter {
+        if (!this._rep) {
+            this._rep = new Reporter(this.fullName)
         }
-        return this._logMgr;
+        return this._rep;
     }
 }

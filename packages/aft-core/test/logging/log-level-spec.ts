@@ -1,4 +1,4 @@
-import { LogLevel } from "../../../src";
+import { LogLevel } from "../../src";
 
 const consoleLog = console.log;
 

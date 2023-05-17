@@ -1,5 +1,5 @@
 {
-    "logmanager": {
+    "Reporter": {
         "pluginNames": [],
         "level": "info"
     }

@@ -24,7 +24,7 @@ export class HerokuLoginPage extends SeleniumComponent {
 
     async navigateTo(): Promise<void> {
         await Err.handleAsync(async () => await this.driver.navigate().to('https://the-internet.herokuapp.com/login'), {
-            logger: this.logMgr,
+            logger: this.reporter,
             errLevel: 'error'
         });
     }

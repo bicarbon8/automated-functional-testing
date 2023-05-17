@@ -1,17 +1,17 @@
 import * as path from "path";
-import { LoggingPlugin, LogLevel, TestResult, fileio, ExpiringFileLock, FileSystemMap, convert, AftConfig, ResultsPlugin, LoggingPluginConfig } from "aft-core";
+import { ReportingPlugin, LogLevel, TestResult, fileio, ExpiringFileLock, FileSystemMap, convert, AftConfig, ReportingPluginConfig } from "aft-core";
 import { HtmlTestResult } from "./html-test-result";
 import { HtmlResult } from "./html-result";
 import { htmlTemplate } from "./templates/html-template";
 
-export class HtmlLoggingPluginConfig extends LoggingPluginConfig {
+export class HtmlLoggingPluginConfig extends ReportingPluginConfig {
     fileName: string = 'testresults.html';
     outputDir: string = path.join(process.cwd(), 'logs');
     maxLogLines: number;
     override logLevel: LogLevel = 'warn';
 }
 
-export class HtmlLoggingPlugin extends LoggingPlugin implements ResultsPlugin {
+export class HtmlLoggingPlugin extends ReportingPlugin {
     public override get logLevel(): LogLevel {
         return this._level;
     }
@@ -103,14 +103,14 @@ export class HtmlLoggingPlugin extends LoggingPlugin implements ResultsPlugin {
         }
     }
 
-    submitResult = async (result: TestResult): Promise<void> => {
-        if (!this.enabled || !result.testName) {
+    override submitResult = async (name: string, result: TestResult): Promise<void> => {
+        if (!this.enabled) {
             return;
         }
         let htmlTestResult: HtmlTestResult = {
             testId: result.testId,
             status: result.status,
-            logs: this.logs(result.testName)
+            logs: this.logs(name ?? result.testName)
         }
         const results: Array<HtmlTestResult> = this.testResults(result.testName);
         results.push(htmlTestResult);

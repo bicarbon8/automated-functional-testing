@@ -1,5 +1,5 @@
 import { KinesisLoggingPlugin, KinesisLoggingPluginConfig } from "../src/kinesis-logging-plugin";
-import { AftConfig, LogManager, machineInfo, pluginLoader, rand, TestResult } from "aft-core";
+import { AftConfig, Reporter, machineInfo, pluginLoader, rand, TestResult } from "aft-core";
 import * as pkg from "../package.json";
 import * as Firehose from "aws-sdk/clients/firehose";
 import { KinesisLogRecord } from "../src/kinesis-log-record";
@@ -165,7 +165,7 @@ describe('KinesisLoggingPlugin', () => {
     });
 
     /**
-     * WARNING: this test sends an actual message to the Kinesis logMgr
+     * WARNING: this test sends an actual message to the Kinesis reporter
      * only for use in debugging issues locally
      */
     xit('can send real logs and ITestResult objects', async () => {
@@ -188,11 +188,11 @@ describe('KinesisLoggingPlugin', () => {
         };
         const message: string = rand.getString(250);
         await plugin.log(logName, 'info', message);
-        await plugin.submitResult(result);
+        await plugin.submitResult(logName, result);
         await plugin.finalise(logName);
     });
 
-    it('can be loaded by the LogManager', async () => {
+    it('can be loaded by the Reporter', async () => {
         const config = {
             AftConfig: {
                 pluginNames: [
@@ -206,7 +206,7 @@ describe('KinesisLoggingPlugin', () => {
         };
         const cfgMgr = new AftConfig(config);
         pluginLoader.reset();
-        const mgr: LogManager = new LogManager(rand.getString(20), cfgMgr);
+        const mgr: Reporter = new Reporter(rand.getString(20), cfgMgr);
         const plugins = mgr.plugins;
         const plugin = plugins[0];
 

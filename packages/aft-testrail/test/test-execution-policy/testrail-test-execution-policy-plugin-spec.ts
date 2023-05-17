@@ -1,13 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { PolicyEngineManager, AftConfig } from 'aft-core';
+import { TestExecutionPolicyManager, AftConfig } from 'aft-core';
 import { httpService } from 'aft-web-services';
-import { TestRailConfig, TestRailPolicyEnginePlugin } from "../../src";
+import { TestRailTestExecutionPolicyPlugin } from "../../src";
 import { TestRailApi } from '../../src/api/testrail-api';
 import { TestRailCase, TestRailTest } from '../../src/api/testrail-custom-types';
 import { statusConverter } from '../../src/helpers/status-converter';
 
-describe('TestRailTestCasePlugin', () => {
+describe('TestRailTestExecutionPolicyPlugin', () => {
     beforeEach(() => {
         spyOn(httpService, 'performRequest').and.returnValue(Promise.resolve({
             headers: {'content-type': 'application/json'},
@@ -39,7 +39,7 @@ describe('TestRailTestCasePlugin', () => {
             status_id: statusConverter.toTestRailStatus('passed')
         };
         spyOn(api, 'getTestsInRuns').and.returnValue(Promise.resolve([expected]));
-        const plugin: TestRailPolicyEnginePlugin = new TestRailPolicyEnginePlugin(aftCfg, api);
+        const plugin: TestRailTestExecutionPolicyPlugin = new TestRailTestExecutionPolicyPlugin(aftCfg, api);
         
         const actual: TestRailTest = await plugin.getTestCase('C1234');
 
@@ -69,7 +69,7 @@ describe('TestRailTestCasePlugin', () => {
             created_on: Date.now()
         } as TestRailCase;
         spyOn(api, 'getCasesInSuites').and.returnValue(Promise.resolve([expected]));
-        let plugin: TestRailPolicyEnginePlugin = new TestRailPolicyEnginePlugin(aftCfg, api);
+        let plugin: TestRailTestExecutionPolicyPlugin = new TestRailTestExecutionPolicyPlugin(aftCfg, api);
         
         let actual: TestRailCase = await plugin.getTestCase('C1234');
 
@@ -84,7 +84,7 @@ describe('TestRailTestCasePlugin', () => {
         const aftCfg = new AftConfig({
             pluginNames: ['testrail-test-case-plugin']
         });
-        let mgr: PolicyEngineManager = new PolicyEngineManager(aftCfg);
+        let mgr: TestExecutionPolicyManager = new TestExecutionPolicyManager(aftCfg);
         let plugin = await mgr.plugins[0];
 
         expect(plugin).toBeDefined();

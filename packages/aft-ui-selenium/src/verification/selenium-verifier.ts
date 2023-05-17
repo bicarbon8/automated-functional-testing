@@ -88,7 +88,7 @@ export class SeleniumVerifier extends Verifier {
         opts ??= {} as UiComponentOptions;
         opts.aftCfg ??= this.aftCfg;
         opts.driver ??= this.driver;
-        opts.logMgr ??= this.logMgr;
+        opts.reporter ??= this.reporter;
         return new componentType(opts);
     }
 

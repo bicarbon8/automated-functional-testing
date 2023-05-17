@@ -1,4 +1,4 @@
-import { PolicyEngineManager, AftConfig } from "aft-core";
+import { TestExecutionPolicyManager, AftConfig } from "aft-core";
 import { UiSessionGeneratorManager } from "aft-ui";
 import { WebDriver } from "selenium-webdriver";
 import { SeleniumVerifier, verifyWithSelenium } from "../../src";
@@ -51,13 +51,13 @@ describe('SeleniumVerifier', () => {
     it('no BrowserSession is created if assertion should not be run', async () => {
         const sessionMgr = new UiSessionGeneratorManager();
         spyOn(sessionMgr, 'getSession').and.callFake((opts?: Record<string, any>) => Promise.resolve({}));
-        let tcMgr: PolicyEngineManager = new PolicyEngineManager();
+        let tcMgr: TestExecutionPolicyManager = new TestExecutionPolicyManager();
         spyOn(tcMgr, 'shouldRun').and.callFake((testId: string) => Promise.resolve({result: false}));
         
         await verifyWithSelenium((bv: SeleniumVerifier) => {
             expect(true).toBeFalse();
         }).internals.usingUiSessionGeneratorManager(sessionMgr)
-        .internals.usingPolicyEngineManager(tcMgr)
+        .internals.usingTestExecutionPolicyManager(tcMgr)
         .and.withTestIds('C1234')
 
         expect(sessionMgr.getSession).not.toHaveBeenCalled();

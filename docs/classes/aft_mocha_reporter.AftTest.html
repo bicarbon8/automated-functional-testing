@@ -45,7 +45,7 @@ from the Mocha test context</p>
 <h3 class="tsd-index-heading">Accessors</h3>
 <div class="tsd-index-list"><a href="aft_mocha_reporter.AftTest.html#defects" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF4D4D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-262144-path"></rect><path d="M8.85 16L11.13 7.24H12.582L14.85 16H13.758L13.182 13.672H10.53L9.954 16H8.85ZM10.746 12.76H12.954L12.282 10.06C12.154 9.548 12.054 9.12 11.982 8.776C11.91 8.432 11.866 8.208 11.85 8.104C11.834 8.208 11.79 8.432 11.718 8.776C11.646 9.12 11.546 9.544 11.418 10.048L10.746 12.76Z" fill="var(--color-text)" id="icon-262144-text"></path></svg><span>defects</span></a>
 <a href="aft_mocha_reporter.AftTest.html#fullTitle" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>full<wbr/>Title</span></a>
-<a href="aft_mocha_reporter.AftTest.html#logMgr" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>log<wbr/>Mgr</span></a>
+<a href="aft_mocha_reporter.AftTest.html#reporter" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>log<wbr/>Mgr</span></a>
 <a href="aft_mocha_reporter.AftTest.html#testcases" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>testcases</span></a>
 </div></section>
 <section class="tsd-index-section">
@@ -118,13 +118,13 @@ test (i.e. the <code>this</code> argument)</p>
 <p>Inherited from AftLog.fullTitle</p>
 <ul>
 <li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-mocha-reporter/src/aft-log.ts#L12">aft-mocha-reporter/src/aft-log.ts:12</a></li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a id="logMgr" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>log<wbr/>Mgr</span><a href="#logMgr" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a id="reporter" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>log<wbr/>Mgr</span><a href="#reporter" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited">
-<li class="tsd-signature" id="logMgr.logMgr-1"><span class="tsd-signature-symbol">get</span> logMgr<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">LogManager</span></li>
+<li class="tsd-signature" id="reporter.reporter-1"><span class="tsd-signature-symbol">get</span> reporter<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Reporter</span></li>
 <li class="tsd-description">
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">LogManager</span></h4><aside class="tsd-sources">
-<p>Inherited from AftLog.logMgr</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Reporter</span></h4><aside class="tsd-sources">
+<p>Inherited from AftLog.reporter</p>
 <ul>
 <li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-mocha-reporter/src/aft-log.ts#L20">aft-mocha-reporter/src/aft-log.ts:20</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="testcases" class="tsd-anchor"></a>
@@ -192,7 +192,7 @@ test (i.e. the <code>this</code> argument)</p>
 <li class="tsd-signature tsd-anchor-link" id="_logResult._logResult-1">_log<wbr/>Result<span class="tsd-signature-symbol">(</span>status<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TestStatus</span>, message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#_logResult._logResult-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>creates <code>ITestResult</code> objects for each <code>testId</code> and sends these
-to the <code>LogManager.logResult</code> function</p>
+to the <code>Reporter.logResult</code> function</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -275,7 +275,7 @@ to the <code>LogManager.logResult</code> function</p>
 <ul>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.Err.html">Err</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.LogLevel.html">Log<wbr/>Level</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.LogManager.html">Log<wbr/>Manager</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.Reporter.html">Log<wbr/>Manager</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.SafeStringOption.html">Safe<wbr/>String<wbr/>Option</a></li></ul></li>
 <li class="tsd-kind-module"><a href="../modules/aft_jasmine_reporter.html">aft-<wbr/>jasmine-<wbr/>reporter</a></li>
 <li class="tsd-kind-module"><a href="../modules/aft_logging_awskinesis.html">aft-<wbr/>logging-<wbr/>awskinesis</a></li>
@@ -299,7 +299,7 @@ to the <code>LogManager.logResult</code> function</p>
 <li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="aft_mocha_reporter.AftTest.html#test" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>test</a></li>
 <li class="tsd-kind-accessor tsd-parent-kind-class"><a href="aft_mocha_reporter.AftTest.html#defects" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>defects</a></li>
 <li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="aft_mocha_reporter.AftTest.html#fullTitle" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>full<wbr/>Title</a></li>
-<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="aft_mocha_reporter.AftTest.html#logMgr" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>log<wbr/>Mgr</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="aft_mocha_reporter.AftTest.html#reporter" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>log<wbr/>Mgr</a></li>
 <li class="tsd-kind-accessor tsd-parent-kind-class"><a href="aft_mocha_reporter.AftTest.html#testcases" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>testcases</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="aft_mocha_reporter.AftTest.html#_generateTestResult" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_generate<wbr/>Test<wbr/>Result</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="aft_mocha_reporter.AftTest.html#_generateTestResults" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_generate<wbr/>Test<wbr/>Results</a></li>

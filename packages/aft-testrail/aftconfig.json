@@ -1,5 +1,5 @@
 {
-    "logmanager": {
+    "Reporter": {
         "pluginNames": ["testrail-logging-plugin"],
         "level": "info"
     },

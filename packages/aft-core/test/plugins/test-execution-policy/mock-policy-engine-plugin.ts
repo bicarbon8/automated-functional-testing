@@ -1,11 +1,11 @@
-import { PolicyEnginePlugin, AftConfig, ProcessingResult } from "../../../src";
+import { TestExecutionPolicyPlugin, AftConfig, ProcessingResult } from "../../../src";
 
 export class MockPolicyEnginePluginConfig {
     enabled: boolean = false;
     expectedResults: Map<string, ProcessingResult<boolean>> = new Map<string, ProcessingResult<boolean>>();
 }
 
-export class MockPolicyEnginePlugin extends PolicyEnginePlugin {
+export class MockPolicyEnginePlugin extends TestExecutionPolicyPlugin {
     private readonly _enabled: boolean;
     public override get enabled(): boolean {
         return this._enabled;

@@ -1,6 +1,6 @@
 import { Builder, Capabilities, WebDriver } from "selenium-webdriver";
 import { UiSessionGeneratorPlugin } from "aft-ui";
-import { Err, LogManager } from "aft-core";
+import { Err, Reporter } from "aft-core";
 
 type GridSessionOptions = {
     url: string;
@@ -9,12 +9,12 @@ type GridSessionOptions = {
 }
 
 export class GridSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
-    private _logMgr: LogManager;
-    get logMgr(): LogManager {
-        if (!this._logMgr) {
-            this._logMgr = new LogManager(this.constructor.name, this.aftCfg);
+    private _reporter: Reporter;
+    get reporter(): Reporter {
+        if (!this._reporter) {
+            this._reporter = new Reporter(this.constructor.name, this.aftCfg);
         }
-        return this._logMgr;
+        return this._reporter;
     }
     override getSession = async (sessionOptions?: Record<string, any>): Promise<WebDriver> => {
         const gso: GridSessionOptions = {...sessionOptions} as GridSessionOptions;
@@ -27,15 +27,15 @@ export class GridSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
                     .withCapabilities(caps)
                     .build();
                 await Err.handleAsync(async () => await driver.manage().setTimeouts({implicit: gso.implicitTimeoutMs ?? 1000}), {
-                    logger: this.logMgr,
+                    logger: this.reporter,
                     errLevel: 'debug'
                 });
                 await Err.handleAsync(async () => await driver.manage().window().maximize(), {
-                    logger: this.logMgr,
+                    logger: this.reporter,
                     errLevel: 'debug'
                 });
             } catch (e) {
-                this.logMgr.warn(`error in creating WebDriver due to: ${Err.full(e)}`);
+                this.reporter.warn(`error in creating WebDriver due to: ${Err.full(e)}`);
             }
         }
         return driver;

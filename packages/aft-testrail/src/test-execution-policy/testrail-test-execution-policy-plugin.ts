@@ -1,4 +1,4 @@
-import { AftConfig, PolicyEnginePlugin, ProcessingResult } from 'aft-core';
+import { AftConfig, TestExecutionPolicyPlugin, ProcessingResult } from 'aft-core';
 import { TestRailApi } from '../api/testrail-api';
 import { TestRailCase, TestRailRun, TestRailTest } from '../api/testrail-custom-types';
 import { TestRailConfig } from '../configuration/testrail-config';
@@ -10,7 +10,7 @@ import { PlanId } from '../helpers/plan-id';
  * all retrieved from `TestRailConfig` under the `TestRailConfig`
  * section of your `aftconfig.json` file
  */
-export class TestRailPolicyEnginePlugin extends PolicyEnginePlugin {
+export class TestRailTestExecutionPolicyPlugin extends TestExecutionPolicyPlugin {
     private readonly _enabled: boolean;
     public override get enabled(): boolean {
         return this._enabled;

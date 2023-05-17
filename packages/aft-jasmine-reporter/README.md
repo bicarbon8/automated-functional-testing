@@ -19,22 +19,22 @@ while no configuration is required, the `aft-jasmine-reporter` supports all AFT 
 this package comes with two helper classes that can be utilised from within your Jasmine specs to make use of AFT features.
 
 ### `AftLog`
-the `AftLog` class provides access to an AFT `LogManager` instance for your currently executing spec file. you can use it like the following:
+the `AftLog` class provides access to an AFT `Reporter` instance for your currently executing spec file. you can use it like the following:
 ```javascript
 describe('YourTestSuite', () => {
-    it('allows you to log using AFT LogManager', async () => {
+    it('allows you to log using AFT Reporter', async () => {
         const aft = new AftLog();
-        await aft.logMgr.step('starting test...');
+        await aft.reporter.step('starting test...');
         /* do some test things here */
-        await aft.logMgr.step('test is complete');
+        await aft.reporter.step('test is complete');
     });
 });
 ```
 and which would output the following to your console and any AFT `LoggingPlugin` instances referenced in your `aftconfig.json` (assuming your test expectations all pass)
 ```text
-17:52:45 - [YourTestSuite allows you to log using AFT LogManager] - STEP - starting test...
-17:54:02 - [YourTestSuite allows you to log using AFT LogManager] - STEP - test is complete
-17:54:02 - [YourTestSuite allows you to log using AFT LogManager] - PASS - YourTestSuite allows you to log using AFT LogManager
+17:52:45 - [YourTestSuite allows you to log using AFT Reporter] - STEP - starting test...
+17:54:02 - [YourTestSuite allows you to log using AFT Reporter] - STEP - test is complete
+17:54:02 - [YourTestSuite allows you to log using AFT Reporter] - PASS - YourTestSuite allows you to log using AFT Reporter
 ```
 
 ### `AftTest`
@@ -45,7 +45,7 @@ describe('YourTestSuite', () => {
         const aft = new AftTest();
         await aft.verify(async (v: Verifier) => {
             // `verify` calls `pending()` if should not be run which marks test as skipped
-            await aft.logMgr.step('we should never get here if C1234 should not be run');
+            await aft.reporter.step('we should never get here if C1234 should not be run');
             const result = await doStuff();
             return result;
         }).returns(equaling('stuff'));

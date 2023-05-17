@@ -14,7 +14,7 @@
 <li><a href="../modules/aft_core.html">aft-core</a></li>
 <li><a href="aft_core.ErrOptions.html">ErrOptions</a></li></ul>
 <h1>Type alias ErrOptions</h1></div>
-<div class="tsd-signature">Err<wbr/>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>errLevel<span class="tsd-signature-symbol">?: </span><a href="aft_core.LogLevel-1.html" class="tsd-signature-type" data-tsd-kind="Type alias">LogLevel</a><span class="tsd-signature-symbol">; </span>logMgr<span class="tsd-signature-symbol">?: </span><a href="../classes/aft_core.LogManager-1.html" class="tsd-signature-type" data-tsd-kind="Class">LogManager</a><span class="tsd-signature-symbol">; </span>verbosity<span class="tsd-signature-symbol">?: </span><a href="aft_core.ErrVerbosity.html" class="tsd-signature-type" data-tsd-kind="Type alias">ErrVerbosity</a><span class="tsd-signature-symbol"> }</span></div>
+<div class="tsd-signature">Err<wbr/>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>errLevel<span class="tsd-signature-symbol">?: </span><a href="aft_core.LogLevel-1.html" class="tsd-signature-type" data-tsd-kind="Type alias">LogLevel</a><span class="tsd-signature-symbol">; </span>reporter<span class="tsd-signature-symbol">?: </span><a href="../classes/aft_core.Reporter-1.html" class="tsd-signature-type" data-tsd-kind="Class">Reporter</a><span class="tsd-signature-symbol">; </span>verbosity<span class="tsd-signature-symbol">?: </span><a href="aft_core.ErrVerbosity.html" class="tsd-signature-type" data-tsd-kind="Type alias">ErrVerbosity</a><span class="tsd-signature-symbol"> }</span></div>
 <div class="tsd-type-declaration">
 <h4>Type declaration</h4>
 <ul class="tsd-parameters">
@@ -24,8 +24,8 @@
 <code>warn</code></p>
 </div></li>
 <li class="tsd-parameter">
-<h5><code class="tsd-tag ts-flagOptional">Optional</code> log<wbr/>Mgr<span class="tsd-signature-symbol">?: </span><a href="../classes/aft_core.LogManager-1.html" class="tsd-signature-type" data-tsd-kind="Class">LogManager</a></h5>
-<div class="tsd-comment tsd-typography"><p>an optional <code>LogManager</code> instance to use in logging the error message
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> log<wbr/>Mgr<span class="tsd-signature-symbol">?: </span><a href="../classes/aft_core.Reporter-1.html" class="tsd-signature-type" data-tsd-kind="Class">Reporter</a></h5>
+<div class="tsd-comment tsd-typography"><p>an optional <code>Reporter</code> instance to use in logging the error message
 and stack</p>
 </div></li>
 <li class="tsd-parameter">
@@ -60,7 +60,7 @@ and stack</p>
 <ul>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.Err.html">Err</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.LogLevel.html">Log<wbr/>Level</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.LogManager.html">Log<wbr/>Manager</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.Reporter.html">Log<wbr/>Manager</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.SafeStringOption.html">Safe<wbr/>String<wbr/>Option</a></li></ul></li>
 <li class="tsd-kind-module"><a href="../modules/aft_jasmine_reporter.html">aft-<wbr/>jasmine-<wbr/>reporter</a></li>
 <li class="tsd-kind-module"><a href="../modules/aft_logging_awskinesis.html">aft-<wbr/>logging-<wbr/>awskinesis</a></li>
@@ -87,7 +87,7 @@ and stack</p>
 <li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/aft_core.Err-1.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Err</a></li>
 <li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/aft_core.ExpiringFileLock.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Expiring<wbr/>File<wbr/>Lock</a></li>
 <li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/aft_core.FileSystemMap.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>File<wbr/>System<wbr/>Map</a></li>
-<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/aft_core.LogManager-1.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Log<wbr/>Manager</a></li>
+<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/aft_core.Reporter-1.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Log<wbr/>Manager</a></li>
 <li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/aft_core.LoggingPlugin.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Logging<wbr/>Plugin</a></li>
 <li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/aft_core.OptionsProvider.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Options<wbr/>Provider</a></li>
 <li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/aft_core.Plugin.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Plugin</a></li>
@@ -118,7 +118,7 @@ and stack</p>
 <li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="aft_core.JsonObject.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Json<wbr/>Object</a></li>
 <li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="aft_core.JsonValue.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Json<wbr/>Value</a></li>
 <li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="aft_core.LogLevel-1.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Log<wbr/>Level</a></li>
-<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="aft_core.LogManagerOptions.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Log<wbr/>Manager<wbr/>Options</a></li>
+<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="aft_core.ReporterOptions.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Log<wbr/>Manager<wbr/>Options</a></li>
 <li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="aft_core.LogMessageData.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Log<wbr/>Message<wbr/>Data</a></li>
 <li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="aft_core.LoggingPluginOptions.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Logging<wbr/>Plugin<wbr/>Options</a></li>
 <li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="aft_core.MachineInfoData.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Machine<wbr/>Info<wbr/>Data</a></li>

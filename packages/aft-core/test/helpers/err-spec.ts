@@ -1,4 +1,4 @@
-import { rand, Err, LogManager, LogLevel, AftConfig } from "../../src";
+import { rand, Err, Reporter, LogLevel, AftConfig } from "../../src";
 
 const consolelog = console.log;
 
@@ -85,24 +85,24 @@ describe('Err', () => {
             expect(val).toBeNull();
         });
 
-        it('will log a warning if a LogManager is supplied and the Func throws', async () => {
-            const logMgr = new LogManager('will log a warning if a LogManager is supplied and the Func throws', new AftConfig({ pluginNames: [] }));
+        it('will log a warning if a Reporter is supplied and the Func throws', async () => {
+            const reporter = new Reporter('will log a warning if a Reporter is supplied and the Func throws', new AftConfig({ pluginNames: [] }));
             let logMessage: string;
-            spyOn(logMgr, 'warn').and.callFake((message: string) => {
+            spyOn(reporter, 'warn').and.callFake((message: string) => {
                 logMessage = message;
                 return Promise.resolve();
             });
             const func = function () { throw 'foo'; };
-            const val = await Err.handleAsync(func, {logger: logMgr});
+            const val = await Err.handleAsync(func, {logger: reporter});
 
             expect(val).toBeNull();
-            expect(logMgr.warn).toHaveBeenCalledTimes(1);
+            expect(reporter.warn).toHaveBeenCalledTimes(1);
             expect(logMessage).toContain('Error: foo');
         });
 
         it('accepts ErrOptions as a second argument', async () => {
             const func = function () { throw 'foo'; };
-            const logger = new LogManager('accepts ErrOptions as a second argument');
+            const logger = new Reporter('accepts ErrOptions as a second argument');
             let actualLevel: LogLevel;
             let actualMessage: string;
             spyOn(logger, 'log').and.callFake((level: LogLevel, message: string, ...data: any[]) => {

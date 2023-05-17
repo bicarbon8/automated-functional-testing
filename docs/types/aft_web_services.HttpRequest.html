@@ -14,7 +14,7 @@
 <li><a href="../modules/aft_web_services.html">aft-web-services</a></li>
 <li><a href="aft_web_services.HttpRequest.html">HttpRequest</a></li></ul>
 <h1>Type alias HttpRequest</h1></div>
-<div class="tsd-signature">Http<wbr/>Request<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>allowAutoRedirect<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>headers<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">OutgoingHttpHeaders</span><span class="tsd-signature-symbol">; </span>logMgr<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">LogManager</span><span class="tsd-signature-symbol">; </span>method<span class="tsd-signature-symbol">?: </span><a href="aft_web_services.HttpMethod.html" class="tsd-signature-type" data-tsd-kind="Type alias">HttpMethod</a><span class="tsd-signature-symbol">; </span>multipart<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>postData<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">; </span>url<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
+<div class="tsd-signature">Http<wbr/>Request<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>allowAutoRedirect<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>headers<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">OutgoingHttpHeaders</span><span class="tsd-signature-symbol">; </span>reporter<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Reporter</span><span class="tsd-signature-symbol">; </span>method<span class="tsd-signature-symbol">?: </span><a href="aft_web_services.HttpMethod.html" class="tsd-signature-type" data-tsd-kind="Type alias">HttpMethod</a><span class="tsd-signature-symbol">; </span>multipart<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>postData<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">; </span>url<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
 <div class="tsd-comment tsd-typography"><p>to be used with the <code>httpService.performRequest</code> function
 like follows:</p>
 <pre><code class="language-typescript"><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-4">httpService</span><span class="hl-1">.</span><span class="hl-0">performRequest</span><span class="hl-1">({</span><span class="hl-4">url:</span><span class="hl-1"> </span><span class="hl-2">&#39;https://some.domain/path&#39;</span><span class="hl-1">});</span>
@@ -31,7 +31,7 @@ like follows:</p>
 <li class="tsd-parameter">
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> headers<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">OutgoingHttpHeaders</span></h5></li>
 <li class="tsd-parameter">
-<h5><code class="tsd-tag ts-flagOptional">Optional</code> log<wbr/>Mgr<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">LogManager</span></h5></li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> log<wbr/>Mgr<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Reporter</span></h5></li>
 <li class="tsd-parameter">
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> method<span class="tsd-signature-symbol">?: </span><a href="aft_web_services.HttpMethod.html" class="tsd-signature-type" data-tsd-kind="Type alias">HttpMethod</a></h5></li>
 <li class="tsd-parameter">
@@ -67,7 +67,7 @@ like follows:</p>
 <ul>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.Err.html">Err</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.LogLevel.html">Log<wbr/>Level</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.LogManager.html">Log<wbr/>Manager</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.Reporter.html">Log<wbr/>Manager</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.SafeStringOption.html">Safe<wbr/>String<wbr/>Option</a></li></ul></li>
 <li class="tsd-kind-module"><a href="../modules/aft_jasmine_reporter.html">aft-<wbr/>jasmine-<wbr/>reporter</a></li>
 <li class="tsd-kind-module"><a href="../modules/aft_logging_awskinesis.html">aft-<wbr/>logging-<wbr/>awskinesis</a></li>

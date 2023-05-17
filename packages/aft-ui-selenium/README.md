@@ -137,13 +137,13 @@ export class HerokuMessagesFacet extends BrowserFacet {
 ```typescript
 await verifyWithBrowser(async (bv: BrowserVerifier) => {
     let loginPage: HerokuLoginPage = await bv.session.getFacet(HerokuLoginPage);
-    await bv.logMgr.step('navigate to LoginPage...');
+    await bv.reporter.step('navigate to LoginPage...');
     await loginPage.navigateTo();
-    await bv.logMgr.step('login');
+    await bv.reporter.step('login');
     await loginPage.login("tomsmith", "SuperSecretPassword!");
-    await bv.logMgr.step('wait for message to appear...')
+    await bv.reporter.step('wait for message to appear...')
     await wait.untilTrue(() => loginPage.hasMessage(), 20000);
-    await bv.logMgr.step('get message...');
+    await bv.reporter.step('get message...');
     return await loginPage.getMessage();
 }).withDescription('can access websites using AFT and Page Widgets and Facets')
 .and.withTestId('C3456').and.withTestId('C2345').and.withTestId('C1234')

@@ -1,11 +1,12 @@
 import { Plugin, PluginConfig } from "../plugin";
 import { LogLevel } from "../../logging/log-level";
+import { TestResult } from "./test-result";
 
-export class LoggingPluginConfig extends PluginConfig {
+export class ReportingPluginConfig extends PluginConfig {
     logLevel: LogLevel;
 }
 
-export class LoggingPlugin extends Plugin {
+export class ReportingPlugin extends Plugin {
     override get enabled(): boolean {
         return this.logLevel != 'none';
     }
@@ -27,20 +28,25 @@ export class LoggingPlugin extends Plugin {
         return this.aftLogger.logLevel;
     }
     /**
-     * called by the parent `AftLog` on load to allow any plugins to configure
+     * called by the parent `Reporter` on load to allow any plugins to configure
      * themselves for a new logger
-     * @param logName the name of the `AftLog` instance calling dispose
+     * @param logName the name of the `Reporter` instance calling dispose
      */
     initialise = (logName: string): Promise<void> => null;
     /**
-     * used for logging of message strings. this function would be called often
+     * used for reporting message strings. this function would be called often
      * @param message the `LogMessageData` to be logged by this plugin
      */
     log = (name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => null;
     /**
-     * called by the parent `AftLog` before terminating to allow each plugin to 
-     * finalise any deferred logging actions
-     * @param logName the name of the `AftLog` instance calling finalise
+     * function will report on the passed in `TestResult`
+     * @param result a `TestResult` object to be sent
      */
-    finalise = (logName: string): Promise<void> => null;
+    submitResult = (name: string, result: TestResult): Promise<void> => null;
+    /**
+     * called by the parent `Reporter` before terminating to allow each plugin to 
+     * finalise any deferred logging actions
+     * @param name the name of the `Reporter` instance calling finalise
+     */
+    finalise = (name: string): Promise<void> => null;
 }

@@ -1,4 +1,4 @@
-import { AftConfig, Class, Func, LogManager, aftConfig } from 'aft-core';
+import { AftConfig, Class, Func, Reporter, aftConfig } from 'aft-core';
 
 export type UiComponentOptions = {
     driver: unknown;
@@ -6,7 +6,7 @@ export type UiComponentOptions = {
     aftCfg?: AftConfig;
     locator?: unknown;
     parent?: Func<void, Promise<unknown>>;
-    logMgr?: LogManager;
+    reporter?: Reporter;
 };
 
 /**
@@ -19,7 +19,7 @@ export type UiComponentOptions = {
  */
 export abstract class UiComponent {
     public readonly aftCfg: AftConfig;
-    public readonly logMgr: LogManager;
+    public readonly reporter: Reporter;
     
     protected readonly _driver: unknown;
     protected readonly _parent: Func<void, Promise<unknown>>;
@@ -28,7 +28,7 @@ export abstract class UiComponent {
     constructor(options: UiComponentOptions) {
         this._driver = options.driver;
         this.aftCfg = options.aftCfg ?? aftConfig;
-        this.logMgr ??= options.logMgr ?? new LogManager(this.constructor.name, this.aftCfg);
+        this.reporter ??= options.reporter ?? new Reporter(this.constructor.name, this.aftCfg);
         this._parent ??= options.parent;
         this._locator ??= options.locator;
     }
@@ -43,7 +43,7 @@ export abstract class UiComponent {
         options ??= {} as UiComponentOptions;
         options.driver ??= this.driver;
         options.aftCfg ??= this.aftCfg;
-        options.logMgr ??= this.logMgr;
+        options.reporter ??= this.reporter;
         options.parent ??= () => this.getRoot();
         return new componentType(options);
     }

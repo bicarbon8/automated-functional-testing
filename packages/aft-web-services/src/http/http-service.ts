@@ -93,8 +93,8 @@ export class HttpService {
             req = await this.setRequestDefaults(req);
 
             let logMessage = `issuing '${req.method}' request to '${req.url}' with post body '${req.postData}' and headers '${JSON.stringify(req.headers)}'.`;
-            if (req.logMgr) {
-                await req.logMgr.debug(logMessage);
+            if (req.reporter) {
+                await req.reporter.debug(logMessage);
             } else {
                 aftLogger.log({
                     name: this.constructor.name,
@@ -107,8 +107,8 @@ export class HttpService {
             const resp = await this._response(message, req.allowAutoRedirect);
 
             logMessage = `received response data of '${resp?.data}' and headers '${JSON.stringify(resp?.headers)}'.`;
-            if (req.logMgr) {
-                await req.logMgr.debug(logMessage);
+            if (req.reporter) {
+                await req.reporter.debug(logMessage);
             } else {
                 aftLogger.log({
                     name: this.constructor.name,

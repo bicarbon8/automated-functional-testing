@@ -18,25 +18,25 @@ describe('FilesystemLoggingPlugin', () => {
         await plugin.log(logName, 'trace', rand.getString(rand.getInt(100, 200)));
         await plugin.log(logName, 'info', rand.getString(rand.getInt(100, 200)));
         await plugin.log(logName, 'error', rand.getString(rand.getInt(100, 200)));
-        await plugin.submitResult({
+        await plugin.submitResult(logName, {
             testName: logName,
             resultId: rand.guid,
             created: Date.now(),
             status: 'passed'
         });
-        await plugin.submitResult({
+        await plugin.submitResult(logName, {
             testName: logName,
             resultId: rand.guid,
             created: Date.now(),
             status: 'skipped'
         });
-        await plugin.submitResult({
+        await plugin.submitResult(logName, {
             testName: logName,
             resultId: rand.guid,
             created: Date.now(),
             status: 'failed'
         });
-        await plugin.submitResult({
+        await plugin.submitResult(logName, {
             testName: logName,
             resultId: rand.guid,
             created: Date.now(),
@@ -108,7 +108,7 @@ describe('FilesystemLoggingPlugin', () => {
         });
         const plugin = new FilesystemLoggingPlugin(aftCfg);
 
-        await plugin.submitResult({
+        await plugin.submitResult(logName, {
             testName: logName,
             resultId: rand.guid,
             created: Date.now(),

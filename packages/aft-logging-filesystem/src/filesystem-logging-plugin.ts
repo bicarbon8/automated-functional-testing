@@ -1,15 +1,15 @@
 import * as path from "path";
-import { AftConfig, convert, Err, ExpiringFileLock, fileio, LoggingPlugin, LoggingPluginConfig, LogLevel, LogMessageData, ResultsPlugin, TestResult } from "aft-core";
+import { AftConfig, convert, Err, ExpiringFileLock, fileio, ReportingPlugin, ReportingPluginConfig, LogLevel, LogMessageData, TestResult } from "aft-core";
 import * as date from "date-and-time";
 
-export class FilesystemLoggingPluginConfig extends LoggingPluginConfig {
+export class FilesystemLoggingPluginConfig extends ReportingPluginConfig {
     override logLevel: LogLevel = 'trace';
     outputPath: string = path.join(process.cwd(), 'logs');
     includeResults: boolean = true;
     dateFormat: string = 'YYYY-MM-DD HH:mm:ss.SSS';
 };
 
-export class FilesystemLoggingPlugin extends LoggingPlugin implements ResultsPlugin {
+export class FilesystemLoggingPlugin extends ReportingPlugin {
     public override get logLevel(): LogLevel {
         return this._level;
     }
@@ -48,7 +48,7 @@ export class FilesystemLoggingPlugin extends LoggingPlugin implements ResultsPlu
         }
     }
 
-    submitResult = async (result: TestResult): Promise<void> => {
+    override submitResult = async (name: string, result: TestResult): Promise<void> => {
         if (this.enabled && this._includeResults) {
             let level: LogLevel;
             switch(result.status) {
@@ -67,7 +67,7 @@ export class FilesystemLoggingPlugin extends LoggingPlugin implements ResultsPlu
                     break;
             }
             const data: LogMessageData = {
-                name: result.testName,
+                name: name ?? result.testName,
                 level: level,
                 message: JSON.stringify(result)
             };

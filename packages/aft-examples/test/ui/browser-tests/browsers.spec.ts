@@ -10,25 +10,25 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
         await aft.verify(async (tw: SeleniumVerifier) => {
             let loginPage: HerokuLoginPage = tw.getComponent(HerokuLoginPage);
             
-            await tw.logMgr.step('navigate to LoginPage...');
+            await tw.reporter.step('navigate to LoginPage...');
             await loginPage.navigateTo();
             
-            await tw.logMgr.step('login');
+            await tw.reporter.step('login');
             await loginPage.login("tomsmith", "SuperSecretPassword!");
 
-            await tw.logMgr.step('wait for message to appear...')
+            await tw.reporter.step('wait for message to appear...')
             await retry(() => loginPage.hasMessage())
                 .withDelay(100)
                 .withBackOff('exponential')
                 .withMaxDuration(20000);
             
-            await tw.logMgr.step('get message...');
+            await tw.reporter.step('get message...');
             return await loginPage.getMessage();
         }, SeleniumVerifier).withAdditionalSessionOptions({
             capabilities: {
                 browserName: 'chrome',
                 "bstack:options": {
-                    sessionName: aft.logMgr.logName,
+                    sessionName: aft.reporter.reporterName,
                     os: 'windows',
                     osVersion: '11',
                     buildName: await new BuildInfoManager().get()
@@ -44,34 +44,34 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
             let loginPage: HerokuLoginPage = tw.getComponent(HerokuLoginPage);
             
             await aft.verify(async (v: Verifier) => {
-                await v.logMgr.step('navigate to LoginPage');
+                await v.reporter.step('navigate to LoginPage');
                 await loginPage.navigateTo();
                 return await loginPage.driver.getCurrentUrl();
             }).withTestIds('C4567')
             .returns(containing('the-internet.herokuapp.com/login'));
             
             await aft.verify(async (v: Verifier) => {
-                await v.logMgr.step('click login button...');
+                await v.reporter.step('click login button...');
                 await loginPage.content.getLoginButton().then(button => button.click());
-                await v.logMgr.info('no exception thrown on click');
+                await v.reporter.info('no exception thrown on click');
             }).withTestIds('C5678');
 
             await aft.verify(async (v: Verifier) => {
-                await v.logMgr.step('refresh page...');
+                await v.reporter.step('refresh page...');
                 await tw.driver.navigate().refresh();
-                await v.logMgr.info('page refreshed');
+                await v.reporter.info('page refreshed');
             }).withTestIds('C6789');
 
             await aft.verify(async (v: Verifier) => {
-                await tw.logMgr.step('click login button after refresh...');
+                await tw.reporter.step('click login button after refresh...');
                 await loginPage.content.getLoginButton().then(button => button.click());
-                await tw.logMgr.info('no exception thrown on click');
+                await tw.reporter.info('no exception thrown on click');
             }).withTestIds('C7890');
         }, SeleniumVerifier).withAdditionalSessionOptions({
             capabilities: {
                 browserName: 'chrome',
                 "bstack:options": {
-                    sessionName: aft.logMgr.logName,
+                    sessionName: aft.reporter.reporterName,
                     os: 'windows',
                     osVersion: '11',
                     buildName: await new BuildInfoManager().get()
@@ -104,7 +104,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                 capabilities: {
                     browserName: platform.browser,
                     "bstack:options": {
-                        sessionName: aft.logMgr.logName,
+                        sessionName: aft.reporter.reporterName,
                         os: platform.os,
                         osVersion: platform.osV,
                         buildName: await new BuildInfoManager(aftCfg).get()

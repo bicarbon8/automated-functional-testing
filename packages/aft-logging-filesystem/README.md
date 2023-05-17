@@ -1,5 +1,5 @@
 # AFT-Logging-Filesystem
-Automated Functional Testing (AFT) package providing a Filesystem Logging Plugin that generates .log files based on the `LogManager.logName` and appends log lines using a customisable date format
+Automated Functional Testing (AFT) package providing a Filesystem Logging Plugin that generates .log files based on the `Reporter.logName` and appends log lines using a customisable date format
 
 ## Installation
 `> npm i aft-logging-filesystem`
@@ -11,7 +11,7 @@ this plugin accepts configuration options in the following format:
 ```json
 {
     ...
-    "LogManager": {
+    "Reporter": {
         "level": "info",
         "plugins": [{
             "name": "filesystem-logging-plugin",
@@ -27,10 +27,10 @@ this plugin accepts configuration options in the following format:
     ...
 }
 ```
-- **level** - a `string` containing a valid `LogLevel` _(defaults to value set in `LogManager.level` or `"none"` if not set)_
+- **level** - a `string` containing a valid `LogLevel` _(defaults to value set in `Reporter.level` or `"none"` if not set)_
 - **enabled** - a `boolean` indicating if this plugin should be used _(defaults to `true`)_
 - **outputPath** - a `string` with either an absolute path or a relative path from the `process.cwd()` where .log files will be created _(defaults to `./logs`)_
-- **includeResults** - a `boolean` indicating whether calls to any `LogManager.logResult` function will output the `TestResult` to the .log file _(defaults to `true`)_
+- **includeResults** - a `boolean` indicating whether calls to any `Reporter.logResult` function will output the `TestResult` to the .log file _(defaults to `true`)_
 - **dateFormat** - a `string` that can include Date Formatting as outlined at the [date-and-time](https://github.com/knowledgecode/date-and-time#formatdateobj-arg-utc) npm package
 
 ## Log Format

@@ -1,4 +1,4 @@
-import { LoggingPlugin, LogLevel, TestResult, ellide, ResultsPlugin, AftConfig, FileSystemMap } from "aft-core";
+import { ReportingPlugin, LogLevel, TestResult, ellide, AftConfig, FileSystemMap } from "aft-core";
 import { TestRailApi } from "../api/testrail-api";
 import { TestRailResultRequest } from "../api/testrail-custom-types";
 import { TestRailConfig } from "../configuration/testrail-config";
@@ -9,7 +9,7 @@ import { PlanId } from "../helpers/plan-id";
 /**
  * this plugin uses the following configuration to control its operation via
  * `aftconfig.json` and if the `logLevel` is unset it will be set from the value 
- * in `LogManagerConfig` before falling back to a value of `warn`
+ * in `ReporterConfig` before falling back to a value of `warn`
  * ```json
  * {
  *     "TestRailConfig": {
@@ -25,7 +25,7 @@ import { PlanId } from "../helpers/plan-id";
  * then a new TestRail Plan will be created from the specified `projectId` and `suiteIds`
  * configuration keys
  */
-export class TestRailLoggingPlugin extends LoggingPlugin implements ResultsPlugin {
+export class TestRailLoggingPlugin extends ReportingPlugin {
     private readonly _level: LogLevel;
     public override get logLevel(): LogLevel {
         return this._level;
@@ -72,9 +72,9 @@ export class TestRailLoggingPlugin extends LoggingPlugin implements ResultsPlugi
         }
     }
     
-    submitResult = async (result: TestResult): Promise<void> => {
-        if (this.enabled && result && result.testName) {
-            const trResult: TestRailResultRequest = await this._getTestRailResultForTestResult(result.testName, result);
+    override submitResult = async (name: string, result: TestResult): Promise<void> => {
+        if (this.enabled && result && name) {
+            const trResult: TestRailResultRequest = await this._getTestRailResultForTestResult(name ?? result.testName, result);
             const planId = await PlanId.get(this.aftCfg, this._api);
             await this._api.addResult(result.testId, planId, trResult);
         }

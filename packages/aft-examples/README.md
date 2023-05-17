@@ -54,7 +54,7 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
 ```
 - **pluginNames** - `Array<string>` containing names that should match the filename and classname (if you remove characters like `-`, `_` and `.`) of the plugins to load
 - **pluginsSearchDir** - `string` containing a relative path (to `process.cwd()`) used to search for the plugins listed in the `pluginNames` array. _(defaults to `process.cwd()`)_
-- **logLevel** - `string` containing the minimum `LogLevel` where logs will be sent to the console. this value can also serve as a global fall-back for logging plugin implementations using `aftConfig.getSection(LogManagerConfig).logLevel` if no value is specified for the given plugin. _(defaults to `'warn'`)_
+- **logLevel** - `string` containing the minimum `LogLevel` where logs will be sent to the console. this value can also serve as a global fall-back for logging plugin implementations using `aftConfig.getSection(ReporterConfig).logLevel` if no value is specified for the given plugin. _(defaults to `'warn'`)_
 - **KinesisLoggingPluginConfig** - configuration for the `kinesis-logging-plugin`
   - **logLevel** - the minimum level where logs will be forwarded to your AWS Kinesis Firehose delivery stream. _(defaults to `'none'`)_
   - **region** - `string` containing an AWS Region System Name like `'eu-west-1'`
@@ -75,7 +75,7 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
   - **options** - `object` containing any properties that will be passed to the loaded `UiSessionGeneratorPlugin.getSession` function and that can be used by the plugin to control the type of session to create
 
 ## Test Execution
-executing the tests using `npm test` should result in the output like the following sent to the console (assuming the `LogManager.level` is set to something like `info` in your `aftconfig.json`):
+executing the tests using `npm test` should result in the output like the following sent to the console (assuming the `Reporter.level` is set to something like `info` in your `aftconfig.json`):
 ```
 14:51:33 - [can access websites using AFT and Page Widgets and Facets] - STEP  - 1: navigate to LoginPage...
 14:51:35 - [can access websites using AFT and Page Widgets and Facets] - STEP  - 2: login

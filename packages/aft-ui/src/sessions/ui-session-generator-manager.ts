@@ -1,5 +1,5 @@
 import { merge } from "lodash";
-import { AftConfig, Err, LogManager, aftConfig, aftLogger, pluginLoader } from "aft-core";
+import { AftConfig, Err, Reporter, aftConfig, aftLogger, pluginLoader } from "aft-core";
 import { UiSessionGeneratorPlugin } from "./ui-session-generator-plugin";
 import { UiSessionConfig } from "../configuration/ui-session-config";
 

@@ -1,4 +1,4 @@
-import { LoggingPlugin, LogLevel, TestResult, machineInfo, AftConfig, ResultsPlugin, BuildInfoManager, LoggingPluginConfig } from "aft-core";
+import { ReportingPlugin, LogLevel, TestResult, machineInfo, AftConfig, BuildInfoManager, ReportingPluginConfig } from "aft-core";
 import * as AWS from "aws-sdk";
 import * as pkg from "../package.json";
 import { KinesisLogRecord } from "./kinesis-log-record";
@@ -8,7 +8,7 @@ type CheckAndSendOptions = {
     logName: string;
 };
 
-export class KinesisLoggingPluginConfig extends LoggingPluginConfig {
+export class KinesisLoggingPluginConfig extends ReportingPluginConfig {
     region: string;
     deliveryStream: string;
     batch: boolean = true;
@@ -38,7 +38,7 @@ export class KinesisLoggingPluginConfig extends LoggingPluginConfig {
  * - Process Credentials: any credentials set on the current process
  * - Options: read from passed in `KinesisLoggingPluginOptions`
  */
-export class KinesisLoggingPlugin extends LoggingPlugin implements ResultsPlugin {
+export class KinesisLoggingPlugin extends ReportingPlugin {
     private readonly _logs: Map<string, AWS.Firehose.Record[]>;
     private readonly _buildInfo: BuildInfoManager;
     private readonly _level: LogLevel;
@@ -152,9 +152,9 @@ export class KinesisLoggingPlugin extends LoggingPlugin implements ResultsPlugin
      * implementation of the {ResultsPlugin} class used to submit results
      * @param result a {TestResult} to send to Kinesis Firehose
      */
-    submitResult = async (result: TestResult): Promise<void> => {
+    override submitResult = async (name: string, result: TestResult): Promise<void> => {
         if (this.enabled) {
-            const name = result?.testName;
+            name ??= result?.testName;
             if (name) {
                 let record: AWS.Firehose.Record = this._createKinesisLogRecord({
                     logName: name,

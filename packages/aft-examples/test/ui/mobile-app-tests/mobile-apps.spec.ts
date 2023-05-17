@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as FormData from "form-data";
-import { AftConfig, BuildInfoManager, LogManager, aftConfig } from "aft-core";
+import { AftConfig, BuildInfoManager, Reporter, aftConfig } from "aft-core";
 import { WikipediaView } from "./page-objects/wikipedia-view";
 import { AftTest } from "aft-mocha-reporter";
 import { httpService, httpData, HttpHeaders } from "aft-web-services";
@@ -12,7 +12,7 @@ var customId: string;
 
 describe('Functional Mobile App Tests using AFT-UI-SELENIUM', () => {
     before(async () => {
-        const logger = new LogManager('MobileAppsSpec Before');
+        const logger = new Reporter('MobileAppsSpec Before');
         const uisc = aftConfig.getSection(UiSessionConfig);
         const username = uisc.options.capabilities?.["bstack:options"]?.userName;
         const password = uisc.options.capabilities?.["bstack:options"]?.accessKey;
@@ -21,7 +21,7 @@ describe('Functional Mobile App Tests using AFT-UI-SELENIUM', () => {
             headers: {
                 ...HttpHeaders.Authorization.basic(username, password)
             },
-            logMgr: logger
+            reporter: logger
         });
         let app: any;
         const uploadedApps = httpData.as<Array<any>>(resp);
@@ -44,7 +44,7 @@ describe('Functional Mobile App Tests using AFT-UI-SELENIUM', () => {
                     ...HttpHeaders.Authorization.basic(username, password)
                 },
                 multipart: true,
-                logMgr: logger
+                reporter: logger
             });
             app = httpData.as<{}>(result);
         }
@@ -55,11 +55,11 @@ describe('Functional Mobile App Tests using AFT-UI-SELENIUM', () => {
         const aftCfg = new AftConfig();
         const aft = new AftTest(this, aftCfg);
         await aft.verify(async (tw: WebdriverIoVerifier) => {
-            await tw.logMgr.step('get the WikipediaView Facet from the Session...');
+            await tw.reporter.step('get the WikipediaView Facet from the Session...');
             let view: WikipediaView = tw.getComponent(WikipediaView);
-            await tw.logMgr.step('enter a search term...');
+            await tw.reporter.step('enter a search term...');
             await view.searchFor('pizza');
-            await tw.logMgr.step('get the results and ensure they contain the search term...');
+            await tw.reporter.step('get the results and ensure they contain the search term...');
             let results: string[] = await view.getResults();
             for (var i=0; i<results.length; i++) {
                 let res: string = results[i];
@@ -75,7 +75,7 @@ describe('Functional Mobile App Tests using AFT-UI-SELENIUM', () => {
                 "appium:deviceName": 'Samsung Galaxy S23',
                 "appium:app": customId,
                 "bstack:options": {
-                    "sessionName": aft.logMgr.logName,
+                    "sessionName": aft.reporter.reporterName,
                     buildName: await new BuildInfoManager(aftCfg).get()
                 }
             }

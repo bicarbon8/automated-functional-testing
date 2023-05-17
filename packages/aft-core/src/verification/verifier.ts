@@ -1,7 +1,7 @@
-import { LogManager } from "../plugins/logging/log-manager";
-import { TestResult } from "../plugins/results/test-result";
-import { PolicyEngineManager } from "../plugins/policy-engine/policy-engine-manager";
-import { TestStatus } from "../plugins/results/test-status";
+import { Reporter } from "../plugins/reporting/reporter";
+import { TestResult } from "../plugins/reporting/test-result";
+import { TestExecutionPolicyManager } from "../plugins/test-execution-policy/test-execution-policy-manager";
+import { TestStatus } from "../plugins/reporting/test-status";
 import { convert } from "../helpers/convert";
 import { Action, Func, ProcessingResult } from "../helpers/custom-types";
 import { rand } from "../helpers/rand";
@@ -9,7 +9,6 @@ import { equaling, VerifierMatcher } from "./verifier-matcher";
 import { Err } from "../helpers/err";
 import { BuildInfoManager } from "../plugins/build-info/build-info-manager";
 import { AftConfig, aftConfig } from "../configuration/aft-config";
-import { ResultsManager } from "../plugins/results/results-manager";
 import { VerifierInternals } from "./verifier-internals";
 
 export type VerifierEvent = 'skipped' | 'started' | 'done';
@@ -22,7 +21,7 @@ export type VerifierEvent = 'skipped' | 'started' | 'done';
  * Ex:
  * ```
  * await verify(async (v: Verifier) => {
- *   await v.logMgr.info('doing some testing...');
+ *   await v.reporter.info('doing some testing...');
  *   let feature = new FeatureObj();
  *   return await feature.returnExpectedValue();
  * }).withDescription('example usage for Verifier')
@@ -41,10 +40,9 @@ export class Verifier implements PromiseLike<void> {
     protected _startTime: number;
     protected _innerPromise: Promise<void>;
     protected _testIds: Set<string>;
-    protected _logMgr: LogManager;
-    protected _policyEngMgr: PolicyEngineManager;
+    protected _reporter: Reporter;
+    protected _policyEngMgr: TestExecutionPolicyManager;
     protected _buildInfoMgr: BuildInfoManager;
-    protected _resMgr: ResultsManager;
     protected _actionMap: Map<VerifierEvent, Action<void>>;
 
     constructor() {
@@ -61,12 +59,12 @@ export class Verifier implements PromiseLike<void> {
     }
     
     /**
-     * a `LogManager` that uses either the Description
+     * a `Reporter` that uses either the Description
      * or a list of Test Ids or a `uuid` as the `logName` depending
      * on which is available (NOTE: description is preferred most and
      * will be used if other values are also present)
      */
-    get logMgr(): LogManager {
+    get reporter(): Reporter {
         let logName: string;
         if (this._description) {
             logName = this._description;
@@ -75,15 +73,15 @@ export class Verifier implements PromiseLike<void> {
         } else {
             logName = this.constructor.name;
         }
-        if (!this._logMgr) {
-            this._logMgr = new LogManager(logName, this.aftCfg);
+        if (!this._reporter) {
+            this._reporter = new Reporter(logName, this.aftCfg);
         }
-        return this._logMgr;
+        return this._reporter;
     }
 
-    get policyEngMgr(): PolicyEngineManager {
+    get policyEngMgr(): TestExecutionPolicyManager {
         if (!this._policyEngMgr) {
-            this._policyEngMgr = new PolicyEngineManager(this.aftCfg);
+            this._policyEngMgr = new TestExecutionPolicyManager(this.aftCfg);
         }
         return this._policyEngMgr;
     }
@@ -93,13 +91,6 @@ export class Verifier implements PromiseLike<void> {
             this._buildInfoMgr = new BuildInfoManager(this.aftCfg);
         }
         return this._buildInfoMgr;
-    }
-
-    get resultsMgr(): ResultsManager {
-        if (!this._resMgr) {
-            this._resMgr = new ResultsManager(this.aftCfg);
-        }
-        return this._resMgr;
     }
 
     async then<TResult1 = Verifier, TResult2 = never>(onfulfilled?: (value: void) => TResult1 | PromiseLike<TResult1>, onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2> {
@@ -117,7 +108,7 @@ export class Verifier implements PromiseLike<void> {
                         if (action) {
                             Err.handle(() => action(), {
                                 errLevel: 'warn',
-                                logger: this.logMgr
+                                logger: this.reporter
                             });
                         }
                         await this._resolveAssertion();
@@ -128,7 +119,7 @@ export class Verifier implements PromiseLike<void> {
                         if (action) {
                             Err.handle(() => action(), {
                                 errLevel: 'warn',
-                                logger: this.logMgr
+                                logger: this.reporter
                             });
                         }
                     }
@@ -143,7 +134,7 @@ export class Verifier implements PromiseLike<void> {
         if (action) {
             Err.handle(() => action(), {
                 errLevel: 'warn',
-                logger: this.logMgr
+                logger: this.reporter
             });
         }
         return this._innerPromise;
@@ -182,7 +173,7 @@ export class Verifier implements PromiseLike<void> {
      * ex:
      * ```
      * await verify(async (v: Verifier) => {
-     *   await v.logMgr.info('doing some testing...');
+     *   await v.reporter.info('doing some testing...');
      *   let feature = new FeatureObj();
      *   return await feature.returnExpectedValue();
      * }).withDescription('example usage for Verifier')
@@ -248,7 +239,7 @@ export class Verifier implements PromiseLike<void> {
      * creates an object exposing internal functions allowing setting custom instances
      * to internal objects
      * @returns a `VerifierInternals` object containing functions allowing users to
-     * set values for the `LogManager`, `PolicyEngineManager`, `BuildInfoManager` and
+     * set values for the `Reporter`, `PolicyEngineManager`, `BuildInfoManager` and
      * `ResultsManager`
      */
     get internals(): VerifierInternals {
@@ -264,13 +255,13 @@ export class Verifier implements PromiseLike<void> {
                 return this;
             },
             /**
-             * allows for using a specific `LogManager` instance. if not
+             * allows for using a specific `Reporter` instance. if not
              * set then one will be created for use by this `Verifier`
-             * @param logMgr a `LogManager` instance
+             * @param reporter a `Reporter` instance
              * @returns this `Verifier` instance
              */
-            usingLogManager: (logMgr: LogManager): this => {
-                this._logMgr = logMgr;
+            usingReporter: (reporter: Reporter): this => {
+                this._reporter = reporter;
                 return this;
             },
 
@@ -280,7 +271,7 @@ export class Verifier implements PromiseLike<void> {
              * @param policyMgr a `PolicyEngineManager` instance
              * @returns this `Verifier` instance
              */
-            usingPolicyEngineManager: (policyMgr: PolicyEngineManager): this => {
+            usingTestExecutionPolicyManager: (policyMgr: TestExecutionPolicyManager): this => {
                 this._policyEngMgr = policyMgr;
                 return this;
             },
@@ -293,17 +284,6 @@ export class Verifier implements PromiseLike<void> {
              */
             usingBuildInfoManager: (buildMgr: BuildInfoManager): this => {
                 this._buildInfoMgr = buildMgr;
-                return this;
-            },
-
-            /**
-             * allows for using a specific `ResultsManager` instance. if not
-             * set then the global `ResultsManager.instance()` will be used
-             * @param refMgr a `ResultsManager` instance
-             * @returns this `Verifier` instance
-             */
-            usingResultsManager: (refMgr: ResultsManager): this => {
-                this._resMgr = refMgr;
                 return this;
             }
         }
@@ -342,7 +322,7 @@ export class Verifier implements PromiseLike<void> {
 
     /**
      * creates `TestResult` objects for each `testId` and sends these
-     * to the `LogManager.logResult` function
+     * to the `Reporter.logResult` function
      */
     protected async _logResult(status: TestStatus, message?: string): Promise<void> {
         try {
@@ -363,31 +343,31 @@ export class Verifier implements PromiseLike<void> {
             for (var i=0; i<results.length; i++) {
                 let result: TestResult = results[i];
                 try {
-                    await this.resultsMgr.submitResult(result);
+                    await this.reporter.submitResult(result);
                 } catch (e) {
-                    await this.logMgr.warn(`unable to log test result for test '${result.testId || result.resultId}' due to: ${Err.short(e)}`);
+                    await this.reporter.warn(`unable to log test result for test '${result.testId || result.resultId}' due to: ${Err.short(e)}`);
                 }
             }
         } finally {
-            await this.logMgr.dispose();
+            await this.reporter.dispose();
         }
     }
 
     protected async _logMessage(status: TestStatus, message?: string): Promise<void> {
-        message = message || this.logMgr.logName;
+        message = message || this.reporter.reporterName;
         switch (status) {
             case 'blocked':
             case 'retest':
             case 'skipped':
             case 'untested':
-                await this.logMgr.warn(message);
+                await this.reporter.warn(message);
                 break;
             case 'failed':
-                await this.logMgr.fail(message);
+                await this.reporter.fail(message);
                 break;
             case 'passed':
             default:
-                await this.logMgr.pass(message);
+                await this.reporter.pass(message);
                 break;
         }
     }
@@ -409,7 +389,7 @@ export class Verifier implements PromiseLike<void> {
 
     protected async _generateTestResult(status: TestStatus, logMessage: string, testId?: string): Promise<TestResult> {
         let result: TestResult = {
-            testName: this.logMgr.logName,
+            testName: this.reporter.reporterName,
             testId: testId,
             created: Date.now(),
             resultId: rand.guid,
@@ -432,7 +412,7 @@ export class Verifier implements PromiseLike<void> {
  * Ex:
  * ```typescript
  * await verify(async (v: Verifier) => {
- *   await v.logMgr.info('doing some testing...');
+ *   await v.reporter.info('doing some testing...');
  *   let feature = new FeatureObj();
  *   return await feature.returnExpectedValue();
  * }).withDescription('example usage for Verifier')

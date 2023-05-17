@@ -1,4 +1,4 @@
-import { AftConfig, PolicyEngineManager, ProcessingResult, pluginLoader } from "../../../src";
+import { AftConfig, TestExecutionPolicyManager, ProcessingResult, pluginLoader } from "../../../src";
 import { MockPolicyEnginePlugin } from "./mock-policy-engine-plugin";
 
 describe('PolicyEngineManager', () => {
@@ -11,7 +11,7 @@ describe('PolicyEngineManager', () => {
     })
 
     it('can load a specified IPolicyEnginePlugin', async () => {
-        let tcm: PolicyEngineManager = new PolicyEngineManager(new AftConfig({
+        let tcm: TestExecutionPolicyManager = new TestExecutionPolicyManager(new AftConfig({
             pluginNames: ['mock-policy-engine-plugin'],
             MockTestCasePluginConfig: {
                 enabled: true
@@ -27,7 +27,7 @@ describe('PolicyEngineManager', () => {
 
     describe('shouldRun', () => {
         it('returns true if no plugins found or loaded', async () => {
-            let tcm = new PolicyEngineManager();
+            let tcm = new TestExecutionPolicyManager();
             const plugins = tcm.plugins;
             expect(plugins.length).toBe(0);
 
@@ -38,7 +38,7 @@ describe('PolicyEngineManager', () => {
 
         it('returns true if no enabled plugins found', async () => {
             pluginLoader.reset();
-            let tcm: PolicyEngineManager = new PolicyEngineManager(new AftConfig({
+            let tcm: TestExecutionPolicyManager = new TestExecutionPolicyManager(new AftConfig({
                 pluginNames: ['mock-policy-engine-plugin']
             }));
             let plugins = tcm.plugins;

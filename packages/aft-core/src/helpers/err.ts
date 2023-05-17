@@ -1,5 +1,5 @@
 import { LogLevel } from '../logging/log-level';
-import { LogManager } from '../plugins/logging/log-manager';
+import { Reporter } from '../plugins/reporting/reporter';
 import { AftLogger, aftLogger } from '../logging/aft-logger';
 import { convert } from './convert';
 import { Func } from './custom-types';
@@ -9,10 +9,10 @@ export type ErrVerbosity = 'full' | 'short';
 
 export type ErrOptions = {
     /**
-     * an optional `LogManager` instance to use in logging the error message
+     * an optional `Reporter` instance to use in logging the error message
      * and stack
      */
-    logger: LogManager;
+    logger: Reporter;
     /**
      * the `LogLevel` to use when logging any caught `Error`. defaults to
      * `warn`
@@ -40,11 +40,11 @@ export type ErrOptions = {
  * 
  * > NOTE: an optional `Partial<ErrorOptions>` object can be passed to the `handle` and `handleAsync` functions allowing
  * you to control the `LogLevel` used _(defaults to `'warn'`)_, the verbosity _(defaults to `'short'`)_, and the 
- * `LogManager` instance used _(defaults to `aftLog` global instance)_
+ * `Reporter` instance used _(defaults to `aftLog` global instance)_
  * 
  * and:
  * ```typescript
- * const logger = new LogManager('AFT');
+ * const logger = new Reporter('AFT');
  * try {
  *     functionThatThrowsTypeError();
  * } catch (e) {

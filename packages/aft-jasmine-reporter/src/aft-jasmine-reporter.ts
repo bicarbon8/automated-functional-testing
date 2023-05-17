@@ -42,7 +42,7 @@ export class AftJasmineReporter implements jasmine.CustomReporter {
                 await t.pending();
                 break;
             default:
-                await t.logMgr.warn(`unknown test.status of '${t.test.status}' returned`);
+                await t.reporter.warn(`unknown test.status of '${t.test.status}' returned`);
                 break;
         }
         await t.dispose();

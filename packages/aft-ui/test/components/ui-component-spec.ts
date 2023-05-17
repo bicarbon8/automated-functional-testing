@@ -1,4 +1,4 @@
-import { LogManager, rand } from "aft-core";
+import { Reporter, rand } from "aft-core";
 import { UiComponentOptions } from "../../src";
 import { FakeComponent } from "./fake-component";
 import { FakeElement } from "./fake-element";
@@ -14,7 +14,7 @@ describe('UiComponent', () => {
         const options: UiComponentOptions = {
             driver: mockDriver,
             locator: FakeLocator.fakeLocType('fake:loc'),
-            logMgr: new LogManager(rand.getString(15))
+            reporter: new Reporter(rand.getString(15))
         };
         const compo = new FakeComponent(options);
 
@@ -23,6 +23,6 @@ describe('UiComponent', () => {
         expect(actual).toBeDefined();
         expect(actual.locator.input).toEqual('new:loc');
         expect(await actual.parent()).toBe(await compo.getRoot());
-        expect(actual.logMgr).toBe(compo.logMgr);
+        expect(actual.reporter).toBe(compo.reporter);
     });
 });

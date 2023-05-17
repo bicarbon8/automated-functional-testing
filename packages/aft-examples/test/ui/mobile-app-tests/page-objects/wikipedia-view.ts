@@ -11,19 +11,19 @@ export class WikipediaView extends WebdriverIoComponent {
     private _searchResults = async (): Promise<Array<Element<'async'>>> => await (await this.getRoot()).$$("android.widget.TextView");
 
     async searchFor(term: string): Promise<string[]> {
-        await this.logMgr.info("tapping on 'SearchButton'");
+        await this.reporter.info("tapping on 'SearchButton'");
         await this._searchButton().then(b => b.click());
         await this.sendTextToSearch(term);
         return await this.getResults();
     }
 
     async sendTextToSearch(text: string): Promise<void> {
-        await this.logMgr.info(`setting 'SearchInput' to '${text}'...`);
+        await this.reporter.info(`setting 'SearchInput' to '${text}'...`);
         await this._searchInput().then(i => i.addValue(text));
     }
 
     async getResults(): Promise<string[]> {
-        await this.logMgr.info("getting text from 'SearchResults' to return as 'string[]'");
+        await this.reporter.info("getting text from 'SearchResults' to return as 'string[]'");
         let resultsText: string[] = [];
 
         var searchResults = await this._searchResults();
@@ -32,7 +32,7 @@ export class WikipediaView extends WebdriverIoComponent {
             let txt: string = await res.getText().catch(err => err);
             resultsText.push(txt);
         }
-        await this.logMgr.info(`found results of: [${resultsText.join(', ')}]`);
+        await this.reporter.info(`found results of: [${resultsText.join(', ')}]`);
         return resultsText;
     }
 }

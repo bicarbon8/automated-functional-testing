@@ -36,12 +36,12 @@ describe('Sample Test', () => {
          * during more complex actions
          */
         await aft.verify(async (v: Verifier) => {
-            await v.logMgr.step('creating instance of FeatureObj');
+            await v.reporter.step('creating instance of FeatureObj');
             let feature: FeatureObj = new FeatureObj();
-            await v.logMgr.step('about to call performAction');
+            await v.reporter.step('about to call performAction');
             let result: string = await feature.performAction();
-            await v.logMgr.info(`result of performAction was '${result}'`);
-            await v.logMgr.trace('successfully executed expectation');
+            await v.reporter.info(`result of performAction was '${result}'`);
+            await v.reporter.trace('successfully executed expectation');
             return result;
         }).returns(containing('result of action'));
     });
@@ -80,7 +80,7 @@ verify(() => {throw new Error('failure');}) // AFT will report as 'failed'
 - [`aft-web-services`](./packages/aft-web-services/README.md) - adds support for testing REST-based services
 
 ## Plugins
-the primary benefit of using AFT comes from the plugins and the `Verifier`. Because logging using AFT's `LogManager` will also send to any registered logging plugins, it is easy to create logging plugins that send to any external system such as TestRail or to log results to Elasticsearch. Additionally, before running any _assertion_ passed to a `verify(assertion)` function, AFT will confirm if the _assertion_ should actually be run based on the results of queries to any supplied `PolicyEnginePlugin` implementations.
+the primary benefit of using AFT comes from the plugins and the `Verifier`. Because logging using AFT's `Reporter` will also send to any registered logging plugins, it is easy to create logging plugins that send to any external system such as TestRail or to log results to Elasticsearch. Additionally, before running any _assertion_ passed to a `verify(assertion)` function, AFT will confirm if the _assertion_ should actually be run based on the results of queries to any supplied `PolicyEnginePlugin` implementations.
 
 ### LoggingPlugin
 `aft-core` provides a `LoggingPlugin` class which can be extended from to create custom loggers which are then loaded by adding their filenames to the `pluginNames` array under in your `aftconfig.json`

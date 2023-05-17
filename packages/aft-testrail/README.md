@@ -5,7 +5,7 @@ provides TestRail result logging as well as test execution filtering for users o
 the `TestRailLoggingPlugin` extends from `LoggingPlugin` in `aft-core`. if enabled, this plugin will log test results to test cases in a TestRail Plan (if no plan is specified a new one is created the first time one is attempted to be accessed by the plugin). it can be enabled by including the following in your `aftconfig.json` file:
 ```json
 {
-    "LogManager": {
+    "Reporter": {
         "level": "info",
         "plugins": [
             {
@@ -27,7 +27,7 @@ the `TestRailLoggingPlugin` extends from `LoggingPlugin` in `aft-core`. if enabl
 }
 ```
 **PluginConfig**:
-- **level** - [OPTIONAL] `string` value of `none`, `error`, `warn`, `step`, `info`, `debug`, or `trace` _(defaults to value set on `LogManager`)_
+- **level** - [OPTIONAL] `string` value of `none`, `error`, `warn`, `step`, `info`, `debug`, or `trace` _(defaults to value set on `Reporter`)_
 - **maxLogCharacters** - [OPTIONAL] `number` for the maximum number of additional log characters to send to TestRail when logging a `TestResult` _(defaults to 250)_
 
 ## TestRailTestCasePlugin
@@ -76,14 +76,14 @@ to submit results to or filter test execution based on existence and status of t
 - **cacheDurationMs** - the maximum number of milliseconds to cache responses from TestRail's API _(defaults to 300000)_
 
 ## Usage
-you can submit results directly by calling the `aft-core.LogManager.logResult(result: TestResult)` function or results will automatically be submitted if using the `aft-core.verify(assertion)` with valid `testCases` specified in the `options` object. 
+you can submit results directly by calling the `aft-core.Reporter.logResult(result: TestResult)` function or results will automatically be submitted if using the `aft-core.verify(assertion)` with valid `testCases` specified in the `options` object. 
 
 > NOTE: sending a `TestResult` with a `TestStatus` of `Failed` will be converted to a status of `Retest` before submitting to TestRail
 
-### via `aft-core.LogManager`:
+### via `aft-core.Reporter`:
 ```typescript
-let logMgr = new LogManager({logName: 'example'});
-await logMgr.logResult({
+let reporter = new Reporter({logName: 'example'});
+await reporter.logResult({
     testId: 'C3190', // must be an existing TestRail Case ID contained in your referenced TestRail Plan ID
     status: TestStatus.Failed,
     resultMessage: 'there was an error when running this test'

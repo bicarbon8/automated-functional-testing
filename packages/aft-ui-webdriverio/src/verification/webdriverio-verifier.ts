@@ -88,7 +88,7 @@ export class WebdriverIoVerifier extends Verifier {
         opts ??= {} as UiComponentOptions;
         opts.aftCfg ??= this.aftCfg;
         opts.driver ??= this.browser;
-        opts.logMgr ??= this.logMgr;
+        opts.reporter ??= this.reporter;
         return new componentType(opts);
     }
 

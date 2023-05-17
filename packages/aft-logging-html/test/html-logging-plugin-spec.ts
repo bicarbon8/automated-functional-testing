@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
-import { AftConfig, LogManager, rand, TestResult } from "aft-core";
-import { HtmlLoggingPlugin, HtmlLoggingPluginConfig } from "../src";
+import { AftConfig, Reporter, rand, TestResult } from "aft-core";
+import { HtmlLoggingPlugin } from "../src";
 import { HtmlResult } from "../src/html-result";
 
 describe('HtmlLoggingPlugin', () => {
@@ -82,12 +82,12 @@ describe('HtmlLoggingPlugin', () => {
         expect(actual).not.toContain('level info');
     });
 
-    it('can be loaded successfully from the LogManager', async () => {
+    it('can be loaded successfully from the Reporter', async () => {
         const aftCfg = new AftConfig({
             pluginNames: ['html-logging-plugin']
         });
-        let logMgr: LogManager = new LogManager('can be loaded successfully from the LogManager', aftCfg);
-        let plugin = logMgr.plugins[0];
+        let reporter: Reporter = new Reporter('can be loaded successfully from the Reporter', aftCfg);
+        let plugin = reporter.plugins[0];
 
         expect(plugin).toBeDefined();
         expect(plugin.constructor.name).toEqual('HtmlLoggingPlugin');
@@ -110,7 +110,7 @@ describe('HtmlLoggingPlugin', () => {
             {testName: "Fake [Test] <Three>", testId: 'Test', status: 'passed', resultId: rand.guid, created: Date.now()}
         );
         for (var res of testResults) {
-            await plugin.submitResult(res);
+            await plugin.submitResult(res.testName, res);
         };
         let actualResults: HtmlResult[];
         const regenSpy = spyOn<any>(plugin, '_regenerateHtmlFile').and.callFake((results: HtmlResult[]) => {
@@ -126,7 +126,7 @@ describe('HtmlLoggingPlugin', () => {
             status: 'passed', 
             created: Date.now()
         };
-        await plugin.submitResult(expectedResult);
+        await plugin.submitResult(expectedResult.testName, expectedResult);
 
         expect(regenSpy).not.toHaveBeenCalled();
 
@@ -153,7 +153,7 @@ describe('HtmlLoggingPlugin', () => {
             {testName: "Fake [Test] <Three>", status: 'passed', resultId: rand.guid, created: Date.now()}
         );
         for (var res of testResults) {
-            await plugin.submitResult(res);
+            await plugin.submitResult(res.testName, res);
         };
 
         const logName = 'can generate HTML result file';
@@ -165,7 +165,7 @@ describe('HtmlLoggingPlugin', () => {
             status: 'passed', 
             created: Date.now()
         };
-        await plugin.submitResult(expectedResult);
+        await plugin.submitResult(expectedResult.testName, expectedResult);
 
         await plugin.finalise(logName);
 

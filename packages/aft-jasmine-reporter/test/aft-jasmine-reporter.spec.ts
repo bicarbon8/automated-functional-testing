@@ -5,10 +5,10 @@ import { AftLog } from "../src/aft-log";
 describe('AftJasmineReporter', () => {
     it('can create an AftLog instance', async () => {
         const t = new AftLog();
-        await t.logMgr.info('starting AftJasmineReporter test...');
+        await t.reporter.info('starting AftJasmineReporter test...');
         expect(t.test).toBeDefined();
         expect(t.fullName).toEqual('AftJasmineReporter can create an AftLog instance');
-        await t.logMgr.info('completed AftJasmineReporter test.');
+        await t.reporter.info('completed AftJasmineReporter test.');
     });
 
     it('can check if test should be run [C1234]', async () => {
@@ -35,8 +35,8 @@ describe('AftJasmineReporter', () => {
     it('provides a Verifier instance for use in test control', async () => {
         const t = new AftTest(this);
         await t.verify(async (v: Verifier) => {
-            await v.logMgr.warn('returning logName');
-            return v.logMgr.logName;
-        }).returns(equaling(t.logMgr.logName));
+            await v.reporter.warn('returning logName');
+            return v.reporter.reporterName;
+        }).returns(equaling(t.reporter.reporterName));
     });
 });

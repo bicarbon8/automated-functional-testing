@@ -1,4 +1,4 @@
-import { AftConfig, PolicyEngineManager } from "aft-core";
+import { AftConfig, TestExecutionPolicyManager } from "aft-core";
 import { UiSessionGeneratorManager } from "aft-ui";
 import { Browser, ChainablePromiseElement, Element } from "webdriverio";
 import { WebdriverIoVerifier, verifyWithWebdriverIO } from "../../src";
@@ -85,14 +85,14 @@ describe('WebdriverIoVerifier', () => {
         spyOn(sessionMgr, 'getSession').and.callFake((options?: Record<string, any>): Promise<unknown> => {
             return Promise.resolve(mockBrowser);
         });
-        const peMgr: PolicyEngineManager = new PolicyEngineManager();
+        const peMgr: TestExecutionPolicyManager = new TestExecutionPolicyManager();
         spyOn(peMgr, 'shouldRun').and.callFake((testId: string) => Promise.resolve({result: false}));
         
         await verifyWithWebdriverIO((mav: WebdriverIoVerifier) => {
             expect(true).toBeFalse();
         }).withTestIds('C1234')
         .internals.usingUiSessionGeneratorManager(sessionMgr)
-        .internals.usingPolicyEngineManager(peMgr);
+        .internals.usingTestExecutionPolicyManager(peMgr);
 
         expect(sessionMgr.getSession).not.toHaveBeenCalled();
     });

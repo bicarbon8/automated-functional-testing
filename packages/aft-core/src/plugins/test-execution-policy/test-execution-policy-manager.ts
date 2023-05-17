@@ -3,19 +3,19 @@ import { AftLogger, aftLogger } from "../../logging/aft-logger";
 import { ProcessingResult } from "../../helpers/custom-types";
 import { Err } from "../../helpers/err";
 import { pluginLoader } from "../plugin-loader";
-import { PolicyEnginePlugin } from "./policy-engine-plugin";
+import { TestExecutionPolicyPlugin } from "./test-execution-policy-plugin";
 import { LogMessageData } from "../../logging/log-message-data";
 
-export class PolicyEngineManager {
+export class TestExecutionPolicyManager {
     public readonly aftCfg: AftConfig;
-    public readonly plugins: Array<PolicyEnginePlugin>;
+    public readonly plugins: Array<TestExecutionPolicyPlugin>;
 
     private readonly _aftLogger: AftLogger;
 
     constructor(aftCfg?: AftConfig) {
         this.aftCfg = aftCfg ?? aftConfig;
         this._aftLogger = (aftCfg) ? new AftLogger(aftCfg) : aftLogger;
-        this.plugins = pluginLoader.getPluginsByType(PolicyEnginePlugin, this.aftCfg);
+        this.plugins = pluginLoader.getPluginsByType(TestExecutionPolicyPlugin, this.aftCfg);
     }
 
     /**
@@ -51,7 +51,7 @@ export class PolicyEngineManager {
         return { result: true };
     }
 
-    private _getEnabledPlugins(): Array<PolicyEnginePlugin> {
+    private _getEnabledPlugins(): Array<TestExecutionPolicyPlugin> {
         return this.plugins.filter(p => Err.handle(() => p?.enabled));
     }
 }

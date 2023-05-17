@@ -53,7 +53,7 @@ export class AftConfig {
         return this.get('pluginNames', new Array<string>());
     }
     /** 
-     * used by `LogManager` 
+     * used by `Reporter` 
      * @default 'warn'
      */
     get logLevel(): LogLevel {

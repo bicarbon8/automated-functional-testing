@@ -1,5 +1,5 @@
 # AFT-Logging-AWSKinesis
-an Automated Functional Testing (AFT) library providing logging to an AWS Kinesis Firehose endpoint for any `TestResult` objects logged via the `aft-core.LogManager`
+an Automated Functional Testing (AFT) library providing logging to an AWS Kinesis Firehose endpoint for any `TestResult` objects logged via the `aft-core.Reporter`
 
 ## Installation
 `> npm i aft-logging-awskinesis`
@@ -8,7 +8,7 @@ an Automated Functional Testing (AFT) library providing logging to an AWS Kinesi
 to send values to AWS Kinesis Firehose endpoints you must specify the AWS Credentials, the AWS Region Endpoint and the AWS Kinesis Delivery Stream. These take the following form in your `aftconfig.json`:
 ```json
 {
-  "logmanager": {
+  "Reporter": {
     "level": "none",
     "plugins": [{
       "name": "kinesis-logging-plugin",
@@ -32,7 +32,7 @@ to send values to AWS Kinesis Firehose endpoints you must specify the AWS Creden
 - **searchDirectory** - an optional `string` containing the root directory to begin searching for this plugin when first attempting to load it _(defaults to current working directory)_
 - **options** - an optional `object` containing options for the plugin when it is first loaded. accepted values are as follows:
   - **enabled** - an optional `boolean` indicating if this plugin should be used or not _(defaults to `true`)_
-  - **level** - an optional `LogLevel` to be used by this plugin _(defaults to value set in `LogManager`)_
+  - **level** - an optional `LogLevel` to be used by this plugin _(defaults to value set in `Reporter`)_
   - **accessKeyId** - a `string` containing your AWS IAM user's Access Key ID. if not specified the value will attempt to be read from environment variables, EC2 metadata, shared ini file, ECS credentials and process credentials in that order
   - **secretAccessKey** - a `string` containing your AWS IAM user's Secret Access Key. if not specified the value will attempt to be read like `accessKeyId`
   - **sessionToken** - a `string` containing your AWS IAM user's Session Token. only required if you are using a temporary session. if not specified the value will attempt to be read like `accessKeyId`
@@ -67,7 +67,7 @@ the log record that is sent to your AWS Kinesis Firehose endpoint will have the 
     }
 }
 ```
-- **logName** - the `logName` passed to this plugin when loaded from the `LogManager`
+- **logName** - the `logName` passed to this plugin when loaded from the `Reporter`
 - **message** - the `string` being logged by some component
 - **level** - a `string` value from one of the `aft-core.LoggingLevel` values based on the level of the message being logged
 - **version** - the current version of the `KinesisLoggingPlugin`
@@ -107,7 +107,7 @@ the log record that is sent to your AWS Kinesis Firehose endpoint will have the 
     }
 }
 ```
-- **logName** - the `logName` passed to this plugin when loaded from the `LogManager`
+- **logName** - the `logName` passed to this plugin when loaded from the `Reporter`
 - **result** - an `TestResult` object containing the following:
   - **testId** - a `string` containing any unique ID for the test result being recorded
   - **resultMessage** - a `string` message of the final result

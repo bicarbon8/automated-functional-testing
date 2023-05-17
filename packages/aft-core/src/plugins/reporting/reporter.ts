@@ -1,11 +1,14 @@
-import { LoggingPlugin } from "./logging-plugin";
+import { ReportingPlugin } from "./reporting-plugin";
 import { LogLevel } from "../../logging/log-level";
 import { AftConfig } from "../../configuration/aft-config";
 import { pluginLoader } from "../plugin-loader";
 import { AftLogger, aftLogger } from "../../logging/aft-logger";
+import { TestResult } from "./test-result";
+import { Err } from "../../helpers/err";
+import { cloneDeep } from "lodash";
 
 /**
- * a logging class that manages logging plugins.
+ * a class that manages reporting plugins.
  * Configuration for this class can be passed in directly or 
  * specified in `aftconfig.json` like:
  * ```
@@ -17,22 +20,22 @@ import { AftLogger, aftLogger } from "../../logging/aft-logger";
  * }
  * ```
  * NOTE: multiple instances of this class are expected to be created as each instance should have a unique
- * `logName` associated with it. Ex:
+ * `reporterName` associated with it. Ex:
  * ```typescript
- * let logMgr1 = new LogManager('logger for test 1');
- * let logMgr2 = new LogManager('logger for test 2');
+ * const r1 = new Reporter('reporter for test 1');
+ * const r2 = new Reporter('reporter for test 2');
  * ```
  */
-export class LogManager {
-    readonly plugins: Array<LoggingPlugin>;
+export class Reporter {
+    readonly plugins: Array<ReportingPlugin>;
     private readonly _aftLogger: AftLogger;
     private _stepCount: number = 0;
 
     /**
-     * a name unique to a given logging instance intended to uniquely identify logs by
-     * either the associated test or class doing the logging
+     * a name unique to a given reporter instance intended to uniquely identify output by
+     * either the associated test or class doing the reporting
      */
-    public readonly logName: string;
+    public readonly reporterName: string;
     /**
      * allows for filtering out of erroneous information from logs by assigning
      * values to different types of logging. the purpose of each log level is
@@ -50,17 +53,17 @@ export class LogManager {
     public readonly logLevel: LogLevel;
 
     constructor(logName: string, aftCfg?: AftConfig) {
-        this.logName = logName ?? 'AFT';
+        this.reporterName = logName ?? 'AFT';
         this._aftLogger = (aftCfg) ? new AftLogger(aftCfg) : aftLogger;
         this.logLevel = this._aftLogger.logLevel;
-        this.plugins = pluginLoader.getPluginsByType(LoggingPlugin, this._aftLogger.aftCfg);
+        this.plugins = pluginLoader.getPluginsByType(ReportingPlugin, this._aftLogger.aftCfg);
         this.plugins.filter(p => {
             try {
                 return p?.enabled;
             } catch (e) {
                 return false;
             }
-        }).forEach((p: LoggingPlugin) => {
+        }).forEach((p: ReportingPlugin) => {
             p?.initialise(logName)?.catch((err) => this._aftLogger.log({
                 level: 'warn',
                 message: err,
@@ -142,7 +145,7 @@ export class LogManager {
      */
     async log(level: LogLevel, message: string, ...data: any[]): Promise<void> {
         this._aftLogger.log({
-            name: this.logName, 
+            name: this.reporterName, 
             level, 
             message, 
             args: data
@@ -155,12 +158,31 @@ export class LogManager {
             }
         })) {
             try {
-                await plugin?.log(this.logName, level, message, ...data);
+                await plugin?.log(this.reporterName, level, message, ...data);
             } catch (e) {
                 this._aftLogger.log({
                     level: 'warn',
                     message: `unable to send log message to '${plugin?.constructor.name || 'unknown'}' due to: ${e}`,
-                    name: this.logName
+                    name: this.reporterName
+                });
+            }
+        }
+    }
+
+    /**
+     * function will send the passed in `TestResult` to any loaded `IResultsPlugin` implementations
+     * allowing them to process the result
+     * @param result a `TestResult` object to be sent
+     */
+    async submitResult(result: TestResult): Promise<void> {
+        for (var plugin of this.plugins.filter(p => Err.handle(() => p?.enabled))) {
+            try {
+                await plugin?.submitResult(this.reporterName, cloneDeep(result));
+            } catch (e) { 
+                this._aftLogger.log({
+                    level: 'warn',
+                    message: `unable to send result to '${plugin?.constructor.name || 'unknown'}' due to: ${Err.short(e)}`,
+                    name: result?.testName ?? this.constructor.name
                 });
             }
         }
@@ -172,7 +194,7 @@ export class LogManager {
      * of any logging actions before destroying the `AftLogger` instance
      */
     async dispose(error?: Error): Promise<void> {
-        const name = this.logName;
+        const name = this.reporterName;
         for (var plugin of this.plugins.filter(p => {
             try{
                 return p?.enabled;

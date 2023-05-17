@@ -136,7 +136,7 @@ as follows:</p>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 <li class="tsd-signature tsd-anchor-link" id="dispose.dispose-1">dispose<span class="tsd-signature-symbol">(</span>logName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, err<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#dispose.dispose-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>called by the parent <code>LogManager</code> before terminating to allow each plugin to 
+<div class="tsd-comment tsd-typography"><p>called by the parent <code>Reporter</code> before terminating to allow each plugin to 
 finalise any deferred logging actions</p>
 </div>
 <div class="tsd-parameters">
@@ -144,7 +144,7 @@ finalise any deferred logging actions</p>
 <ul class="tsd-parameter-list">
 <li>
 <h5>logName: <span class="tsd-signature-type">string</span></h5>
-<div class="tsd-comment tsd-typography"><p>the name of the <code>LogManager</code> instance calling dispose</p>
+<div class="tsd-comment tsd-typography"><p>the name of the <code>Reporter</code> instance calling dispose</p>
 </div></li>
 <li>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> err: <span class="tsd-signature-type">Error</span></h5>
@@ -184,7 +184,7 @@ of a given test</p>
 <ul class="tsd-parameter-list">
 <li>
 <h5>logName: <span class="tsd-signature-type">string</span></h5>
-<div class="tsd-comment tsd-typography"><p>the name of the <code>LogManager</code> instance sending this result</p>
+<div class="tsd-comment tsd-typography"><p>the name of the <code>Reporter</code> instance sending this result</p>
 </div></li>
 <li>
 <h5>result: <a href="../types/aft_core.TestResult.html" class="tsd-signature-type" data-tsd-kind="Type alias">TestResult</a></h5>
@@ -241,7 +241,7 @@ of a given test</p>
 <ul>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.Err.html">Err</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.LogLevel.html">Log<wbr/>Level</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.LogManager.html">Log<wbr/>Manager</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.Reporter.html">Log<wbr/>Manager</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.SafeStringOption.html">Safe<wbr/>String<wbr/>Option</a></li></ul></li>
 <li class="tsd-kind-module"><a href="../modules/aft_jasmine_reporter.html">aft-<wbr/>jasmine-<wbr/>reporter</a></li>
 <li class="tsd-kind-module"><a href="../modules/aft_logging_awskinesis.html">aft-<wbr/>logging-<wbr/>awskinesis</a></li>

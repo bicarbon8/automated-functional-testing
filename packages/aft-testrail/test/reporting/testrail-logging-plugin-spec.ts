@@ -1,8 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
-import { rand, TestResult, ellide, LogManager, AftConfig } from "aft-core";
+import { rand, TestResult, ellide, Reporter, AftConfig } from "aft-core";
 import { TestRailApi } from "../../src/api/testrail-api";
-import { TestRailConfig } from "../../src/configuration/testrail-config";
 import { httpService } from "aft-web-services";
 import { TestRailPlan, TestRailResult, TestRailResultRequest, TestRailTest } from "../../src/api/testrail-custom-types";
 import { TestRailLoggingPlugin } from "../../src";
@@ -119,7 +118,7 @@ describe('TestRailLoggingPlugin', () => {
             created: Date.now(),
             metadata: {"durationMs": 1000}
         };
-        await plugin.submitResult(result);
+        await plugin.submitResult(result.testName, result);
 
         expect(api.addResult).toHaveBeenCalledTimes(1);
         expect(TestStore.request.status_id).toEqual(4); // 4 is Retest
@@ -158,18 +157,18 @@ describe('TestRailLoggingPlugin', () => {
             created: Date.now(),
             metadata: {"durationMs": 1000}
         };
-        await plugin.submitResult(result);
+        await plugin.submitResult(result.testName, result);
 
         expect(api.createPlan).toHaveBeenCalledTimes(1);
         const sharedCacheFile: string = path.join(process.cwd(), 'FileSystemMap', 'TestRailConfig.json');
         expect(fs.existsSync(sharedCacheFile)).toBeTrue();
     });
 
-    it('can be loaded by the LogManager', async () => {
+    it('can be loaded by the Reporter', async () => {
         const aftCfg = new AftConfig({
             pluginNames: ['testrail-logging-plugin']
         });
-        let mgr: LogManager = new LogManager('can be loaded by the LogManager', aftCfg);
+        let mgr: Reporter = new Reporter('can be loaded by the Reporter', aftCfg);
         let plugin = mgr.plugins[0];
 
         expect(plugin).toBeDefined();
@@ -209,7 +208,7 @@ describe('TestRailLoggingPlugin', () => {
             metadata: {"durationMs": 300000}
         };
 
-        await plugin.submitResult(testResult);
+        await plugin.submitResult(testResult.testName, testResult);
     }, 300000);
 });
 

@@ -1,6 +1,6 @@
-import { LoggingPlugin, LogLevel, AftConfig } from "../../../src";
+import { ReportingPlugin, LogLevel, AftConfig, TestResult } from "../../../src";
 
-export class ThrowsLoggingPlugin extends LoggingPlugin {
+export class ThrowsReportingPlugin extends ReportingPlugin {
     constructor(aftCfg?: AftConfig) {
         super(aftCfg);
     }
@@ -9,6 +9,9 @@ export class ThrowsLoggingPlugin extends LoggingPlugin {
     }
     override log = async (name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => {
         throw 'log exception';
+    }
+    override submitResult = async (name: string, result: TestResult): Promise<void> => {
+        throw 'submitResult exception';
     }
     override finalise = async (name: string, error?: Error): Promise<void> => {
         throw 'dispose exception';
