@@ -109,7 +109,7 @@ the primary benefit of using AFT comes from the plugins and the `Verifier`. Beca
 ```
 
 ### TestExecutionPolicyPlugin
-the purpose of a `TestExecutionPolicyPlugin` implementation is to provide execution control over any expectations by way of supplied _Test IDs_. to specify an implementation of the plugin to load you can add the following to your `aftconfig.json` (where plugins `testrail-test-execution-policy-plugin.js` is contained within the test execution directory or a subdirectory of it):
+the purpose of a `TestExecutionPolicyPlugin` implementation is to provide execution control over any expectations by way of supplied _Test IDs_. to specify an implementation of the plugin to load you can add the following to your `aftconfig.json` (where plugin `testrail-test-execution-policy-plugin.js` is contained within the test execution directory or a subdirectory of it):
 ```json
 // aftconfig.json
 {
@@ -117,15 +117,6 @@ the purpose of a `TestExecutionPolicyPlugin` implementation is to provide execut
 }
 ```
 > NOTE: if no plugin is specified then external Policy Engine integration will be disabled and _assertions_ will be executed without first checking that they should be run based on associated Test IDs
-
-### ResultsPlugin
-the purpose of a `ResultsPlugin` implementation is to handle test and assertion results such as logging results to TestRail or creating / updating Jira defects based on a failed test result. to specify an implementation of the plugin to load you can add the following to your `aftconfig.json` (where plugins `jira-results-plugin` is contained within the test execution directory of a subdirectory of it):
-```json
-// aftconfig.json
-{
-    "pluginNames": ["jira-results-plugin"]
-}
-```
 
 ## Example Test Project
 - [`aft-examples`](./packages/aft-examples/README.md) - a demonstration of how to develop UI and REST based functional test automation using AFT is located under `./packages/aft-examples`

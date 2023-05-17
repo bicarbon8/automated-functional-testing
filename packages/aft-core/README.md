@@ -58,7 +58,7 @@ the `aft-core` package contains several helper and utility classes, interfaces a
 - **convert** - string manipulation like Base64 encode / decode and replacement
 - **ellide** - string elliding supporting beginning, middle and end ellipsis
 - **Err** - a `module` that can run functions in a `try-catch` with optional logging as well as provide formatted string outputs from `Error` objects
-- **using** - automatically call the `dispose` function of a class that implements the `IDisposable` interface when done
+- **using** - automatically call the `dispose` function of a class that implements the `Disposable` interface when done
 - **MachineInfo** - get details of the host machine and user running the tests
 - **CacheMap** - a `Map` implementation that stores values with expirations where expired items will not be returned and are pruned from the `Map` automatically. The `CacheMap` can also optionally store its data on the filesystem allowing for other running node processes to read from the same cache data (e.g. sharded parallel testing)
 - **FileSystemMap** - a `Map` implementation that stores its values in a file on the filesystem allowing multiple node processes to share the map data or to persist the data over multiple iterations
@@ -80,23 +80,23 @@ the `aft-core` package contains several helper and utility classes, interfaces a
 
 ## Plugins
 
-### Example Logging Plugin
-to create your own simple logging plugin that stores all logs until the `dispose` function is called you would implement the code below.
+### Example Reporting Plugin
+to create your own simple reporting plugin that stores all logs until the `finalise` function is called you would implement the code below.
 
-> NOTE: configuration for the below can be added in a object in the `aftconfig.json` named `OnDisposeConsoleLoggerConfig` and optionally containing values for the supported properties of the `OnDisposeConsoleLoggerConfig` class
+> NOTE: configuration for the below can be added in a object in the `aftconfig.json` named `OnDisposeConsoleReportingPluginConfig` and optionally containing values for the supported properties of the `OnDisposeConsoleReportingPluginConfig` class
 ```typescript
-export class OnDisposeConsoleLoggerConfig {
+export class OnDisposeConsoleReportingPluginConfig {
     maxLogLines: number = Infinity;
     logLevel: LogLevel = 'warn';
 };
-export class OnDisposeConsoleLogger extends ReportingPlugin {
+export class OnDisposeConsoleReportingPlugin extends ReportingPlugin {
     public override get logLevel(): LogLevel { return this._lvl; }
     private readonly _lvl: LogLevel;
     private readonly _logs: Map<string, Array<LogMessageData>>;
     private readonly _maxLines: number;
     constructor(aftCfg?: AftConfig) {
         super(aftCfg);
-        const cfg = this.aftCfg.getSection(OnDisposeConsoleLoggerConfig);
+        const cfg = this.aftCfg.getSection(OnDisposeConsoleReportingPluginConfig);
         this._lvl = cfg.logLevel ?? 'warn';
         if (this.enabled) {
             this._logs = new Map<string, Array<LogMessageData>>();
@@ -117,6 +117,9 @@ export class OnDisposeConsoleLogger extends ReportingPlugin {
                 }
             }
         }
+    }
+    override submitResult = async (name: string, result: TestResult): Promise<void> => {
+        /* ignore */
     }
     override finalise = async (name: string): Promise<void> => { 
         if (this.enabled) {
@@ -163,45 +166,9 @@ export class TestRailTestExecutionPolicyPlugin extends TestExecutionPolicyPlugin
     }
 }
 ```
-### Example ResultsPlugin (HTML Results File)
-```typescript
-export class HtmlResultsPluginConfig {
-    directory: string = path.join(process.cwd(), 'Results');
-    fileName: string = 'testResults.html';
-    enabled: boolean = false;
-}
-export class HtmlResultsPlugin extends ResultsPlugin {
-    private readonly _dir: string;
-    private readonly _file: string;
-    private readonly _enabled: boolean;
-    private readonly _results: Array<TestResult>;
-    public override get enabled(): boolean { return this._enabled; }
-    constructor(aftCfg?: AftConfig) {
-        super(aftCfg);
-        const hrpc = this.aftCfg.getSection(HtmlResultsPluginConfig);
-        this._enabled = hrpc.enabled ?? false;
-        if (this.enabled) {
-            this._results = new Array<TestResult>();
-            this._dir = hrpc.directory;
-            this._file = hrpc.fileName ?? 'testResults.html';
-        }
-    }
-    override submitResult = async (result: TestResult): Promise<void> => {
-        this._results.push(result);
-        const lock = ExpiringFileLock.get(this.constructor.name);
-        try {
-            const htmlTemplate = TEMPLATE_FILE;
-            htmlTemplate.replace('{results}', JSON.stringify(this._results))
-            fileio.write(path.join(this.dir, this.file), htmlTemplate);
-        } finally {
-            lock.unlock();
-        }
-    }
-}
-```
 
 ## Testing with the Verifier
-the `Verifier` class and `verify` functions of `aft-core` enable testing with pre-execution filtering based on integration with external test case and defect managers via plugin packages supporting each (see examples above).
+the `Verifier` class and `verify` functions of `aft-core` enable testing with pre-execution filtering based on integration with external test execution policy managers via plugin packages extending the `TestExecutionPolicyPlugin` class (see examples above).
 
 ```typescript
 describe('Sample Test', () => {
@@ -209,8 +176,7 @@ describe('Sample Test', () => {
         let feature: FeatureObj = new FeatureObj();
         /**
          * the `verify(assertion).returns(expectation)` function
-         * checks any specified `TestExecutionPolicyPlugin`
-         * and `DefectPlugin` implementations
+         * checks any specified `TestExecutionPolicyPlugin` implementations
          * to ensure the test should be run. It will then
          * report to any `ReportingPlugin` implementations
          * with an `TestResult` indicating the success,
@@ -227,5 +193,4 @@ describe('Sample Test', () => {
 in the above example, the `await feature.performAction()` call will only be run if a `TestExecutionPolicyPlugin` is loaded and returns `true` from it's `shouldRun(testId: string)` function (or no `TestExecutionPolicyPlugin` is loaded) and if a `DefectPlugin` is loaded and returns either no defect or a `closed` defect from it's `getDefect(defectId: string)` function (or no `DefectPlugin` is loaded). additionally, any logs associated with the above `verify` call will use a `logName` of `"expect_that_performAction_will_return_result_of_action"` resulting in log lines like the following:
 ```
 09:14:01 - [expect that performAction will return 'result of action'] - TRACE - no TestExecutionPolicyPlugin in use so run all tests
-09:14:02 - [expect that performAction will return 'result of action'] - TRACE - no DefectPlugin in use so run all tests
 ```
