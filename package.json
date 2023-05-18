@@ -17,6 +17,7 @@
     "test:web-services": "npm run test --workspace=aft-web-services",
     "test:html": "npm run test --workspace=aft-reporting-html",
     "test:examples": "npm run test:e2e --workspace=aft-examples",
+    "test-examples": "npm run test:examples",
     "test:filesystem": "npm run test --workspace=aft-reporting-filesystem",
     "test:mocha": "npm run test --workspace=aft-mocha-reporter",
     "test:jasmine": "npm run test --workspace=aft-jasmine-reporter",
