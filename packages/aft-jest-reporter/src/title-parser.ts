@@ -9,6 +9,9 @@ export class TitleParser {
      * @returns an array of TestId strings or empty array
      */
     static parseTestIds(title: string): Array<string> {
+        if (!title) {
+            return [];
+        }
         return this._parseAll(title, /\[([^\[\]]+)\]/gi);
     }
 

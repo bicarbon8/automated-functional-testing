@@ -46,12 +46,10 @@ export default class AftJestReporter implements Reporter {
         const foo = 'bar';
     }
     onTestStart(test: Test): Promise<void> | void {
-        const t: AftTest = new AftTest({test});
-        this._testNames.set(t.fullName, true);
+        const foo = 'bar';
     }
     onTestFileStart(test: Test): Promise<void> | void {
-        const t: AftTest = new AftTest({test});
-        this._testNames.set(t.fullName, true);
+        const foo = 'bar';
     }
     onRunComplete(testContexts: Set<TestContext>, results: AggregatedResult): Promise<void> | void {
         const foo = 'bar';

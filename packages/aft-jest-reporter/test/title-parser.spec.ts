@@ -1,4 +1,4 @@
-import { test } from "@jest/globals";
+import { test, expect } from "@jest/globals";
 import { TitleParser } from '../src/title-parser';
 
 describe('TitleParser', () => {

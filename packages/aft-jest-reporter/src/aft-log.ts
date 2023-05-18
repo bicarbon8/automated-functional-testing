@@ -1,22 +1,19 @@
 import { TestCaseResult } from "@jest/reporters";
-import { AftConfig, FileSystemMap, Reporter, aftConfig } from "aft-core";
-import AftJestReporter from "./aft-jest-reporter";
+import { AftConfig, Reporter, aftConfig } from "aft-core";
 
 export class AftLog {
     private _rep: Reporter;
     private readonly _aftCfg: AftConfig;
-    private readonly _testNames: FileSystemMap<string, any>;
     public readonly test: TestCaseResult;
     
     constructor(scope?: any, aftCfg?: AftConfig) {
         this._aftCfg = aftCfg ?? aftConfig;
-        this._testNames = new FileSystemMap<string, any>(AftJestReporter.name, [], this._aftCfg);
-        if (!scope) {
-            const names: Array<string> = Array.from(this._testNames.keys());
-            scope = (names?.length > 0) ? names[0] : undefined;
-        }
-        if (typeof scope === 'string') {
-            scope = {testCaseResult: {fullName: scope}};
+        if (scope) {
+            if (typeof scope === 'string') {
+                scope = {testCaseResult: {fullName: scope}};
+            } else {
+                scope = {testCaseResult: {fullName: scope?.getState?.()?.currentTestName}}
+            }
         }
         this.test = scope?.testCaseResult || {};
     }
