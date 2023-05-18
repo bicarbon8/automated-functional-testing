@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as FormData from "form-data";
-import { AftConfig, BuildInfoManager, Reporter, aftConfig } from "aft-core";
+import { AftConfig, BuildInfoManager, Reporter, aftConfig, pluginLoader } from "aft-core";
 import { WikipediaView } from "./page-objects/wikipedia-view";
 import { AftTest } from "aft-mocha-reporter";
 import { httpService, httpData, HttpHeaders } from "aft-web-services";
@@ -10,7 +10,16 @@ import { WebdriverIoVerifier } from "aft-ui-webdriverio";
 
 var customId: string;
 
-describe('Functional Mobile App Tests using AFT-UI-SELENIUM', () => {
+describe('Functional Mobile App Tests using AFT-UI-WEBDRIVERIO', () => {
+    beforeEach(() => {
+        /**
+         * normally this call would not be necessary, but because these examples switch between
+         * multiple configurations and UI Session Generators it is necessary to clear out any
+         * cached plugins and force a reload with fresh configuration before each test
+         */
+        pluginLoader.reset();
+    });
+
     before(async () => {
         const logger = new Reporter('MobileAppsSpec Before');
         const uisc = aftConfig.getSection(UiSessionConfig);
@@ -53,9 +62,13 @@ describe('Functional Mobile App Tests using AFT-UI-SELENIUM', () => {
 
     it('can search in Wikipedia App', async function() {
         const aftCfg = new AftConfig();
+        const uisc = aftCfg.getSection(UiSessionConfig);
+        uisc.generatorName = 'webdriverio-remote-session-generator-plugin';
+        const username = uisc.options.capabilities?.["bstack:options"]?.userName;
+        const password = uisc.options.capabilities?.["bstack:options"]?.accessKey;
         const aft = new AftTest(this, aftCfg);
         await aft.verify(async (tw: WebdriverIoVerifier) => {
-            await tw.reporter.step('get the WikipediaView Facet from the Session...');
+            await tw.reporter.step('get the WikipediaView Component from the Session...');
             let view: WikipediaView = tw.getComponent(WikipediaView);
             await tw.reporter.step('enter a search term...');
             await view.searchFor('pizza');
@@ -68,6 +81,8 @@ describe('Functional Mobile App Tests using AFT-UI-SELENIUM', () => {
                 }
             }
         }, WebdriverIoVerifier).withAdditionalSessionOptions({
+            user: username,
+            key: password,
             capabilities: {
                 browserName: 'android',
                 platformName: 'android',

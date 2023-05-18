@@ -1,9 +1,18 @@
-import { AftConfig, BuildInfoManager, containing, retry, Verifier } from "aft-core";
+import { AftConfig, BuildInfoManager, containing, pluginLoader, retry, Verifier } from "aft-core";
 import { AftTest } from "aft-mocha-reporter";
 import { SeleniumVerifier } from "aft-ui-selenium";
 import { HerokuLoginPage } from "./page-objects/heroku-login-page";
 
 describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
+    beforeEach(() => {
+        /**
+         * normally this call would not be necessary, but because these examples switch between
+         * multiple configurations and UI Session Generators it is necessary to clear out any
+         * cached plugins and force a reload with fresh configuration before each test
+         */
+        pluginLoader.reset();
+    });
+
     it('[C3456][C2345][C1234] can access websites using AFT and BrowserComponents', async function() {
         const aftCfg = new AftConfig();
         const aft = new AftTest(this, aftCfg);
@@ -81,7 +90,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
     });
 
     const uiplatforms = [
-        { browser: 'safari', os: 'osx', osV: 'latest' },
+        { browser: 'safari', os: 'os x', osV: 'ventura' },
         { browser: 'firefox', os: 'windows', osV: '11' },
         { browser: 'edge', os: 'windows', osV: '11' },
     ];
