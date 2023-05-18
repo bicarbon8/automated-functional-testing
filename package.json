@@ -19,7 +19,8 @@
     "test:examples": "npm run test:e2e --workspace=aft-examples",
     "test:filesystem": "npm run test --workspace=aft-reporting-filesystem",
     "test:mocha": "npm run test --workspace=aft-mocha-reporter",
-    "test:jasmine": "npm run test --workspace=aft-jasmine-reporter"
+    "test:jasmine": "npm run test --workspace=aft-jasmine-reporter",
+    "docs": "npm run build && npx typedoc --entryPointStrategy packages ./packages/* --out ./docs"
   },
   "devDependencies": {
     "dpdm": "^3.9.0",

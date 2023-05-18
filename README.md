@@ -138,4 +138,4 @@ the purpose of a `TestExecutionPolicyPlugin` implementation is to provide execut
 
 > use `npx lerna version` to automatically update the version of all projects at once (all changes must be committed first)
 
-> generate documentation perform a build using `npm run build` and then run typedoc using the following: `npx typedoc --entryPointStrategy packages ./packages/* --out ./docs`
+> generate documentation `npm run docs`
