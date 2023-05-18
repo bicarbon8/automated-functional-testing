@@ -8,7 +8,7 @@
     "clean": "rimraf ./dist && rimraf ./logs && rimraf ./FileSystemMap && rimraf ./testresults.html",
     "build": "npm run clean && tsc --build",
     "test": "npm run build && jasmine --config=./jasmine.json --reporter=./dist/src/aft-jasmine-reporter.js",
-    "coverage": "nyc npm run test"
+    "coverage": "npm run build && nyc jasmine --config=./jasmine.json --reporter=./dist/src/aft-jasmine-reporter.js"
   },
   "repository": {
     "type": "git",
