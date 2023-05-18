@@ -7,7 +7,7 @@
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./.nyc_output && rimraf ./coverage",
     "build": "npm run clean && tsc --build",
-    "test": "jasmine-ts ./test/**/*-spec.ts",
+    "test": "npm run build && jasmine-ts ./test/**/*-spec.ts",
     "coverage": "nyc npm run test"
   },
   "repository": {

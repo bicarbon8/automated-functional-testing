@@ -1,5 +1,5 @@
 import { AftConfig, TestExecutionPolicyManager, ProcessingResult, pluginLoader } from "../../../src";
-import { MockTestExecutionPolicyPlugin } from "./mock-policy-engine-plugin";
+import { MockTestExecutionPolicyPlugin } from "./mock-test-execution-policy-plugin";
 
 describe('TestExecutionPolicyManager', () => {
     beforeEach(() => {
@@ -10,9 +10,9 @@ describe('TestExecutionPolicyManager', () => {
         pluginLoader.reset();
     })
 
-    it('can load a specified ITestExecutionPolicyPlugin', async () => {
+    it('can load a specified TestExecutionPolicyPlugin', async () => {
         let tcm: TestExecutionPolicyManager = new TestExecutionPolicyManager(new AftConfig({
-            pluginNames: ['mock-policy-engine-plugin'],
+            pluginNames: ['mock-test-execution-policy-plugin'],
             MockTestExecutionPolicyPluginConfig: {
                 enabled: true
             }
@@ -39,7 +39,7 @@ describe('TestExecutionPolicyManager', () => {
         it('returns true if no enabled plugins found', async () => {
             pluginLoader.reset();
             let tcm: TestExecutionPolicyManager = new TestExecutionPolicyManager(new AftConfig({
-                pluginNames: ['mock-policy-engine-plugin']
+                pluginNames: ['mock-test-execution-policy-plugin']
             }));
             let plugins = tcm.plugins;
             expect(plugins.length).toBe(1);

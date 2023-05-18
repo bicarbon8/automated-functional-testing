@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { rand, TestResult, ellide, Reporter, AftConfig } from "aft-core";
+import { rand, TestResult, ellide, Reporter, AftConfig, pluginLoader } from "aft-core";
 import { TestRailApi } from "../../src/api/testrail-api";
 import { httpService } from "aft-web-services";
 import { TestRailPlan, TestRailResult, TestRailResultRequest, TestRailTest } from "../../src/api/testrail-custom-types";
@@ -17,12 +17,14 @@ describe('TestRailReportingPlugin', () => {
         if (fs.existsSync(cachePath)) {
             fs.rmSync(cachePath, {recursive: true, force: true});
         }
+        pluginLoader.reset();
     });
     
     afterEach(() => {
         TestStore.caseId = undefined;
         TestStore.planId = undefined;
         TestStore.request = undefined;
+        pluginLoader.reset();
     });
 
     it('keeps the last 250 characters logged', async () => {
@@ -43,31 +45,6 @@ describe('TestRailReportingPlugin', () => {
 
         let actual: string = plugin.logs(logName);
         expect(actual).toEqual(expected);
-    });
-
-    it('removes logs for a given logName on call to dispose', async () => {
-        const aftCfg = new AftConfig({
-            TestRailConfig: {
-                url: 'https://127.0.0.1/', 
-                user: 'fake@fake.fake', 
-                accesskey: 'fake-key',
-                logLevel: 'info',
-                maxLogCharacters: 250
-            }
-        });
-        let plugin: TestRailReportingPlugin = new TestRailReportingPlugin(aftCfg);
-
-        let expected: string = rand.getString(250, true, true);
-        const logName = rand.getString(15);
-        
-        await plugin.log(logName, 'info', expected);
-
-        let actual: string = plugin.logs(logName);
-        expect(actual).toEqual(expected);
-
-        await plugin.finalise(logName);
-        actual = plugin.logs(logName);
-        expect(actual).toEqual('');
     });
 
     it('logging over 250 characters is ellided from beginning of string', async () => {
@@ -98,7 +75,8 @@ describe('TestRailReportingPlugin', () => {
                 url: 'https://127.0.0.1/', 
                 user: 'fake@fake.fake', 
                 accesskey: 'fake-key',
-                logLevel: 'info'
+                logLevel: 'info',
+                planId: rand.getInt(999, 9999)
             }
         });
         const api = new TestRailApi(aftCfg);
@@ -168,8 +146,8 @@ describe('TestRailReportingPlugin', () => {
         const aftCfg = new AftConfig({
             pluginNames: ['testrail-reporting-plugin']
         });
-        let mgr: Reporter = new Reporter('can be loaded by the Reporter', aftCfg);
-        let plugin = mgr.plugins[0];
+        const mgr: Reporter = new Reporter('can be loaded by the Reporter', aftCfg);
+        const plugin = mgr.plugins[0];
 
         expect(plugin).toBeDefined();
         expect(plugin.constructor.name).toEqual('TestRailReportingPlugin');

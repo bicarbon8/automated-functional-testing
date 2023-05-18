@@ -25,9 +25,9 @@ export class TestRailConfig extends ReportingPluginConfig {
     public url: string;
     public user: string;
     public accessKey: string;
-    public projectId: number = -1;
+    public projectId: number;
     public suiteIds: number[] = [];
-    public planId: number = -1;
+    public planId: number;
     public cacheDuration: number = 300000;
     public override logLevel: LogLevel = 'warn';
     public maxLogCharacters: number = 250;

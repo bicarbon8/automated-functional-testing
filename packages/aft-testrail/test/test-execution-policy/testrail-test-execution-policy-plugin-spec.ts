@@ -57,7 +57,8 @@ describe('TestRailTestExecutionPolicyPlugin', () => {
                 user: 'fake@fake.fake',
                 accesskey: 'fake_key',
                 projectid: 4,
-                suiteids: [12, 15]
+                suiteids: [12, 15],
+                logLevel: 'none'
             }
         });
         const api = new TestRailApi(aftCfg);

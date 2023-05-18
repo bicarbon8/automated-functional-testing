@@ -31,7 +31,6 @@ export class TestRailReportingPlugin extends ReportingPlugin {
         return this._level;
     }
 
-    private readonly _fsm: FileSystemMap<string, string | number>;
     private readonly _logs: Map<string, string>;
     private readonly _api: TestRailApi;
     private readonly _maxLogChars: number;
@@ -41,7 +40,6 @@ export class TestRailReportingPlugin extends ReportingPlugin {
         const cfg = this.aftCfg.getSection(TestRailConfig);
         this._level = cfg.logLevel ?? this.aftCfg.logLevel ?? 'warn';
         if (this.enabled) {
-            this._fsm = new FileSystemMap<string, string | number>(TestRailConfig.name);
             this._logs = new Map<string, string>();
             this._api = api ?? new TestRailApi(this.aftCfg);
             this._maxLogChars = cfg.maxLogCharacters ?? 250;

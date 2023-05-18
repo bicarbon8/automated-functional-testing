@@ -195,7 +195,7 @@ describe('Verifier', () => {
         spyOn(reporter, 'warn').and.callThrough();
         pluginLoader.reset();
         const peMgr = new TestExecutionPolicyManager(new AftConfig({
-            pluginNames: ['mock-policy-engine-plugin'],
+            pluginNames: ['mock-test-execution-policy-plugin'],
             MockTestExecutionPolicyPluginConfig: {
                 enabled: true
             }
