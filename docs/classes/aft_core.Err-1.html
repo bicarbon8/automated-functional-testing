@@ -17,17 +17,23 @@
 <section class="tsd-panel tsd-comment">
 <div class="tsd-comment tsd-typography"><p>provides a standardised way of generating log-friendly exception details
 in either short or full formatting. Usage would look like:</p>
-<pre><code class="language-typescript"><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-10">reporter</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">Reporter</span><span class="hl-1">({</span><span class="hl-4">logName:</span><span class="hl-1"> </span><span class="hl-2">&#39;foo&#39;</span><span class="hl-1">});</span><br/><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-10">result</span><span class="hl-1"> = </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-4">Err</span><span class="hl-1">.</span><span class="hl-0">handle</span><span class="hl-1">(</span><span class="hl-4">functionThatThrowsTypeError</span><span class="hl-1">, {</span><br/><span class="hl-1">    </span><span class="hl-4">reporter:</span><span class="hl-1"> </span><span class="hl-4">reporter</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-4">errLevel:</span><span class="hl-1"> </span><span class="hl-2">&#39;debug&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-4">verbosity:</span><span class="hl-1"> </span><span class="hl-2">&#39;short&#39;</span><br/><span class="hl-1">});</span>
+<pre><code class="language-typescript"><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-4">result1</span><span class="hl-1"> = </span><span class="hl-8">Err</span><span class="hl-1">.</span><span class="hl-0">handle</span><span class="hl-1">(() </span><span class="hl-3">=&gt;</span><span class="hl-1"> </span><span class="hl-0">functionThatThrowsTypeError</span><span class="hl-1">());</span><br/><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-4">result2</span><span class="hl-1"> = </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-8">Err</span><span class="hl-1">.</span><span class="hl-0">handleAsync</span><span class="hl-1">(</span><span class="hl-3">async</span><span class="hl-1"> () </span><span class="hl-3">=&gt;</span><span class="hl-1"> </span><span class="hl-0">asyncFunctionThatThrowsArgumentError</span><span class="hl-1">());</span>
 </code></pre>
 <p>which would output:</p>
-<pre><code class="language-text">YYYYMMDD - [foo] - DEBUG - TypeError: [max 100 characters of message...] --- [max 300 characters of the ... first line of stack trace]
+<pre><code class="language-text">YYYYMMDD - [AFT] - WARN  - TypeError: [max 100 characters of message...] --- [max 300 characters...of the stack trace]
+YYYYMMDD - [AFT] - WARN  - ArgumentError: [max 100 characters of message...] --- [max 300 characters...of the stack trace]
 </code></pre>
+<blockquote>
+<p>NOTE: an optional <code>Partial&lt;ErrorOptions&gt;</code> object can be passed to the <code>handle</code> and <code>handleAsync</code> functions allowing
+you to control the <code>LogLevel</code> used <em>(defaults to <code>&#39;warn&#39;</code>)</em>, the verbosity <em>(defaults to <code>&#39;short&#39;</code>)</em>, and the 
+<code>Reporter</code> instance used <em>(defaults to <code>aftLog</code> global instance)</em></p>
+</blockquote>
 <p>and:</p>
-<pre><code class="language-typescript"><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-10">reporter</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">Reporter</span><span class="hl-1">({</span><span class="hl-4">logName:</span><span class="hl-1"> </span><span class="hl-2">&#39;AFT&#39;</span><span class="hl-1">});</span><br/><span class="hl-7">try</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-0">functionThatThrowsTypeError</span><span class="hl-1">();</span><br/><span class="hl-1">} </span><span class="hl-7">catch</span><span class="hl-1"> (</span><span class="hl-4">e</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-4">reporter</span><span class="hl-1">.</span><span class="hl-0">warn</span><span class="hl-1">(</span><span class="hl-4">Err</span><span class="hl-1">.</span><span class="hl-0">short</span><span class="hl-1">(</span><span class="hl-4">e</span><span class="hl-1">));</span><br/><span class="hl-1">    </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-4">reporter</span><span class="hl-1">.</span><span class="hl-0">debug</span><span class="hl-1">(</span><span class="hl-4">Err</span><span class="hl-1">.</span><span class="hl-0">full</span><span class="hl-1">(</span><span class="hl-4">e</span><span class="hl-1">));</span><br/><span class="hl-1">}</span>
+<pre><code class="language-typescript"><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-4">logger</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">Reporter</span><span class="hl-1">(</span><span class="hl-2">&#39;AFT&#39;</span><span class="hl-1">);</span><br/><span class="hl-7">try</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-0">functionThatThrowsTypeError</span><span class="hl-1">();</span><br/><span class="hl-1">} </span><span class="hl-7">catch</span><span class="hl-1"> (</span><span class="hl-8">e</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-8">logger</span><span class="hl-1">.</span><span class="hl-0">warn</span><span class="hl-1">(</span><span class="hl-8">Err</span><span class="hl-1">.</span><span class="hl-0">short</span><span class="hl-1">(</span><span class="hl-8">e</span><span class="hl-1">));</span><br/><span class="hl-1">    </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-8">logger</span><span class="hl-1">.</span><span class="hl-0">debug</span><span class="hl-1">(</span><span class="hl-8">Err</span><span class="hl-1">.</span><span class="hl-0">full</span><span class="hl-1">(</span><span class="hl-8">e</span><span class="hl-1">));</span><br/><span class="hl-1">}</span>
 </code></pre>
 <p>which outputs:</p>
-<pre><code class="language-text">YYYYMMDD - [AFT] - WARN - TypeError: [max 100 characters of message...] --- [max 300 characters of the ... first line of stack trace]
-YYYYMMDD - [AFT] - DEBUG - TypeError: [full type error description message]
+<pre><code class="language-text">YYYYMMDD - [AFT] - WARN - TypeError: [max 100 characters of message...] --- [max 300 characters...of the stack trace]
+YYYYMMDD - [AFT] - DEBUG - TypeError: [full type error message and stack trace]
 [full stack trace of as much as the Error contained]
 </code></pre>
 </div></section>
@@ -36,8 +42,8 @@ YYYYMMDD - [AFT] - DEBUG - TypeError: [full type error description message]
 <ul class="tsd-hierarchy">
 <li><span class="target">Err</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/err.ts#L59">aft-core/src/helpers/err.ts:59</a></li>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/err.ts#L153">aft-core/src/helpers/err.ts:153</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/74967c1/packages/aft-core/src/helpers/err.ts#L62">aft-core/src/helpers/err.ts:62</a></li>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/74967c1/packages/aft-core/src/helpers/err.ts#L156">aft-core/src/helpers/err.ts:156</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -83,19 +89,19 @@ YYYYMMDD - [AFT] - DEBUG - TypeError: [full type error description message]
 <h5>error: <span class="tsd-signature-type">any</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="aft_core.Err-1.html" class="tsd-signature-type" data-tsd-kind="Class">Err</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/err.ts#L63">aft-core/src/helpers/err.ts:63</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/74967c1/packages/aft-core/src/helpers/err.ts#L66">aft-core/src/helpers/err.ts:66</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private"><a id="_verbosity" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>_verbosity</span><a href="#_verbosity" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">_verbosity<span class="tsd-signature-symbol">:</span> <a href="../types/aft_core.ErrVerbosity.html" class="tsd-signature-type" data-tsd-kind="Type alias">ErrVerbosity</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/err.ts#L61">aft-core/src/helpers/err.ts:61</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/74967c1/packages/aft-core/src/helpers/err.ts#L64">aft-core/src/helpers/err.ts:64</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="err" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>err</span><a href="#err" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">err<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Error</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/err.ts#L60">aft-core/src/helpers/err.ts:60</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/74967c1/packages/aft-core/src/helpers/err.ts#L63">aft-core/src/helpers/err.ts:63</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Accessors</h2>
 <section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="message" class="tsd-anchor"></a>
@@ -105,7 +111,7 @@ YYYYMMDD - [AFT] - DEBUG - TypeError: [full type error description message]
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/err.ts#L87">aft-core/src/helpers/err.ts:87</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/74967c1/packages/aft-core/src/helpers/err.ts#L90">aft-core/src/helpers/err.ts:90</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="stack" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>stack</span><a href="#stack" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
@@ -113,7 +119,7 @@ YYYYMMDD - [AFT] - DEBUG - TypeError: [full type error description message]
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/err.ts#L91">aft-core/src/helpers/err.ts:91</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/74967c1/packages/aft-core/src/helpers/err.ts#L94">aft-core/src/helpers/err.ts:94</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="type" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>type</span><a href="#type" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
@@ -121,7 +127,7 @@ YYYYMMDD - [AFT] - DEBUG - TypeError: [full type error description message]
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/err.ts#L83">aft-core/src/helpers/err.ts:83</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/74967c1/packages/aft-core/src/helpers/err.ts#L86">aft-core/src/helpers/err.ts:86</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="verbosity" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>verbosity</span><a href="#verbosity" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
@@ -129,7 +135,7 @@ YYYYMMDD - [AFT] - DEBUG - TypeError: [full type error description message]
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <a href="../types/aft_core.ErrVerbosity.html" class="tsd-signature-type" data-tsd-kind="Type alias">ErrVerbosity</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/err.ts#L71">aft-core/src/helpers/err.ts:71</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/74967c1/packages/aft-core/src/helpers/err.ts#L74">aft-core/src/helpers/err.ts:74</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private"><a id="_isError" class="tsd-anchor"></a>
@@ -144,7 +150,7 @@ YYYYMMDD - [AFT] - DEBUG - TypeError: [full type error description message]
 <h5>obj: <span class="tsd-signature-type">any</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/err.ts#L107">aft-core/src/helpers/err.ts:107</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/74967c1/packages/aft-core/src/helpers/err.ts#L110">aft-core/src/helpers/err.ts:110</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private"><a id="_processMessage" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>_process<wbr/>Message</span><a href="#_processMessage" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
@@ -157,7 +163,7 @@ YYYYMMDD - [AFT] - DEBUG - TypeError: [full type error description message]
 <h5>message: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/err.ts#L111">aft-core/src/helpers/err.ts:111</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/74967c1/packages/aft-core/src/helpers/err.ts#L114">aft-core/src/helpers/err.ts:114</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private"><a id="_processStack" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>_process<wbr/>Stack</span><a href="#_processStack" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
@@ -170,7 +176,7 @@ YYYYMMDD - [AFT] - DEBUG - TypeError: [full type error description message]
 <h5>stack: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/err.ts#L120">aft-core/src/helpers/err.ts:120</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/74967c1/packages/aft-core/src/helpers/err.ts#L123">aft-core/src/helpers/err.ts:123</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private"><a id="_removeInternalStackLines" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>_remove<wbr/>Internal<wbr/>Stack<wbr/>Lines</span><a href="#_removeInternalStackLines" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
@@ -183,7 +189,7 @@ YYYYMMDD - [AFT] - DEBUG - TypeError: [full type error description message]
 <h5>stack: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/err.ts#L132">aft-core/src/helpers/err.ts:132</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/74967c1/packages/aft-core/src/helpers/err.ts#L135">aft-core/src/helpers/err.ts:135</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private"><a id="_removeNewlinesAndExtraWhitespace" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>_remove<wbr/>Newlines<wbr/>And<wbr/>Extra<wbr/>Whitespace</span><a href="#_removeNewlinesAndExtraWhitespace" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
@@ -196,7 +202,7 @@ YYYYMMDD - [AFT] - DEBUG - TypeError: [full type error description message]
 <h5>input: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/err.ts#L144">aft-core/src/helpers/err.ts:144</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/74967c1/packages/aft-core/src/helpers/err.ts#L147">aft-core/src/helpers/err.ts:147</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="setVerbosity" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>set<wbr/>Verbosity</span><a href="#setVerbosity" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -209,7 +215,7 @@ YYYYMMDD - [AFT] - DEBUG - TypeError: [full type error description message]
 <h5>v: <a href="../types/aft_core.ErrVerbosity.html" class="tsd-signature-type" data-tsd-kind="Type alias">ErrVerbosity</a></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="aft_core.Err-1.html" class="tsd-signature-type" data-tsd-kind="Class">Err</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/err.ts#L78">aft-core/src/helpers/err.ts:78</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/74967c1/packages/aft-core/src/helpers/err.ts#L81">aft-core/src/helpers/err.ts:81</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="toString" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>to<wbr/>String</span><a href="#toString" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -217,7 +223,7 @@ YYYYMMDD - [AFT] - DEBUG - TypeError: [full type error description message]
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/err.ts#L95">aft-core/src/helpers/err.ts:95</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/74967c1/packages/aft-core/src/helpers/err.ts#L98">aft-core/src/helpers/err.ts:98</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
@@ -242,20 +248,27 @@ YYYYMMDD - [AFT] - DEBUG - TypeError: [full type error description message]
 <li class="current tsd-kind-module"><a href="../modules/aft_core.html">aft-<wbr/>core</a>
 <ul>
 <li class="selected tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.Err.html">Err</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.ExpiringFileLock.html">Expiring<wbr/>File<wbr/>Lock</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.LogLevel.html">Log<wbr/>Level</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.Reporter.html">Log<wbr/>Manager</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.SafeStringOption.html">Safe<wbr/>String<wbr/>Option</a></li></ul></li>
 <li class="tsd-kind-module"><a href="../modules/aft_jasmine_reporter.html">aft-<wbr/>jasmine-<wbr/>reporter</a></li>
-<li class="tsd-kind-module"><a href="../modules/aft_logging_awskinesis.html">aft-<wbr/>logging-<wbr/>awskinesis</a></li>
-<li class="tsd-kind-module"><a href="../modules/aft_logging_filesystem.html">aft-<wbr/>logging-<wbr/>filesystem</a></li>
-<li class="tsd-kind-module"><a href="../modules/aft_logging_html.html">aft-<wbr/>logging-<wbr/>html</a></li>
 <li class="tsd-kind-module"><a href="../modules/aft_mocha_reporter.html">aft-<wbr/>mocha-<wbr/>reporter</a></li>
+<li class="tsd-kind-module"><a href="../modules/aft_reporting_aws_kinesis_firehose.html">aft-<wbr/>reporting-<wbr/>aws-<wbr/>kinesis-<wbr/>firehose</a></li>
+<li class="tsd-kind-module"><a href="../modules/aft_reporting_filesystem.html">aft-<wbr/>reporting-<wbr/>filesystem</a></li>
+<li class="tsd-kind-module"><a href="../modules/aft_reporting_html.html">aft-<wbr/>reporting-<wbr/>html</a></li>
 <li class="tsd-kind-module"><a href="../modules/aft_testrail.html">aft-<wbr/>testrail</a></li>
 <li class="tsd-kind-module"><a href="../modules/aft_ui.html">aft-<wbr/>ui</a></li>
-<li class="tsd-kind-module"><a href="../modules/aft_ui_browsers.html">aft-<wbr/>ui-<wbr/>browsers</a></li>
-<li class="tsd-kind-module"><a href="../modules/aft_ui_mobile_apps.html">aft-<wbr/>ui-<wbr/>mobile-<wbr/>apps</a></li>
+<li class="tsd-kind-module"><a href="../modules/aft_ui_selenium.html">aft-<wbr/>ui-<wbr/>selenium</a></li>
+<li class="tsd-kind-module"><a href="../modules/aft_ui_webdriverio.html">aft-<wbr/>ui-<wbr/>webdriverio</a></li>
 <li class="tsd-kind-module"><a href="../modules/aft_web_services.html">aft-<wbr/>web-<wbr/>services</a>
 <ul>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_web_services.HttpHeaders.html">Http<wbr/>Headers</a>
+<ul>
+<li class="tsd-kind-namespace tsd-parent-kind-namespace"><a href="../modules/aft_web_services.HttpHeaders.Accept.html">Accept</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-namespace"><a href="../modules/aft_web_services.HttpHeaders.Authorization.html">Authorization</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-namespace"><a href="../modules/aft_web_services.HttpHeaders.ContentType.html">Content<wbr/>Type</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-namespace"><a href="../modules/aft_web_services.HttpHeaders.Cookies.html">Cookies</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-namespace"><a href="../modules/aft_web_services.HttpHeaders.MimeType.html">Mime<wbr/>Type</a></li></ul></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_web_services.XML.html">XML</a></li></ul></li></ul></li></ul></div></details></nav>
 <nav class="tsd-navigation secondary menu-sticky">
 <ul>
