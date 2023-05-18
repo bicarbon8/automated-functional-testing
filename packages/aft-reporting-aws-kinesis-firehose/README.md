@@ -85,17 +85,9 @@ the log record that is sent to your AWS Kinesis Firehose endpoint will have the 
     "result": {
       "testId": "1234",
       "resultMessage": "the final result was a SUCCESS!",
-      "status": "Passed",
+      "status": "passed",
       "resultId": "dbbf6fce-14db-4bd2-ba31-e3fa68d719e4",
       "created": 1655289028279,
-      "defects": [
-        {
-          "id": "3344",
-          "title": "a defect that has now been closed",
-          "description": "this defect used to affect this test, but now it doesn't :)",
-          "status": "closed"
-        }
-      ],
       "metadata": {}
     }, 
     "buildName": "Jenkins or Team City Job Name", 
@@ -114,7 +106,6 @@ the log record that is sent to your AWS Kinesis Firehose endpoint will have the 
   - **status** - a `string` representing the `aft-core.TestStatus` value
   - **resultId** - a `string` containing a unique identifier for the `TestResult`
   - **created** - a `number` containing the date and time the `TestResult` was created as milliseconds since the epoch
-  - **defects** - an array of `aft-core.Defect` objects
   - **metadata** - an `object` that can contain additional data for the `TestResult`
 - **version** - the current version of the `KinesisReportingPlugin`
 - **buildName** - a `string` retrieved from the `BuildInfoManager.getBuildName` function

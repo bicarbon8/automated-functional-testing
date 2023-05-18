@@ -184,13 +184,14 @@ describe('Sample Test', () => {
          */
         await verify(async () => await feature.performAction())
         .withTestId('C1234')
-        .and.withKnownDefectId('DEFECT-123')
         .and.withDescription("expect that performAction will return 'result of action'")
         .returns('result of action');
     });
 });
 ```
-in the above example, the `await feature.performAction()` call will only be run if a `TestExecutionPolicyPlugin` is loaded and returns `true` from it's `shouldRun(testId: string)` function (or no `TestExecutionPolicyPlugin` is loaded) and if a `DefectPlugin` is loaded and returns either no defect or a `closed` defect from it's `getDefect(defectId: string)` function (or no `DefectPlugin` is loaded). additionally, any logs associated with the above `verify` call will use a `logName` of `"expect_that_performAction_will_return_result_of_action"` resulting in log lines like the following:
+> NOTE: if using the `aft-jasmine-reporter` or `aft-mocha-reporter` it is even easier to set the test IDs. see examples at [jasmine](../aft-jasmine-reporter/README.md#afttest) and [mocha](../aft-mocha-reporter/README.md#afttest)
+
+in the above example, the `await feature.performAction()` call will only be run if a `TestExecutionPolicyPlugin` is loaded and returns `true` from it's `shouldRun(testId: string)` function (or no `TestExecutionPolicyPlugin` is loaded). additionally, any logs associated with the above `verify` call will use a `logName` of `"expect_that_performAction_will_return_result_of_action"` resulting in log lines like the following:
 ```
 09:14:01 - [expect that performAction will return 'result of action'] - TRACE - no TestExecutionPolicyPlugin in use so run all tests
 ```

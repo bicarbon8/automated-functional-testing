@@ -15,8 +15,8 @@ export type VerifierEvent = 'skipped' | 'started' | 'done';
 
 /**
  * class to be used for executing some Functional Test Assertion after checking with any
- * `TestExecutionPolicyPlugin` and `DefectPlugin` instances that have been loaded to confirm that the
- * assertion should be executed based on referenced Test ID(s) or Defect ID(s)
+ * `TestExecutionPolicyPlugin` instances that have been loaded to confirm that the
+ * assertion should be executed based on referenced Test ID(s)
  * 
  * Ex:
  * ```
@@ -26,7 +26,6 @@ export type VerifierEvent = 'skipped' | 'started' | 'done';
  *   return await feature.returnExpectedValue();
  * }).withDescription('example usage for Verifier')
  * .and.withTestIds('C1234') // if TestExecutionPolicyPlugin.shouldRun('C1234') returns `false` the assertion is not run
- * .and.withKnownDefectIds('AUTO-123') // if DefectPlugin.getDefect('AUTO-123').status === 'open' the assertion is not run
  * .returns('expected value');
  * ```
  * @param assertion the `Func<Verifier, any>` function to be executed by this `Verifier`

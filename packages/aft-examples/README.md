@@ -54,7 +54,7 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
 ```
 - **pluginNames** - `Array<string>` containing names that should match the filename and classname (if you remove characters like `-`, `_` and `.`) of the plugins to load
 - **pluginsSearchDir** - `string` containing a relative path (to `process.cwd()`) used to search for the plugins listed in the `pluginNames` array. _(defaults to `process.cwd()`)_
-- **logLevel** - `string` containing the minimum `LogLevel` where logs will be sent to the console. this value can also serve as a global fall-back for logging plugin implementations using `aftConfig.getSection(ReporterConfig).logLevel` if no value is specified for the given plugin. _(defaults to `'warn'`)_
+- **logLevel** - `string` containing the minimum `LogLevel` where logs will be sent to the console. this value can also serve as a global fall-back for logging plugin implementations using `aftConfig.logLevel` if no value is specified for the given plugin. _(defaults to `'warn'`)_
 - **KinesisReportingPluginConfig** - configuration for the `kinesis-reporting-plugin`
   - **logLevel** - the minimum level where logs will be forwarded to your AWS Kinesis Firehose delivery stream. _(defaults to `'none'`)_
   - **region** - `string` containing an AWS Region System Name like `'eu-west-1'`
@@ -93,17 +93,21 @@ executing the tests using `npm test` should result in the output like the follow
 ```
 
 ## TestRail Logging
-if using `testrail-reporting-plugin` then you must ensure your `verify(assertion)`, `verifyWithSelenium(assertion)`, `verifyWithWebdriverIO(assertion)`, `Verifier`, `SeleniumVerifier`, or `WebdriverIoVerifier` instances have valid TestRail Case ID's referenced. The values specified for the `withTestId` function must be the TestRail Case ID's referenced by your existing TestRail Plan (not to be confused with the TestRail Test ID's that start with the letter _T_). Modifications will need to be made in two places per test:
+if using `testrail-reporting-plugin` then you must ensure your `verify(assertion)`, `verifyWithSelenium(assertion)`, `verifyWithWebdriverIO(assertion)`, `Verifier`, `SeleniumVerifier`, or `WebdriverIoVerifier` instances have valid TestRail Case ID's referenced. The values specified for the `withTestIds` function must be the TestRail Case ID's referenced by your existing TestRail Plan (not to be confused with the TestRail Test ID's that start with the letter _T_). Modifications will need to be made in two places per test:
 
 ### Specifying Test IDs
-in the options object, set the following:
+on the `Verifier` instance, set the following:
 ```typescript
 await verify(() => someTestAction())
-    .withTestId('C1234')
-    .and.withTestId('C2345')
-    .and.withTestId('C3456');
+    .withTestIds('C1234', 'C2345', 'C3456');
 ```
-specifying the TestRail Case ID's for the Cases you wish to cover.
+or, if using the `aft-jasmine-reporter` or `aft-mocha-reporter` packages, modify your test function titles to include the test case IDs like the following:
+```typescript
+it('[C1234] can include tests [C2345] in the title [C3456]', async function() {
+    const aft = new AftTest(this); // if using Jasmine, leave off the `this`
+    await aft.verify(() => someTestAction());
+})
+```
 
 > WARNING: Jasmine's _expect_ calls do not return a boolean as their type definitions would make you think and failed `expect` calls will only throw exceptions if the stop on failure option is enabled: 
 ```typescript
