@@ -1,6 +1,6 @@
 {
   "name": "aft-examples",
-  "version": "9.0.0",
+  "version": "10.0.0",
   "description": "Automated Functional Testing (AFT) package containing examples of how it can be used",
   "private": true,
   "scripts": {
@@ -30,14 +30,14 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-reporting-aws-kinesis-firehose": "^9.0.0",
-    "aft-reporting-filesystem": "^9.0.0",
-    "aft-reporting-html": "^9.0.0",
-    "aft-mocha-reporter": "^9.0.0",
-    "aft-testrail": "^9.0.0",
-    "aft-ui-selenium": "^9.0.0",
-    "aft-ui-webdriverio": "^9.0.0",
-    "aft-web-services": "^9.0.0"
+    "aft-mocha-reporter": "^10.0.0",
+    "aft-reporting-aws-kinesis-firehose": "^10.0.0",
+    "aft-reporting-filesystem": "^10.0.0",
+    "aft-reporting-html": "^10.0.0",
+    "aft-testrail": "^10.0.0",
+    "aft-ui-selenium": "^10.0.0",
+    "aft-ui-webdriverio": "^10.0.0",
+    "aft-web-services": "^10.0.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.17",
