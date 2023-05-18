@@ -1,47 +1,78 @@
 import * as path from "path";
-import { rand } from "aft-core";
-import { MobileAppFacetOptions, mobileAppSessionGeneratorMgr, MobileAppVerifier, verifyWithMobileApp } from "aft-ui-mobile-apps";
+import * as fs from "fs";
+import * as FormData from "form-data";
+import { AftConfig, BuildInfoManager, Reporter, aftConfig, pluginLoader } from "aft-core";
 import { WikipediaView } from "./page-objects/wikipedia-view";
-import { assert } from "chai";
 import { AftTest } from "aft-mocha-reporter";
+import { httpService, httpData, HttpHeaders } from "aft-web-services";
+import { UiSessionConfig } from "aft-ui";
+import { WebdriverIoVerifier } from "aft-ui-webdriverio";
 
 var customId: string;
 
-describe('Functional Mobile App Tests using AFT-UI-MOBILE-APPS', () => {
+describe('Functional Mobile App Tests using AFT-UI-WEBDRIVERIO', () => {
+    beforeEach(() => {
+        /**
+         * normally this call would not be necessary, but because these examples switch between
+         * multiple configurations and UI Session Generators it is necessary to clear out any
+         * cached plugins and force a reload with fresh configuration before each test
+         */
+        pluginLoader.reset();
+    });
+
     before(async () => {
-        let resp = await mobileAppSessionGeneratorMgr.sendCommand('getApps');
+        const logger = new Reporter('MobileAppsSpec Before');
+        const uisc = aftConfig.getSection(UiSessionConfig);
+        const username = uisc.options.capabilities?.["bstack:options"]?.userName;
+        const password = uisc.options.capabilities?.["bstack:options"]?.accessKey;
+        const resp = await httpService.performRequest({
+            url: "https://api-cloud.browserstack.com/app-automate/recent_group_apps",
+            headers: {
+                ...HttpHeaders.Authorization.basic(username, password)
+            },
+            reporter: logger
+        });
         let app: any;
-        for (var i=0; i<resp?.apps?.length; i++) {
-            let a = resp.apps[i];
+        const uploadedApps = httpData.as<Array<any>>(resp);
+        for (var i=0; i<uploadedApps?.length; i++) {
+            let a = uploadedApps[i];
             if (a.app_name == 'WikipediaSample.apk') {
                 app = a;
                 break;
             }
         }
         if (!app) {
-            let data = {
-                file: path.join(process.cwd(), './test/ui/mobile-app-tests/mobile-apps/WikipediaSample.apk'),
-                custom_id: rand.getString(15)
-            };
-            let result: any = await mobileAppSessionGeneratorMgr.sendCommand('upload', data);
-            customId = result?.custom_id;
-        } else {
-            customId = app.shareable_id || app.custom_id || app.app_url;
+            const formData = new FormData();
+            formData.append('custom_id', 'AFT.WikipediaApp');
+            formData.append('file', fs.createReadStream(path.join(process.cwd(), './test/ui/mobile-app-tests/mobile-apps/WikipediaSample.apk')));
+            const result: any = await httpService.performRequest({
+                url: "https://api-cloud.browserstack.com/app-automate/upload",
+                postData: formData,
+                method: 'POST',
+                headers: {
+                    ...HttpHeaders.Authorization.basic(username, password)
+                },
+                multipart: true,
+                reporter: logger
+            });
+            app = httpData.as<{}>(result);
         }
+        customId = app.shareable_id ?? app.custom_id ?? app.app_url ?? 'AFT.WikipediaApp';
     });
 
     it('can search in Wikipedia App', async function() {
-        const aft = new AftTest(this);
-        const shouldRun = await aft.shouldRun();
-        if (!shouldRun) {
-            this.skip();
-        }
-        await verifyWithMobileApp(async (tw: MobileAppVerifier) => {
-            await tw.logMgr.step('get the WikipediaView Facet from the Session...');
-            let view: WikipediaView = await tw.session.getFacet<WikipediaView, MobileAppFacetOptions>(WikipediaView);
-            await tw.logMgr.step('enter a search term...');
+        const aftCfg = new AftConfig();
+        const uisc = aftCfg.getSection(UiSessionConfig);
+        uisc.generatorName = 'webdriverio-remote-session-generator-plugin';
+        const username = uisc.options.capabilities?.["bstack:options"]?.userName;
+        const password = uisc.options.capabilities?.["bstack:options"]?.accessKey;
+        const aft = new AftTest(this, aftCfg);
+        await aft.verify(async (tw: WebdriverIoVerifier) => {
+            await tw.reporter.step('get the WikipediaView Component from the Session...');
+            let view: WikipediaView = tw.getComponent(WikipediaView);
+            await tw.reporter.step('enter a search term...');
             await view.searchFor('pizza');
-            await tw.logMgr.step('get the results and ensure they contain the search term...');
+            await tw.reporter.step('get the results and ensure they contain the search term...');
             let results: string[] = await view.getResults();
             for (var i=0; i<results.length; i++) {
                 let res: string = results[i];
@@ -49,8 +80,20 @@ describe('Functional Mobile App Tests using AFT-UI-MOBILE-APPS', () => {
                     return true;
                 }
             }
-        }).withMobileAppSessionOptions({app: customId})
-        .and.withLogManager(aft.logMgr)
-        .returns(true);
+        }, WebdriverIoVerifier).withAdditionalSessionOptions({
+            user: username,
+            key: password,
+            capabilities: {
+                browserName: 'android',
+                platformName: 'android',
+                "appium:platformVersion": '13.0',
+                "appium:deviceName": 'Samsung Galaxy S23',
+                "appium:app": customId,
+                "bstack:options": {
+                    "sessionName": aft.reporter.reporterName,
+                    buildName: await new BuildInfoManager(aftCfg).get()
+                }
+            }
+        }).returns(true);
     });
 });

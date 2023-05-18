@@ -1,6 +1,6 @@
 /** configuration */
 export * from './configuration/testrail-config';
-/** test-cases */
-export * from './test-cases/testrail-test-case-plugin';
-/** logging */
-export * from './logging/testrail-logging-plugin';
+/** test-execution-policy */
+export * from './test-execution-policy/testrail-test-execution-policy-plugin';
+/** reporting */
+export * from './reporting/testrail-reporting-plugin';

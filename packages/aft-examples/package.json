@@ -1,12 +1,12 @@
 {
   "name": "aft-examples",
-  "version": "9.0.0",
+  "version": "10.0.0",
   "description": "Automated Functional Testing (AFT) package containing examples of how it can be used",
   "private": true,
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./logs && rimraf ./FileSystemMap && rimraf ./testresults.html",
-    "build-e2e": "npm run clean && tsc --build",
-    "test-e2e": "npm run build-e2e && mocha"
+    "build": "npm run clean && tsc --build",
+    "test:e2e": "npm run build && mocha"
   },
   "repository": {
     "type": "git",
@@ -19,7 +19,7 @@
     "integration",
     "functional",
     "ui",
-    "logging",
+    "http",
     "test",
     "examples"
   ],
@@ -30,13 +30,14 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-mocha-reporter": "^9.0.0",
-    "aft-logging-awskinesis": "^9.0.0",
-    "aft-logging-filesystem": "^9.0.0",
-    "aft-logging-html": "^9.0.0",
-    "aft-testrail": "^9.0.0",
-    "aft-ui-browsers": "^9.0.0",
-    "aft-ui-mobile-apps": "^9.0.0"
+    "aft-mocha-reporter": "^10.0.0",
+    "aft-reporting-aws-kinesis-firehose": "^10.0.0",
+    "aft-reporting-filesystem": "^10.0.0",
+    "aft-reporting-html": "^10.0.0",
+    "aft-testrail": "^10.0.0",
+    "aft-ui-selenium": "^10.0.0",
+    "aft-ui-webdriverio": "^10.0.0",
+    "aft-web-services": "^10.0.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.17",

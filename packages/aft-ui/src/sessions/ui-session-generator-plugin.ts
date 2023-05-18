@@ -1,27 +1,12 @@
-import { Plugin, LogManager, Merge, PluginOptions } from "aft-core";
-import { UiPlatform } from "../configuration/ui-platform";
-import { UiSession, UiSessionOptions } from "./ui-session";
+import { Plugin, convert } from "aft-core";
+import { UiSessionConfig } from "../configuration/ui-session-config";
 
-export type UiSessionGeneratorPluginOptions = Merge<PluginOptions, {
-    uiplatform?: string;
-    logMgr?: LogManager;
-}>;
-
-export abstract class UiSessionGeneratorPlugin<T extends UiSessionGeneratorPluginOptions> extends Plugin<T> {
-    private _logMgr: LogManager;
-    private _platform: UiPlatform;
-    get logMgr(): LogManager {
-        if (!this._logMgr) {
-            this._logMgr = this.option('logMgr') || new LogManager({logName: this.constructor.name});
-        }
-        return this._logMgr;
+export class UiSessionGeneratorPlugin extends Plugin {
+    override get enabled(): boolean {
+        const uisc = this.aftCfg.getSection(UiSessionConfig);
+        const genName = uisc.generatorName;
+        const safeName = convert.toSafeString(genName, [{exclude: /[-_.\s\d]/gi, replaceWith: ''}]);
+        return safeName.toLocaleLowerCase() === this.constructor.name.toLocaleLowerCase();
     }
-    get uiplatform(): UiPlatform {
-        if (!this._platform) {
-            let plt: string = this.option('uiplatform');
-            this._platform = UiPlatform.parse(plt);
-        }
-        return this._platform;
-    }
-    abstract newUiSession(options?: UiSessionOptions): Promise<UiSession<any>>;
+    getSession = async (sessionOptions?: Record<string, any>): Promise<unknown> => null;
 }

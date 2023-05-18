@@ -1,12 +1,14 @@
-import { FileSystemMap, LogManager } from "aft-core";
+import { AftConfig, Reporter, aftConfig } from "aft-core";
 
 export class AftLog {
-    private _logMgr: LogManager;
+    private _rep: Reporter;
     
     public readonly test: Mocha.Test;
+    public readonly aftCfg: AftConfig;
     
-    constructor(scope?: any) {
+    constructor(scope?: any, aftCfg?: AftConfig) {
         this.test = scope?.test || {};
+        this.aftCfg = aftCfg ?? aftConfig;
     }
 
     get fullTitle(): string {
@@ -17,14 +19,14 @@ export class AftLog {
         }
     }
 
-    get logMgr(): LogManager {
-        if (!this._logMgr) {
-            this._logMgr = new LogManager({logName: this.fullTitle})
+    get reporter(): Reporter {
+        if (!this._rep) {
+            this._rep = new Reporter(this.fullTitle, this.aftCfg);
         }
-        return this._logMgr;
+        return this._rep;
     }
 
     async dispose(): Promise<void> {
-        await this.logMgr.dispose();
+        await this.reporter.dispose();
     }
 }

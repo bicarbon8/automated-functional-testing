@@ -16,10 +16,10 @@
 <h1>Class Verifier</h1></div>
 <section class="tsd-panel tsd-comment">
 <div class="tsd-comment tsd-typography"><p>class to be used for executing some Functional Test Assertion after checking with any
-<code>TestCasePlugin</code> and <code>DefectPlugin</code> instances that have been loaded to confirm that the
-assertion should be executed based on referenced Test ID(s) or Defect ID(s)</p>
+<code>TestExecutionPolicyPlugin</code> instances that have been loaded to confirm that the
+assertion should be executed based on referenced Test ID(s)</p>
 <p>Ex:</p>
-<pre><code><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-0">verify</span><span class="hl-1">(</span><span class="hl-3">async</span><span class="hl-1"> (</span><span class="hl-4">v</span><span class="hl-1">: </span><span class="hl-5">Verifier</span><span class="hl-1">) </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-4">v</span><span class="hl-1">.</span><span class="hl-4">logMgr</span><span class="hl-1">.</span><span class="hl-0">info</span><span class="hl-1">(</span><span class="hl-2">&#39;doing some testing...&#39;</span><span class="hl-1">);</span><br/><span class="hl-1">  </span><span class="hl-3">let</span><span class="hl-1"> </span><span class="hl-4">feature</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">FeatureObj</span><span class="hl-1">();</span><br/><span class="hl-1">  </span><span class="hl-7">return</span><span class="hl-1"> </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-4">feature</span><span class="hl-1">.</span><span class="hl-0">returnExpectedValue</span><span class="hl-1">();</span><br/><span class="hl-1">}).</span><span class="hl-0">withDescription</span><span class="hl-1">(</span><span class="hl-2">&#39;example usage for Verifier&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">.</span><span class="hl-4">and</span><span class="hl-1">.</span><span class="hl-0">withTestIds</span><span class="hl-1">(</span><span class="hl-2">&#39;C1234&#39;</span><span class="hl-1">) </span><span class="hl-6">// if TestCasePlugin.shouldRun(&#39;C1234&#39;) returns `false` the assertion is not run</span><br/><span class="hl-1">.</span><span class="hl-4">and</span><span class="hl-1">.</span><span class="hl-0">withKnownDefectIds</span><span class="hl-1">(</span><span class="hl-2">&#39;AUTO-123&#39;</span><span class="hl-1">) </span><span class="hl-6">// if DefectPlugin.getDefect(&#39;AUTO-123&#39;).status === &#39;open&#39; the assertion is not run</span><br/><span class="hl-1">.</span><span class="hl-0">returns</span><span class="hl-1">(</span><span class="hl-2">&#39;expected value&#39;</span><span class="hl-1">);</span>
+<pre><code><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-0">verify</span><span class="hl-1">(</span><span class="hl-3">async</span><span class="hl-1"> (</span><span class="hl-8">v</span><span class="hl-1">: </span><span class="hl-5">Verifier</span><span class="hl-1">) </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-8">v</span><span class="hl-1">.</span><span class="hl-8">reporter</span><span class="hl-1">.</span><span class="hl-0">info</span><span class="hl-1">(</span><span class="hl-2">&#39;doing some testing...&#39;</span><span class="hl-1">);</span><br/><span class="hl-1">  </span><span class="hl-3">let</span><span class="hl-1"> </span><span class="hl-8">feature</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">FeatureObj</span><span class="hl-1">();</span><br/><span class="hl-1">  </span><span class="hl-7">return</span><span class="hl-1"> </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-8">feature</span><span class="hl-1">.</span><span class="hl-0">returnExpectedValue</span><span class="hl-1">();</span><br/><span class="hl-1">}).</span><span class="hl-0">withDescription</span><span class="hl-1">(</span><span class="hl-2">&#39;example usage for Verifier&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">.</span><span class="hl-8">and</span><span class="hl-1">.</span><span class="hl-0">withTestIds</span><span class="hl-1">(</span><span class="hl-2">&#39;C1234&#39;</span><span class="hl-1">) </span><span class="hl-6">// if TestExecutionPolicyPlugin.shouldRun(&#39;C1234&#39;) returns `false` the assertion is not run</span><br/><span class="hl-1">.</span><span class="hl-0">returns</span><span class="hl-1">(</span><span class="hl-2">&#39;expected value&#39;</span><span class="hl-1">);</span>
 </code></pre>
 
 <h3>Param</h3><p>the <code>Func&lt;Verifier, any&gt;</code> function to be executed by this <code>Verifier</code></p>
@@ -35,7 +35,7 @@ assertion should be executed based on referenced Test ID(s) or Defect ID(s)</p>
 <ul class="tsd-hierarchy">
 <li><span class="tsd-signature-type">PromiseLike</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L32">aft-core/src/helpers/verifier.ts:32</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L34">aft-core/src/verification/verifier.ts:34</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -47,25 +47,26 @@ assertion should be executed based on referenced Test ID(s) or Defect ID(s)</p>
 </div></section>
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading">Properties</h3>
-<div class="tsd-index-list"><a href="aft_core.Verifier.html#_assertion" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF984D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-1024-path"></rect><path d="M9.354 16V7.24H12.174C12.99 7.24 13.638 7.476 14.118 7.948C14.606 8.412 14.85 9.036 14.85 9.82C14.85 10.604 14.606 11.232 14.118 11.704C13.638 12.168 12.99 12.4 12.174 12.4H10.434V16H9.354ZM10.434 11.428H12.174C12.646 11.428 13.022 11.284 13.302 10.996C13.59 10.7 13.734 10.308 13.734 9.82C13.734 9.324 13.59 8.932 13.302 8.644C13.022 8.356 12.646 8.212 12.174 8.212H10.434V11.428Z" fill="var(--color-text)" id="icon-1024-text"></path></svg><span>_assertion</span></a>
-<a href="aft_core.Verifier.html#_buildMgr" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_build<wbr/>Mgr</span></a>
-<a href="aft_core.Verifier.html#_defectMgr" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_defect<wbr/>Mgr</span></a>
-<a href="aft_core.Verifier.html#_defects" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_defects</span></a>
+<div class="tsd-index-list"><a href="aft_core.Verifier.html#_actionMap" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF984D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-1024-path"></rect><path d="M9.354 16V7.24H12.174C12.99 7.24 13.638 7.476 14.118 7.948C14.606 8.412 14.85 9.036 14.85 9.82C14.85 10.604 14.606 11.232 14.118 11.704C13.638 12.168 12.99 12.4 12.174 12.4H10.434V16H9.354ZM10.434 11.428H12.174C12.646 11.428 13.022 11.284 13.302 10.996C13.59 10.7 13.734 10.308 13.734 9.82C13.734 9.324 13.59 8.932 13.302 8.644C13.022 8.356 12.646 8.212 12.174 8.212H10.434V11.428Z" fill="var(--color-text)" id="icon-1024-text"></path></svg><span>_action<wbr/>Map</span></a>
+<a href="aft_core.Verifier.html#_aftCfg" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_aft<wbr/>Cfg?</span></a>
+<a href="aft_core.Verifier.html#_assertion" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_assertion</span></a>
+<a href="aft_core.Verifier.html#_buildInfoMgr" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_build<wbr/>Info<wbr/>Mgr</span></a>
 <a href="aft_core.Verifier.html#_description" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_description</span></a>
 <a href="aft_core.Verifier.html#_innerPromise" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_inner<wbr/>Promise</span></a>
-<a href="aft_core.Verifier.html#_logMgr" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_log<wbr/>Mgr</span></a>
 <a href="aft_core.Verifier.html#_matcher" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_matcher</span></a>
+<a href="aft_core.Verifier.html#_policyEngMgr" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_policy<wbr/>Eng<wbr/>Mgr</span></a>
+<a href="aft_core.Verifier.html#_reporter" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_reporter</span></a>
 <a href="aft_core.Verifier.html#_startTime" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_start<wbr/>Time</span></a>
-<a href="aft_core.Verifier.html#_testMgr" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_test<wbr/>Mgr</span></a>
-<a href="aft_core.Verifier.html#_tests" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_tests</span></a>
+<a href="aft_core.Verifier.html#_testIds" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_test<wbr/>Ids</span></a>
 </div></section>
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading">Accessors</h3>
-<div class="tsd-index-list"><a href="aft_core.Verifier.html#and" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF4D4D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-262144-path"></rect><path d="M8.85 16L11.13 7.24H12.582L14.85 16H13.758L13.182 13.672H10.53L9.954 16H8.85ZM10.746 12.76H12.954L12.282 10.06C12.154 9.548 12.054 9.12 11.982 8.776C11.91 8.432 11.866 8.208 11.85 8.104C11.834 8.208 11.79 8.432 11.718 8.776C11.646 9.12 11.546 9.544 11.418 10.048L10.746 12.76Z" fill="var(--color-text)" id="icon-262144-text"></path></svg><span>and</span></a>
-<a href="aft_core.Verifier.html#buildMgr" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>build<wbr/>Mgr</span></a>
-<a href="aft_core.Verifier.html#defectMgr" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>defect<wbr/>Mgr</span></a>
-<a href="aft_core.Verifier.html#logMgr" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>log<wbr/>Mgr</span></a>
-<a href="aft_core.Verifier.html#testMgr" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>test<wbr/>Mgr</span></a>
+<div class="tsd-index-list"><a href="aft_core.Verifier.html#aftCfg" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF4D4D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-262144-path"></rect><path d="M8.85 16L11.13 7.24H12.582L14.85 16H13.758L13.182 13.672H10.53L9.954 16H8.85ZM10.746 12.76H12.954L12.282 10.06C12.154 9.548 12.054 9.12 11.982 8.776C11.91 8.432 11.866 8.208 11.85 8.104C11.834 8.208 11.79 8.432 11.718 8.776C11.646 9.12 11.546 9.544 11.418 10.048L10.746 12.76Z" fill="var(--color-text)" id="icon-262144-text"></path></svg><span>aft<wbr/>Cfg</span></a>
+<a href="aft_core.Verifier.html#and" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>and</span></a>
+<a href="aft_core.Verifier.html#buildInfoMgr" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>build<wbr/>Info<wbr/>Mgr</span></a>
+<a href="aft_core.Verifier.html#internals" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>internals</span></a>
+<a href="aft_core.Verifier.html#policyEngMgr" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>policy<wbr/>Eng<wbr/>Mgr</span></a>
+<a href="aft_core.Verifier.html#reporter" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>reporter</span></a>
 </div></section>
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading">Methods</h3>
@@ -75,17 +76,12 @@ assertion should be executed based on referenced Test ID(s) or Defect ID(s)</p>
 <a href="aft_core.Verifier.html#_logMessage" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>_log<wbr/>Message</span></a>
 <a href="aft_core.Verifier.html#_logResult" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>_log<wbr/>Result</span></a>
 <a href="aft_core.Verifier.html#_resolveAssertion" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>_resolve<wbr/>Assertion</span></a>
-<a href="aft_core.Verifier.html#_shouldRun_defects" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>_should<wbr/>Run_<wbr/>defects</span></a>
-<a href="aft_core.Verifier.html#_shouldRun_tests" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>_should<wbr/>Run_<wbr/>tests</span></a>
+<a href="aft_core.Verifier.html#on" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>on</span></a>
 <a href="aft_core.Verifier.html#returns" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>returns</span></a>
+<a href="aft_core.Verifier.html#shouldRun" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>should<wbr/>Run</span></a>
 <a href="aft_core.Verifier.html#then" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>then</span></a>
 <a href="aft_core.Verifier.html#verify" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>verify</span></a>
-<a href="aft_core.Verifier.html#withBuildInfoManager" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>with<wbr/>Build<wbr/>Info<wbr/>Manager</span></a>
-<a href="aft_core.Verifier.html#withDefectManager" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>with<wbr/>Defect<wbr/>Manager</span></a>
 <a href="aft_core.Verifier.html#withDescription" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>with<wbr/>Description</span></a>
-<a href="aft_core.Verifier.html#withKnownDefectIds" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>with<wbr/>Known<wbr/>Defect<wbr/>Ids</span></a>
-<a href="aft_core.Verifier.html#withLogManager" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>with<wbr/>Log<wbr/>Manager</span></a>
-<a href="aft_core.Verifier.html#withTestCaseManager" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>with<wbr/>Test<wbr/>Case<wbr/>Manager</span></a>
 <a href="aft_core.Verifier.html#withTestIds" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>with<wbr/>Test<wbr/>Ids</span></a>
 </div></section></div></details></section></section>
 <section class="tsd-panel-group tsd-member-group">
@@ -97,66 +93,74 @@ assertion should be executed based on referenced Test ID(s) or Defect ID(s)</p>
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <a href="aft_core.Verifier.html" class="tsd-signature-type" data-tsd-kind="Class">Verifier</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L45">aft-core/src/helpers/verifier.ts:45</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L47">aft-core/src/verification/verifier.ts:47</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
+<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="_actionMap" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_action<wbr/>Map</span><a href="#_actionMap" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature">_action<wbr/>Map<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/aft_core.VerifierEvent.html" class="tsd-signature-type" data-tsd-kind="Type alias">VerifierEvent</a><span class="tsd-signature-symbol">, </span><a href="../types/aft_core.Action.html" class="tsd-signature-type" data-tsd-kind="Type alias">Action</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L45">aft-core/src/verification/verifier.ts:45</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="_aftCfg" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <code class="tsd-tag ts-flagOptional">Optional</code> <span>_aft<wbr/>Cfg</span><a href="#_aftCfg" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature">_aft<wbr/>Cfg<span class="tsd-signature-symbol">?:</span> <a href="aft_core.AftConfig.html" class="tsd-signature-type" data-tsd-kind="Class">AftConfig</a></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L35">aft-core/src/verification/verifier.ts:35</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="_assertion" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_assertion</span><a href="#_assertion" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">_assertion<span class="tsd-signature-symbol">:</span> <a href="../types/aft_core.Func.html" class="tsd-signature-type" data-tsd-kind="Type alias">Func</a><span class="tsd-signature-symbol">&lt;</span><a href="aft_core.Verifier.html" class="tsd-signature-type" data-tsd-kind="Class">Verifier</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L33">aft-core/src/helpers/verifier.ts:33</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="_buildMgr" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_build<wbr/>Mgr</span><a href="#_buildMgr" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">_build<wbr/>Mgr<span class="tsd-signature-symbol">:</span> <a href="aft_core.BuildInfoManager.html" class="tsd-signature-type" data-tsd-kind="Class">BuildInfoManager</a></div><aside class="tsd-sources">
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L36">aft-core/src/verification/verifier.ts:36</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="_buildInfoMgr" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_build<wbr/>Info<wbr/>Mgr</span><a href="#_buildInfoMgr" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature">_build<wbr/>Info<wbr/>Mgr<span class="tsd-signature-symbol">:</span> <a href="aft_core.BuildInfoManager.html" class="tsd-signature-type" data-tsd-kind="Class">BuildInfoManager</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L43">aft-core/src/helpers/verifier.ts:43</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="_defectMgr" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_defect<wbr/>Mgr</span><a href="#_defectMgr" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">_defect<wbr/>Mgr<span class="tsd-signature-symbol">:</span> <a href="aft_core.DefectManager.html" class="tsd-signature-type" data-tsd-kind="Class">DefectManager</a></div><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L42">aft-core/src/helpers/verifier.ts:42</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="_defects" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_defects</span><a href="#_defects" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">_defects<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L39">aft-core/src/helpers/verifier.ts:39</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L44">aft-core/src/verification/verifier.ts:44</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="_description" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_description</span><a href="#_description" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">_description<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L35">aft-core/src/helpers/verifier.ts:35</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L38">aft-core/src/verification/verifier.ts:38</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="_innerPromise" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_inner<wbr/>Promise</span><a href="#_innerPromise" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">_inner<wbr/>Promise<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L37">aft-core/src/helpers/verifier.ts:37</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="_logMgr" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_log<wbr/>Mgr</span><a href="#_logMgr" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">_log<wbr/>Mgr<span class="tsd-signature-symbol">:</span> <a href="aft_core.LogManager-1.html" class="tsd-signature-type" data-tsd-kind="Class">LogManager</a></div><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L40">aft-core/src/helpers/verifier.ts:40</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L40">aft-core/src/verification/verifier.ts:40</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="_matcher" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_matcher</span><a href="#_matcher" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">_matcher<span class="tsd-signature-symbol">:</span> <a href="../interfaces/aft_core.VerifierMatcher.html" class="tsd-signature-type" data-tsd-kind="Interface">VerifierMatcher</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L34">aft-core/src/helpers/verifier.ts:34</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L37">aft-core/src/verification/verifier.ts:37</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="_policyEngMgr" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_policy<wbr/>Eng<wbr/>Mgr</span><a href="#_policyEngMgr" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature">_policy<wbr/>Eng<wbr/>Mgr<span class="tsd-signature-symbol">:</span> <a href="aft_core.TestExecutionPolicyManager.html" class="tsd-signature-type" data-tsd-kind="Class">TestExecutionPolicyManager</a></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L43">aft-core/src/verification/verifier.ts:43</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="_reporter" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_reporter</span><a href="#_reporter" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature">_reporter<span class="tsd-signature-symbol">:</span> <a href="aft_core.Reporter.html" class="tsd-signature-type" data-tsd-kind="Class">Reporter</a></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L42">aft-core/src/verification/verifier.ts:42</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="_startTime" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_start<wbr/>Time</span><a href="#_startTime" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">_start<wbr/>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L36">aft-core/src/helpers/verifier.ts:36</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="_testMgr" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_test<wbr/>Mgr</span><a href="#_testMgr" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">_test<wbr/>Mgr<span class="tsd-signature-symbol">:</span> <a href="aft_core.TestCaseManager.html" class="tsd-signature-type" data-tsd-kind="Class">TestCaseManager</a></div><aside class="tsd-sources">
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L39">aft-core/src/verification/verifier.ts:39</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="_testIds" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_test<wbr/>Ids</span><a href="#_testIds" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature">_test<wbr/>Ids<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L41">aft-core/src/helpers/verifier.ts:41</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="_tests" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_tests</span><a href="#_tests" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">_tests<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L38">aft-core/src/helpers/verifier.ts:38</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L41">aft-core/src/verification/verifier.ts:41</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Accessors</h2>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="aftCfg" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>aft<wbr/>Cfg</span><a href="#aftCfg" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+<li class="tsd-signature" id="aftCfg.aftCfg-1"><span class="tsd-signature-symbol">get</span> aftCfg<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_core.AftConfig.html" class="tsd-signature-type" data-tsd-kind="Class">AftConfig</a></li>
+<li class="tsd-description">
+<h4 class="tsd-returns-title">Returns <a href="aft_core.AftConfig.html" class="tsd-signature-type" data-tsd-kind="Class">AftConfig</a></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L53">aft-core/src/verification/verifier.ts:53</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="and" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>and</span><a href="#and" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
@@ -166,44 +170,51 @@ assertion should be executed based on referenced Test ID(s) or Defect ID(s)</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L134">aft-core/src/helpers/verifier.ts:134</a></li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="buildMgr" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>build<wbr/>Mgr</span><a href="#buildMgr" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L154">aft-core/src/verification/verifier.ts:154</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="buildInfoMgr" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>build<wbr/>Info<wbr/>Mgr</span><a href="#buildInfoMgr" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
-<li class="tsd-signature" id="buildMgr.buildMgr-1"><span class="tsd-signature-symbol">get</span> buildMgr<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_core.BuildInfoManager.html" class="tsd-signature-type" data-tsd-kind="Class">BuildInfoManager</a></li>
+<li class="tsd-signature" id="buildInfoMgr.buildInfoMgr-1"><span class="tsd-signature-symbol">get</span> buildInfoMgr<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_core.BuildInfoManager.html" class="tsd-signature-type" data-tsd-kind="Class">BuildInfoManager</a></li>
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <a href="aft_core.BuildInfoManager.html" class="tsd-signature-type" data-tsd-kind="Class">BuildInfoManager</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L86">aft-core/src/helpers/verifier.ts:86</a></li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="defectMgr" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>defect<wbr/>Mgr</span><a href="#defectMgr" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L88">aft-core/src/verification/verifier.ts:88</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="internals" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>internals</span><a href="#internals" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
-<li class="tsd-signature" id="defectMgr.defectMgr-1"><span class="tsd-signature-symbol">get</span> defectMgr<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_core.DefectManager.html" class="tsd-signature-type" data-tsd-kind="Class">DefectManager</a></li>
+<li class="tsd-signature" id="internals.internals-1"><span class="tsd-signature-symbol">get</span> internals<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../types/aft_core.VerifierInternals.html" class="tsd-signature-type" data-tsd-kind="Type alias">VerifierInternals</a></li>
 <li class="tsd-description">
-<h4 class="tsd-returns-title">Returns <a href="aft_core.DefectManager.html" class="tsd-signature-type" data-tsd-kind="Class">DefectManager</a></h4><aside class="tsd-sources">
+<div class="tsd-comment tsd-typography"><p>creates an object exposing internal functions allowing setting custom instances
+to internal objects</p>
+
+<h3>Returns</h3><p>a <code>VerifierInternals</code> object containing functions allowing users to
+set values for the <code>Reporter</code>, <code>TestExecutionPolicyManager</code>, <code>BuildInfoManager</code> and
+<code>ResultsManager</code></p>
+</div>
+<h4 class="tsd-returns-title">Returns <a href="../types/aft_core.VerifierInternals.html" class="tsd-signature-type" data-tsd-kind="Type alias">VerifierInternals</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L79">aft-core/src/helpers/verifier.ts:79</a></li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="logMgr" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>log<wbr/>Mgr</span><a href="#logMgr" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L244">aft-core/src/verification/verifier.ts:244</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="policyEngMgr" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>policy<wbr/>Eng<wbr/>Mgr</span><a href="#policyEngMgr" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
-<li class="tsd-signature" id="logMgr.logMgr-1"><span class="tsd-signature-symbol">get</span> logMgr<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_core.LogManager-1.html" class="tsd-signature-type" data-tsd-kind="Class">LogManager</a></li>
+<li class="tsd-signature" id="policyEngMgr.policyEngMgr-1"><span class="tsd-signature-symbol">get</span> policyEngMgr<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_core.TestExecutionPolicyManager.html" class="tsd-signature-type" data-tsd-kind="Class">TestExecutionPolicyManager</a></li>
 <li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>a <code>LogManager</code> that uses either the Description
+<h4 class="tsd-returns-title">Returns <a href="aft_core.TestExecutionPolicyManager.html" class="tsd-signature-type" data-tsd-kind="Class">TestExecutionPolicyManager</a></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L81">aft-core/src/verification/verifier.ts:81</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="reporter" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>reporter</span><a href="#reporter" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+<li class="tsd-signature" id="reporter.reporter-1"><span class="tsd-signature-symbol">get</span> reporter<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_core.Reporter.html" class="tsd-signature-type" data-tsd-kind="Class">Reporter</a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>a <code>Reporter</code> that uses either the Description
 or a list of Test Ids or a <code>uuid</code> as the <code>logName</code> depending
 on which is available (NOTE: description is preferred most and
 will be used if other values are also present)</p>
 </div>
-<h4 class="tsd-returns-title">Returns <a href="aft_core.LogManager-1.html" class="tsd-signature-type" data-tsd-kind="Class">LogManager</a></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <a href="aft_core.Reporter.html" class="tsd-signature-type" data-tsd-kind="Class">Reporter</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L57">aft-core/src/helpers/verifier.ts:57</a></li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="testMgr" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>test<wbr/>Mgr</span><a href="#testMgr" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
-<li class="tsd-signature" id="testMgr.testMgr-1"><span class="tsd-signature-symbol">get</span> testMgr<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_core.TestCaseManager.html" class="tsd-signature-type" data-tsd-kind="Class">TestCaseManager</a></li>
-<li class="tsd-description">
-<h4 class="tsd-returns-title">Returns <a href="aft_core.TestCaseManager.html" class="tsd-signature-type" data-tsd-kind="Class">TestCaseManager</a></h4><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L72">aft-core/src/helpers/verifier.ts:72</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L66">aft-core/src/verification/verifier.ts:66</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a id="_generateTestResult" class="tsd-anchor"></a>
@@ -222,7 +233,7 @@ will be used if other values are also present)</p>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> testId: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/aft_core.TestResult.html" class="tsd-signature-type" data-tsd-kind="Type alias">TestResult</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L380">aft-core/src/helpers/verifier.ts:380</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L389">aft-core/src/verification/verifier.ts:389</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a id="_generateTestResults" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_generate<wbr/>Test<wbr/>Results</span><a href="#_generateTestResults" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
@@ -239,7 +250,7 @@ will be used if other values are also present)</p>
 <h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span>testIds: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/aft_core.TestResult.html" class="tsd-signature-type" data-tsd-kind="Type alias">TestResult</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L365">aft-core/src/helpers/verifier.ts:365</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L374">aft-core/src/verification/verifier.ts:374</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a id="_getInnerPromise" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_get<wbr/>Inner<wbr/>Promise</span><a href="#_getInnerPromise" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
@@ -247,7 +258,7 @@ will be used if other values are also present)</p>
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L98">aft-core/src/helpers/verifier.ts:98</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L100">aft-core/src/verification/verifier.ts:100</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a id="_logMessage" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_log<wbr/>Message</span><a href="#_logMessage" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
@@ -262,14 +273,14 @@ will be used if other values are also present)</p>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> message: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L346">aft-core/src/helpers/verifier.ts:346</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L355">aft-core/src/verification/verifier.ts:355</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a id="_logResult" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_log<wbr/>Result</span><a href="#_logResult" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
 <li class="tsd-signature tsd-anchor-link" id="_logResult._logResult-1">_log<wbr/>Result<span class="tsd-signature-symbol">(</span>status<span class="tsd-signature-symbol">: </span><a href="../types/aft_core.TestStatus.html" class="tsd-signature-type" data-tsd-kind="Type alias">TestStatus</a>, message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#_logResult._logResult-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>creates <code>TestResult</code> objects for each <code>testId</code> and sends these
-to the <code>LogManager.logResult</code> function</p>
+to the <code>Reporter.logResult</code> function</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -280,7 +291,7 @@ to the <code>LogManager.logResult</code> function</p>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> message: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L317">aft-core/src/helpers/verifier.ts:317</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L326">aft-core/src/verification/verifier.ts:326</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a id="_resolveAssertion" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_resolve<wbr/>Assertion</span><a href="#_resolveAssertion" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
@@ -288,33 +299,30 @@ to the <code>LogManager.logResult</code> function</p>
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L122">aft-core/src/helpers/verifier.ts:122</a></li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a id="_shouldRun_defects" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_should<wbr/>Run_<wbr/>defects</span><a href="#_shouldRun_defects" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-<li class="tsd-signature tsd-anchor-link" id="_shouldRun_defects._shouldRun_defects-1">_should<wbr/>Run_<wbr/>defects<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>defects<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/aft_core.ProcessingResult.html" class="tsd-signature-type" data-tsd-kind="Type alias">ProcessingResult</a><span class="tsd-signature-symbol">&gt;</span><a href="#_shouldRun_defects._shouldRun_defects-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L142">aft-core/src/verification/verifier.ts:142</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="on" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>on</span><a href="#on" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+<li class="tsd-signature tsd-anchor-link" id="on.on-1">on<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="../types/aft_core.VerifierEvent.html" class="tsd-signature-type" data-tsd-kind="Type alias">VerifierEvent</a>, action<span class="tsd-signature-symbol">: </span><a href="../types/aft_core.Action.html" class="tsd-signature-type" data-tsd-kind="Type alias">Action</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_core.Verifier.html" class="tsd-signature-type" data-tsd-kind="Class">Verifier</a><a href="#on.on-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>allows for specifying actions to be called on certain events</p>
+
+<h3>Returns</h3><p>a reference to this {Verifier} instance</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span>defects: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/aft_core.ProcessingResult.html" class="tsd-signature-type" data-tsd-kind="Type alias">ProcessingResult</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L299">aft-core/src/helpers/verifier.ts:299</a></li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a id="_shouldRun_tests" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_should<wbr/>Run_<wbr/>tests</span><a href="#_shouldRun_tests" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-<li class="tsd-signature tsd-anchor-link" id="_shouldRun_tests._shouldRun_tests-1">_should<wbr/>Run_<wbr/>tests<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>tests<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/aft_core.ProcessingResult.html" class="tsd-signature-type" data-tsd-kind="Type alias">ProcessingResult</a><span class="tsd-signature-symbol">&gt;</span><a href="#_shouldRun_tests._shouldRun_tests-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
-<li class="tsd-description">
-<div class="tsd-parameters">
-<h4 class="tsd-parameters-title">Parameters</h4>
-<ul class="tsd-parameter-list">
+<h5>event: <a href="../types/aft_core.VerifierEvent.html" class="tsd-signature-type" data-tsd-kind="Type alias">VerifierEvent</a></h5>
+<div class="tsd-comment tsd-typography"><p>an event trigger</p>
+</div></li>
 <li>
-<h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span>tests: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/aft_core.ProcessingResult.html" class="tsd-signature-type" data-tsd-kind="Type alias">ProcessingResult</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<h5>action: <a href="../types/aft_core.Action.html" class="tsd-signature-type" data-tsd-kind="Type alias">Action</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h5>
+<div class="tsd-comment tsd-typography"><p>the action to be run on the event</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="aft_core.Verifier.html" class="tsd-signature-type" data-tsd-kind="Class">Verifier</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L265">aft-core/src/helpers/verifier.ts:265</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L164">aft-core/src/verification/verifier.ts:164</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="returns" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>returns</span><a href="#returns" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -336,7 +344,20 @@ the executed <code>assertion</code></p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="aft_core.Verifier.html" class="tsd-signature-type" data-tsd-kind="Class">Verifier</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L212">aft-core/src/helpers/verifier.ts:212</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L228">aft-core/src/verification/verifier.ts:228</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="shouldRun" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>should<wbr/>Run</span><a href="#shouldRun" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+<li class="tsd-signature tsd-anchor-link" id="shouldRun.shouldRun-1">should<wbr/>Run<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/aft_core.ProcessingResult.html" class="tsd-signature-type" data-tsd-kind="Type alias">ProcessingResult</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><a href="#shouldRun.shouldRun-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>checks if any of the supplied test ids should be run and returns <code>true</code> if at least
+one of them should</p>
+
+<h3>Returns</h3><p>a <code>ProcessingResult&lt;boolean&gt;</code> indicating if the testing should proceed</p>
+</div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/aft_core.ProcessingResult.html" class="tsd-signature-type" data-tsd-kind="Type alias">ProcessingResult</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L298">aft-core/src/verification/verifier.ts:298</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="then" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>then</span><a href="#then" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -381,7 +402,7 @@ the executed <code>assertion</code></p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TResult1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TResult2</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Implementation of PromiseLike.then</p>
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L93">aft-core/src/helpers/verifier.ts:93</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L95">aft-core/src/verification/verifier.ts:95</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="verify" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>verify</span><a href="#verify" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -390,7 +411,7 @@ the executed <code>assertion</code></p>
 <div class="tsd-comment tsd-typography"><p>the starting point for setting up a <code>Verifier</code> execution. Generally it is preferred
 to use the <code>verify(...)</code> <code>const</code> instead of creating individual <code>Verifier</code> instances.
 ex:</p>
-<pre><code><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-0">verify</span><span class="hl-1">(</span><span class="hl-3">async</span><span class="hl-1"> (</span><span class="hl-4">v</span><span class="hl-1">: </span><span class="hl-5">Verifier</span><span class="hl-1">) </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-4">v</span><span class="hl-1">.</span><span class="hl-4">logMgr</span><span class="hl-1">.</span><span class="hl-0">info</span><span class="hl-1">(</span><span class="hl-2">&#39;doing some testing...&#39;</span><span class="hl-1">);</span><br/><span class="hl-1">  </span><span class="hl-3">let</span><span class="hl-1"> </span><span class="hl-4">feature</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">FeatureObj</span><span class="hl-1">();</span><br/><span class="hl-1">  </span><span class="hl-7">return</span><span class="hl-1"> </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-4">feature</span><span class="hl-1">.</span><span class="hl-0">returnExpectedValue</span><span class="hl-1">();</span><br/><span class="hl-1">}).</span><span class="hl-0">withDescription</span><span class="hl-1">(</span><span class="hl-2">&#39;example usage for Verifier&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">.</span><span class="hl-4">and</span><span class="hl-1">.</span><span class="hl-0">withTestId</span><span class="hl-1">(</span><span class="hl-2">&#39;C1234&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">.</span><span class="hl-0">returns</span><span class="hl-1">(</span><span class="hl-2">&#39;expected value&#39;</span><span class="hl-1">);</span>
+<pre><code><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-0">verify</span><span class="hl-1">(</span><span class="hl-3">async</span><span class="hl-1"> (</span><span class="hl-8">v</span><span class="hl-1">: </span><span class="hl-5">Verifier</span><span class="hl-1">) </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-8">v</span><span class="hl-1">.</span><span class="hl-8">reporter</span><span class="hl-1">.</span><span class="hl-0">info</span><span class="hl-1">(</span><span class="hl-2">&#39;doing some testing...&#39;</span><span class="hl-1">);</span><br/><span class="hl-1">  </span><span class="hl-3">let</span><span class="hl-1"> </span><span class="hl-8">feature</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">FeatureObj</span><span class="hl-1">();</span><br/><span class="hl-1">  </span><span class="hl-7">return</span><span class="hl-1"> </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-8">feature</span><span class="hl-1">.</span><span class="hl-0">returnExpectedValue</span><span class="hl-1">();</span><br/><span class="hl-1">}).</span><span class="hl-0">withDescription</span><span class="hl-1">(</span><span class="hl-2">&#39;example usage for Verifier&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">.</span><span class="hl-8">and</span><span class="hl-1">.</span><span class="hl-0">withTestId</span><span class="hl-1">(</span><span class="hl-2">&#39;C1234&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">.</span><span class="hl-0">returns</span><span class="hl-1">(</span><span class="hl-2">&#39;expected value&#39;</span><span class="hl-1">);</span>
 </code></pre>
 
 <h3>Returns</h3><p>this <code>Verifier</code> instance</p>
@@ -404,47 +425,7 @@ ex:</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="aft_core.Verifier.html" class="tsd-signature-type" data-tsd-kind="Class">Verifier</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L154">aft-core/src/helpers/verifier.ts:154</a></li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="withBuildInfoManager" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>with<wbr/>Build<wbr/>Info<wbr/>Manager</span><a href="#withBuildInfoManager" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-<li class="tsd-signature tsd-anchor-link" id="withBuildInfoManager.withBuildInfoManager-1">with<wbr/>Build<wbr/>Info<wbr/>Manager<span class="tsd-signature-symbol">(</span>buildMgr<span class="tsd-signature-symbol">: </span><a href="aft_core.BuildInfoManager.html" class="tsd-signature-type" data-tsd-kind="Class">BuildInfoManager</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_core.Verifier.html" class="tsd-signature-type" data-tsd-kind="Class">Verifier</a><a href="#withBuildInfoManager.withBuildInfoManager-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
-<li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>allows for using a specific <code>BuildInfoManager</code> instance. if not
-set then the global <code>BuildInfoManager.instance()</code> will be used</p>
-
-<h3>Returns</h3><p>this <code>Verifier</code> instance</p>
-</div>
-<div class="tsd-parameters">
-<h4 class="tsd-parameters-title">Parameters</h4>
-<ul class="tsd-parameter-list">
-<li>
-<h5>buildMgr: <a href="aft_core.BuildInfoManager.html" class="tsd-signature-type" data-tsd-kind="Class">BuildInfoManager</a></h5>
-<div class="tsd-comment tsd-typography"><p>a <code>BuildInfoManager</code> instance</p>
-</div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="aft_core.Verifier.html" class="tsd-signature-type" data-tsd-kind="Class">Verifier</a></h4><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L260">aft-core/src/helpers/verifier.ts:260</a></li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="withDefectManager" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>with<wbr/>Defect<wbr/>Manager</span><a href="#withDefectManager" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-<li class="tsd-signature tsd-anchor-link" id="withDefectManager.withDefectManager-1">with<wbr/>Defect<wbr/>Manager<span class="tsd-signature-symbol">(</span>defectMgr<span class="tsd-signature-symbol">: </span><a href="aft_core.DefectManager.html" class="tsd-signature-type" data-tsd-kind="Class">DefectManager</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_core.Verifier.html" class="tsd-signature-type" data-tsd-kind="Class">Verifier</a><a href="#withDefectManager.withDefectManager-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
-<li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>allows for using a specific <code>DefectManager</code> instance. if not
-set then the global <code>DefectManager.instance()</code> will be used</p>
-
-<h3>Returns</h3><p>this <code>Verifier</code> instance</p>
-</div>
-<div class="tsd-parameters">
-<h4 class="tsd-parameters-title">Parameters</h4>
-<ul class="tsd-parameter-list">
-<li>
-<h5>defectMgr: <a href="aft_core.DefectManager.html" class="tsd-signature-type" data-tsd-kind="Class">DefectManager</a></h5>
-<div class="tsd-comment tsd-typography"><p>a <code>DefectManager</code> instance</p>
-</div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="aft_core.Verifier.html" class="tsd-signature-type" data-tsd-kind="Class">Verifier</a></h4><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L249">aft-core/src/helpers/verifier.ts:249</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L185">aft-core/src/verification/verifier.ts:185</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="withDescription" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>with<wbr/>Description</span><a href="#withDescription" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -464,67 +445,7 @@ logging output from this <code>Verifier</code></p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="aft_core.Verifier.html" class="tsd-signature-type" data-tsd-kind="Class">Verifier</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L165">aft-core/src/helpers/verifier.ts:165</a></li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="withKnownDefectIds" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>with<wbr/>Known<wbr/>Defect<wbr/>Ids</span><a href="#withKnownDefectIds" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-<li class="tsd-signature tsd-anchor-link" id="withKnownDefectIds.withKnownDefectIds-1">with<wbr/>Known<wbr/>Defect<wbr/>Ids<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>defectIds<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_core.Verifier.html" class="tsd-signature-type" data-tsd-kind="Class">Verifier</a><a href="#withKnownDefectIds.withKnownDefectIds-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
-<li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>allows for setting a <code>defectId</code> to be checked before executing the <code>assertion</code>.
-if the referenced <code>defectId</code> is <em>open</em> then the <code>assertion</code> will not be run.</p>
-
-<h3>Returns</h3><p>this <code>Verifier</code> instance</p>
-</div>
-<div class="tsd-parameters">
-<h4 class="tsd-parameters-title">Parameters</h4>
-<ul class="tsd-parameter-list">
-<li>
-<h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span>defectIds: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
-<div class="tsd-comment tsd-typography"><p>a defect identifier for your connected <code>DefectPlugin</code></p>
-</div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="aft_core.Verifier.html" class="tsd-signature-type" data-tsd-kind="Class">Verifier</a></h4><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L195">aft-core/src/helpers/verifier.ts:195</a></li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="withLogManager" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>with<wbr/>Log<wbr/>Manager</span><a href="#withLogManager" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-<li class="tsd-signature tsd-anchor-link" id="withLogManager.withLogManager-1">with<wbr/>Log<wbr/>Manager<span class="tsd-signature-symbol">(</span>logMgr<span class="tsd-signature-symbol">: </span><a href="aft_core.LogManager-1.html" class="tsd-signature-type" data-tsd-kind="Class">LogManager</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_core.Verifier.html" class="tsd-signature-type" data-tsd-kind="Class">Verifier</a><a href="#withLogManager.withLogManager-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
-<li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>allows for using a specific <code>LogManager</code> instance. if not
-set then one will be created for use by this <code>Verifier</code></p>
-
-<h3>Returns</h3><p>this <code>Verifier</code> instance</p>
-</div>
-<div class="tsd-parameters">
-<h4 class="tsd-parameters-title">Parameters</h4>
-<ul class="tsd-parameter-list">
-<li>
-<h5>logMgr: <a href="aft_core.LogManager-1.html" class="tsd-signature-type" data-tsd-kind="Class">LogManager</a></h5>
-<div class="tsd-comment tsd-typography"><p>a <code>LogManager</code> instance</p>
-</div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="aft_core.Verifier.html" class="tsd-signature-type" data-tsd-kind="Class">Verifier</a></h4><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L227">aft-core/src/helpers/verifier.ts:227</a></li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="withTestCaseManager" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>with<wbr/>Test<wbr/>Case<wbr/>Manager</span><a href="#withTestCaseManager" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-<li class="tsd-signature tsd-anchor-link" id="withTestCaseManager.withTestCaseManager-1">with<wbr/>Test<wbr/>Case<wbr/>Manager<span class="tsd-signature-symbol">(</span>testMgr<span class="tsd-signature-symbol">: </span><a href="aft_core.TestCaseManager.html" class="tsd-signature-type" data-tsd-kind="Class">TestCaseManager</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_core.Verifier.html" class="tsd-signature-type" data-tsd-kind="Class">Verifier</a><a href="#withTestCaseManager.withTestCaseManager-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
-<li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>allows for using a specific <code>TestCaseManager</code> instance. if not
-set then the global <code>TestCaseManager.instance()</code> will be used</p>
-
-<h3>Returns</h3><p>this <code>Verifier</code> instance</p>
-</div>
-<div class="tsd-parameters">
-<h4 class="tsd-parameters-title">Parameters</h4>
-<ul class="tsd-parameter-list">
-<li>
-<h5>testMgr: <a href="aft_core.TestCaseManager.html" class="tsd-signature-type" data-tsd-kind="Class">TestCaseManager</a></h5>
-<div class="tsd-comment tsd-typography"><p>a <code>TestCaseManager</code> instance</p>
-</div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="aft_core.Verifier.html" class="tsd-signature-type" data-tsd-kind="Class">Verifier</a></h4><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L238">aft-core/src/helpers/verifier.ts:238</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L196">aft-core/src/verification/verifier.ts:196</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="withTestIds" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>with<wbr/>Test<wbr/>Ids</span><a href="#withTestIds" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -533,7 +454,7 @@ set then the global <code>TestCaseManager.instance()</code> will be used</p>
 <div class="tsd-comment tsd-typography"><p>allows for setting a <code>testId</code> to be checked before executing the <code>assertion</code>
 and to be reported to from any connected logging plugins that connect to
 your test case management system. if all the referenced <code>testId</code> values should not be
-run (as returned by your <code>AbstractTestCasePlugin.shouldRun(testId)</code>) then
+run (as returned by your <code>TestExecutionPolicyPlugin.shouldRun(testId)</code>) then
 the <code>assertion</code> will not be run.
 NOTE: multiple <code>testId</code> values can be chained together</p>
 
@@ -544,11 +465,11 @@ NOTE: multiple <code>testId</code> values can be chained together</p>
 <ul class="tsd-parameter-list">
 <li>
 <h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span>testIds: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
-<div class="tsd-comment tsd-typography"><p>a test identifier for your connected <code>AbstractTestCasePlugin</code></p>
+<div class="tsd-comment tsd-typography"><p>a test identifier for your connected <code>TestExecutionPolicyPlugin</code></p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="aft_core.Verifier.html" class="tsd-signature-type" data-tsd-kind="Class">Verifier</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/02df93d/packages/aft-core/src/helpers/verifier.ts#L180">aft-core/src/helpers/verifier.ts:180</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/50d0c66/packages/aft-core/src/verification/verifier.ts#L211">aft-core/src/verification/verifier.ts:211</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
@@ -573,59 +494,62 @@ NOTE: multiple <code>testId</code> values can be chained together</p>
 <li class="current tsd-kind-module"><a href="../modules/aft_core.html">aft-<wbr/>core</a>
 <ul>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.Err.html">Err</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.ExpiringFileLock.html">Expiring<wbr/>File<wbr/>Lock</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.LogLevel.html">Log<wbr/>Level</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.LogManager.html">Log<wbr/>Manager</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_core.SafeStringOption.html">Safe<wbr/>String<wbr/>Option</a></li></ul></li>
 <li class="tsd-kind-module"><a href="../modules/aft_jasmine_reporter.html">aft-<wbr/>jasmine-<wbr/>reporter</a></li>
-<li class="tsd-kind-module"><a href="../modules/aft_logging_awskinesis.html">aft-<wbr/>logging-<wbr/>awskinesis</a></li>
-<li class="tsd-kind-module"><a href="../modules/aft_logging_filesystem.html">aft-<wbr/>logging-<wbr/>filesystem</a></li>
-<li class="tsd-kind-module"><a href="../modules/aft_logging_html.html">aft-<wbr/>logging-<wbr/>html</a></li>
 <li class="tsd-kind-module"><a href="../modules/aft_mocha_reporter.html">aft-<wbr/>mocha-<wbr/>reporter</a></li>
+<li class="tsd-kind-module"><a href="../modules/aft_reporting_aws_kinesis_firehose.html">aft-<wbr/>reporting-<wbr/>aws-<wbr/>kinesis-<wbr/>firehose</a></li>
+<li class="tsd-kind-module"><a href="../modules/aft_reporting_filesystem.html">aft-<wbr/>reporting-<wbr/>filesystem</a></li>
+<li class="tsd-kind-module"><a href="../modules/aft_reporting_html.html">aft-<wbr/>reporting-<wbr/>html</a></li>
 <li class="tsd-kind-module"><a href="../modules/aft_testrail.html">aft-<wbr/>testrail</a></li>
 <li class="tsd-kind-module"><a href="../modules/aft_ui.html">aft-<wbr/>ui</a></li>
-<li class="tsd-kind-module"><a href="../modules/aft_ui_browsers.html">aft-<wbr/>ui-<wbr/>browsers</a></li>
-<li class="tsd-kind-module"><a href="../modules/aft_ui_mobile_apps.html">aft-<wbr/>ui-<wbr/>mobile-<wbr/>apps</a></li>
+<li class="tsd-kind-module"><a href="../modules/aft_ui_selenium.html">aft-<wbr/>ui-<wbr/>selenium</a></li>
+<li class="tsd-kind-module"><a href="../modules/aft_ui_webdriverio.html">aft-<wbr/>ui-<wbr/>webdriverio</a></li>
 <li class="tsd-kind-module"><a href="../modules/aft_web_services.html">aft-<wbr/>web-<wbr/>services</a>
 <ul>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_web_services.HttpHeaders.html">Http<wbr/>Headers</a>
+<ul>
+<li class="tsd-kind-namespace tsd-parent-kind-namespace"><a href="../modules/aft_web_services.HttpHeaders.Accept.html">Accept</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-namespace"><a href="../modules/aft_web_services.HttpHeaders.Authorization.html">Authorization</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-namespace"><a href="../modules/aft_web_services.HttpHeaders.ContentType.html">Content<wbr/>Type</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-namespace"><a href="../modules/aft_web_services.HttpHeaders.Cookies.html">Cookies</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-namespace"><a href="../modules/aft_web_services.HttpHeaders.MimeType.html">Mime<wbr/>Type</a></li></ul></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="../modules/aft_web_services.XML.html">XML</a></li></ul></li></ul></li></ul></div></details></nav>
 <nav class="tsd-navigation secondary menu-sticky">
 <ul>
 <li class="current tsd-kind-class tsd-parent-kind-module"><a href="aft_core.Verifier.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-class)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-128-path"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)" id="icon-128-text"></path></svg><span>Verifier</span></a>
 <ul>
 <li class="tsd-kind-constructor tsd-parent-kind-class"><a href="aft_core.Verifier.html#constructor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-512-path"></use><use href="#icon-512-text"></use></svg>constructor</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_actionMap" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_action<wbr/>Map</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_aftCfg" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_aft<wbr/>Cfg?</a></li>
 <li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_assertion" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_assertion</a></li>
-<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_buildMgr" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_build<wbr/>Mgr</a></li>
-<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_defectMgr" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_defect<wbr/>Mgr</a></li>
-<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_defects" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_defects</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_buildInfoMgr" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_build<wbr/>Info<wbr/>Mgr</a></li>
 <li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_description" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_description</a></li>
 <li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_innerPromise" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_inner<wbr/>Promise</a></li>
-<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_logMgr" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_log<wbr/>Mgr</a></li>
 <li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_matcher" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_matcher</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_policyEngMgr" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_policy<wbr/>Eng<wbr/>Mgr</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_reporter" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_reporter</a></li>
 <li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_startTime" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_start<wbr/>Time</a></li>
-<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_testMgr" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_test<wbr/>Mgr</a></li>
-<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_tests" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_tests</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_testIds" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_test<wbr/>Ids</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="aft_core.Verifier.html#aftCfg" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>aft<wbr/>Cfg</a></li>
 <li class="tsd-kind-accessor tsd-parent-kind-class"><a href="aft_core.Verifier.html#and" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>and</a></li>
-<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="aft_core.Verifier.html#buildMgr" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>build<wbr/>Mgr</a></li>
-<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="aft_core.Verifier.html#defectMgr" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>defect<wbr/>Mgr</a></li>
-<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="aft_core.Verifier.html#logMgr" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>log<wbr/>Mgr</a></li>
-<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="aft_core.Verifier.html#testMgr" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>test<wbr/>Mgr</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="aft_core.Verifier.html#buildInfoMgr" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>build<wbr/>Info<wbr/>Mgr</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="aft_core.Verifier.html#internals" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>internals</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="aft_core.Verifier.html#policyEngMgr" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>policy<wbr/>Eng<wbr/>Mgr</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="aft_core.Verifier.html#reporter" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>reporter</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_generateTestResult" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_generate<wbr/>Test<wbr/>Result</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_generateTestResults" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_generate<wbr/>Test<wbr/>Results</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_getInnerPromise" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_get<wbr/>Inner<wbr/>Promise</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_logMessage" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_log<wbr/>Message</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_logResult" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_log<wbr/>Result</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_resolveAssertion" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_resolve<wbr/>Assertion</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_shouldRun_defects" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_should<wbr/>Run_<wbr/>defects</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="aft_core.Verifier.html#_shouldRun_tests" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_should<wbr/>Run_<wbr/>tests</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class"><a href="aft_core.Verifier.html#on" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>on</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class"><a href="aft_core.Verifier.html#returns" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>returns</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class"><a href="aft_core.Verifier.html#shouldRun" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>should<wbr/>Run</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class"><a href="aft_core.Verifier.html#then" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>then</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class"><a href="aft_core.Verifier.html#verify" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>verify</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class"><a href="aft_core.Verifier.html#withBuildInfoManager" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>with<wbr/>Build<wbr/>Info<wbr/>Manager</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class"><a href="aft_core.Verifier.html#withDefectManager" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>with<wbr/>Defect<wbr/>Manager</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class"><a href="aft_core.Verifier.html#withDescription" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>with<wbr/>Description</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class"><a href="aft_core.Verifier.html#withKnownDefectIds" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>with<wbr/>Known<wbr/>Defect<wbr/>Ids</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class"><a href="aft_core.Verifier.html#withLogManager" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>with<wbr/>Log<wbr/>Manager</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class"><a href="aft_core.Verifier.html#withTestCaseManager" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>with<wbr/>Test<wbr/>Case<wbr/>Manager</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class"><a href="aft_core.Verifier.html#withTestIds" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>with<wbr/>Test<wbr/>Ids</a></li></ul></li></ul></nav></div></div>
 <div class="container tsd-generator">
 <p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>

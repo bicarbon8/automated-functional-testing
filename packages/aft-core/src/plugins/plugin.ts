@@ -1,32 +1,27 @@
-import { IHasOptions } from "../configuration/i-has-options";
-import { optmgr } from "../configuration/options-manager";
+import { AftConfig, aftConfig } from "../configuration/aft-config";
+import { AftLogger, aftLogger } from "../logging/aft-logger";
 
-export type PluginOptions = {
-    enabled?: boolean;
+export class PluginConfig {
+    enabled: boolean = false;
 }
 
 /**
- * interface to be implemented by any Plugin implementation
+ * class to be extended by any `Plugin` implementation
  */
-export abstract class Plugin<T extends PluginOptions> implements IHasOptions<T> {
-    private readonly _opts: T;
-
-    private _enabled: boolean;
-
-    constructor(options?: T) {
-        options = options || {} as T;
-        this._opts = optmgr.process(options);
+export class Plugin {
+    private readonly _aftCfg: AftConfig;
+    private readonly _aftLogger: AftLogger;
+    get aftCfg(): AftConfig {
+        return this._aftCfg;
     }
-
-    option<K extends keyof T, V extends T[K]>(key: K, defaultVal?: V): V {
-        const result: V = this._opts[key] as V;
-        return (result === undefined) ? defaultVal : result;
+    get aftLogger(): AftLogger {
+        return this._aftLogger;
     }
-
     get enabled(): boolean {
-        if (this._enabled == null) {
-            this._enabled = this.option('enabled', true);
-        }
-        return this._enabled;
+        return false;
+    }
+    constructor(aftCfg?: AftConfig) {
+        this._aftCfg = aftCfg ?? aftConfig;
+        this._aftLogger = (aftCfg) ? new AftLogger(aftCfg) : aftLogger;
     }
 }

@@ -1,7 +1,7 @@
+import { SeleniumComponent } from "aft-ui-selenium";
 import { By, Locator, WebElement } from "selenium-webdriver";
-import { BrowserFacet } from "aft-ui-browsers";
 
-export class HerokuMessagesWidget extends BrowserFacet {
+export class HerokuMessagesWidget extends SeleniumComponent {
     /**
      * this Facet sets a static locator instead of using a passed
      * in value on the constructor
@@ -11,27 +11,32 @@ export class HerokuMessagesWidget extends BrowserFacet {
     }
 
     private async message(): Promise<WebElement> {
-        let elements: WebElement[] = await this.getElements({ locator: By.id('flash') });
-        return elements[0];
+        let elements: WebElement[];
+        try {
+            elements = await this.getRoot()
+                .then(r => r.findElements(By.id('flash')))
+                .catch((err) => []);
+        } catch (e) {
+            return null;
+        }
+        if (elements.length > 0) {
+            return elements[0];
+        }
+        return null;
     }
     
     async hasMessage(): Promise<boolean> {
-        return await this.message()
-        .then((message) => {
-            return message !== undefined;
-        }).catch((err: Error) => {
-            return false;
-        });
+        const message = await this.message();
+        if (message != null) {
+            return true;
+        }
+        return false;
     }
 
     async getMessage(): Promise<string> {
         if (await this.hasMessage()) {
-            return await this.message()
-            .then(message => {
-                return message.getText();
-            }).catch((err) => {
-                return null;
-            });
+            const messageEl = await this.message();
+            return await messageEl.getText();
         }
         return null;
     }

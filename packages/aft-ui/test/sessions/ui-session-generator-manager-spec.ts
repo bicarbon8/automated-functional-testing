@@ -1,62 +1,54 @@
-import { pluginloader, rand } from "aft-core";
-import { UiPlatform } from "../../src";
-import { FakeSessionGeneratorManager, FakeSessionGeneratorManagerOptions } from "./fake-session-generator-manager";
+import { AftConfig, pluginLoader } from "aft-core";
+import { UiSessionGeneratorManager, UiSessionGeneratorPlugin } from "../../src";
+import { FakeSessionGeneratorPlugin } from "./fake-session-generator-plugin";
+
+const consolelog = console.log;
 
 describe('UiSessionGeneratorManager', () => {
+    beforeAll(() => {
+        console.log = (...args: any[]) => null;
+    });
+
     beforeEach(() => {
-        pluginloader.clear();
+        pluginLoader.reset();
     });
 
-    it('can be extended by a class instance', async () => {
-        const config = {
-            logName: rand.getString(25),
-            plugins: ['fake-session-generator-plugin']
-        };
-        const manager = new FakeSessionGeneratorManager(config);
+    afterAll(() => {
+        console.log = consolelog;
+    });
+
+    it('will get only specified plugin for use', async () => {
+        const aftCfg = new AftConfig({
+            pluginNames: [
+                'fake-session-generator-plugin-throws',
+                'fake-session-generator-plugin'
+            ],
+            UiSessionConfig: {
+                generatorName: 'fake-session-generator-plugin'
+            }
+        });
+        const manager = new UiSessionGeneratorManager(aftCfg);
 
         expect(manager).toBeDefined();
-        expect(await manager.logMgr().then((l) => l.logName)).toEqual(config.logName);
-        expect(await manager.first().then((f) => f.constructor.name)).toEqual('FakeSessionGeneratorPlugin');
-        expect(await manager.newUiSession()).toBeDefined();
+        expect(manager.plugins.length).toBe(2);
+        const enabled: Array<UiSessionGeneratorPlugin> = manager.plugins.filter(p => p.enabled);
+        expect(enabled.length).toBe(1);
+        expect(enabled[0].constructor.name).toEqual(FakeSessionGeneratorPlugin.name);
+        expect(await manager.getSession()).not.toBeNull();
     });
 
-    it('can handle a defective plugin', async () => {
-        const config = {
-            plugins: ['fake-session-generator-plugin-throws']
-        } as FakeSessionGeneratorManagerOptions;
-        const manager = new FakeSessionGeneratorManager(config);
+    it('rejects with error if plugin unable to getSession', async () => {
+        const aftCfg = new AftConfig({
+            pluginNames: ['fake-session-generator-plugin-throws'],
+            UiSessionConfig: {
+                generatorName: 'fake-session-generator-plugin-throws'
+            }
+        });
+        const manager = new UiSessionGeneratorManager(aftCfg);
 
         expect(manager).toBeDefined();
-        expect(await manager.logMgr().then((l) => l.logName)).toEqual(manager.constructor.name);
-        expect(await manager.first().then((f) => f.constructor.name)).toEqual('FakeSessionGeneratorPluginThrows');
-        expect(await manager.newUiSession()).toBeNull();
-    });
-
-    it('sets the uiplatform if the plugin options does not already set it', async () => {
-        const plt = UiPlatform.parse('android_12_chrome_79_Google Pixel XL');
-        const manager = new FakeSessionGeneratorManager({
-            uiplatform: plt.toString(),
-            plugins: ['fake-session-generator-plugin']
+        await manager.getSession().catch((err) => {
+            expect(err).toMatch(/.*(unable to generate UI session due to:).*/);
         });
-
-        const plugin = await manager.first();
-        expect(plugin.uiplatform.toString()).toEqual(plt.toString());
-    });
-
-    it('does not set the uiplatform if the plugin options set it', async () => {
-        const plt = UiPlatform.parse('android_12_chrome_79_Google Pixel XL');
-        const expected = 'windows_10_firefox_88_+';
-        const manager = new FakeSessionGeneratorManager({
-            uiplatform: plt.toString(),
-            plugins: [{
-                name: 'fake-session-generator-plugin',
-                options: {
-                    uiplatform: expected
-                }
-            }]
-        });
-
-        const plugin = await manager.first();
-        expect(plugin.uiplatform.toString()).toEqual(expected);
     });
 });

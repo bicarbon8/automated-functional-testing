@@ -1,48 +1,45 @@
 import { By, Locator } from 'selenium-webdriver';
-import { BrowserFacet } from 'aft-ui-browsers';
 import { HerokuContentWidget } from './heroku-content-widget';
 import { HerokuMessagesWidget } from './heroku-messages-widget';
+import { SeleniumComponent } from 'aft-ui-selenium';
+import { Err } from 'aft-core';
 
-export class HerokuLoginPage extends BrowserFacet {
+export class HerokuLoginPage extends SeleniumComponent {
     /**
      * this Facet sets a static locator instead of using a passed
      * in value on the constructor
      */
     override get locator(): Locator {
-        return By.css('html')
-    };
+        return By.css('html');
+    }
 
     /* begin: widgets */
-    async content(): Promise<HerokuContentWidget> {
-        return await this.getFacet(HerokuContentWidget);
+    get content(): HerokuContentWidget {
+        return this.getComponent(HerokuContentWidget);
     }
-    async messages(): Promise<HerokuMessagesWidget> {
-        return await this.getFacet(HerokuMessagesWidget, {maxWaitMs: 20000});
+    get messages(): HerokuMessagesWidget {
+        return this.getComponent(HerokuMessagesWidget);
     }
     /* end: widgets */
 
     async navigateTo(): Promise<void> {
-        try {
-            await this.session.goTo('https://the-internet.herokuapp.com/login');
-        } catch (e) {
-            return Promise.reject(e);
-        }
+        await Err.handleAsync(async () => await this.driver.navigate().to('https://the-internet.herokuapp.com/login'), {
+            logger: this.reporter,
+            errLevel: 'error'
+        });
     }
 
     /* begin: page actions */
     async login(username: string, password: string): Promise<void> {
-        let hc: HerokuContentWidget = await this.content();
-        return hc.login(username, password);
+        return await this.content.login(username, password);
     }
 
     async hasMessage(): Promise<boolean> {
-        let hm: HerokuMessagesWidget = await this.messages();
-        return hm.hasMessage();
+        return await this.messages.hasMessage();
     }
 
     async getMessage(): Promise<string> {
-        let hm: HerokuMessagesWidget = await this.messages();
-        return hm.getMessage();
+        return await this.messages.getMessage();
     }
     /* end: page actions */
 }

@@ -1,1 +1,0 @@
-export type TestStatus = 'Untested' | 'Passed' | 'Blocked' | 'Retest' | 'Failed' | 'Skipped';

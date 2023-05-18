@@ -1,8 +1,6 @@
-import { Plugin, PluginOptions } from "../plugin";
+import { Plugin } from "../plugin";
 
-export type BuildInfoPluginOptions = PluginOptions;
-
-export abstract class BuildInfoPlugin<T extends BuildInfoPluginOptions> extends Plugin<T> {
-    abstract buildName(): Promise<string>;
-    abstract buildNumber(): Promise<string>;
+export class BuildInfoPlugin extends Plugin {
+    buildName = (): Promise<string> => null;
+    buildNumber = (): Promise<string> => null;
 }

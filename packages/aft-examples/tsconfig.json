@@ -6,10 +6,13 @@
     },
     "include": ["test"],
     "references": [
-        { "path": "../aft-ui-browsers" },
-        { "path": "../aft-ui-mobile-apps" },
-        { "path": "../aft-logging-awskinesis" },
-        { "path": "../aft-logging-html" },
-        { "path": "../aft-testrail" }
+        { "path": "../aft-mocha-reporter" },
+        { "path": "../aft-reporting-aws-kinesis-firehose" },
+        { "path": "../aft-reporting-filesystem" },
+        { "path": "../aft-reporting-html" },
+        { "path": "../aft-testrail" },
+        { "path": "../aft-ui-selenium" },
+        { "path": "../aft-ui-webdriverio" },
+        { "path": "../aft-web-services" }
     ]
 }

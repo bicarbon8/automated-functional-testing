@@ -1,10 +1,10 @@
 {
-    "logmanager": {
-        "pluginNames": ["testrail-logging-plugin"],
+    "Reporter": {
+        "pluginNames": ["testrail-reporting-plugin"],
         "level": "info"
     },
     "testcasemanager": {
-        "pluginNames": ["testrail-test-case-plugin"]
+        "pluginNames": ["testrail-test-execution-policy-plugin"]
     },
     "testrailconfig": {
         "url": "%testrail_url%",
@@ -13,7 +13,7 @@
         "projectid": 3,
         "suiteids": [1219]
     },
-    "testrailloggingplugin": {
+    "testrailReportingPlugin": {
         "maxLogCharacters": 100
     }
 }

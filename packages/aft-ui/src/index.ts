@@ -1,9 +1,7 @@
 /* configuration */
-export * from './configuration/ui-platform';
-/* facets */
-export * from './facets/ui-facet';
-export * from './facets/ui-element-options';
+export * from './configuration/ui-session-config';
+/* components */
+export * from './components/ui-component';
 /* sessions */
 export * from './sessions/ui-session-generator-plugin';
-export * from './sessions/ui-session';
 export * from './sessions/ui-session-generator-manager';

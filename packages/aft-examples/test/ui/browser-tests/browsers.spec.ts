@@ -1,92 +1,125 @@
-import { containing, retry, Verifier, verify } from "aft-core";
-import { AftLog, AftTest } from "aft-mocha-reporter";
-import { verifyWithBrowser, BrowserVerifier, BrowserFacetOptions } from "aft-ui-browsers";
-import { expect } from "chai";
+import { AftConfig, BuildInfoManager, containing, pluginLoader, retry, Verifier } from "aft-core";
+import { AftTest } from "aft-mocha-reporter";
+import { SeleniumVerifier } from "aft-ui-selenium";
 import { HerokuLoginPage } from "./page-objects/heroku-login-page";
 
-describe('Functional Browser Tests using AFT-UI-BROWSERS', () => {
-    it('can access websites using AFT and Page Widgets and Facets', async function() {
-        const aft = new AftLog(this);
-        await verifyWithBrowser(async (tw: BrowserVerifier) => {
-            let loginPage: HerokuLoginPage = await tw.session.getFacet<HerokuLoginPage, BrowserFacetOptions>(HerokuLoginPage);
+describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
+    beforeEach(() => {
+        /**
+         * normally this call would not be necessary, but because these examples switch between
+         * multiple configurations and UI Session Generators it is necessary to clear out any
+         * cached plugins and force a reload with fresh configuration before each test
+         */
+        pluginLoader.reset();
+    });
+
+    it('[C3456][C2345][C1234] can access websites using AFT and BrowserComponents', async function() {
+        const aftCfg = new AftConfig();
+        const aft = new AftTest(this, aftCfg);
+        await aft.verify(async (tw: SeleniumVerifier) => {
+            let loginPage: HerokuLoginPage = tw.getComponent(HerokuLoginPage);
             
-            await tw.logMgr.step('navigate to LoginPage...');
+            await tw.reporter.step('navigate to LoginPage...');
             await loginPage.navigateTo();
             
-            await tw.logMgr.step('login');
+            await tw.reporter.step('login');
             await loginPage.login("tomsmith", "SuperSecretPassword!");
 
-            await tw.logMgr.step('wait for message to appear...')
+            await tw.reporter.step('wait for message to appear...')
             await retry(() => loginPage.hasMessage())
-                .withStartDelayBetweenAttempts(100)
+                .withDelay(100)
                 .withBackOff('exponential')
                 .withMaxDuration(20000);
             
-            await tw.logMgr.step('get message...');
+            await tw.reporter.step('get message...');
             return await loginPage.getMessage();
-        }).withLogManager(aft.logMgr)
-        .and.withTestIds('C3456').and.withTestIds('C2345').and.withTestIds('C1234')
-        .returns(containing("You logged into a secure area!"));
+        }, SeleniumVerifier).withAdditionalSessionOptions({
+            capabilities: {
+                browserName: 'chrome',
+                "bstack:options": {
+                    sessionName: aft.reporter.reporterName,
+                    os: 'windows',
+                    osVersion: '11',
+                    buildName: await new BuildInfoManager().get()
+                }
+            }
+        }).returns(containing("You logged into a secure area!"));
     });
 
     it('can recover from StaleElementExceptions automatically', async function() {
-        const aft = new AftTest(this);
-        const shouldRun = await aft.shouldRun();
-        if (!shouldRun) {
-            this.skip();
-        }
-        await verifyWithBrowser(async (tw: BrowserVerifier) => {
-            let loginPage: HerokuLoginPage = await tw.session.getFacet<HerokuLoginPage, BrowserFacetOptions>(HerokuLoginPage, {maxWaitMs: 5000});
+        const aftCfg = new AftConfig();
+        const aft = new AftTest(this, aftCfg);
+        await aft.verify(async (tw: SeleniumVerifier) => {
+            let loginPage: HerokuLoginPage = tw.getComponent(HerokuLoginPage);
             
-            await verify(async (v: Verifier) => {
-                await v.logMgr.step('navigate to LoginPage');
+            await aft.verify(async (v: Verifier) => {
+                await v.reporter.step('navigate to LoginPage');
                 await loginPage.navigateTo();
-                return await loginPage.session.driver.getCurrentUrl();
-            }).withLogManager(tw.logMgr).and.withTestIds('C4567')
+                return await loginPage.driver.getCurrentUrl();
+            }).withTestIds('C4567')
             .returns(containing('the-internet.herokuapp.com/login'));
             
-            await verify(async (v: Verifier) => {
-                await v.logMgr.step('click login button...');
-                await loginPage.content().then(c => c.getLoginButton()).then(button => button.click());
-                await v.logMgr.info('no exception thrown on click');
-            }).withLogManager(tw.logMgr).and.withTestIds('C5678');
+            await aft.verify(async (v: Verifier) => {
+                await v.reporter.step('click login button...');
+                await loginPage.content.getLoginButton().then(button => button.click());
+                await v.reporter.info('no exception thrown on click');
+            }).withTestIds('C5678');
 
-            await verify(async (v: Verifier) => {
-                await v.logMgr.step('refresh page...');
-                await tw.session.refresh();
-                await v.logMgr.info('page refreshed');
-            }).withLogManager(tw.logMgr).and.withTestIds('C6789');
+            await aft.verify(async (v: Verifier) => {
+                await v.reporter.step('refresh page...');
+                await tw.driver.navigate().refresh();
+                await v.reporter.info('page refreshed');
+            }).withTestIds('C6789');
 
-            await verify(async (v: Verifier) => {
-                await tw.logMgr.step('click login button after refresh...');
-                await loginPage.content().then(c => c.getLoginButton()).then(button => button.click());
-                await tw.logMgr.info('no exception thrown on click');
-            }).withLogManager(tw.logMgr).and.withTestIds('C7890');
-        }).withLogManager(aft.logMgr);
+            await aft.verify(async (v: Verifier) => {
+                await tw.reporter.step('click login button after refresh...');
+                await loginPage.content.getLoginButton().then(button => button.click());
+                await tw.reporter.info('no exception thrown on click');
+            }).withTestIds('C7890');
+        }, SeleniumVerifier).withAdditionalSessionOptions({
+            capabilities: {
+                browserName: 'chrome',
+                "bstack:options": {
+                    sessionName: aft.reporter.reporterName,
+                    os: 'windows',
+                    osVersion: '11',
+                    buildName: await new BuildInfoManager().get()
+                }
+            }
+        });
     });
 
     const uiplatforms = [
-        'os x_+_safari_latest',
-        'windows_11_firefox',
-        'windows_11_edge_+_+'
+        { browser: 'safari', os: 'os x', osV: 'ventura' },
+        { browser: 'firefox', os: 'windows', osV: '11' },
+        { browser: 'edge', os: 'windows', osV: '11' },
     ];
-    for (var i=0; i<uiplatforms.length; i++) {
-        let uiplatform = uiplatforms[i];
-        it(`can run with multiple uiplatforms: ${uiplatform}`, async function() {
-            const aft = new AftLog(this);
-            await verifyWithBrowser(async (tw: BrowserVerifier) => {
-                let loginPage: HerokuLoginPage = await tw.session.getFacet<HerokuLoginPage, BrowserFacetOptions>(HerokuLoginPage);
+    for (let uiplatform of uiplatforms) {
+        it(`can run with multiple uiplatforms: ${JSON.stringify(uiplatform)}`, async function() {
+            const platform = Object.freeze({...uiplatform});
+            const aftCfg = new AftConfig();
+            const aft = new AftTest(this, aftCfg);
+            await aft.verify(async (tw: SeleniumVerifier) => {
+                let loginPage: HerokuLoginPage = tw.getComponent(HerokuLoginPage);
                 await loginPage.navigateTo();
                 await loginPage.login("tomsmith", "SuperSecretPassword!");
                 await retry(() => loginPage.hasMessage())
-                    .until((res: boolean) => res)
-                    .withStartDelayBetweenAttempts(100)
+                    .withDelay(100)
                     .withBackOff('exponential')
-                    .withMaxDuration(20000);
+                    .withMaxDuration(20000)
+                    .until((res: boolean) => res);
                 return await loginPage.getMessage();
-            }).withLogManager(aft.logMgr)
-            .and.withBrowserSessionOptions({uiplatform: uiplatform})
-            .returns(containing("You logged into a secure area!"));
+            }, SeleniumVerifier).withAdditionalSessionOptions({
+                capabilities: {
+                    browserName: platform.browser,
+                    "bstack:options": {
+                        sessionName: aft.reporter.reporterName,
+                        os: platform.os,
+                        osVersion: platform.osV,
+                        buildName: await new BuildInfoManager(aftCfg).get()
+                    }
+                }
+            }).returns(containing("You logged into a secure area!"));
         });
     }
 });

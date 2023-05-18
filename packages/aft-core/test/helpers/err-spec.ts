@@ -1,6 +1,16 @@
-import { rand, Err, LogManager, LogLevel } from "../../src";
+import { rand, Err, Reporter, LogLevel, AftConfig } from "../../src";
+
+const consolelog = console.log;
 
 describe('Err', () => {
+    beforeAll(() => {
+        console.log = (...data: any[]) => null;
+    })
+
+    afterAll(() => {
+        console.log = consolelog;
+    })
+
     it('exposes the original Error', () => {
         const err: Error = new Error(rand.getString(25));
 
@@ -8,17 +18,17 @@ describe('Err', () => {
 
         expect(actual.err).toBeDefined();
         expect(actual.err.message).toEqual(err.message);
-        expect(actual.verbosity).toEqual('full');
+        expect(actual.verbosity).toEqual('short');
     });
 
     it('verbosity can be set', () => {
         const err: Error = new Error(rand.getString(25));
 
-        const actual = new Err(err).setVerbosity('short');
+        const actual = new Err(err).setVerbosity('full');
 
         expect(actual.err).toBeDefined();
         expect(actual.err.message).toEqual(err.message);
-        expect(actual.verbosity).toEqual('short');
+        expect(actual.verbosity).toEqual('full');
     });
 
     describe('short', () => {
@@ -56,54 +66,54 @@ describe('Err', () => {
     describe('handle', () => {
         it('can handle try-catch for a Func<void, any> that does not throw', async () => {
             const func = function () { return 'foo'; };
-            const val = await Err.handle(func);
+            const val = Err.handle(func);
 
             expect(val).toEqual('foo');
         });
 
         it('can handle try-catch for a Func<void, any> that throws', async () => {
             const func = function () { throw 'foo'; };
-            const val = await Err.handle(func);
+            const val = Err.handle(func);
 
             expect(val).toBeNull();
         });
 
         it('can handle try-catch for a Func<void, any> that rejects a Promise', async () => {
             const func = () => Promise.reject('foo');
-            const val = await Err.handle(func);
+            const val = await Err.handleAsync(func);
 
             expect(val).toBeNull();
         });
 
-        it('will log a warning if a LogManager is supplied and the Func throws', async () => {
-            const logMgr = new LogManager({logName: 'will log a warning if a LogManager is supplied and the Func throws', plugins: []});
+        it('will log a warning if a Reporter is supplied and the Func throws', async () => {
+            const reporter = new Reporter('will log a warning if a Reporter is supplied and the Func throws', new AftConfig({ pluginNames: [] }));
             let logMessage: string;
-            spyOn(logMgr, 'warn').and.callFake((message: string) => {
+            spyOn(reporter, 'warn').and.callFake((message: string) => {
                 logMessage = message;
                 return Promise.resolve();
             });
             const func = function () { throw 'foo'; };
-            const val = await Err.handle(func, logMgr);
+            const val = await Err.handleAsync(func, {logger: reporter});
 
             expect(val).toBeNull();
-            expect(logMgr.warn).toHaveBeenCalledTimes(2); // 1 time for logging and 1 time to output deprecation warning for passing LogMgr instead of ErrOptions
+            expect(reporter.warn).toHaveBeenCalledTimes(1);
             expect(logMessage).toContain('Error: foo');
         });
 
         it('accepts ErrOptions as a second argument', async () => {
             const func = function () { throw 'foo'; };
-            const logger = new LogManager({logName: 'accepts ErrOptions as a second argument'});
+            const logger = new Reporter('accepts ErrOptions as a second argument');
             let actualLevel: LogLevel;
             let actualMessage: string;
-            spyOn(logger, 'log').and.callFake((level: LogLevel, message: string) => {
+            spyOn(logger, 'log').and.callFake((level: LogLevel, message: string, ...data: any[]) => {
                 actualLevel = level;
                 actualMessage = message;
                 return Promise.resolve();
             });
-            const val = await Err.handle(func, {
+            const val = await Err.handleAsync(func, {
                 verbosity: 'short',
                 errLevel: 'info',
-                logMgr: logger
+                logger: logger
             });
 
             expect(val).toBeNull();

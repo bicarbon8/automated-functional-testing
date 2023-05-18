@@ -5,40 +5,52 @@ the base Automated Functional Testing (AFT) library providing support for Plugin
 `> npm i aft-core`
 
 ## Configuration
-the `aft-core` package contains the `cfgmgr` constant class for reading in configuration from multiple different sources all chained in the following order by default, but updatable using `cfgmgr.set((configKey: string, options: object) => new ChainedProvider([new ProviderOne(), new ProviderTwo(), ...]))`:
-- **OptionsProvider** - reads from the passed in `options` object passed to `cfgmgr.get(configKey, options)`
-- **EnvVarProvider** - reads from the `process.env` prepending all environment variable keys with the supplied `configKey`
-- **AftConfigProvider** - reads from the `aftconfig.json` file starting from a property named with the supplied `configKey`
+the `aft-core` package contains the `aftConfig` constant class (instance of `new AftConfig()`) for reading in configuration an `aftconfig.json` file at the project root. this configuration can be read as a top-level field using `aftConfig.get('field_name')` or `aftConfig.get('field_name', defaultVal)` and can also be set without actually modifying the values in your `aftconfig.json` using `aftConfig.set('field_name', val)`. additionally, configuration classes can be read using `AftConfig` with the `aftConfig.getSection(ConfigClass)` which will read from your `aftconfig.json` file for a field named `ConfigClass`
 
 Ex: with an `aftconfig.json` containing:
 ```json
 {
-    "ConfigSectionName": {
-        "config_field3": "%your_env_var%",
-        "config_field4": "some-value",
-        "config_field5": "['foo', true, 10]"
+    "SomeCustomClassConfig": {
+        "configField1": "%your_env_var%",
+        "configField2": "some-value",
+        "configField3": ["foo", true, 10]
     }
 }
 ```
 and with the following environment variables set:
 > export your_env_var="an important value"
 
-can be accessed using the `cfgmgr` as follows:
+and a config class of:
 ```typescript
-const config = cfgmgr.get('ConfigSectionName', {
-    config_field1: 12345,
-    config_field2: true,
-    config_field4: 'a value here'
-});
-await config.get('config_field1', -1); // returns 12345
-await config.get('config_field2', true); // returns false
-await config.get<string>('config_field3'); // returns "an important value"
-await config.get('config_field4', 'no value'); // returns "a value here" (passed in options override aftconfig.json values)
-await config.get<string>('config_field5'); // returns ["foo", true, 10] as an array
+export class SomeCustomClassConfig {
+    configField1: string = 'default_value_here';
+    configField2: string = 'another_default_value';
+    configField3: Array<string | boolean | number> = ['default_val'];
+    configField4: string = 'last_default_value';
+}
 ```
-for classes that rely on dependency injected options, there is also the `optmgr` constant class that will extract environment variables and JSON objects from a object passed to the `optmgr.process()` function. this is useful when combined with the `IHasOptions<T>` interface resulting in easier scoping of lookups on the passed in `options` object.
 
-> NOTE: the `optmgr.process` function is used in the `OptionsProvider` and `AftConfigProvider` classes before returning the values for a given key
+can be accessed using an `AftConfig` instance as follows:
+```typescript
+const config = aftConfig.getSection(SomeCustomClassConfig); // or new AftConfig().getSection(SomeCustomClassConfig);
+config.configField1; // returns "an important value"
+config.configField2; // returns "some-value"
+config.configField3; // returns ["foo", true, 10] as an array
+config.configField4; // returns "last_default_value"
+```
+
+and if you wish to entirely disregard the configuration specified in your `aftconfig.json` file you can use the following (still based on the above example):
+```typescript
+const config = new AftConfig({
+    SomeCustomClassConfig: {
+        configField1: 'custom_value_here'
+    }
+});
+config.configField1; // returns "custom_value_here"
+config.configField2; // returns "another_default_value"
+config.configField3; // returns ["default_val"] as an array
+config.configField4; // returns "last_default_value"
+```
 
 ## Helpers
 the `aft-core` package contains several helper and utility classes, interfaces and functions to make functional testing and test development easier. These include:
@@ -46,15 +58,13 @@ the `aft-core` package contains several helper and utility classes, interfaces a
 - **convert** - string manipulation like Base64 encode / decode and replacement
 - **ellide** - string elliding supporting beginning, middle and end ellipsis
 - **Err** - a `module` that can run functions in a `try-catch` with optional logging as well as provide formatted string outputs from `Error` objects
-- **wait** - continually retry some action until success or a maximum time elapses
-- **using** - automatically call the `dispose` function of a class that implements the `IDisposable` interface when done
-- **verify** - a function accepting an `assertion` function that simplifies usage of a `Verifier` within your _Jasmine_ or _Mocha_ tests
+- **using** - automatically call the `dispose` function of a class that implements the `Disposable` interface when done
 - **MachineInfo** - get details of the host machine and user running the tests
 - **CacheMap** - a `Map` implementation that stores values with expirations where expired items will not be returned and are pruned from the `Map` automatically. The `CacheMap` can also optionally store its data on the filesystem allowing for other running node processes to read from the same cache data (e.g. sharded parallel testing)
 - **FileSystemMap** - a `Map` implementation that stores its values in a file on the filesystem allowing multiple node processes to share the map data or to persist the data over multiple iterations
-- **fileio** - a constant class providing file system `write`, `readAs<T>` and `getExpiringFileLock` functions to simplify file operations
+- **fileio** - a constant class providing file system `write` and `readAs<T>` functions to simplify file operations
 - **wait** - constant class providing `wait.forResult<T>(...): Promise<T>`, `wait.forDuration(number)`, and `wait.until(number | Date): Promise<void>` functions to allow for non-thread-locking waits
-- **retry** - constant class providing `retry(retryable): Promise<T>` async function
+- **retry** - constant class providing `retry(retryable): Promise<T>` async function that will retry a given `retryable` function until it succeeds or some condition such as number of attempts or elapsed time is exceeded
 - **verifier** - see: [Testing with the Verifier](#testing-with-the-verifier) section below
 
 ## Custom Types
@@ -70,106 +80,95 @@ the `aft-core` package contains several helper and utility classes, interfaces a
 
 ## Plugins
 
-### Example Logging Plugin
-to create your own simple logging plugin that stores all logs until the `dispose` function is called you would implement the code below.
+### Example Reporting Plugin
+to create your own simple reporting plugin that stores all logs until the `finalise` function is called you would implement the code below.
 
-> NOTE: configuration for the below can be added in a object in the `aftconfig.json` named `ondisposeconsolelogger` based on the `key` passed to the `LoggingPlugin` constructor
+> NOTE: configuration for the below can be added in a object in the `aftconfig.json` named `OnDisposeConsoleReportingPluginConfig` and optionally containing values for the supported properties of the `OnDisposeConsoleReportingPluginConfig` class
 ```typescript
-export type OnDisposeConsoleLoggerOptions = Merge<LoggingPluginOptions, {
-    maxLogLines?: number;
-}>;
-export class OnDisposeConsoleLogger extends LoggingPlugin<OnDisposeConsoleLoggerOptions> {
-    private _logs: Array<LogMessageData>;
-    private _maxLines: number;
-    constructor(options?: OnDisposeConsoleLoggerOptions) {
-        super(options);
-        this._logs = new Array<LogMessageData>();
-    }
-    get maxLogLines(): number {
-        if (!this._maxLines) {
-            this._maxLines = this.option('maxLogLines', 100);
+export class OnDisposeConsoleReportingPluginConfig {
+    maxLogLines: number = Infinity;
+    logLevel: LogLevel = 'warn';
+};
+export class OnDisposeConsoleReportingPlugin extends ReportingPlugin {
+    public override get logLevel(): LogLevel { return this._lvl; }
+    private readonly _lvl: LogLevel;
+    private readonly _logs: Map<string, Array<LogMessageData>>;
+    private readonly _maxLines: number;
+    constructor(aftCfg?: AftConfig) {
+        super(aftCfg);
+        const cfg = this.aftCfg.getSection(OnDisposeConsoleReportingPluginConfig);
+        this._lvl = cfg.logLevel ?? 'warn';
+        if (this.enabled) {
+            this._logs = new Map<string, Array<LogMessageData>>();
         }
-        return this._maxLines;
     }
-    async log(data: LogMessageData): Promise<void> {
-        let l: LoggingLevel = this.level;
-        if (LogLevel.toValue(data.level) >= LogLevel.toValue(l) && level != 'none') {
-            this._logs.push(data);
-            while (this._logs.length > this.maxLogLines) {
-                this._logs.shift();
+    override initialise = async (name: string): Promise<void> => {
+        if (!this._logs.has(name)) {
+            this._logs.set(name, new Array<LogMessageData>());
+        }
+    }
+    override log = async (name: string, level: LogLevel, message: string, ...data: Array<any>): Promise<void> => {
+        if (this.enabled) {
+            if (LogLevel.toValue(level) >= LogLevel.toValue(this.logLevel) && level != 'none') {
+                const namedLogs: Array<LogMessageData> = this._logs.get(name);
+                namedLogs.push({name, level, message, args: data});
+                while (namedLogs.length > this.maxLogLines) {
+                    namedLogs.shift();
+                }
             }
         }
     }
-    async logResult(name: string, result: ITestResult): Promise<void> { 
-        if (result.status == 'Passed') {
-            this.log(LoggingLevel.pass, JSON.stringify(result));
-        } else {
-            this.log(LogginLevel.fail, JSON.stringify(result));
-        }
+    override submitResult = async (name: string, result: TestResult): Promise<void> => {
+        /* ignore */
     }
-    async dispose(name: string, error?: Error): Promise<void> { 
-        this._logs.forEach((message) => {
-            LogManager.toConsole(message);
-        });
-        if (error) {
-            LogManager.toConsole({name: this.logName, level: 'error', message: Err.full(error.message)});
+    override finalise = async (name: string): Promise<void> => { 
+        if (this.enabled) {
+            const namedLogs = this._logs.get(name);
+            while (namedLogs?.length > 0) {
+                let data = namedLogs.shift();
+                aftLogger.log({name: data.name, level: data.level, message: data.message, args: data.args});
+            });
+            aftLogger.log({name: this.constructor.name, level: 'debug', message: `finalised '${name}'`});
         }
-        LogManager.toConsole({name: this.logName, level: 'info', message: 'OnDisposeConsoleLogger is now disposed!'});
     }
 }
 ```
 
-### Example Test Case Plugin (TestRail)
+### Example TestExecutionPolicyPlugin (TestRail)
 ```typescript
-export type TestRailTestCasePluginOptions = Merge<TestCasePluginOptions, {
-    client?: TestRailClient;
-}>;
-export class TestRailTestCasePlugin extends TestCasePlugin<TestRailTestCasePluginOptions> {
-    private _client: TestRailClient;
-    get client(): TestRailClient {
-        if (!this._client) {
-            this._client = this.option('client') || new TestRailClient();
-        }
-        return this._client;
-    }
-    async getTestCase(testId: string): Promise<ITestCase> {
-        return await this.client.getTestCase(testId);
-    }
-    async findTestCases(searchTerm: string): Promise<ITestCase[]> {
-        return await this.client.findTestCases(searchTerm);
-    }
-    async shouldRun(testId: string): Promise<ProcessingResult> {
-        return await this.client.shouldRun(testId);
-    }
-    async dispose(error?: Error) { /* perform some action if needed */ }
+export class TestRailConfig {
+    username: string;
+    password: string;
+    url: string = 'https://you.testrail.io';
+    projectId: number;
+    suiteIds: Array<number> = new Array<number>();
+    planId: number;
+    enabled: boolean = false;
 }
-```
-### Example Defect Plugin (Bugzilla)
-```typescript
-export type BugzillaDefectPluginOptions = Merge<DefectPluginOptions, {
-    client?: BugzillaClient;
-}>;
-
-export class BugzillaDefectPlugin extends DefectPlugin<BugzillaDefectPluginOptions> {
-    private _client: BugzillaClient;
-    get client(): TestRailClient {
-        if (!this._client) {
-            this._client = this.option('client') || new BugzillaClient();
+export class TestRailTestExecutionPolicyPlugin extends TestExecutionPolicyPlugin {
+    public override get enabled(): boolean { return this._enabled; }
+    private readonly _client: TestRailClient;
+    private readonly _enabled: boolean;
+    constructor(aftCfg?: AftConfig) {
+        super(aftCfg);
+        const cfg = this.aftCfg.getSection(TestRailConfig);
+        this._enabled = cfg.enabled ?? false;
+        if (this.enabled) {
+            this._client = new TestRailClient(this.aftCfg);
         }
-        return this._client;
     }
-    async getDefect(defectId: string): Promise<IDefect> {
-        return await this.client.getDefect(defectId);
+    override shouldRun = async (testId: string): Promise<ProcessingResult> => {
+        const result = await this._client.getLastTestResult(testId);
+        if (result.status === 'Passed') {
+            return false; // test alraedy has passing result so don't run
+        }
+        return true;
     }
-    async findDefects(searchTerm: string): Promise<IDefect[]> {
-        return await this.client.findDefects(searchTerm);
-    }
-    async dispose(error?: Error) { /* perform some action if needed */ }
 }
 ```
 
 ## Testing with the Verifier
-the `Verifier` class and `verify` functions of `aft-core` enable testing with pre-execution filtering based on integration with external test case and defect managers via plugin packages supporting each (see examples above).
+the `Verifier` class and `verify` functions of `aft-core` enable testing with pre-execution filtering based on integration with external test execution policy managers via plugin packages extending the `TestExecutionPolicyPlugin` class (see examples above).
 
 ```typescript
 describe('Sample Test', () => {
@@ -177,23 +176,22 @@ describe('Sample Test', () => {
         let feature: FeatureObj = new FeatureObj();
         /**
          * the `verify(assertion).returns(expectation)` function
-         * checks any specified `TestCasePlugin`
-         * and `DefectPlugin` implementations
+         * checks any specified `TestExecutionPolicyPlugin` implementations
          * to ensure the test should be run. It will then
-         * report to any `LoggingPlugin` implementations
+         * report to any `ReportingPlugin` implementations
          * with an `TestResult` indicating the success,
          * failure or skipped status
          */
         await verify(async () => await feature.performAction())
         .withTestId('C1234')
-        .and.withKnownDefectId('DEFECT-123')
         .and.withDescription("expect that performAction will return 'result of action'")
         .returns('result of action');
     });
 });
 ```
-in the above example, the `await feature.performAction()` call will only be run if a `TestCasePlugin` is loaded and returns `true` from it's `shouldRun(testId: string)` function (or no `TestCasePlugin` is loaded) and if a `DefectPlugin` is loaded and returns either no defect or a `closed` defect from it's `getDefect(defectId: string)` function (or no `DefectPlugin` is loaded). additionally, any logs associated with the above `verify` call will use a `logName` of `"expect_that_performAction_will_return_result_of_action"` resulting in log lines like the following:
+> NOTE: if using the `aft-jasmine-reporter` or `aft-mocha-reporter` it is even easier to set the test IDs. see examples at [jasmine](../aft-jasmine-reporter/README.md#afttest) and [mocha](../aft-mocha-reporter/README.md#afttest)
+
+in the above example, the `await feature.performAction()` call will only be run if a `TestExecutionPolicyPlugin` is loaded and returns `true` from it's `shouldRun(testId: string)` function (or no `TestExecutionPolicyPlugin` is loaded). additionally, any logs associated with the above `verify` call will use a `logName` of `"expect_that_performAction_will_return_result_of_action"` resulting in log lines like the following:
 ```
-09:14:01 - [expect that performAction will return 'result of action'] - TRACE - no TestCasePlugin in use so run all tests
-09:14:02 - [expect that performAction will return 'result of action'] - TRACE - no DefectPlugin in use so run all tests
+09:14:01 - [expect that performAction will return 'result of action'] - TRACE - no TestExecutionPolicyPlugin in use so run all tests
 ```
