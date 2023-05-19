@@ -11,7 +11,7 @@ using this `Reporter` requires either calling the `jest` command with the follow
 module.exports = {
     reporters: [
         'default',
-        ["<rootDir>/dist/src/aft-jest-reporter.js", { useReporter: true }]
+        ["<rootDir>/node_modules/aft-jest-reporter/dist/src/aft-jest-reporter.js", { useReporter: true }]
     ]
 };
 ```
