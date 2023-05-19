@@ -1,6 +1,8 @@
-import { rand, TestResult, TestStatus, Err, AftConfig, BuildInfoManager, Verifier, Func, Class } from "aft-core";
+import { rand, TestResult, TestStatus, Err, AftConfig, BuildInfoManager, Verifier, Func, Class, FileSystemMap } from "aft-core";
 import { AftLog } from "./aft-log";
 import { TitleParser } from "./title-parser";
+import AftJestReporter from "./aft-jest-reporter";
+import { TestCaseResult } from "@jest/reporters";
 
 /**
  * provides a more streamlined means of getting a `Verifier`
@@ -9,6 +11,7 @@ import { TitleParser } from "./title-parser";
 export class AftTest extends AftLog {
     private _testcases: Array<string>;
     private readonly _buildMgr: BuildInfoManager;
+    private readonly _fsMap: FileSystemMap<string, Omit<TestCaseResult, 'failureDetails'>>;
 
     /**
      * expects to be passed the scope from an executing Mocha
@@ -18,6 +21,7 @@ export class AftTest extends AftLog {
     constructor(scope?: any, aftCfg?: AftConfig) {
         super(scope, aftCfg);
         this._buildMgr = new BuildInfoManager(this.aftCfg);
+        this._fsMap = new FileSystemMap<string, Omit<TestCaseResult, 'failureDetails'>>(AftJestReporter.name, [], this.aftCfg);
     }
 
     get buildInfoMgr(): BuildInfoManager {
@@ -32,19 +36,47 @@ export class AftTest extends AftLog {
     }
 
     async pass(): Promise<void> {
+        this._fsMap.set(this.fullName, {
+            fullName: this.fullName,
+            numPassingAsserts: 1,
+            status: 'passed',
+            duration: this.test.duration,
+            failureMessages: undefined,
+            ancestorTitles: undefined,
+            title: undefined
+        });
         await this._logResult('passed');
     }
 
-    async fail(): Promise<void> {
-        let err: string = 'unknown error occurred';
-        if (this.test?.failureMessages) {
-            err = this.test.failureMessages.join('\n');
+    async fail(reason?: string): Promise<void> {
+        let err: string = reason ?? 'unknown error occurred';
+        if (this.test) {
+            err = this.test.failureMessages?.join('\n') ?? err;
         }
+        this._fsMap.set(this.fullName, {
+            fullName: this.fullName,
+            numPassingAsserts: 0,
+            status: 'failed',
+            duration: this.test.duration,
+            failureMessages: err?.split('\n'),
+            ancestorTitles: undefined,
+            title: undefined
+        });
         await this._logResult('failed', err);
     }
 
-    async skipped(): Promise<void> {
-        await this._logResult('skipped', 'test skipped');
+    async skipped(reason?: string): Promise<void> {
+        reason ??= 'test skipped';
+        this._fsMap.set(this.fullName, {
+            fullName: this.fullName,
+            numPassingAsserts: 0,
+            status: 'skipped',
+            duration: this.test.duration,
+            failureMessages: [reason],
+            ancestorTitles: undefined,
+            title: undefined
+        });
+        await this._logResult('skipped', reason);
     }
 
     /**
@@ -77,7 +109,7 @@ export class AftTest extends AftLog {
             .internals.usingAftConfig(this.aftCfg)
             .withDescription(this.fullName)
             .withTestIds(...this.testcases)
-            .on('skipped', () => pending()) as T;
+            .on('skipped', () => this.skipped()) as T;
     }
 
     async dispose(): Promise<void> {
@@ -161,7 +193,7 @@ export class AftTest extends AftLog {
             resultMessage: logMessage,
             status: status,
             metadata: {
-                durationMs: this.test.duration || 0,
+                durationMs: (this.test?.duration ?? 0) * 1000,
                 buildName: await this.buildInfoMgr.buildName() || 'unknown',
                 buildNumber: await this.buildInfoMgr.buildNumber() || 'unknown'
             }

@@ -1,29 +1,35 @@
 import { TestCaseResult } from "@jest/reporters";
-import { AftConfig, Reporter, aftConfig } from "aft-core";
+import { AftConfig, Reporter, aftConfig, convert } from "aft-core";
 
 export class AftLog {
     private _rep: Reporter;
+    private readonly _startTime: number;
     private readonly _aftCfg: AftConfig;
     public readonly test: TestCaseResult;
     
     constructor(scope?: any, aftCfg?: AftConfig) {
         this._aftCfg = aftCfg ?? aftConfig;
-        if (scope) {
-            if (typeof scope === 'string') {
-                scope = {testCaseResult: {fullName: scope}};
-            } else {
-                scope = {testCaseResult: {fullName: scope?.getState?.()?.currentTestName}}
-            }
+        this._startTime = Date.now();
+        if (typeof scope === 'string') {
+            this.test = {
+                fullName: scope,
+                get duration(): number { return convert.toElapsedMs(this._startTime) / 1000; }
+            } as TestCaseResult;
+        }else if (scope?.['fullName']) {
+            // 'scope' is a 'TestCaseResult'
+            this.test = scope;
+        } else if (scope?.getState?.()) {
+            // 'scope' is an 'expect' object
+            const state = scope.getState();
+            this.test = {
+                fullName: state.currentTestName,
+                get duration(): number { return convert.toElapsedMs(this._startTime) / 1000; }
+            } as TestCaseResult;
         }
-        this.test = scope?.testCaseResult || {};
     }
 
     get fullName(): string {
-        try {
-            return this.test?.fullName;
-        } catch (e) {
-            return null;
-        }
+        return this.test?.fullName ?? 'unknown';
     }
 
     get aftCfg(): AftConfig {

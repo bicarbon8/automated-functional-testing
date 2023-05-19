@@ -1,29 +1,33 @@
-# AFT-Jasmine-Reporter
-a Jasmine `CustomReporter` integration for AFT providing support for AFT plugins, configuration and helpers
+# AFT-Jest-Reporter
+a Jest `Reporter` integration for AFT providing support for AFT plugins, configuration and helpers
 
 ## Installation
-`> npm i aft-jasmine-reporter`
+`> npm i aft-jest-reporter`
 
-## Jasmine Configuration
-using this `CustomReporter` requires either calling the `jasmine` command with the following argument `--reporter=aft-jasmine-reporter` or from within your test code using the following: 
+## Jest Configuration
+using this `Reporter` requires either calling the `jest` command with the following argument `--reporters"default" --reporters="aft-jest-reporter"` or from within your Jest config file using the following: 
 ```javascript
-const AftJasmineReporter = require("aft-jasmine-reporter");
-...
-jasmine.getEnv().addReporter(AftJasmineReporter);
+// jest.config.js
+module.exports = {
+    reporters: [
+        'default',
+        ["<rootDir>/dist/src/aft-jest-reporter.js", { useReporter: true }]
+    ]
+};
 ```
 
 ## AFT Configuration
-while no configuration is required, the `aft-jasmine-reporter` supports all AFT configuration via an `aftconfig.json` file in the root directory.
+while no configuration is required, the `aft-jest-reporter` supports all AFT configuration via an `aftconfig.json` file in the root directory.
 
 ## AFT Helpers
-this package comes with two helper classes that can be utilised from within your Jasmine specs to make use of AFT features.
+this package comes with two helper classes that can be utilised from within your Jest specs to make use of AFT features.
 
 ### `AftLog`
 the `AftLog` class provides access to an AFT `Reporter` instance for your currently executing spec file. you can use it like the following:
 ```javascript
 describe('YourTestSuite', () => {
-    it('allows you to log using AFT Reporter', async () => {
-        const aft = new AftLog();
+    test('allows you to log using AFT Reporter', async () => {
+        const aft = new AftLog(expect); // passing 'expect' allows AftLog to get the current test full name
         await aft.reporter.step('starting test...');
         /* do some test things here */
         await aft.reporter.step('test is complete');
@@ -41,10 +45,9 @@ and which would output the following to your console and any AFT `ReportingPlugi
 the `AftTest` class extends from the `AftLog` adding the ability to parse the Spec name for any referenced Test. each Test ID must be surrounded with square brackets `[ABC123]`. additionally you can then call the `AftTest.shouldRun()` async function or use `AftTest.verify(assertion)` which will determine if your test should be run based on any AFT `TestExecutionPolicyPlugin` instances referenced in your `aftconfig.json` file. using the `AftTest` class would look like the following:
 ```javascript
 describe('YourTestSuite', () => {
-    it('can check if test [C1234] should be run', async () => {
-        const aft = new AftTest();
+    test('can check if test [C1234] should be run', async () => {
+        const aft = new AftTest(expect); // passing 'expect' allows AftLog to get the current test full name
         await aft.verify(async (v: Verifier) => {
-            // `verify` calls `pending()` if should not be run which marks test as skipped
             await aft.reporter.step('we should never get here if C1234 should not be run');
             const result = await doStuff();
             return result;
@@ -59,10 +62,11 @@ which would output the following to your console and any AFT `ReportingPlugin` i
 ```
 
 ## NOTES
-- this Jasmine `CustomReporter` expects that there is only one instance of Jasmine running from a single location as it writes to a file when each Spec is started so that from within a given Spec the `AftLog` and `AftTest` classes can automatically get the Spec description. this causes a performance degradation since there is a locked filesystem read and write operation associated with each test
+- because Jest refuses to allow programmatic skipping of tests (see: [7245](https://github.com/jestjs/jest/issues/7245)) you will either need to perform all test verification inside an AFT `Verifier` or if using `AftTest` you may call `if (await new AftTest(expect).shouldRun()) { return; }` at the top of your test function to ensure AFT can skip tests that should not be run based on any `TestExecutionPolicyPlugin` responses. this means Jest will report the test as `'passing'`, but AFT will correctly report `'skipped'`
+- this Jest `Reporter` expects that there is only one instance of Jest running from a single location as it writes to a file to track the actual status of the test on completion
 - you can use the AFT `Verifier` in combination with the `AftLog` or `AftTest` classes like follows:
-```javascript
-const aft = new AftTest();
+```typescript
+const aft = new AftTest(expect);
 await aft.verify(() => {
     /* perform testing here */
 }).returns(expected);

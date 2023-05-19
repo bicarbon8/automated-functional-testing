@@ -18,7 +18,7 @@ describe('TitleParser', () => {
         {title: '[C1234]foo [C2345]foo', expected: ['C1234', 'C2345']},
         {title: 'Case name 1234', expected: []},
         {title: 'foo [C1234] bar <BUG-123> baz', expected: ['C1234']}
-    ])(`can parse cases from titles`, (data) => {
+    ])(`can parse cases from titles %s`, (data) => {
         expect(TitleParser.parseTestIds(data.title)).toEqual(data.expected);
     });
 });
