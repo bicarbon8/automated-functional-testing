@@ -65,18 +65,19 @@ verify(() => {throw new Error('failure');}) // AFT will report as 'failed'
 ```
 
 ## Packages (click on name for more info)
-- [`aft-core`](./packages/aft-core/README.md) - base library containing helpers and configuration and plugin managers
-- [`aft-examples`](./packages/aft-examples/README.md) - provides real-world examples of how the AFT libraries can be used in functional tests
-- [`aft-jasmine-reporter`](./packages/aft-jasmine-reporter/README.md) - a Jasmine Reporter Plugin that integrates with AFT to simplify logging and test execution via AFT
-- [`aft-reporting-aws-kinesis-firehose`](./packages/aft-reporting-aws-kinesis-firehose/README.md) - reporting plugin supporting logging to AWS Kinesis Firehose
-- [`aft-reporting-filesystem`](./packages/aft-reporting-filesystem/README.md) - reporting plugin supporting logging to .log files for all log output
-- [`aft-reporting-html`](./packages/aft-reporting-html/README.md) - reporting plugin supporting logging to a HTML results file
-- [`aft-mocha-reporter`](./packages/aft-mocha-reporter/README.md) - provides Mocha Reporter Plugin that integrates with AFT to simplify logging and test execution via AFT
-- [`aft-testrail`](./packages/aft-testrail/README.md) - reporting and test execution policy plugins supporting logging test results and filtering test execution based on TestRail Projects, Suites and Plans
-- [`aft-ui`](./packages/aft-ui/README.md) - base library supporting development of UI testing packages
-- [`aft-ui-selenium`](./packages/aft-ui-selenium/README.md) - adds support for Selenium-based UI testing
-- [`aft-ui-webdriverio`](./packages/aft-ui-webdriverio/README.md) - adds support for WebdriverIO-based UI testing
-- [`aft-web-services`](./packages/aft-web-services/README.md) - adds support for testing REST-based services
+- [`aft-core`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-core/README.md) - base library containing helpers and configuration and plugin managers
+- [`aft-examples`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-examples/README.md) - provides real-world examples of how the AFT libraries can be used in functional tests
+- [`aft-jasmine-reporter`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-jasmine-reporter/README.md) - a Jasmine Reporter Plugin that integrates with AFT to simplify logging and test execution via AFT
+- [`aft-jest-reporter`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-jest-reporter/README.md) - a Jest Reporter Plugin that integrates with AFT to simplify logging and test execution via AFT
+- [`aft-mocha-reporter`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-mocha-reporter/README.md) - provides Mocha Reporter Plugin that integrates with AFT to simplify logging and test execution via AFT
+- [`aft-reporting-aws-kinesis-firehose`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-reporting-aws-kinesis-firehose/README.md) - reporting plugin supporting logging to AWS Kinesis Firehose
+- [`aft-reporting-filesystem`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-reporting-filesystem/README.md) - reporting plugin supporting logging to .log files for all log output
+- [`aft-reporting-html`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-reporting-html/README.md) - reporting plugin supporting logging to a HTML results file
+- [`aft-testrail`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-testrail/README.md) - reporting and test execution policy plugins supporting logging test results and filtering test execution based on TestRail Projects, Suites and Plans
+- [`aft-ui`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-ui/README.md) - base library supporting development of UI testing packages
+- [`aft-ui-selenium`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-ui-selenium/README.md) - adds support for Selenium-based UI testing
+- [`aft-ui-webdriverio`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-ui-webdriverio/README.md) - adds support for WebdriverIO-based UI testing
+- [`aft-web-services`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-web-services/README.md) - adds support for testing REST-based services
 
 ## Plugins
 the primary benefit of using AFT comes from the plugins and the `Verifier`. Because logging using AFT's `Reporter` will also send to any registered logging plugins, it is easy to create logging plugins that send to any external system such as TestRail or to log results to Elasticsearch. Additionally, before running any _assertion_ passed to a `verify(assertion)` function, AFT will confirm if the _assertion_ should actually be run based on the results of queries to any supplied `TestExecutionPolicyPlugin` implementations.

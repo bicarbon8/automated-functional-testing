@@ -1,0 +1,8 @@
+{
+    "pluginNames": [
+        "html-reporting-plugin",
+        "filesystem-reporting-plugin"
+    ],
+    "pluginsSearchDir": "../",
+    "logLevel": "debug"
+}
