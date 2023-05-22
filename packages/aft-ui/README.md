@@ -1,14 +1,14 @@
-# AFT-SELENIUM
-Automated Functional Testing (AFT) package supporting Selenium interactions using the Page Object Model (POM) to streamline UI test development and also supporting extension via plugins to support systems such as Selenium and Cypress.
+# AFT-UI
+Automated Functional Testing (AFT) package supporting UI testing via plugins supporting the `UiSessionGeneratorPlugin` base class as well as providing
 
 ## Installation
-`> npm i aft-selenium`
+`> npm i aft-ui`
 
 ## Page Object Model (POM)
-the POM is a standard design pattern used in UI and layout testing. AFT-UI supports this model via an `UiComponent` class that is made up of one or more `UiComponent` classes and / or elements encapsulating logical blocks of functionality on the page. The `aft-selenium` package supports local and remote Selenium WebDriver instantiation as well as development of libraries used to generate UI test sessions (via the `UiSessionGeneratorManager`, `UiSessionGeneratorPlugin`, classes).
+the POM is a standard design pattern used in UI and layout testing. AFT-UI supports this model via an `UiComponent` class that is made up of one or more `UiComponent` classes and / or elements encapsulating logical blocks of functionality on the page. The `aft-ui` package supports UI session instantiation as well as development of libraries used to generate UI test sessions (via the `UiSessionGeneratorManager`, `UiSessionGeneratorPlugin`, classes).
 
 ### Creating a Session Generator Plugin (BrowserStack)
-the `UiSessionGeneratorPlugin` implementation is responsible for creating new UI session instances (classes extending from `WebDriver`)
+the `UiSessionGeneratorPlugin` implementation is responsible for creating new UI session instances
 
 ```typescript
 export class BrowserStackAutomateConfig {
@@ -19,18 +19,17 @@ export class BrowserStackAutomateConfig {
     accessKey: string;
 }
 export class BrowserStackAutomateSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
-    override getSession = async (aftCfg?: AftConfig): Promise<WebDriver> => {
-        aftCfg ??= this.aftCfg;
-        const cfg = aftCfg.getSection(BrowserStackAutomateConfig);
-        const caps: Capabilities = await this.getCapabilities(aftCfg);
+    override getSession = async (sessionOptions?: Record<string, any>): Promise<WebDriver> => {
+        const cfg = this.aftCfg.getSection(BrowserStackAutomateConfig);
+        let caps: Capabilities = await this.getCapabilities();
+        caps = merge(caps, sessionOptions); // using lodash merge
         return await new Builder()
             .usingServer(cfg.url)
             .withCapabilities(caps)
             .build();
     }
-    async getCapabilities(aftCfg?: AftConfig): Promise<Capabilities> {
-        aftCfg ??= this.aftCfg;
-        const bsc = aftCfg.getSection(BrowserStackConfig);
+    async getCapabilities(): Promise<Capabilities> {
+        const bsc = this.aftCfg.getSection(BrowserStackConfig);
         let capabilities: Capabilities = new Capabilities();
         const platform: UiPlatform = bsc.uiplatform;
         capabilities.set('browserstack.user', bsc.username);
@@ -47,6 +46,7 @@ export class BrowserStackAutomateSessionGeneratorPlugin extends UiSessionGenerat
 ## aftconfig.json keys and values supported by aft-selenium package
 
 **GridSessionGeneratorPlugin Example using BrowserStack:**
+the `aft-ui-selenium` package contains a `UiSessionGeneratorPlugin` called `grid-session-generator-plugin` which the below example uses to demonstrate configuration supported by `aft-ui`. this is not to be confused with the above example demonstrating how a BrowserStack `UiSessionGeneratorPlugin` could be created using `aft-ui`.
 ```json
 // aftconfig.json
 {

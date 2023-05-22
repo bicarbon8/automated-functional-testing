@@ -1,8 +1,8 @@
-# AFT-UI-Mobile-Apps
-Automated Functional Testing (AFT) package providing Appium-based `MobileAppFacet extends UiFacet` Plugins and BrowserStack, Sauce Labs and Appium Grid `UiSession` Plugins extending the `aft-ui` package. This enables testing using BrowserStack's, Sauce Labs's or a Local Selenium Grid for any Mobile Device application tests.
+# AFT-UI-WEBDRIVERIO
+Automated Functional Testing (AFT) package providing WebdriverIO-based `WebdriverIoComponent extends UiComponent` class for use with POM-based UI testing strategies as well as `UiSessionGeneratorPlugin` implementations for connecting to WebdriverIO's Browser instance.
 
 ## Installation
-`> npm i aft-ui-mobile-apps`
+`> npm i aft-ui-webdriverio`
 
 ## Creating your own Components for use in testing
 Take the following as an example of how one could interact with the following Android App
@@ -15,28 +15,27 @@ export class WikipediaView extends WebdriverIoComponent {
     override get locator(): string {
         return '//*';
     }
-    private _searchButton = async (): Promise<Element<'async'>> => await (await this.getRoot()).$("~Search Wikipedia");
-    private _searchInput = async (): Promise<Element<'async'>> => await this.driver.$('android=new UiSelector().resourceId("org.wikipedia.alpha:id/search_src_text")');
-    private _searchResults = async (): Promise<Array<Element<'async'>>> => await (await this.getRoot()).$$("android.widget.TextView");
+    private get _searchButton() { return this.getRoot().then(r => r.$("~Search Wikipedia")); }
+    private get _searchInput() { return this.driver.$('android=new UiSelector().resourceId("org.wikipedia.alpha:id/search_src_text")'); }
+    private get _searchResults() { return this.getRoot().then(r => r.$$("android.widget.TextView")); }
     async searchFor(term: string): Promise<string[]> {
-        await this.reporter.info("tapping on 'SearchButton'");
-        await this._searchButton().then(b => b.click());
+        await this.reporter.info("tapping on 'SearchButton'...");
+        await this._searchButton.then(b => b.click());
         await this.sendTextToSearch(term);
         return await this.getResults();
     }
     async sendTextToSearch(text: string): Promise<void> {
         await this.reporter.info(`setting 'SearchInput' to '${text}'...`);
-        await this._searchInput().then(i => i.addValue(text));
+        await this._searchInput.then(i => i.addValue(text));
     }
     async getResults(): Promise<string[]> {
         await this.reporter.info("getting text from 'SearchResults' to return as 'string[]'");
-        let resultsText: string[] = [];
-
-        var searchResults = await this._searchResults();
+        const resultsText = new Array<string>();
+        const searchResults = await this._searchResults;
         for (var i=0; i<searchResults.length; i++) {
             let res = searchResults[i];
-            let txt: string = await res.getText().catch(err => err);
-            resultsText.push(txt);
+            let txt: string = await res.getText().catch(err => null);
+            if (txt) { resultsText.push(txt); }
         }
         await this.reporter.info(`found results of: [${resultsText.join(', ')}]`);
         return resultsText;
@@ -63,7 +62,7 @@ await verifyWithWebdriverIO(async (v: WebdriverIoVerifier) => {
         }
     }
     return contains;
-}).returns(true);
+}).returns(true); // if no results contained the word 'pizza' test fails
 ```
 ## aftconfig.json keys and values supported by aft-ui-webdriverio package
 this package does not support any additional configuration. see [aft-ui](../aft-ui/README.md#aftconfigjson-keys-and-values-supported-by-aft-selenium-package) for values relevant in the `UiSessionConfig`
