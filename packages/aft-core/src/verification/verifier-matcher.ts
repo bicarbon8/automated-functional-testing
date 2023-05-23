@@ -87,6 +87,10 @@ class EquivalentTo implements VerifierMatcher {
         return this;
     }
     compare(): boolean {
+        if (this.expected == null || this._actual == null) {
+            this._failure = `expected and actual must both be non-null objects; expected: '${this.expected}', actual: '${this._actual}'`;
+            return false;
+        }
         if (typeof this.expected !== 'object') {
             this._failure = `expected must be an object, but was '${typeof this.expected}'`;
             return false;
@@ -264,6 +268,91 @@ class ValueContaining implements VerifierMatcher {
 export const containing = (expected: any): ValueContaining => {
     return new ValueContaining(expected);
 };
+
+class HavingProperties implements VerifierMatcher {
+    readonly expected: any;
+    private _actual: unknown;
+    private _failure: string;
+    constructor(expected: Record<string | number | symbol, any>) {
+        this.expected = expected;
+    }
+    setActual(actual: unknown): VerifierMatcher {
+        this._actual = actual;
+        return this;
+    }
+    compare(): boolean {
+        if (this.expected == null || this._actual == null) {
+            this._failure = `expected and actual must both be non-null objects; expected: '${this.expected}', actual: '${this._actual}'`;
+            return false;
+        }
+        if (typeof this.expected !== 'object') {
+            this._failure = `expected must be an object, but was '${typeof this.expected}'`;
+            return false;
+        }
+        if (typeof this._actual !== 'object') {
+            this._failure = `actual must be an object, but was '${typeof this._actual}'`;
+            return false;
+        }
+        return this._compareObjects(this._actual, this.expected);
+    }
+    failureString(): string {
+        return this._failure;
+    }
+    private _compareObjects(actual: Record<string | number | symbol, any>, expected: Record<string | number | symbol, any>): boolean {
+        let equivalent: boolean = true;
+        const expectedKeys = Object.keys(expected);
+        for (let prop of expectedKeys) {
+            if (actual[prop] == null && expected[prop] != null) {
+                equivalent = false;
+                this._failure = `'actual.${prop}' unset or non-existing while 'expected.${prop}' exists`;
+                break;
+            }
+            if (typeof actual[prop] !== typeof expected[prop]) {
+                equivalent = false;
+                this._failure = `typeof actual.${prop}: '${typeof actual[prop]}' not equal to '${typeof expected[prop]}'`;
+                break;
+            }
+            if (typeof expected[prop] === 'object') {
+                equivalent = this._compareObjects(actual[prop], expected[prop]);
+                if (!equivalent) {
+                    break;
+                }
+            }
+        }
+        return equivalent;
+    }
+}
+/**
+ * compares the passed in `expected` object to an `actual` checking that they both contain all the same
+ * properties and property types as are found in the `expected` object. for example, given an `expected`
+ * of:
+ * ```typescript
+ * const expected = {
+ *     foo: 'bar',
+ *     baz: true
+ * }
+ * ```
+ * and an `actual` of:
+ * ```typescript
+ * const actual = {
+ *     foo: 'foo',
+ *     bar: 42,
+ *     baz: false
+ * }
+ * ```
+ * calling the following:
+ * ```typescript
+ * havingProps(expected).setActual(actual).compare(); // true
+ * ```
+ * would return true because `actual` has both a `foo` property of type `string`
+ * and a `baz` property of type `boolean`. usage in a {Verifier} would look like:
+ * ```typescript
+ * await verifier(() => {foo: 'bar', baz: true}).returns(havingProps({foo: 'any', baz: false})); // succeeds
+ * ```
+ * @param expected an object or array containing properties
+ * @returns a new {HavingProperties} instance
+ */
+export const havingProps = (expected: Record<string | number | symbol, any>) => new HavingProperties(expected);
 
 class HavingValue implements VerifierMatcher {
     readonly expected: string = 'value other than null or undefined';

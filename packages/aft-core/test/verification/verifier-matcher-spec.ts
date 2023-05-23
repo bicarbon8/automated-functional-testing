@@ -1,4 +1,4 @@
-import { between, containing, equaling, exactly, greaterThan, havingValue, lessThan, not } from "../../src";
+import { between, containing, equaling, equivalent, exactly, greaterThan, havingProps, havingValue, lessThan, not } from "../../src";
 
 describe('VerifierMatcher', () => {
     describe('Equaling', () => {
@@ -41,6 +41,26 @@ describe('VerifierMatcher', () => {
         testData.forEach((data) => {
             it(`can get expected result from comparison: ${JSON.stringify(data)}`, () => {
                 expect(exactly(data.expected).setActual(data.actual).compare()).toBe(data.result);
+            });
+        });
+    });
+
+    describe('EquivalentTo', () => {
+        let testData = [
+            {expected: {}, actual: {}, result: true},
+            {expected: {foo: 'foo'}, actual: {foo: 'foo'}, result: true},
+            {expected: {foo: 'foo'}, actual: {foo: 'foo', bar: 'bar'}, result: true},
+            {expected: {foo: {foo: 'foo'}}, actual: {foo: {foo: 'foo'}, baz: 'foo'}, result: true},
+            {expected: {}, actual: 'foo', result: false},
+            {expected: null, actual: null, result: false},
+            {expected: {foo: 'foo'}, actual: {foo: 'bar'}, result: false},
+            {expected: {foo: 'foo'}, actual: {bar: 'foo'}, result: false},
+            {expected: {foo: {foo: 'foo'}}, actual: {foo: {foo: 'bar'}}, result: false},
+            {expected: {foo: 'foo', bar: 'bar'}, actual: {bar: 'bar'}, result: false}
+        ];
+        testData.forEach((data) => {
+            it(`can get expected result from comparison: ${JSON.stringify(data)}`, () => {
+                expect(equivalent(data.expected).setActual(data.actual).compare()).toBe(data.result);
             });
         });
     });
@@ -92,6 +112,25 @@ describe('VerifierMatcher', () => {
         testData.forEach((data) => {
             it(`can get expected result from comparison: ${JSON.stringify(data)}`, () => {
                 expect(containing(data.expected).setActual(data.actual).compare()).toBe(data.result);
+            });
+        });
+    });
+
+    describe('HavingProperties', () => {
+        let testData = [
+            {expected: {}, actual: {}, result: true},
+            {expected: {foo: 'foo'}, actual: {foo: 'bar'}, result: true},
+            {expected: {foo: 'foo'}, actual: {foo: 'bar', baz: 'foo'}, result: true},
+            {expected: {foo: {foo: 'foo'}}, actual: {foo: {foo: 'bar'}, baz: 'foo'}, result: true},
+            {expected: {}, actual: 'foo', result: false},
+            {expected: null, actual: null, result: false},
+            {expected: {foo: 'foo'}, actual: {bar: 'foo'}, result: false},
+            {expected: {foo: {foo: 'foo'}}, actual: {foo: {bar: 'bar'}}, result: false},
+            {expected: {foo: 'foo', bar: 'bar'}, actual: {bar: 'foo'}, result: false}
+        ];
+        testData.forEach((data) => {
+            it(`can get expected result from comparison: ${JSON.stringify(data)}`, () => {
+                expect(havingProps(data.expected).setActual(data.actual).compare()).toBe(data.result);
             });
         });
     });
