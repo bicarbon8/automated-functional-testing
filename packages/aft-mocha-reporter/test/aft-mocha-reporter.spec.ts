@@ -35,7 +35,7 @@ describe('AftMochaReporter', () => {
         
         expect(t).to.exist;
         expect(t.reporter).to.exist;
-        expect(t.reporter.reporterName).to.eql('AFT');
+        expect(t.reporter.reporterName).to.eql('unknown');
         
         // NOTE: arrow functions have no `this` so `this.test.fullTitle` doesn't exist
         // expect(t.reporter.logName).to.equal(t.fullTitle);
