@@ -1,6 +1,4 @@
-import { rand, TestResult, TestStatus, Err, AftConfig, BuildInfoManager, Verifier, Func, Class, FileSystemMap } from "aft-core";
-import { AftLog } from "./aft-log";
-import { TitleParser } from "./title-parser";
+import { AftConfig, FileSystemMap, AftTestIntegration, convert } from "aft-core";
 import AftJestReporter from "./aft-jest-reporter";
 import { TestCaseResult } from "@jest/reporters";
 
@@ -8,10 +6,10 @@ import { TestCaseResult } from "@jest/reporters";
  * provides a more streamlined means of getting a `Verifier`
  * from the Mocha test context
  */
-export class AftTest extends AftLog {
-    private _testcases: Array<string>;
-    private readonly _buildMgr: BuildInfoManager;
+export class AftTest extends AftTestIntegration {
     private readonly _fsMap: FileSystemMap<string, Omit<TestCaseResult, 'failureDetails'>>;
+
+    public readonly test: TestCaseResult;
 
     /**
      * expects to be passed the scope from an executing Mocha
@@ -20,22 +18,33 @@ export class AftTest extends AftLog {
      */
     constructor(scope?: any, aftCfg?: AftConfig) {
         super(scope, aftCfg);
-        this._buildMgr = new BuildInfoManager(this.aftCfg);
         this._fsMap = new FileSystemMap<string, Omit<TestCaseResult, 'failureDetails'>>(AftJestReporter.name, [], this.aftCfg);
-    }
-
-    get buildInfoMgr(): BuildInfoManager {
-        return this._buildMgr;
-    }
-
-    get testcases(): Array<string> {
-        if (!this._testcases) {
-            this._testcases = TitleParser.parseTestIds(this.fullName);
+        if (typeof scope === 'string') {
+            this.test = {
+                fullName: scope,
+                get duration(): number { return convert.toElapsedMs(this.startTime) / 1000; }
+            } as TestCaseResult;
+        }else if (scope?.['fullName']) {
+            // 'scope' is a 'TestCaseResult'
+            this.test = scope;
+        } else if (scope?.getState?.()) {
+            // 'scope' is an 'expect' object
+            const state = scope.getState();
+            this.test = {
+                fullName: state.currentTestName,
+                get duration(): number { return convert.toElapsedMs(this.startTime) / 1000; }
+            } as TestCaseResult;
         }
-        return this._testcases;
     }
 
-    async pass(): Promise<void> {
+    /**
+     * the value from `jest.TestCaseResult.fullName`
+     */
+    override get fullName(): string {
+        return this.test?.fullName ?? 'unknown';
+    }
+
+    override async pass(): Promise<void> {
         this._fsMap.set(this.fullName, {
             fullName: this.fullName,
             numPassingAsserts: 1,
@@ -48,7 +57,7 @@ export class AftTest extends AftLog {
         await this._logResult('passed');
     }
 
-    async fail(reason?: string): Promise<void> {
+    override async fail(reason?: string): Promise<void> {
         let err: string = reason ?? 'unknown error occurred';
         if (this.test) {
             err = this.test.failureMessages?.join('\n') ?? err;
@@ -65,139 +74,28 @@ export class AftTest extends AftLog {
         await this._logResult('failed', err);
     }
 
+    /**
+     * see: `pending`
+     * @param reason the reason for skipping this test
+     */
     async skipped(reason?: string): Promise<void> {
-        reason ??= 'test skipped';
+        await this.pending(reason);
+    }
+    /**
+     * marks the test as skipped in all downstream reporting
+     * @param message the reason for skipping this test
+     */
+    override async pending(message?: string): Promise<void> {
+        message ??= 'test skipped';
         this._fsMap.set(this.fullName, {
             fullName: this.fullName,
             numPassingAsserts: 0,
             status: 'skipped',
             duration: this.test.duration,
-            failureMessages: [reason],
+            failureMessages: [message],
             ancestorTitles: undefined,
             title: undefined
         });
-        await this._logResult('skipped', reason);
-    }
-
-    /**
-     * determines if any of the referenced Test Case ID's should be run according to the
-     * loaded `TestExecutionPolicyPlugin` implementations' `shouldRun` methods
-     * @returns `true` if test should be run, otherwise `false`
-     */
-    async shouldRun(): Promise<boolean> {
-        const shouldRun = await this._getVerifier(Verifier).shouldRun();
-        return shouldRun.result;
-    }
-
-    /**
-     * creates a new {Verifier} that will run the passed in `assertion` if the `shouldRun` function
-     * returns `true` otherwise it will bypass execution
-     * @param assertion a function that performs test actions and will accept a {Verifier} instance
-     * for use during the test actions' execution
-     * @param verifierType an optional {Verifier} class to use instead of the base {Verifier} type
-     * @returns a {Verifier} instance already configured with test cases, description, logger and config
-     */
-    verify<T extends Verifier>(assertion: Func<T, any>, verifierType?: Class<T>): T {
-        return this._getVerifier<T>(verifierType)
-            .verify(assertion) as T;
-    }
-
-    protected _getVerifier<T extends Verifier>(verifierType?: Class<T>): T {
-        verifierType ??= Verifier as Class<T>;
-        return new verifierType()
-            .internals.usingReporter(this.reporter)
-            .internals.usingAftConfig(this.aftCfg)
-            .withDescription(this.fullName)
-            .withTestIds(...this.testcases)
-            .on('skipped', () => this.skipped()) as T;
-    }
-
-    async dispose(): Promise<void> {
-        await this.reporter.dispose();
-    }
-
-    /**
-     * creates `ITestResult` objects for each `testId` and sends these
-     * to the `Reporter.logResult` function
-     * @param result an `IProcessingResult` returned from executing the 
-     * expectation
-     */
-     protected async _logResult(status: TestStatus, message?: string): Promise<void> {
-        try {
-            status = status || 'untested';
-            if (this.testcases.length) {
-                this.testcases.forEach(async (testId: string) => {
-                    if (message) {
-                        await this._logMessage(status, `${testId} - ${message}`);
-                    } else {
-                        await this._logMessage(status, testId);
-                    }
-                });
-            } else {
-                await this._logMessage(status, message);
-            }
-
-            let results: TestResult[] = await this._generateTestResults(status, message, ...this.testcases);
-            for (var i=0; i<results.length; i++) {
-                let result: TestResult = results[i];
-                try {
-                    await this.reporter.submitResult(result);
-                } catch (e) {
-                    await this.reporter.warn(`unable to log test result for test '${result.testId || result.resultId}' due to: ${Err.short(e)}`);
-                }
-            }
-        } finally {
-            await this.reporter.dispose();
-        }
-    }
-
-    protected async _logMessage(status: TestStatus, message?: string): Promise<void> {
-        message = message || this.reporter.reporterName;
-        switch (status) {
-            case 'blocked':
-            case 'retest':
-            case 'skipped':
-            case 'untested':
-                await this.reporter.warn(message);
-                break;
-            case 'failed':
-                await this.reporter.fail(message);
-                break;
-            case 'passed':
-            default:
-                await this.reporter.pass(message);
-                break;
-        }
-    }
-
-    protected async _generateTestResults(status: TestStatus, logMessage: string, ...testIds: string[]): Promise<TestResult[]> {
-        let results: TestResult[] = [];
-        if (testIds.length > 0) {
-            for (var i=0; i<testIds.length; i++) {
-                let testId: string = testIds[i];
-                let result: TestResult = await this._generateTestResult(status, logMessage, testId);
-                results.push(result);
-            }
-        } else {
-            let result: TestResult = await this._generateTestResult(status, logMessage);
-            results.push(result);
-        }
-        return results;
-    }
-
-    protected async _generateTestResult(status: TestStatus, logMessage: string, testId?: string): Promise<TestResult> {
-        const result: TestResult = {
-            testId: testId,
-            created: Date.now(),
-            resultId: rand.guid,
-            resultMessage: logMessage,
-            status: status,
-            metadata: {
-                durationMs: (this.test?.duration ?? 0) * 1000,
-                buildName: await this.buildInfoMgr.buildName() || 'unknown',
-                buildNumber: await this.buildInfoMgr.buildNumber() || 'unknown'
-            }
-        };
-        return result;
+        await this._logResult('skipped', message);
     }
 }

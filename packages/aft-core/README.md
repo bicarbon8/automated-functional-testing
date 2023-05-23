@@ -183,9 +183,9 @@ describe('Sample Test', () => {
          * failure or skipped status
          */
         await verify(async () => await feature.performAction())
-        .withTestId('C1234')
-        .and.withDescription("expect that performAction will return 'result of action'")
-        .returns('result of action');
+            .withTestId('C1234')
+            .and.withDescription("expect that performAction will return 'result of action'")
+            .returns('result of action');
     });
 });
 ```
@@ -195,3 +195,17 @@ in the above example, the `await feature.performAction()` call will only be run 
 ```
 09:14:01 - [expect that performAction will return 'result of action'] - TRACE - no TestExecutionPolicyPlugin in use so run all tests
 ```
+
+### VerifierMatcher
+the `.returns(...)` function on a `Verifier` can accept a `VerifierMatcher` instance to enhance the comparison capabilities performed by the `Verifier.returns` check. the following `VerifierMatcher` types are supported within AFT Core:
+> NOTE: if no `VerifierMatcher` is supplied then `equaling` is used by default
+- `equaling`: performs a `'=='` test between the `actual` and `expected`. ex: `await verify(() => 0).returns(equaling(false)); // success`
+- `exactly`: performs a `'==='` test between the `actual` and `expected`. ex: `await verify(() => 0).returns(exactly(false)); // fail`
+- `equivalent`: iterates over all keys of `expected` and compares their type and values to those found on `actual`. ex: `await verify(() => {foo: 'bar'}).returns({foo: 'foo'}); // fail`
+- `between`: verifies that the `actual` numerical value is either equal to or between the `minimum` and `maximum` expected values. ex: `await verify(() => 42).returns(between(42, 45)); // success`
+- `containing`: verifies that the `actual` collection contains the `expected` value. ex: `await verify(() => [0, 1, 2, 3]).returns(containing(2)); // success`
+- `havingProps`: iterates over all keys of `expected` and compares their type to those found on `actual`. this differs from `equivalent` in that the actual values are not part of the comparison. ex: `await verify(() => {foo: 'bar'}).returns(havingProps({foo: 'foo'})); // success`
+- `havingValue`: verifies that the `actual` is not equal to `null` or `undefined`. ex: `await verify(() => false).returns(havingValue()); // success`
+- `greaterThan`: verifies that the `actual` numerical value is greater than the `expected`. ex: `await verify(() => 2).returns(greaterThan(0)); // success`
+- `lessThan`: verifies that the `actual` numerical value is less than the `expected`. ex: `await verify(() => 0).returns(lessThan(1)); // success`
+- `not`: a special use `VerifierMatcher` that negates any `VerifierMatcher` passed into it. ex: `await verify(() => [0, 1, 2]).returns(not(containing(1))); // fails`

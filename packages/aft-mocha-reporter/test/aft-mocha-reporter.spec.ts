@@ -1,10 +1,10 @@
 import { expect } from "chai";
-import { AftLog, AftTest } from "../src";
+import { AftTest } from "../src";
 import * as sinon from "sinon";
 import { Verifier, equaling } from "aft-core";
 
 describe('AftMochaReporter', () => {
-    it('passes a Mocha Test to the test that can be used by AftLog', async function () {
+    it('passes a Mocha Test to the test that can be used by AftTest', async function () {
         this.timeout(10000);
         const t = new AftTest(this);
         const shouldRun = await t.shouldRun();
@@ -13,7 +13,7 @@ describe('AftMochaReporter', () => {
         }
         expect(t).to.exist;
         expect(t.reporter).to.exist;
-        expect(t.reporter.reporterName).to.equal(t.fullTitle);
+        expect(t.reporter.reporterName).to.equal(t.fullName);
 
         await t.reporter.trace('sample log message');
     });
@@ -31,7 +31,7 @@ describe('AftMochaReporter', () => {
     });
 
     it('still works if using an arrow function', async () => {
-        const t = new AftLog(this);
+        const t = new AftTest(this);
         
         expect(t).to.exist;
         expect(t.reporter).to.exist;

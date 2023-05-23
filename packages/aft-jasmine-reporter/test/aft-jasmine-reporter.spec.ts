@@ -1,13 +1,12 @@
 import { Verifier, equaling } from "aft-core";
 import { AftTest } from "../src";
-import { AftLog } from "../src/aft-log";
 
 describe('AftJasmineReporter', () => {
-    it('can create an AftLog instance', async () => {
-        const t = new AftLog();
+    it('can create an AftTest instance', async () => {
+        const t = new AftTest();
         await t.reporter.info('starting AftJasmineReporter test...');
         expect(t.test).toBeDefined();
-        expect(t.fullName).toEqual('AftJasmineReporter can create an AftLog instance');
+        expect(t.fullName).toEqual('AftJasmineReporter can create an AftTest instance');
         await t.reporter.info('completed AftJasmineReporter test.');
     });
 
