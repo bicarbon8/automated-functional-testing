@@ -271,10 +271,12 @@ export const containing = (expected: any): ValueContaining => {
 
 class HavingProperties implements VerifierMatcher {
     readonly expected: any;
+    private readonly _maxDepth: number;
     private _actual: unknown;
     private _failure: string;
-    constructor(expected: Record<string | number | symbol, any>) {
+    constructor(expected: Record<string | number | symbol, any>, maxDepth: number = Infinity) {
         this.expected = expected;
+        this._maxDepth = maxDepth ?? 1;
     }
     setActual(actual: unknown): VerifierMatcher {
         this._actual = actual;
@@ -298,7 +300,7 @@ class HavingProperties implements VerifierMatcher {
     failureString(): string {
         return this._failure;
     }
-    private _compareObjects(actual: Record<string | number | symbol, any>, expected: Record<string | number | symbol, any>): boolean {
+    private _compareObjects(actual: Record<string | number | symbol, any>, expected: Record<string | number | symbol, any>, depth: number = 1): boolean {
         let equivalent: boolean = true;
         const expectedKeys = Object.keys(expected);
         for (let prop of expectedKeys) {
@@ -313,9 +315,11 @@ class HavingProperties implements VerifierMatcher {
                 break;
             }
             if (typeof expected[prop] === 'object') {
-                equivalent = this._compareObjects(actual[prop], expected[prop]);
-                if (!equivalent) {
-                    break;
+                if (depth < this._maxDepth) {
+                    equivalent = this._compareObjects(actual[prop], expected[prop], depth + 1);
+                    if (!equivalent) {
+                        break;
+                    }
                 }
             }
         }
@@ -350,9 +354,10 @@ class HavingProperties implements VerifierMatcher {
  * await verifier(() => {foo: 'bar', baz: true}).returns(havingProps({foo: 'any', baz: false})); // succeeds
  * ```
  * @param expected an object or array containing properties
+ * @param maxDepth a number indicating how deeply comparison should recurse into the objects @default Infinity
  * @returns a new {HavingProperties} instance
  */
-export const havingProps = (expected: Record<string | number | symbol, any>) => new HavingProperties(expected);
+export const havingProps = (expected: Record<string | number | symbol, any>, maxDepth: number = Infinity) => new HavingProperties(expected, maxDepth);
 
 class HavingValue implements VerifierMatcher {
     readonly expected: string = 'value other than null or undefined';
