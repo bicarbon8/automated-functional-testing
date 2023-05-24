@@ -18,7 +18,7 @@ export class AftTest extends AftTestIntegration {
      */
     constructor(scope?: any, aftCfg?: AftConfig) {
         super(scope, aftCfg);
-        this._fsMap = new FileSystemMap<string, Omit<TestCaseResult, 'failureDetails'>>(AftJestReporter.name, [], this.aftCfg);
+        this._fsMap = new FileSystemMap<string, Omit<TestCaseResult, 'failureDetails'>>('AftJestReporter', [], this.aftCfg);
         if (typeof scope === 'string') {
             this.test = {
                 fullName: scope,
