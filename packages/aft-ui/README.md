@@ -71,5 +71,4 @@ the `aft-ui-selenium` package contains a `UiSessionGeneratorPlugin` called `grid
 }
 ```
 - **generatorName** - a `string` containing the class name (optionally separated using `-` characters) that is used to get the specific `UiSessionGeneratorPlugin` implementation to be used
-
-> NOTE: if using the `LocalBrowserSessionGeneratorPlugin` you may also need to include npm package references to your Browser Driver package such as `ChromeDriver`
+- **options** - an `object` containing values that will be passed in to any `UiSessionGeneratorPlugin.getSession(sessionOptions)` call. it is up to the plugin to handle this data and the structure will be defined by the plugin being used. _the example above assumes a usage of the `grid-session-generator-plugin` from `aft-ui-selenium` to connect to BrowserStack's Automate service_
