@@ -21,28 +21,8 @@ while no configuration is required, the `aft-mocha-reporter` supports all AFT co
 ## AFT Helpers
 this package comes with two helper classes that can be utilised from within your Mocha specs to make use of AFT features.
 
-### `AftLog`
-the `AftLog` class provides access to an AFT `Reporter` instance for your currently executing spec file. you can use it like the following:
-> **!!WARNING!!** using arrow functions in your Spec definition **IS NOT SUPPORTED** if using `AftLog` because it removes the `this` scope
-```javascript
-describe('YourTestSuite', () => {
-    it('allows you to log using AFT Reporter', async function() {
-        const aft = new AftLog(this);
-        await aft.reporter.step('starting test...');
-        /* do some test things here */
-        await aft.reporter.step('test is complete');
-    });
-});
-```
-and which would output the following to your console and any AFT `ReportingPlugin` instances referenced in your `aftconfig.json` (assuming your test expectations all pass)
-```text
-17:52:45 - [YourTestSuite allows you to log using AFT Reporter] - STEP - starting test...
-17:54:02 - [YourTestSuite allows you to log using AFT Reporter] - STEP - test is complete
-17:54:02 - [YourTestSuite allows you to log using AFT Reporter] - PASS - YourTestSuite allows you to log using AFT Reporter
-```
-
 ### `AftTest`
-the `AftTest` class extends from the `AftLog` adding the ability to parse the Spec name for any referenced Test. each Test ID must be surrounded with square brackets `[ABC123]`. you can then either directly call the `AftTest.shouldRun()` async function which will determine if your test should be run based on any AFT `TestExecutionPolicyPlugin` instances referenced in your `aftconfig.json` file or you can call `AftTest.verify(assertion)` which will perform the `AftTest.shouldRun()` call and mark the test as skipped if it should not be run. using the `AftTest` class would look like the following:
+the `AftTest` class extends from the `AftTestIntegration` class providing the ability to parse the Spec name for any referenced Test. each Test ID must be surrounded with square brackets `[ABC123]`. you can then either directly call the `AftTest.shouldRun()` async function which will determine if your test should be run based on any AFT `TestExecutionPolicyPlugin` instances referenced in your `aftconfig.json` file or you can call `AftTest.verify(assertion)` which will perform the `AftTest.shouldRun()` call and mark the test as skipped if it should not be run. using the `AftTest` class would look like the following:
 > **!!WARNING!!** using arrow functions in your Spec definition **IS NOT SUPPORTED** if using `AftTest` because it removes the `this` scope
 ```javascript
 describe('YourTestSuite', () => {
@@ -64,11 +44,11 @@ which would output the following to your console and any AFT `ReportingPlugin` i
 ```
 
 ## NOTES
-- the `AftLog` and `AftTest` constructors expects to be passed a valid `scope` containing reference to the currently executing `Mocha.Test`. typically this will be the `this` object within your Spec
-- this Mocha `Reporter` works in both parallel and sequential execution modes, but you **MUST ALWAYS** use a non-arrow function for your Spec definition if you are using `AftLog` or `AftTest` classes within your Spec
-- you can use the AFT `Verifier` in combination with the `AftLog` or `AftTest` classes like follows:
+- the `AftTest` constructors expects to be passed a valid `scope` containing reference to the currently executing `Mocha.Test`. typically this will be the `this` object within your Spec
+- this Mocha `Reporter` works in both parallel and sequential execution modes, but you **MUST ALWAYS** use a non-arrow function for your Spec definition if you are using `AftTest` class within your Spec
+- you can use the AFT `Verifier` in combination with the `AftTest` classes like follows:
 ```javascript
-const aft = new AftTest();
+const aft = new AftTest(this);
 await aft.verify((v: Verifier) => {
     /* perform testing here */
 }).returns(expected);

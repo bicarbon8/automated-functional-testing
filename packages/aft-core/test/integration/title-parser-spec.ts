@@ -1,6 +1,4 @@
-import * as chai from 'chai';
-import { TitleParser } from '../src/title-parser';
-const expect = chai.expect;
+import { TitleParser } from '../../src';
 
 describe('TitleParser', () => {
     const tcdata = [
@@ -22,7 +20,7 @@ describe('TitleParser', () => {
     ];
     tcdata.forEach((d) => {
         it(`can parse cases from titles: '${d.title}'`, function () {
-            expect(TitleParser.parseTestIds(d.title)).to.eql(d.expected);
+            expect(TitleParser.parseTestIds(d.title)).toEqual(d.expected);
         });
     });
 });

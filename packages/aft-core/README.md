@@ -6,6 +6,7 @@ the base Automated Functional Testing (AFT) library providing support for Plugin
 
 ## Configuration
 the `aft-core` package contains the `aftConfig` constant class (instance of `new AftConfig()`) for reading in configuration an `aftconfig.json` file at the project root. this configuration can be read as a top-level field using `aftConfig.get('field_name')` or `aftConfig.get('field_name', defaultVal)` and can also be set without actually modifying the values in your `aftconfig.json` using `aftConfig.set('field_name', val)`. additionally, configuration classes can be read using `AftConfig` with the `aftConfig.getSection(ConfigClass)` which will read from your `aftconfig.json` file for a field named `ConfigClass`
+> NOTE: when a new instance of `AftConfig` is created the `dotenv` package is run and any `.env` file found at your project root (`process.cwd()`) will be processed into your environment variables making it easier to load values when developing and testing locally.
 
 Ex: with an `aftconfig.json` containing:
 ```json
@@ -167,13 +168,21 @@ export class TestRailTestExecutionPolicyPlugin extends TestExecutionPolicyPlugin
 }
 ```
 
+## Integration with javascript test frameworks
+the `aft-core` package comes with an `AftTestIntegration` class which can be extended from to allow near seamless integration of AFT's reporting and test execution flow control features. AFT already has packages for integration with a few of the major test frameworks such as Jasmine, Mocha and Jest and these can be used as examples for implementing your own as needed if you are using some other test framework _(NOTE: the Mocha integration also works with Cypress)_. 
+- `aft-jasmine-reporter`: [aft-test](../aft-jasmine-reporter/README.md#afttest)
+- `aft-mocha-reporter`: [aft-test](../aft-mocha-reporter/README.md#afttest)
+- `aft-jest-reporter`: [aft-test](../aft-jest-reporter/README.md#afttest)
+
 ## Testing with the Verifier
 the `Verifier` class and `verify` functions of `aft-core` enable testing with pre-execution filtering based on integration with external test execution policy managers via plugin packages extending the `TestExecutionPolicyPlugin` class (see examples above).
 
 ```typescript
+// jasmine spec using `aft-jasmine-reporter` package
 describe('Sample Test', () => {
-    it('can perform a demonstration of AFT', async () => {
-        let feature: FeatureObj = new FeatureObj();
+    it("[C1234] expect that performAction will return 'result of action'", async () => {
+        const aft = new AftTest();
+        const feature: FeatureObj = new FeatureObj();
         /**
          * the `verify(assertion).returns(expectation)` function
          * checks any specified `TestExecutionPolicyPlugin` implementations
@@ -182,16 +191,27 @@ describe('Sample Test', () => {
          * with an `TestResult` indicating the success,
          * failure or skipped status
          */
-        await verify(async () => await feature.performAction())
-        .withTestId('C1234')
-        .and.withDescription("expect that performAction will return 'result of action'")
-        .returns('result of action');
+        await aft.verify(async () => await feature.performAction())
+            .returns('result of action');
     });
 });
 ```
-> NOTE: if using the `aft-jasmine-reporter` or `aft-mocha-reporter` it is even easier to set the test IDs. see examples at [jasmine](../aft-jasmine-reporter/README.md#afttest) and [mocha](../aft-mocha-reporter/README.md#afttest)
 
 in the above example, the `await feature.performAction()` call will only be run if a `TestExecutionPolicyPlugin` is loaded and returns `true` from it's `shouldRun(testId: string)` function (or no `TestExecutionPolicyPlugin` is loaded). additionally, any logs associated with the above `verify` call will use a `logName` of `"expect_that_performAction_will_return_result_of_action"` resulting in log lines like the following:
 ```
 09:14:01 - [expect that performAction will return 'result of action'] - TRACE - no TestExecutionPolicyPlugin in use so run all tests
 ```
+
+### VerifierMatcher
+the `.returns(...)` function on a `Verifier` can accept a `VerifierMatcher` instance to enhance the comparison capabilities performed by the `Verifier.returns` check. the following `VerifierMatcher` types are supported within AFT Core:
+> NOTE: if no `VerifierMatcher` is supplied then `equaling` is used by default
+- `equaling`: performs a `'=='` test between the `actual` and `expected`. ex: `await verify(() => 0).returns(equaling(false)); // success`
+- `exactly`: performs a `'==='` test between the `actual` and `expected`. ex: `await verify(() => 0).returns(exactly(false)); // fail`
+- `equivalent`: iterates over all keys of `expected` and compares their type and values to those found on `actual`. ex: `await verify(() => {foo: 'bar'}).returns({foo: 'foo'}); // fail`
+- `between`: verifies that the `actual` numerical value is either equal to or between the `minimum` and `maximum` expected values. ex: `await verify(() => 42).returns(between(42, 45)); // success`
+- `containing`: verifies that the `actual` collection contains the `expected` value. ex: `await verify(() => [0, 1, 2, 3]).returns(containing(2)); // success`
+- `havingProps`: iterates over all keys of `expected` and compares their type to those found on `actual`. this differs from `equivalent` in that the actual values are not part of the comparison. ex: `await verify(() => {foo: 'bar'}).returns(havingProps({foo: 'foo'})); // success`
+- `havingValue`: verifies that the `actual` is not equal to `null` or `undefined`. ex: `await verify(() => false).returns(havingValue()); // success`
+- `greaterThan`: verifies that the `actual` numerical value is greater than the `expected`. ex: `await verify(() => 2).returns(greaterThan(0)); // success`
+- `lessThan`: verifies that the `actual` numerical value is less than the `expected`. ex: `await verify(() => 0).returns(lessThan(1)); // success`
+- `not`: a special use `VerifierMatcher` that negates any `VerifierMatcher` passed into it. ex: `await verify(() => [0, 1, 2]).returns(not(containing(1))); // fails`

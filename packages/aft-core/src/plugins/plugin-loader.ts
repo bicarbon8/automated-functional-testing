@@ -4,6 +4,7 @@ import { convert } from '../helpers/convert';
 import { Plugin } from './plugin';
 import { AftConfig, aftConfig } from '../configuration/aft-config';
 import { Class } from '../helpers/custom-types';
+import { havingProps } from '../verification/verifier-matcher';
 
 class PluginLoader {
     private readonly _pluginsMap: Map<string, Plugin>;
@@ -51,14 +52,7 @@ class PluginLoader {
         const classInst = new clazz();
         for (var pKey of this._pluginsMap.keys()) {
             let plugin = this._pluginsMap.get(pKey);
-            let isMatch = true;
-            for (var cKey of Object.keys(classInst)) {
-                let pluginKeys = Object.keys(plugin);
-                if (!pluginKeys.includes(cKey) || typeof plugin[cKey] !== typeof classInst[cKey]) {
-                    isMatch = false;
-                    break;
-                }
-            }
+            let isMatch = havingProps(classInst, 1).setActual(plugin).compare();
             if (isMatch) {
                 plugins.push(plugin as T);
             }

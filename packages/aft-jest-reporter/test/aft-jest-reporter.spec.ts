@@ -1,14 +1,13 @@
 import { test, jest, expect } from "@jest/globals";
 import { Verifier, equaling } from "aft-core";
 import { AftTest } from "../src";
-import { AftLog } from "../src/aft-log";
 
 describe('AftJestReporter', () => {
-    test('can create an AftLog instance', async () => {
-        const aft = new AftLog(expect);
+    test('can create an AftTest instance', async () => {
+        const aft = new AftTest(expect);
         await aft.reporter.info('starting AftJestReporter test...');
         expect(aft.test).toBeDefined();
-        expect(aft.fullName).toEqual('AftJestReporter can create an AftLog instance');
+        expect(aft.fullName).toEqual('AftJestReporter can create an AftTest instance');
         await aft.reporter.info('completed AftJestReporter test.');
     });
 
