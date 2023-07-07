@@ -1,3 +1,6 @@
+import * as fs from 'fs';
+import * as path from 'path';
+import * as process from 'process';
 import * as dotenv from "dotenv";
 import { Class, JsonObject, JsonValue, RetryBackOffType } from "../helpers/custom-types";
 import { fileio } from "../helpers/file-io";
@@ -7,15 +10,17 @@ export class AftConfig {
     private readonly _cfg: JsonObject;
     private readonly _valueCache: Map<string, JsonValue>;
     private readonly _sectionCache: Map<string, {}>;
+    private static readonly _fileCandidates = Object.freeze(new Array<string>(
+        'aftconfig.json',
+        'aftconfig.js',
+        'aftconfig.cjs',
+        'aftconfig.mjs'
+    ));
 
     constructor(config?: JsonObject) {
         this._cfg = config;
         if (!this._cfg) {
-            try {
-                this._cfg = fileio.readAs<JsonObject>('aftconfig.json');
-            } catch {
-                this._cfg = {};
-            }
+            this._cfg = this._loadConfigFile();
         }
         this._valueCache = new Map<string, JsonValue>();
         this._sectionCache = new Map<string, {}>();
@@ -253,6 +258,24 @@ export class AftConfig {
             }
         }
         return input;
+    }
+
+    private _loadConfigFile(): JsonObject {
+        const cfgFile = AftConfig._fileCandidates
+            .map(c => path.resolve(process.cwd(), c))
+            .find(c => fs.existsSync(c));
+        if (cfgFile) {
+            try {
+                if (cfgFile.endsWith('.json')) {
+                    return fileio.readAs<JsonObject>(cfgFile);
+                } else {
+                    return require(cfgFile) as JsonObject;
+                }
+            } catch {
+                /* ignore */
+            }
+        }
+        return {};
     }
 }
 
