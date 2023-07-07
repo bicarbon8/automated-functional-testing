@@ -5,8 +5,10 @@ the base Automated Functional Testing (AFT) library providing support for Plugin
 `> npm i aft-core`
 
 ## Configuration
-the `aft-core` package contains the `aftConfig` constant class (instance of `new AftConfig()`) for reading in configuration an `aftconfig.json` file at the project root. this configuration can be read as a top-level field using `aftConfig.get('field_name')` or `aftConfig.get('field_name', defaultVal)` and can also be set without actually modifying the values in your `aftconfig.json` using `aftConfig.set('field_name', val)`. additionally, configuration classes can be read using `AftConfig` with the `aftConfig.getSection(ConfigClass)` which will read from your `aftconfig.json` file for a field named `ConfigClass`
-> NOTE: when a new instance of `AftConfig` is created the `dotenv` package is run and any `.env` file found at your project root (`process.cwd()`) will be processed into your environment variables making it easier to load values when developing and testing locally.
+the `aft-core` package contains the `aftConfig` constant class (instance of `new AftConfig()`) for reading in configuration an `aftconfig.json`, `aftconfig.js`, `aftconfig.cjs` or `aftconfig.mjs` file at the project root. this configuration can be read as a top-level field using `aftConfig.get('field_name')` or `aftConfig.get('field_name', defaultVal)` and can also be set without actually modifying the values in your `aftconfig.json` using `aftConfig.set('field_name', val)`. additionally, configuration classes can be read using `AftConfig` with the `aftConfig.getSection(ConfigClass)` which will read from your `aftconfig.json` file for a field named `ConfigClass`
+> NOTE: 
+> - when a new instance of `AftConfig` is created the `dotenv` package is run and any `.env` file found at your project root (`process.cwd()`) will be processed into your environment variables making it easier to load values when developing and testing locally.
+> - if using a javascript `aftconfig` file, you must export the config object using `module.exports = { ... }`
 
 Ex: with an `aftconfig.json` containing:
 ```json
