@@ -46,7 +46,7 @@ XML to object deserialisation will use the following rules:
 <xml>
     <image src="./foo/bar/baz.jpg" />
     <hr />
-    <span style="color:#808080">
+    <span style="color:#808080" class="hidden rounded">
         This is coloured
     </span>
 </xml>
@@ -61,6 +61,7 @@ will become:
         "hr": {},
         "span": {
             "@style": "color:#808080",
+            "@class": "hidden rounded",
             "keyValue": "This is coloured"
         }
     }

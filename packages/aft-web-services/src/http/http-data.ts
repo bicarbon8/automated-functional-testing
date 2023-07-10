@@ -1,13 +1,12 @@
-import { JsonObject } from "aft-core";
+import { Func, JsonObject } from "aft-core";
 import { XML } from "../helpers/xml";
 import { HttpResponse } from "./http-custom-types";
-import { DOMParser } from 'xmldom';
 
 class HttpData {
-    private readonly _xmlParser: DOMParser;
+    private readonly _xmlParser: Func<string, JsonObject>;
 
-    constructor() {
-        this._xmlParser = new DOMParser();
+    constructor(xmlParser?: Func<string, JsonObject>) {
+        this._xmlParser = xmlParser ?? XML.fromString;
     }
 
     /**
@@ -21,13 +20,13 @@ class HttpData {
      */
     as<T extends JsonObject>(response: HttpResponse): T {
         if (response.headers && response.headers['content-type']) {
-            let contentType: string = response.headers['content-type'];
+            const contentType: string = response.headers['content-type'];
             if(contentType.match(/(xml|html)/) !== null) {
-                let doc: Document = this._xmlParser.parseFromString(response.data, 'text/xml');
-                return XML.toObject(doc);
+                const doc = this._xmlParser(response.data);
+                return doc as T;
             }
         }
-        return JSON.parse(response.data);
+        return JSON.parse(response.data) as T;
     }
 }
 

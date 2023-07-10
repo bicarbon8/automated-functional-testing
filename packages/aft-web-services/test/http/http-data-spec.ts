@@ -22,8 +22,8 @@ describe('HttpData', () => {
         let yop: Yop = httpData.as<Yop>(response);
 
         expect(yop).toBeDefined();
-        expect(yop.foo.bar).toEqual('sample');
-        expect(yop.foo.baz).toEqual(2);
+        expect(yop.foo.bar.keyValue).toEqual('sample');
+        expect(yop.foo.baz.keyValue).toEqual(2);
     });
 });
 
@@ -33,5 +33,8 @@ type Foo = {
 }
 
 type Yop = {
-    foo: Foo;
+    foo: {
+        bar: {keyValue: string},
+        baz: {keyValue: number}
+    };
 }
