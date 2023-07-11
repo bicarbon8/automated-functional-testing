@@ -1,10 +1,10 @@
 import { UiSessionGeneratorPlugin } from "aft-ui";
-import { Browser, remote, RemoteOptions } from "webdriverio";
+import { remote, RemoteOptions } from "webdriverio";
 
 export class WebdriverIoRemoteSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
-    override getSession = async(options?: Record<string, any>): Promise<Browser<'async'>> => {
+    override getSession = async(options?: Record<string, any>): Promise<WebdriverIO.Browser> => {
         const ro: RemoteOptions = {...options} as RemoteOptions;
-        let browser: Browser<'async'>; 
+        let browser: WebdriverIO.Browser; 
         try {
             browser = await remote(ro);
         } catch (e) {

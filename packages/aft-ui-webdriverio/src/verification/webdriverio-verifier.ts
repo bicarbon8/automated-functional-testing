@@ -22,11 +22,11 @@ export class WebdriverIoVerifier extends Verifier {
     }
 
     /**
-     * after a new `Browser<'async'>` session is created, this holds the instance
+     * after a new `Browser` session is created, this holds the instance
      * so it can be referenced from within the executing `assertion`
      */
-    get browser(): Browser<'async'> {
-        return this._browser as Browser<'async'>;
+    get browser(): Browser {
+        return this._browser as Browser;
     }
 
     override get internals(): WebdriverIoVerifierInternals {

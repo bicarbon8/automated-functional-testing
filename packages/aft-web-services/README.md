@@ -43,24 +43,25 @@ XML to object deserialisation will use the following rules:
 
 *Ex:*
 ```xml
-<xml>
+<html>
     <image src="./foo/bar/baz.jpg" />
     <hr />
-    <span style="color:#808080">
+    <span style="color:#808080" class="hidden rounded">
         This is coloured
     </span>
-</xml>
+</html>
 ```
 will become:
 ```json
 {
-    "xml": {
+    "html": {
         "image": {
             "@src": "./foo/bar/baz.jpg",
         },
         "hr": {},
         "span": {
             "@style": "color:#808080",
+            "@class": "hidden rounded",
             "keyValue": "This is coloured"
         }
     }

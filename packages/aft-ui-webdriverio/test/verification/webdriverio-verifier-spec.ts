@@ -5,12 +5,12 @@ import { WebdriverIoVerifier, verifyWithWebdriverIO } from "../../src";
 
 describe('WebdriverIoVerifier', () => {
     it('can create a MobileAppSession', async () => {
-        let mockElement: Element<'async'>;
-        mockElement = jasmine.createSpyObj<Element<'async'>>({
-            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element<'async'>>
+        let mockElement: Element;
+        mockElement = jasmine.createSpyObj<Element>({
+            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element>
         });
-        const mockBrowser: Browser<'async'> = jasmine.createSpyObj<Browser<'async'>>({
-            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element<'async'>>
+        const mockBrowser: Browser = jasmine.createSpyObj<Browser>({
+            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element>
         })
         const sessionMgr = new UiSessionGeneratorManager(new AftConfig({}));
         spyOn(sessionMgr, 'getSession').and.callFake((options?: Record<string, any>): Promise<unknown> => {
@@ -25,12 +25,12 @@ describe('WebdriverIoVerifier', () => {
     });
 
     it('can create a MobileAppSession using specific MobileAppSessionOptions', async () => {
-        let mockElement: Element<'async'>;
-        mockElement = jasmine.createSpyObj<Element<'async'>>({
-            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element<'async'>>
+        let mockElement: Element;
+        mockElement = jasmine.createSpyObj<Element>({
+            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element>
         });
-        const mockBrowser: Browser<'async'> = jasmine.createSpyObj<Browser<'async'>>({
-            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element<'async'>>
+        const mockBrowser: Browser = jasmine.createSpyObj<Browser>({
+            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element>
         })
         const sessionMgr = new UiSessionGeneratorManager(new AftConfig({}));
         spyOn(sessionMgr, 'getSession').and.callFake((options?: Record<string, any>): Promise<unknown> => {
@@ -52,12 +52,12 @@ describe('WebdriverIoVerifier', () => {
     });
 
     it('disposes of MobileAppSession on completion', async () => {
-        let mockElement: Element<'async'>;
-        mockElement = jasmine.createSpyObj<Element<'async'>>({
-            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element<'async'>>
+        let mockElement: Element;
+        mockElement = jasmine.createSpyObj<Element>({
+            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element>
         });
-        const mockBrowser: Browser<'async'> = jasmine.createSpyObj<Browser<'async'>>({
-            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element<'async'>>,
+        const mockBrowser: Browser = jasmine.createSpyObj<Browser>({
+            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element>,
             "deleteSession": Promise.resolve()
         });
         const sessionMgr = new UiSessionGeneratorManager(new AftConfig({}));
@@ -74,12 +74,12 @@ describe('WebdriverIoVerifier', () => {
     });
 
     it('no MobileAppSession is created if assertion should not be run', async () => {
-        let mockElement: Element<'async'>;
-        mockElement = jasmine.createSpyObj<Element<'async'>>({
-            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element<'async'>>
+        let mockElement: Element;
+        mockElement = jasmine.createSpyObj<Element>({
+            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element>
         });
-        const mockBrowser: Browser<'async'> = jasmine.createSpyObj<Browser<'async'>>({
-            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element<'async'>>
+        const mockBrowser: Browser = jasmine.createSpyObj<Browser>({
+            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element>
         })
         const sessionMgr = new UiSessionGeneratorManager(new AftConfig({}));
         spyOn(sessionMgr, 'getSession').and.callFake((options?: Record<string, any>): Promise<unknown> => {
