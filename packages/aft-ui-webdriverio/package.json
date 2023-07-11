@@ -1,6 +1,6 @@
 {
   "name": "aft-ui-webdriverio",
-  "version": "10.2.0",
+  "version": "10.2.1",
   "description": "Automated Functional Testing (AFT) package supporting UI testing in mobile apps with support for BrowserStack, Sauce Labs and Local Appium",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-ui": "^10.2.0",
+    "aft-ui": "^10.2.1",
     "webdriverio": "^8.12.1"
   },
   "devDependencies": {
