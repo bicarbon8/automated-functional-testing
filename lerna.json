@@ -2,6 +2,5 @@
   "packages": [
     "packages/*"
   ],
-  "version": "10.2.0",
-  "useWorkspaces": true
+  "version": "10.2.0"
 }
