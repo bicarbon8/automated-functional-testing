@@ -1,6 +1,6 @@
 {
   "name": "aft-mocha-reporter",
-  "version": "10.2.1",
+  "version": "10.2.2",
   "description": "Automated Functional Testing (AFT) Reporter for use with Mocha Test Framework",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -30,15 +30,15 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-core": "^10.2.1",
+    "aft-core": "^10.2.2",
     "mocha": "^10.2.0"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.1",
     "@types/node": "^20.4.1",
     "@types/sinon": "^10.0.15",
-    "aft-reporting-filesystem": "^10.2.1",
-    "aft-reporting-html": "^10.2.1",
+    "aft-reporting-filesystem": "^10.2.2",
+    "aft-reporting-html": "^10.2.2",
     "chai": "^4.3.7",
     "nyc": "^15.1.0",
     "rimraf": "^5.0.1",
