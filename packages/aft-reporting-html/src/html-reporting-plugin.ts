@@ -4,8 +4,10 @@ import { HtmlTestResult } from "./html-test-result";
 import { HtmlResult } from "./html-result";
 import { htmlTemplate } from "./templates/html-template";
 
+const defaultFileName = 'testresults.html'
+
 export class HtmlReportingPluginConfig extends ReportingPluginConfig {
-    fileName: string = 'testresults.html';
+    fileName = defaultFileName;
     outputDir: string = path.join(process.cwd(), 'logs');
     maxLogLines: number;
     override logLevel: LogLevel = 'warn';
@@ -30,8 +32,8 @@ export class HtmlReportingPlugin extends ReportingPlugin {
         if (this.enabled) {
             this._results = new FileSystemMap<string, Array<HtmlTestResult>>('htmlSharedResults');
             this._logs = new FileSystemMap<string, Array<string>>('htmlSharedLogs');
-            this._fileName = cfg.fileName ?? 'testresults.html';
-            let dir = cfg.outputDir ?? path.join(process.cwd(), 'logs');
+            this._fileName = cfg.fileName ?? defaultFileName;
+            const dir = cfg.outputDir ?? path.join(process.cwd(), 'logs');
             if (path.isAbsolute(dir)) {
                 this._outputDir = dir;
             } else {
@@ -46,12 +48,12 @@ export class HtmlReportingPlugin extends ReportingPlugin {
             return null;
         }
         let fullPathAndFile: string;
-        let filePath: string = this._outputDir;
-        let fileName: string = this._fileName;
+        const filePath: string = this._outputDir;
+        const fileName: string = this._fileName;
         if (filePath && fileName) {
             fullPathAndFile = path.join(filePath, fileName);
         } else {
-            fullPathAndFile = path.join(process.cwd(), 'testresults.html');
+            fullPathAndFile = path.join(process.cwd(), defaultFileName);
         }
         return fullPathAndFile;
     }
@@ -90,11 +92,11 @@ export class HtmlReportingPlugin extends ReportingPlugin {
         if (!this.enabled) {
             return;
         }
-        let expectedLevel: LogLevel = this.logLevel;
-        if (LogLevel.toValue(level) >= LogLevel.toValue(expectedLevel) && level != 'none') {
+        const expectedLevel: LogLevel = this.logLevel;
+        if (LogLevel.toValue(level) >= LogLevel.toValue(expectedLevel) && level !== 'none') {
             const logs = this.logs(name);
             logs.push(`${level} - ${message}`);
-            let max: number = this._maxLogLines;
+            const max: number = this._maxLogLines;
             while (logs.length > max) {
                 logs.shift();
                 logs[0] = `...<br />${logs[0]}`;
@@ -107,7 +109,7 @@ export class HtmlReportingPlugin extends ReportingPlugin {
         if (!this.enabled) {
             return;
         }
-        let htmlTestResult: HtmlTestResult = {
+        const htmlTestResult: HtmlTestResult = {
             testId: result.testId,
             status: result.status,
             logs: this.logs(name ?? result.testName)

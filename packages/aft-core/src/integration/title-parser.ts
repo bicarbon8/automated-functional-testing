@@ -15,8 +15,7 @@ export class TitleParser {
     private static _parseAll(input: string, regex: RegExp): Array<string> {
         const results = new Array<string>();
         const allMatches = [...input.matchAll(regex)];
-        for (var i=0; i<allMatches.length; i++) {
-            let matches = allMatches[i];
+        for (const matches of allMatches) {
             matches?.forEach((match, groupIndex) => {
                 if (groupIndex > 0) {
                     results.push(match);

@@ -83,8 +83,7 @@ class Convert {
     toSafeString(input: string, options: SafeStringOption[] = SafeStringOption.defaults): string {
         let output: string = input;
         if (input) {
-            for (var i=0; i<options.length; i++) {
-                let o: SafeStringOption = options[i];
+            for (const o of options) {
                 output = output.replace(o.exclude, o.replaceWith);
             }
         }

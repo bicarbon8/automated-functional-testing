@@ -92,9 +92,11 @@ export class Verifier implements PromiseLike<void> {
         return this._buildInfoMgr;
     }
 
-    async then<TResult1 = Verifier, TResult2 = never>(onfulfilled?: (value: void) => TResult1 | PromiseLike<TResult1>, onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2> {
-        return this._getInnerPromise()
-            .then(onfulfilled, onrejected);
+    async then<TResult1 = Verifier, TResult2 = never>(
+        onfulfilled?: (value: void) => TResult1 | PromiseLike<TResult1>,
+        onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2> {
+            return this._getInnerPromise()
+                .then(onfulfilled, onrejected);
     }
 
     protected async _getInnerPromise(): Promise<void> {
@@ -140,12 +142,12 @@ export class Verifier implements PromiseLike<void> {
     }
 
     protected async _resolveAssertion(): Promise<void> {
-        let result: any = await Promise.resolve(this._assertion(this));
-        if (this._matcher !== undefined) {
-            if (!this._matcher.setActual(result).compare()) {
+        const result: any = await Promise.resolve(this._assertion(this));
+        if (this._matcher !== undefined
+            && !this._matcher.setActual(result).compare()) {
                 return Promise.reject(`${this._matcher.failureString()}`);
-            }
         }
+        return Promise.resolve();
     }
 
     /**
@@ -210,8 +212,8 @@ export class Verifier implements PromiseLike<void> {
      */
     withTestIds(...testIds: string[]): this {
         if (testIds?.length) {
-            for (var i=0; i<testIds.length; i++) {
-                this._testIds.add(testIds[i]);
+            for (const id of testIds) {
+                this._testIds.add(id);
             }
         }
         return this;
@@ -297,16 +299,12 @@ export class Verifier implements PromiseLike<void> {
      */
     async shouldRun(): Promise<ProcessingResult<boolean>> {
         const shouldRunTests = new Array<string>();
-        const shouldNotRunTests = new Array<string>();
         const testIds = Array.from(this._testIds.keys());
         if (testIds?.length) {
-            for (var i=0; i<testIds.length; i++) {
-                let testId: string = testIds[i];
-                let result: ProcessingResult<boolean> = await this.policyEngMgr.shouldRun(testId);
+            for (const testId of testIds) {
+                const result: ProcessingResult<boolean> = await this.policyEngMgr.shouldRun(testId);
                 if (result.result === true) {
                     shouldRunTests.push(testId);
-                } else {
-                    shouldNotRunTests.push(testId);
                 }
             }
             if (shouldRunTests.length === 0) {
@@ -338,9 +336,8 @@ export class Verifier implements PromiseLike<void> {
                 await this._logMessage(status, message);
             }
 
-            let results: TestResult[] = await this._generateTestResults(status, message, ...Array.from(this._testIds.values()));
-            for (var i=0; i<results.length; i++) {
-                let result: TestResult = results[i];
+            const results: TestResult[] = await this._generateTestResults(status, message, ...Array.from(this._testIds.values()));
+            for (const result of results) {
                 try {
                     await this.reporter.submitResult(result);
                 } catch (e) {
@@ -372,22 +369,21 @@ export class Verifier implements PromiseLike<void> {
     }
 
     protected async _generateTestResults(status: TestStatus, logMessage: string, ...testIds: string[]): Promise<TestResult[]> {
-        let results: TestResult[] = [];
+        const results: TestResult[] = [];
         if (testIds.length > 0) {
-            for (var i=0; i<testIds.length; i++) {
-                let testId: string = testIds[i];
-                let result: TestResult = await this._generateTestResult(status, logMessage, testId);
+            for (const testId of testIds) {
+                const result: TestResult = await this._generateTestResult(status, logMessage, testId);
                 results.push(result);
             }
         } else {
-            let result: TestResult = await this._generateTestResult(status, logMessage);
+            const result: TestResult = await this._generateTestResult(status, logMessage);
             results.push(result);
         }
         return results;
     }
 
     protected async _generateTestResult(status: TestStatus, logMessage: string, testId?: string): Promise<TestResult> {
-        let result: TestResult = {
+        const result: TestResult = {
             testName: this.reporter.reporterName,
             testId: testId,
             created: Date.now(),

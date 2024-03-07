@@ -5,9 +5,9 @@ import * as date from "date-and-time";
 export class FilesystemReportingPluginConfig extends ReportingPluginConfig {
     override logLevel: LogLevel = 'trace';
     outputPath: string = path.join(process.cwd(), 'logs');
-    includeResults: boolean = true;
-    dateFormat: string = 'YYYY-MM-DD HH:mm:ss.SSS';
-};
+    includeResults = true;
+    dateFormat = 'YYYY-MM-DD HH:mm:ss.SSS';
+}
 
 export class FilesystemReportingPlugin extends ReportingPlugin {
     public override get logLevel(): LogLevel {
@@ -96,8 +96,8 @@ export class FilesystemReportingPlugin extends ReportingPlugin {
         data = data || {} as LogMessageData;
         data.message ??= '';
         data.level ??= 'none';
-        let d: string = date.format(new Date(), this._dateFormat);
-        let out: string = `[${d}] - ${data.level.toUpperCase()} - ${data.message}`;
+        const d: string = date.format(new Date(), this._dateFormat);
+        const out = `[${d}] - ${data.level.toUpperCase()} - ${data.message}`;
         return out;
     }
 }

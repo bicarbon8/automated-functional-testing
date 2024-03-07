@@ -10,26 +10,20 @@ this plugin accepts configuration options in the following format:
 `aftconfig.json`
 ```json
 {
-    ...
-    "Reporter": {
-        "level": "info",
-        "plugins": [{
-            "name": "filesystem-reporting-plugin",
-            "options": {
-                "level": "trace",
-                "enabled": true,
-                "outputPath": "./path/relative/to/process/cwd",
-                "includeResults": false,
-                "dateFormat": "YYYY-MM-DD HH:mm:ss.SSS"
-            }
-        }]
-    },
-    ...
+    "pluginsSearchDir": "../node_modules",
+    "pluginNames": [
+      "filesystem-reporting-plugin"
+    ],
+    "FilesystemReportingPluginConfig": {
+        "logLevel": "trace",
+        "outputPath": "./full/path/or/relative/path/to/directory",
+        "includeResults": false,
+        "dateFormat": "YYYY-MM-DD HH:mm:ss.SSS"
+    }
 }
 ```
-- **level** - a `string` containing a valid `LogLevel` _(defaults to value set in `Reporter.level` or `"none"` if not set)_
-- **enabled** - a `boolean` indicating if this plugin should be used _(defaults to `true`)_
-- **outputPath** - a `string` with either an absolute path or a relative path from the `process.cwd()` where .log files will be created _(defaults to `./logs`)_
+- **logLevel** - a `string` containing a valid `LogLevel` _(defaults to `trace` if not set)_
+- **outputPath** - a `string` with either an absolute path or a relative path from the `process.cwd()` where .log files will be created _(defaults to `path.join(process.cwd(), 'logs')`)_
 - **includeResults** - a `boolean` indicating whether calls to any `Reporter.logResult` function will output the `TestResult` to the .log file _(defaults to `true`)_
 - **dateFormat** - a `string` that can include Date Formatting as outlined at the [date-and-time](https://github.com/knowledgecode/date-and-time#formatdateobj-arg-utc) npm package
 

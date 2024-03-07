@@ -20,7 +20,7 @@ export class CacheMap<K extends JsonKey, V extends JsonValue> implements Map<K, 
     constructor(cacheDurationMs: number, useFileCache: boolean, filename?: string) {
         this._cacheDuration = cacheDurationMs;
         if (useFileCache && !filename) {
-            throw `[${this.constructor.name}] when 'useFileCache' is set to 'true', 'filename' must be defined`;
+            throw new Error(`[${this.constructor.name}] when 'useFileCache' is set to 'true', 'filename' must be defined`);
         }
         this._internalMap = (useFileCache) ? new FileSystemMap<K, CacheObject>(filename) : new Map<K, CacheObject>();
     }
@@ -34,9 +34,8 @@ export class CacheMap<K extends JsonKey, V extends JsonValue> implements Map<K, 
     forEach(callbackfn: (value: V, key: K, map: Map<K, V>) => void, thisArg?: any): void {
         const valMap: Map<K, V> = new Map<K, V>();
         const keys: K[] = Array.from(this._internalMap.keys());
-        for (var i=0; i<keys.length; i++) {
-            let key = keys[i];
-            let val = this.get(key);
+        for (const key of keys) {
+            const val = this.get(key);
             valMap.set(key, val);
         }
         valMap.forEach(callbackfn, thisArg);
@@ -73,9 +72,8 @@ export class CacheMap<K extends JsonKey, V extends JsonValue> implements Map<K, 
     entries(): IterableIterator<[K, V]> {
         const entriesMap: Map<K, V> = new Map<K, V>();
         const keys: K[] = Array.from(this._internalMap.keys());
-        for (var i=0; i<keys.length; i++) {
-            let key = keys[i];
-            let val = this.get(key);
+        for (const key of keys) {
+            const val = this.get(key);
             entriesMap.set(key, val);
         }
         return entriesMap.entries();
@@ -84,11 +82,10 @@ export class CacheMap<K extends JsonKey, V extends JsonValue> implements Map<K, 
         return this._internalMap.keys();
     }
     values(): IterableIterator<V> {
-        let values: V[] = [];
+        const values: V[] = [];
         const keys: K[] = Array.from(this._internalMap.keys());
-        for (var i=0; i<keys.length; i++) {
-            let key = keys[i];
-            let val = this.get(key);
+        for (const key of keys) {
+            const val = this.get(key);
             values.push(val);
         }
         return values.values();
@@ -96,9 +93,8 @@ export class CacheMap<K extends JsonKey, V extends JsonValue> implements Map<K, 
     [Symbol.iterator](): IterableIterator<[K, V]> {
         const entriesMap: Map<K, V> = new Map<K, V>();
         const keys: K[] = Array.from(this._internalMap.keys());
-        for (var i=0; i<keys.length; i++) {
-            let key = keys[i];
-            let val = this.get(key);
+        for (const key of keys) {
+            const val = this.get(key);
             entriesMap.set(key, val);
         }
         return entriesMap[Symbol.iterator]();
@@ -106,9 +102,8 @@ export class CacheMap<K extends JsonKey, V extends JsonValue> implements Map<K, 
     get [Symbol.toStringTag](): string {
         const entriesMap: Map<K, V> = new Map<K, V>();
         const keys: K[] = Array.from(this._internalMap.keys());
-        for (var i=0; i<keys.length; i++) {
-            let key = keys[i];
-            let val = this.get(key);
+        for (const key of keys) {
+            const val = this.get(key);
             entriesMap.set(key, val);
         }
         return entriesMap[Symbol.toStringTag];
@@ -116,8 +111,8 @@ export class CacheMap<K extends JsonKey, V extends JsonValue> implements Map<K, 
 
     private _isStillValid(cacheObject: CacheObject): boolean {
         if (cacheObject) {
-            let validUntil: number = cacheObject.validUntil || 0;
-            let now: number = Date.now();
+            const validUntil: number = cacheObject.validUntil || 0;
+            const now: number = Date.now();
             if (now <= validUntil) {
                 return true;
             }
