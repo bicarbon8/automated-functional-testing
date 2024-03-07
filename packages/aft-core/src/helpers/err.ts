@@ -1,6 +1,6 @@
 import { LogLevel } from '../logging/log-level';
 import { Reporter } from '../plugins/reporting/reporter';
-import { AftLogger, aftLogger } from '../logging/aft-logger';
+import { aftLogger } from '../logging/aft-logger';
 import { convert } from './convert';
 import { Func } from './custom-types';
 import { ellide } from './ellide';
@@ -135,8 +135,8 @@ export class Err {
     private _removeInternalStackLines(stack: string): string {
         const resultStackLines = new Array<string>();
         const stackLines: Array<string> = stack?.split('\n') || [];
-        for (var i=1; i<stackLines.length; i++) {
-            let line = stackLines[i];
+        for (let i=1; i<stackLines.length; i++) {
+            const line = stackLines[i];
             if (line.match(/.*(err).(ts|js)/gi) == null) {
                 resultStackLines.push(line);
             }
@@ -195,12 +195,12 @@ export module Err {
             opts.errLevel ??= 'warn';
             const err = new Err(e).setVerbosity(opts.verbosity);
             if (opts.logger) {
-                opts.logger[opts?.errLevel](e.toString());
+                opts.logger[opts?.errLevel](err.toString());
             } else {
                 aftLogger.log({
                     name: this.constructor.name,
                     level: opts.errLevel,
-                    message: e.toString()
+                    message: err.toString()
                 });
             }
             return null as T;

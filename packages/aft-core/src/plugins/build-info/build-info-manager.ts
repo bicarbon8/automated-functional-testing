@@ -51,9 +51,9 @@ export class BuildInfoManager {
                 });
             }
         }
-        let mi: MachineInfoData = machineInfo.data;
-        let username: string = convert.toSafeString(mi.user, this._safeStrOpt);
-        let machine: string = convert.toSafeString(mi.hostname, this._safeStrOpt);
+        const mi: MachineInfoData = machineInfo.data;
+        const username: string = convert.toSafeString(mi.user, this._safeStrOpt);
+        const machine: string = convert.toSafeString(mi.hostname, this._safeStrOpt);
         return `${username.toLocaleUpperCase()}_${machine.toLocaleUpperCase()}`;
     }
 
@@ -77,17 +77,17 @@ export class BuildInfoManager {
             }
         }
         let d = new Date();
-        let month: number = d.getUTCMonth() + 1;
+        const month: number = d.getUTCMonth() + 1;
         let monthStr: string = month.toString();
         if (month < 10) {
             monthStr = '0' + month;
         }
-        let day: number = d.getUTCDate();
+        const day: number = d.getUTCDate();
         let dayStr: string = day.toString();
         if (day < 10) {
             dayStr = '0' + day;
         }
-        let now: string = convert.toSafeString(`${d.getUTCFullYear()}${monthStr}${dayStr}`, this._safeStrOpt);
+        const now: string = convert.toSafeString(`${d.getUTCFullYear()}${monthStr}${dayStr}`, this._safeStrOpt);
         return now;
     }
 }

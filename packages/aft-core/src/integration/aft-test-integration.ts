@@ -15,7 +15,8 @@ export class AftTestIntegration {
     private readonly _buildMgr: BuildInfoManager;
     private readonly _testCases: Array<string>;
     private _rep: Reporter;
-    private _testName: string;
+    
+    private readonly _testName: string;
 
     public readonly startTime: number;
 
@@ -89,7 +90,7 @@ export class AftTestIntegration {
      */
     verify<T extends Verifier>(assertion: Func<T, any>, verifierType?: Class<T>): T {
         return this._getVerifier<T>(verifierType)
-            .verify(assertion) as T;
+            .verify(assertion);
     }
 
     protected _getVerifier<T extends Verifier>(verifierType?: Class<T>): T {
@@ -126,9 +127,8 @@ export class AftTestIntegration {
                 await this._logMessage(status, message);
             }
 
-            let results: TestResult[] = await this._generateResults(status, message, ...this.testCases);
-            for (var i=0; i<results.length; i++) {
-                let result: TestResult = results[i];
+            const results: TestResult[] = await this._generateResults(status, message, ...this.testCases);
+            for (const result of results) {
                 try {
                     await this.reporter.submitResult(result);
                 } catch (e) {
@@ -160,15 +160,14 @@ export class AftTestIntegration {
     }
 
     protected async _generateResults(status: TestStatus, logMessage: string, ...testIds: string[]): Promise<TestResult[]> {
-        let results: TestResult[] = [];
+        const results: TestResult[] = [];
         if (testIds.length > 0) {
-            for (var i=0; i<testIds.length; i++) {
-                let testId: string = testIds[i];
-                let result: TestResult = await this._generateTestResult(status, logMessage, testId);
+            for (const testId of testIds) {
+                const result: TestResult = await this._generateTestResult(status, logMessage, testId);
                 results.push(result);
             }
         } else {
-            let result: TestResult = await this._generateTestResult(status, logMessage);
+            const result: TestResult = await this._generateTestResult(status, logMessage);
             results.push(result);
         }
         return results;

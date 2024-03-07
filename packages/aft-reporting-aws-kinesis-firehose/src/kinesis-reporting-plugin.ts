@@ -11,8 +11,8 @@ type CheckAndSendOptions = {
 export class KinesisReportingPluginConfig extends ReportingPluginConfig {
     region: string;
     deliveryStream: string;
-    batch: boolean = true;
-    batchSize: number = 10;
+    batch = true;
+    batchSize = 10;
 };
 
 /**
@@ -36,7 +36,6 @@ export class KinesisReportingPluginConfig extends ReportingPluginConfig {
  * - Shared Ini File: read from the host system
  * - ECS Credentials: similar to the EC2 Metadata, but on ECS
  * - Process Credentials: any credentials set on the current process
- * - Options: read from passed in `KinesisReportingPluginOptions`
  */
 export class KinesisReportingPlugin extends ReportingPlugin {
     private readonly _logs: Map<string, AWS.Firehose.Record[]>;
@@ -122,29 +121,25 @@ export class KinesisReportingPlugin extends ReportingPlugin {
     }
 
     override initialise = async (logName: string): Promise<void> => {
-        if (this.enabled) {
-            if (!this._logs.has(logName)) {
-                this._logs.set(logName, new Array<AWS.Firehose.Record>());
-            }
+        if (this.enabled && !this._logs.has(logName)) {
+            this._logs.set(logName, new Array<AWS.Firehose.Record>());
         }
     }
 
     override log = async (name: string, level: LogLevel, message: string, ...data: Array<any>): Promise<void> => {
-        if (this.enabled) {
-            if (LogLevel.toValue(level) >= LogLevel.toValue(this.logLevel) && level != 'none') {
-                let record: AWS.Firehose.Record = this._createKinesisLogRecord({
-                    logName: name,
-                    level: level,
-                    message: message,
-                    version: pkg.version,
-                    buildName: await this._buildInfo.buildName().catch((err) => 'unknown'),
-                    machineInfo: machineInfo.data
-                });
-                const logs = this.logs(name);
-                logs.push(record);
-                this.logs(name, logs);
-                await this._checkAndSendLogs({logName: name});
-            }
+        if (this.enabled && LogLevel.toValue(level) >= LogLevel.toValue(this.logLevel) && level !== 'none') {
+            const record: AWS.Firehose.Record = this._createKinesisLogRecord({
+                logName: name,
+                level: level,
+                message: message,
+                version: pkg.version,
+                buildName: await this._buildInfo.buildName().catch((err) => 'unknown'),
+                machineInfo: machineInfo.data
+            });
+            const logs = this.logs(name);
+            logs.push(record);
+            this.logs(name, logs);
+            await this._checkAndSendLogs({logName: name});
         }
     }
 
@@ -156,7 +151,7 @@ export class KinesisReportingPlugin extends ReportingPlugin {
         if (this.enabled) {
             name ??= result?.testName;
             if (name) {
-                let record: AWS.Firehose.Record = this._createKinesisLogRecord({
+                const record: AWS.Firehose.Record = this._createKinesisLogRecord({
                     logName: name,
                     result: result,
                     version: pkg.version,
@@ -179,8 +174,8 @@ export class KinesisReportingPlugin extends ReportingPlugin {
     }
 
     private _createKinesisLogRecord(logRecord: KinesisLogRecord): AWS.Firehose.Record {
-        let data: string = JSON.stringify(logRecord);
-        let record: AWS.Firehose.Record = {
+        const data: string = JSON.stringify(logRecord);
+        const record: AWS.Firehose.Record = {
             Data: data
         };
         return record;
@@ -192,7 +187,7 @@ export class KinesisReportingPlugin extends ReportingPlugin {
         const logs = this.logs(options.logName);
         if (options?.override || !batch || logs.length >= batchSize) {
             let data: AWS.Firehose.PutRecordBatchOutput | AWS.Firehose.PutRecordOutput;
-            let deliveryStream: string = this.deliveryStream;
+            const deliveryStream: string = this.deliveryStream;
             if (batch) {
                 data = await this._sendBatch(deliveryStream, logs);
             } else {
@@ -209,7 +204,7 @@ export class KinesisReportingPlugin extends ReportingPlugin {
         const client = await this.client();
         return await new Promise((resolve, reject) => {
             try {
-                let batchInput: AWS.Firehose.PutRecordBatchInput = {
+                const batchInput: AWS.Firehose.PutRecordBatchInput = {
                     Records: records,
                     DeliveryStreamName: deliveryStream
                 };
@@ -230,7 +225,7 @@ export class KinesisReportingPlugin extends ReportingPlugin {
         const client = await this.client();
         return await new Promise((resolve, reject) => {
             try {
-                let input: AWS.Firehose.PutRecordInput = {
+                const input: AWS.Firehose.PutRecordInput = {
                     Record: record,
                     DeliveryStreamName: deliveryStream
                 }

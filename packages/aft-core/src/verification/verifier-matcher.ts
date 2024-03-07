@@ -1,5 +1,3 @@
-import { Class } from "../helpers/custom-types";
-
 export interface VerifierMatcher {
     readonly expected: any;
     setActual(actual: any): VerifierMatcher;
@@ -104,17 +102,17 @@ class EquivalentTo implements VerifierMatcher {
     failureString(): string {
         return this._failure;
     }
-    private _compareObjects(actual: Record<string | number | symbol, any>, expected: Record<string | number | symbol, any>, depth: number = 1): boolean {
-        let equivalent: boolean = true;
+    private _compareObjects(actual: Record<string | number | symbol, any>, expected: Record<string | number | symbol, any>, depth = 1): boolean {
+        let equiv = true;
         const expectedKeys = Object.keys(expected);
-        for (let prop of expectedKeys) {
+        for (const prop of expectedKeys) {
             if (actual[prop] == null && expected[prop] != null) {
-                equivalent = false;
+                equiv = false;
                 this._failure = `'actual.${prop}' unset while 'expected.${prop}' had a value`;
                 break;
             }
             if (typeof actual[prop] !== typeof expected[prop]) {
-                equivalent = false;
+                equiv = false;
                 this._failure = `typeof actual.${prop}: '${typeof actual[prop]}' not equal to '${typeof expected[prop]}'`;
                 break;
             }
@@ -122,18 +120,18 @@ class EquivalentTo implements VerifierMatcher {
                 /* ignore */
             } else if (typeof expected[prop] === 'object') {
                 if (depth < this._maxDepth) {
-                    equivalent = this._compareObjects(actual[prop], expected[prop], depth + 1);
-                    if (!equivalent) {
+                    equiv = this._compareObjects(actual[prop], expected[prop], depth + 1);
+                    if (!equiv) {
                         break;
                     }
                 }
             } else if (actual[prop] != expected[prop]) {
-                equivalent = false;
+                equiv = false;
                 this._failure = `actual.${prop}: '${actual[prop]}' != '${expected[prop]}'`;
                 break;
             }
         }
-        return equivalent;
+        return equiv;
     }
 }
 /**
@@ -301,29 +299,28 @@ class HavingProperties implements VerifierMatcher {
         return this._failure;
     }
     private _compareObjects(actual: Record<string | number | symbol, any>, expected: Record<string | number | symbol, any>, depth: number = 1): boolean {
-        let equivalent: boolean = true;
+        let equiv = true;
         const expectedKeys = Object.keys(expected);
-        for (let prop of expectedKeys) {
+        for (const prop of expectedKeys) {
             if (actual[prop] == null && expected[prop] != null) {
-                equivalent = false;
+                equiv = false;
                 this._failure = `'actual.${prop}' unset or non-existing while 'expected.${prop}' exists`;
                 break;
             }
             if (typeof actual[prop] !== typeof expected[prop]) {
-                equivalent = false;
+                equiv = false;
                 this._failure = `typeof actual.${prop}: '${typeof actual[prop]}' not equal to '${typeof expected[prop]}'`;
                 break;
             }
-            if (typeof expected[prop] === 'object') {
-                if (depth < this._maxDepth) {
-                    equivalent = this._compareObjects(actual[prop], expected[prop], depth + 1);
-                    if (!equivalent) {
+            if (typeof expected[prop] === 'object'
+                && depth < this._maxDepth) {
+                    equiv = this._compareObjects(actual[prop], expected[prop], depth + 1);
+                    if (!equiv) {
                         break;
                     }
-                }
             }
         }
-        return equivalent;
+        return equiv;
     }
 }
 /**

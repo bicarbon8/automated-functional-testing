@@ -8,7 +8,7 @@ export class ReportingPluginConfig extends PluginConfig {
 
 export class ReportingPlugin extends Plugin {
     override get enabled(): boolean {
-        return this.logLevel != 'none';
+        return this.logLevel !== 'none';
     }
     /**
      * allows for filtering out of erroneous information from logs by assigning

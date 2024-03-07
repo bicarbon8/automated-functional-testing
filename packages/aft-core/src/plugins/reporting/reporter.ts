@@ -29,7 +29,7 @@ import { cloneDeep } from "lodash";
 export class Reporter {
     readonly plugins: Array<ReportingPlugin>;
     private readonly _aftLogger: AftLogger;
-    private _stepCount: number = 0;
+    private _stepCount = 0;
 
     /**
      * a name unique to a given reporter instance intended to uniquely identify output by
@@ -73,6 +73,14 @@ export class Reporter {
     }
 
     /**
+     * creates a filtered array by checking all plugins' `enabled` property
+     * and handling any exceptions as a `false` enabled state
+     */
+    get enabledPlugins() {
+        return this.plugins?.filter(p => Err.handle(() => p?.enabled)) ?? [];
+    }
+
+    /**
      * calls the `log` function with a `LogLevel` of `trace`
      * @param message the message to be logged
      */
@@ -101,7 +109,8 @@ export class Reporter {
      * @param message the message to be logged
      */
     async step(message: string, ...data: Array<any>): Promise<void> {
-        await this.log('step', ++this._stepCount + ': ' + message, ...data);
+        this._stepCount += 1;
+        await this.log('step', `${this._stepCount}: ${message}`, ...data);
     }
 
     /**
@@ -150,13 +159,7 @@ export class Reporter {
             message, 
             args: data
         });
-        for (var plugin of this.plugins.filter(p => {
-            try{
-                return p?.enabled;
-            } catch (e) {
-                /* ignore */
-            }
-        })) {
+        for (const plugin of this.enabledPlugins) {
             try {
                 await plugin?.log(this.reporterName, level, message, ...data);
             } catch (e) {
@@ -175,7 +178,7 @@ export class Reporter {
      * @param result a `TestResult` object to be sent
      */
     async submitResult(result: TestResult): Promise<void> {
-        for (var plugin of this.plugins.filter(p => Err.handle(() => p?.enabled))) {
+        for (const plugin of this.enabledPlugins) {
             try {
                 await plugin?.submitResult(this.reporterName, cloneDeep(result));
             } catch (e) { 
@@ -195,13 +198,7 @@ export class Reporter {
      */
     async dispose(error?: Error): Promise<void> {
         const name = this.reporterName;
-        for (var plugin of this.plugins.filter(p => {
-            try{
-                return p?.enabled;
-            } catch {
-                /* ignore */
-            }
-        })) {
+        for (const plugin of this.enabledPlugins) {
             try {
                 await plugin?.finalise(name);
             } catch (e) {

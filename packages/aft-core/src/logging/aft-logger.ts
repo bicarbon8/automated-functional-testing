@@ -59,11 +59,11 @@ export class AftLogger {
      * @param data an array of additional data to be included in the logs
      */
     log(data: LogMessageData): void {
-        if (data?.level != 'none' && LogLevel.toValue(data?.level) >= LogLevel.toValue(this.logLevel)) {
-            if (data?.message) {
+        if (data?.level !== 'none'
+            && LogLevel.toValue(data?.level) >= LogLevel.toValue(this.logLevel)
+            && data?.message) {
                 const out: string = this.format(data);
                 this.toConsole(data.level, out);
-            }
         }
     }
 
@@ -78,8 +78,8 @@ export class AftLogger {
         data.name ??= 'AFT';
         data.message ??= '';
         data.level ??= 'none';
-        let d: string = new Date().toLocaleTimeString();
-        let out: string = `${d} - [${data.name}] - ${ellide(data.level.toUpperCase(), 5, 'end', '')} - ${data.message}`;
+        const d: string = new Date().toLocaleTimeString();
+        const out = `${d} - [${data.name}] - ${ellide(data.level.toUpperCase(), 5, 'end', '')} - ${data.message}`;
         return out;
     }
 
