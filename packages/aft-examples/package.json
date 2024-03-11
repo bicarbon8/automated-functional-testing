@@ -45,7 +45,7 @@
     "@types/mocha": "^10.0.1",
     "@types/node": "^20.4.1",
     "@types/selenium-webdriver": "^4.1.15",
-    "chai": "^4.3.7",
+    "chai": "^5.1.0",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
     "rimraf": "^5.0.1",
