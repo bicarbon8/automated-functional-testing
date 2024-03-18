@@ -34,7 +34,7 @@
     "jasmine": "^5.0.2"
   },
   "devDependencies": {
-    "@types/jasmine": "^4.3.5",
+    "@types/jasmine": "^5.1.4",
     "@types/node": "^20.4.1",
     "aft-reporting-filesystem": "^10.2.2",
     "aft-reporting-html": "^10.2.2",

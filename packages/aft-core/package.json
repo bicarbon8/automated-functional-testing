@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@types/fs-ext": "^2.0.0",
-    "@types/jasmine": "^4.3.5",
+    "@types/jasmine": "^5.1.4",
     "@types/node": "^20.4.1",
     "@types/uuid": "^9.0.2",
     "jasmine": "^5.0.2",

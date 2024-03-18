@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "devDependencies": {
-    "@types/jasmine": "^4.3.5",
+    "@types/jasmine": "^5.1.4",
     "@types/node": "^20.4.1",
     "jasmine": "^5.0.2",
     "jasmine-ts": "^0.4.0",
