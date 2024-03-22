@@ -1,0 +1,197 @@
+import * as fs from "fs";
+import * as path from "path";
+import { rand, TestResult, ellide, Reporter, AftConfig, pluginLoader } from "aft-core";
+import { JiraApi } from "../../src/api/jira-api";
+import { httpService } from "aft-web-services";
+import {  } from "../../src/api/jira-custom-types";
+import { JiraReportingPlugin } from "../../src";
+
+describe('JiraReportingPlugin', () => {
+    beforeEach(() => {
+        spyOn(httpService, 'performRequest').and.returnValue(Promise.resolve({
+            headers: {'content-type': 'application/json'},
+            statusCode: 200,
+            data: '{}'
+        }));
+        const cachePath: string = path.join(process.cwd(), 'FileSystemMap');
+        if (fs.existsSync(cachePath)) {
+            fs.rmSync(cachePath, {recursive: true, force: true});
+        }
+        pluginLoader.reset();
+    });
+    
+    afterEach(() => {
+        TestStore.caseId = undefined;
+        TestStore.planId = undefined;
+        TestStore.request = undefined;
+        pluginLoader.reset();
+    });
+
+    it('keeps the last 250 characters logged', async () => {
+        const aftCfg = new AftConfig({
+            TestRailConfig: {
+                url: 'https://127.0.0.1/', 
+                user: 'fake@fake.fake', 
+                accesskey: 'fake-key',
+                logLevel: 'info',
+                maxLogCharacters: 250
+            }
+        });
+        let plugin: JiraReportingPlugin = new JiraReportingPlugin(aftCfg);
+
+        let expected: string = rand.getString(250, true, true);
+        const logName = 'keeps the last 250 characters logged';
+        await plugin.log(logName, 'info', expected);
+
+        let actual: string = plugin.logs(logName);
+        expect(actual).toEqual(expected);
+    });
+
+    it('logging over 250 characters is ellided from beginning of string', async () => {
+        const aftCfg = new AftConfig({
+            TestRailConfig: {
+                url: 'https://127.0.0.1/', 
+                user: 'fake@fake.fake', 
+                accesskey: 'fake-key',
+                logLevel: 'info',
+                maxLogCharacters: 250
+            }
+        });
+        let plugin: JiraReportingPlugin = new JiraReportingPlugin(aftCfg);
+        let notExpected: string = rand.getString(200, true, true);
+        let expected: string = rand.getString(250, true, true);
+        
+        const logName = rand.getString(60);
+        await plugin.log(logName, 'info', notExpected);
+        await plugin.log(logName, 'info', expected);
+
+        let actual: string = plugin.logs(logName);
+        expect(actual).toEqual(ellide(`${notExpected}${expected}`, 250, 'beginning'));
+    });
+
+    it('converts a Failed result to Retry', async () => {
+        const aftCfg = new AftConfig({
+            TestRailConfig: {
+                url: 'https://127.0.0.1/', 
+                user: 'fake@fake.fake', 
+                accesskey: 'fake-key',
+                logLevel: 'info',
+                planId: rand.getInt(999, 9999)
+            }
+        });
+        const api = new TestRailApi(aftCfg);
+        spyOn(api, 'addResult').and.callFake(async (caseId: string, planId: number, request: TestRailResultRequest): Promise<TestRailResult[]> => {
+            TestStore.caseId = caseId;
+            TestStore.request = request;
+            TestStore.planId = planId;
+            return [];
+        });
+        let plugin: JiraReportingPlugin = new JiraReportingPlugin(aftCfg, api);
+        
+        let result: TestResult = {
+            testName: 'converts a Failed result to Retry',
+            testId: 'C' + rand.getInt(99, 999),
+            status: 'failed',
+            resultId: rand.guid,
+            created: Date.now(),
+            metadata: {"durationMs": 1000}
+        };
+        await plugin.submitResult(result.testName, result);
+
+        expect(api.addResult).toHaveBeenCalledTimes(1);
+        expect(TestStore.request.status_id).toEqual(4); // 4 is Retest
+        expect(TestStore.caseId).toEqual(result.testId);
+        expect(TestStore.planId).toBeDefined();
+    });
+
+    it('creates a new TestRail plan in a shared FileSystemMap if none exists', async () => {
+        const aftCfg = new AftConfig({
+            TestRailConfig: {
+                url: 'https://127.0.0.1/', 
+                user: 'fake@fake.fake', 
+                accesskey: 'fake-key',
+                projectid: 3,
+                suiteids: [12, 15],
+                logLevel: 'info'
+            }
+        });
+        const api = new TestRailApi(aftCfg);
+        const planId: number = rand.getInt(1000, 10000);
+        spyOn(api, 'createPlan').and.callFake(async (projectId: number, suiteIds: number[], name?: string): Promise<TestRailPlan> => {
+            return {id: planId};
+        });
+        spyOn(api, 'getTestByCaseId').and.callFake(async (caseId: string, planId: number): Promise<TestRailTest> => {
+            return {
+                id: rand.getInt(1000, 10000)
+            };
+        });
+        let plugin: JiraReportingPlugin = new JiraReportingPlugin(aftCfg, api);
+        
+        let result: TestResult = {
+            testName: 'creates a new TestRail plan in a shared FileSystemMap if none exists',
+            testId: 'C' + rand.getInt(99, 999),
+            status: 'failed',
+            resultId: rand.guid,
+            created: Date.now(),
+            metadata: {"durationMs": 1000}
+        };
+        await plugin.submitResult(result.testName, result);
+
+        expect(api.createPlan).toHaveBeenCalledTimes(1);
+        const sharedCacheFile: string = path.join(process.cwd(), 'FileSystemMap', 'TestRailConfig.json');
+        expect(fs.existsSync(sharedCacheFile)).toBeTrue();
+    });
+
+    it('can be loaded by the Reporter', async () => {
+        const aftCfg = new AftConfig({
+            pluginNames: ['testrail-reporting-plugin']
+        });
+        const mgr: Reporter = new Reporter('can be loaded by the Reporter', aftCfg);
+        const plugin = mgr.plugins[0];
+
+        expect(plugin).toBeDefined();
+        expect(plugin.constructor.name).toEqual('JiraReportingPlugin');
+    });
+
+    /**
+     * WARNING: this test is only for local connectivity testing. it will
+     * connect to an actual TestRail instance and submit a Retest result.
+     * the `url`, `user` and `accesskey` configurations should be set as
+     * environment variables on the local system and the `project_id`,
+     * `suite_ids` and `ITestResult.testId` should be updated to value values
+     */
+    xit('sends actual TestResult to TestRail', async () => {
+        const aftCfg = new AftConfig({
+            TestRailConfig: {
+                url: '%testrail_url%', 
+                user: '%testrail_user%', 
+                accesskey: '%testrail_pass%',
+                projectid: 3,
+                suiteids: [1219],
+                logLevel: 'trace'
+            }
+        });
+        let plugin: JiraReportingPlugin = new JiraReportingPlugin(aftCfg);
+        
+        const logName = 'sends actual TestResult to TestRail';
+        await plugin.log(logName, 'error', rand.getString(100));
+        
+        let testResult: TestResult = {
+            testName: logName,
+            testId: 'C4663085', // must be an existing TestRail Case ID
+            status: 'failed',
+            resultMessage: rand.getString(100),
+            created: Date.now(),
+            resultId: rand.guid,
+            metadata: {"durationMs": 300000}
+        };
+
+        await plugin.submitResult(testResult.testName, testResult);
+    }, 300000);
+});
+
+module TestStore {
+    export var caseId: string;
+    export var request: TestRailResultRequest;
+    export var planId: number;
+}

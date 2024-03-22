@@ -1,0 +1,44 @@
+{
+  "name": "aft-jira",
+  "version": "10.2.2",
+  "description": "Automated Functional Testing (AFT) package supporting Jira integration for test execution control and logging",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bicarbon8/automated-functional-testing.git"
+  },
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "scripts": {
+    "clean": "rimraf ./dist && rimraf ./.nyc_output && rimraf ./coverage",
+    "build": "npm run clean && tsc --build",
+    "test": "npm run build && jasmine-ts ./test/**/*-spec.ts",
+    "coverage": "npm run build && nyc jasmine-ts ./test/**/*-spec.ts"
+  },
+  "keywords": [
+    "aft",
+    "automation",
+    "e2e",
+    "integration",
+    "functional",
+    "jira"
+  ],
+  "author": "Jason Holt Smith <bicarbon8@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bicarbon8/automated-functional-testing/issues"
+  },
+  "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
+  "dependencies": {
+    "aft-web-services": "^10.2.2"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^4.3.5",
+    "@types/node": "^20.4.1",
+    "jasmine": "^5.0.2",
+    "jasmine-ts": "^0.4.0",
+    "nyc": "^15.1.0",
+    "rimraf": "^5.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  }
+}
