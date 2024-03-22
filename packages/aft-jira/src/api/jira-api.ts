@@ -1,7 +1,7 @@
 import { httpData, HttpRequest, HttpResponse, httpService } from "aft-web-services";
 import { aftConfig, AftConfig, CacheMap, convert, JsonObject } from "aft-core";
 import { JiraConfig } from "../configuration/jira-config";
-import { JiraIssue, JiraSearchResults } from "./jira-custom-types";
+import { JiraSearchResults } from "./jira-custom-types";
 
 export class JiraApi {
     private readonly _aftCfg: AftConfig;
@@ -17,17 +17,13 @@ export class JiraApi {
     }
 
     async createIssue(): Promise<void> {
-        
-    }
-
-    async getIssue(issueId: string): Promise<JiraIssue> {
-        const path = `/issue/${issueId}`;
-        return this._get<JiraIssue>(path, true);
+        // TODO
     }
 
     async searchIssues(jql: string): Promise<JiraSearchResults> {
         const path = `/search?jql=${jql}`;
-        return this._get<JiraSearchResults>(path, true);
+        const results = await this._get<JiraSearchResults>(path, true);
+        return results;
     }
 
     private async _get<T extends JsonObject>(path: string, cacheResponse: boolean): Promise<T> {

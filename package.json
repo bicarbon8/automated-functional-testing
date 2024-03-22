@@ -9,6 +9,7 @@
     "test": "npm run test --workspaces --if-present",
     "coverage": "npm run coverage --workspaces --if-present",
     "test:core": "npm run test --workspace=aft-core",
+    "test:jira": "npm run test --workspace=aft-jira",
     "test:kinesis": "npm run test --workspace=aft-reporting-aws-kinesis-firehose",
     "test:testrail": "npm run test --workspace=aft-testrail",
     "test:ui": "npm run test --workspace=aft-ui",

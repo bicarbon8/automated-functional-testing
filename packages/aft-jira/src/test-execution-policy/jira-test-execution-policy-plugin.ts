@@ -44,11 +44,11 @@ export class JiraTestExecutionPolicyPlugin extends TestExecutionPolicyPlugin {
     }
 
     private async _getIssuesReferencingTestIds(...testIds: Array<string>): Promise<Array<JiraIssue>> {
-        const issues = new Array<JiraIssue>();
+        const openIssues = new Array<JiraIssue>();
         for (const id of testIds) {
             const issues = await CommonActions.getOpenIssuesReferencingTestId(id, this._api);
-            issues.push(...issues);
+            openIssues.push(...issues);
         }
-        return issues;
+        return openIssues;
     }
 }

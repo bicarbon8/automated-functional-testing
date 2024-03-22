@@ -1,12 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { TestExecutionPolicyManager, AftConfig } from 'aft-core';
+import { TestExecutionPolicyManager, AftConfig, rand, ProcessingResult } from 'aft-core';
 import { httpService } from 'aft-web-services';
 import { JiraTestExecutionPolicyPlugin } from "../../src";
 import { JiraApi } from '../../src/api/jira-api';
-import {  } from '../../src/api/jira-custom-types';
+import { JiraFields, JiraIssue, JiraSearchResults } from '../../src/api/jira-custom-types';
 
-describe('JiraApiTestExecutionPolicyPlugin', () => {
+describe('JiraTestExecutionPolicyPlugin', () => {
     beforeEach(() => {
         spyOn(httpService, 'performRequest').and.returnValue(Promise.resolve({
             headers: {'content-type': 'application/json'},
@@ -19,75 +19,97 @@ describe('JiraApiTestExecutionPolicyPlugin', () => {
         }
     });
 
-    it('can lookup a test case in an existing plan by case id', async () => {
-        const aftCfg = new AftConfig({
-            TestRailConfig: {
-                url: 'http://127.0.0.1',
-                user: 'fake@fake.fake',
-                accesskey: 'fake_key',
-                planid: 1234
-            }
+    describe('shouldRun', () => {
+        it('returns false if any open defects found', async () => {
+            const aftCfg = new AftConfig({
+                JiraConfig: {
+                    url: 'http://127.0.0.1',
+                    user: 'fake@fake.fake',
+                    accesskey: 'fake_key',
+                    policyEngineEnabled: true
+                }
+            });
+            const api = new JiraApi(aftCfg);
+            const expected: JiraSearchResults = {
+                issues: new Array({
+                    id: `${rand.getString(4, true, false, false, false)}-${rand.getString(4, false, true, false, false)}`,
+                    fields: {
+                        created: new Date().toISOString(),
+                        comment: rand.getString(100),
+                        description: rand.getString(100)
+                    } as JiraFields
+                } as JiraIssue)
+            };
+            spyOn(api, 'searchIssues').and.returnValue(Promise.resolve(expected));
+            const plugin: JiraTestExecutionPolicyPlugin = new JiraTestExecutionPolicyPlugin(aftCfg, api);
+            
+            const actual: ProcessingResult<boolean> = await plugin.shouldRun('C1234');
+
+            expect(actual).toBeDefined();
+            expect(actual.result).toBe(false);
+            expect(actual.message).toContain('C1234');
+            expect(actual.message).toContain(expected.issues[0].id);
+            expect(api.searchIssues).toHaveBeenCalledTimes(1);
         });
-        const api = new JiraApi(aftCfg);
-        let expected: TestRailTest = {
-            id: 1,
-            case_id: 1234,
-            priority_id: 2,
-            title: 'fake test title',
-            run_id: 2,
-            status_id: statusConverter.toTestRailStatus('passed')
-        };
-        spyOn(api, 'getTestsInRuns').and.returnValue(Promise.resolve([expected]));
-        const plugin: JiraTestExecutionPolicyPlugin = new JiraTestExecutionPolicyPlugin(aftCfg, api);
-        
-        const actual: TestRailTest = await plugin.getTestCase('C1234');
 
-        expect(actual).toBeDefined();
-        expect(actual.id).toBe(1);
-        expect(actual.status_id).toBe(expected.status_id);
-        expect(actual.title).toBe(expected.title);
-        expect(api.getTestsInRuns).toHaveBeenCalledTimes(1);
-    });
+        it('returns true if no open defects found', async () => {
+            const aftCfg = new AftConfig({
+                JiraConfig: {
+                    url: 'http://127.0.0.1',
+                    user: 'fake@fake.fake',
+                    accesskey: 'fake_key',
+                    policyEngineEnabled: true
+                }
+            });
+            const api = new JiraApi(aftCfg);
+            const expected: JiraSearchResults = {
+                issues: []
+            };
+            spyOn(api, 'searchIssues').and.returnValue(Promise.resolve(expected));
+            const plugin: JiraTestExecutionPolicyPlugin = new JiraTestExecutionPolicyPlugin(aftCfg, api);
+            
+            const actual: ProcessingResult<boolean> = await plugin.shouldRun('C1234');
 
-    it('can lookup a test case in a supplied project and suite by case id', async () => {
-        const aftCfg = new AftConfig({
-            TestRailConfig: {
-                url: 'http://127.0.0.1',
-                user: 'fake@fake.fake',
-                accesskey: 'fake_key',
-                projectid: 4,
-                suiteids: [12, 15],
-                logLevel: 'none'
-            }
+            expect(actual).toBeDefined();
+            expect(actual.result).toBe(true);
+            expect(actual.message).toContain('C1234');
+            expect(actual.message).not.toMatch(/.*([a-zA-Z]{4}-[0-9]{4}).*/);
+            expect(api.searchIssues).toHaveBeenCalledTimes(1);
         });
-        const api = new JiraApi(aftCfg);
-        let expected: TestRailCase = {
-            id: 1234,
-            priority_id: 2,
-            title: 'fake test title',
-            suite_id: 1122,
-            created_on: Date.now()
-        } as TestRailCase;
-        spyOn(api, 'getCasesInSuites').and.returnValue(Promise.resolve([expected]));
-        let plugin: JiraTestExecutionPolicyPlugin = new JiraTestExecutionPolicyPlugin(aftCfg, api);
-        
-        let actual: TestRailCase = await plugin.getTestCase('C1234');
 
-        expect(actual).toBeDefined();
-        expect(actual.id).toBe(expected.id);
-        expect(actual.title).toBe(expected.title);
-        expect(actual.created_on).toEqual(expected.created_on);
-        expect(api.getCasesInSuites).toHaveBeenCalledTimes(1);
-    });
+        it('returns true if plugin is not enabled', async () => {
+            const aftCfg = new AftConfig({
+                JiraConfig: {
+                    url: 'http://127.0.0.1',
+                    user: 'fake@fake.fake',
+                    accesskey: 'fake_key',
+                    policyEngineEnabled: false
+                }
+            });
+            const api = new JiraApi(aftCfg);
+            const expected: JiraSearchResults = {
+                issues: []
+            };
+            spyOn(api, 'searchIssues').and.returnValue(Promise.resolve(expected));
+            const plugin: JiraTestExecutionPolicyPlugin = new JiraTestExecutionPolicyPlugin(aftCfg, api);
+            
+            const actual: ProcessingResult<boolean> = await plugin.shouldRun('C1234');
 
-    it('can be loaded by the testcasemanager', async () => {
-        const aftCfg = new AftConfig({
-            pluginNames: ['testrail-test-execution-policy-plugin']
+            expect(actual).toBeDefined();
+            expect(actual.result).toBe(true);
+            expect(actual.message).not.toBeDefined();
+            expect(api.searchIssues).not.toHaveBeenCalled();
         });
-        let mgr: TestExecutionPolicyManager = new TestExecutionPolicyManager(aftCfg);
-        let plugin = await mgr.plugins[0];
 
-        expect(plugin).toBeDefined();
-        expect(plugin.constructor.name).toEqual('JiraApiTestExecutionPolicyPlugin');
+        it('can be loaded by the testcasemanager', async () => {
+            const aftCfg = new AftConfig({
+                pluginNames: ['jira-test-execution-policy-plugin']
+            });
+            let mgr: TestExecutionPolicyManager = new TestExecutionPolicyManager(aftCfg);
+            let plugin = mgr.plugins[0];
+
+            expect(plugin).toBeDefined();
+            expect(plugin.constructor.name).toEqual('JiraTestExecutionPolicyPlugin');
+        });
     });
 });
