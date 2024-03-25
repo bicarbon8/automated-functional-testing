@@ -36,6 +36,7 @@ export class ReportingPlugin extends Plugin {
     /**
      * used for reporting message strings. this function would be called often
      * @param message the `LogMessageData` to be logged by this plugin
+     * @param data an array of additional data to log
      */
     log = (name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => null;
     /**

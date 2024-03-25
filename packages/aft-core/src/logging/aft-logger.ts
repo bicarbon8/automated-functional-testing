@@ -3,6 +3,7 @@ import { AftConfig, aftConfig } from "../configuration/aft-config";
 import { LogLevel } from "./log-level";
 import { ellide } from "../helpers/ellide";
 import { LogMessageData } from "./log-message-data";
+import { Err } from "../helpers/err";
 
 /**
  * a logging class that uses configuration to determine what
@@ -53,10 +54,8 @@ export class AftLogger {
      * and if it is, will send the `name`, `level` and `message` to the console. if any `data`
      * is included it will be converted to a string using `JSON.stringify(...)` and appended
      * to the `message`
-     * @param name the name of the system performing the log call
-     * @param level the `LogLevel` of this message
-     * @param message the string to be logged
-     * @param data an array of additional data to be included in the logs
+     * @param data a `LogMessageData` object containing details of the log message, level, name
+     * and any additional arguments to be logged
      */
     log(data: LogMessageData): void {
         if (data?.level !== 'none'
@@ -79,7 +78,8 @@ export class AftLogger {
         data.message ??= '';
         data.level ??= 'none';
         const d: string = new Date().toLocaleTimeString();
-        const out = `${d} - [${data.name}] - ${ellide(data.level.toUpperCase(), 5, 'end', '')} - ${data.message}`;
+        const args: string = (data.args?.length) ? `, [${data.args.map(d => Err.handle(() => JSON.stringify(d))).join('')}]` : '';
+        const out = `${d} - [${data.name}] - ${ellide(data.level.toUpperCase(), 5, 'end', '')} - ${data.message}${args}`;
         return out;
     }
 

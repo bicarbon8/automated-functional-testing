@@ -1,4 +1,4 @@
-import { ReportingPlugin, LogLevel, TestResult, ellide, AftConfig } from "aft-core";
+import { ReportingPlugin, LogLevel, TestResult, ellide, AftConfig, Err } from "aft-core";
 import { JiraApi } from "../api/jira-api";
 import { JiraConfig } from "../configuration/jira-config";
 import { JiraIssue, JiraSearchResults } from "../api/jira-custom-types";
@@ -59,7 +59,8 @@ export class JiraReportingPlugin extends ReportingPlugin {
             if (logs.length > 0) {
                 logs += '\n'; // separate new logs from previous
             }
-            logs += message;
+            const dataStr: string = (data?.length) ? `, [${data.map(d => Err.handle(() => JSON.stringify(d))).join('')}]` : '';
+            logs += `${message}${dataStr}`;
             this.logs(name, logs);
         }
     }
@@ -88,7 +89,7 @@ export class JiraReportingPlugin extends ReportingPlugin {
             }
         } else {
             // create a new defect
-            this._api.createIssue(result.testId, result.testName, result.resultMessage);
+            this._api.createIssue(result.testId, result.testName, this.logs(logName));
         }
     }
 
