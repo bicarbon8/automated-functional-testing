@@ -4,7 +4,7 @@ import { TestExecutionPolicyManager, AftConfig, rand, ProcessingResult } from 'a
 import { httpService } from 'aft-web-services';
 import { JiraTestExecutionPolicyPlugin } from "../../src";
 import { JiraApi } from '../../src/api/jira-api';
-import { JiraFields, JiraIssue, JiraSearchResults } from '../../src/api/jira-custom-types';
+import { JiraFields, JiraIssue } from '../../src/api/jira-custom-types';
 
 describe('JiraTestExecutionPolicyPlugin', () => {
     beforeEach(() => {
@@ -30,19 +30,14 @@ describe('JiraTestExecutionPolicyPlugin', () => {
                 }
             });
             const api = new JiraApi(aftCfg);
-            const expected: JiraSearchResults = {
-                startAt: 0,
-                maxResults: 50,
-                total: 1,
-                issues: new Array({
-                    id: `${rand.getString(4, true, false, false, false)}-${rand.getString(4, false, true, false, false)}`,
-                    fields: {
-                        created: new Date().toISOString(),
-                        comment: rand.getString(100),
-                        description: rand.getString(100)
-                    } as JiraFields
-                } as JiraIssue)
-            };
+            const expected: Array<JiraIssue> = new Array({
+                id: `${rand.getString(4, true, false, false, false)}-${rand.getString(4, false, true, false, false)}`,
+                fields: {
+                    created: new Date().toISOString(),
+                    comment: rand.getString(100),
+                    description: rand.getString(100)
+                } as JiraFields
+            } as JiraIssue);
             spyOn(api, 'searchIssues').and.returnValue(Promise.resolve(expected));
             const plugin: JiraTestExecutionPolicyPlugin = new JiraTestExecutionPolicyPlugin(aftCfg, api);
             
@@ -51,7 +46,7 @@ describe('JiraTestExecutionPolicyPlugin', () => {
             expect(actual).toBeDefined();
             expect(actual.result).toBe(false);
             expect(actual.message).toContain('C1234');
-            expect(actual.message).toContain(expected.issues[0].id);
+            expect(actual.message).toContain(expected[0].id);
             expect(api.searchIssues).toHaveBeenCalledTimes(1);
         });
 
@@ -65,12 +60,7 @@ describe('JiraTestExecutionPolicyPlugin', () => {
                 }
             });
             const api = new JiraApi(aftCfg);
-            const expected: JiraSearchResults = {
-                startAt: 0,
-                maxResults: 50,
-                total: 0,
-                issues: []
-            };
+            const expected: Array<JiraIssue> = [];
             spyOn(api, 'searchIssues').and.returnValue(Promise.resolve(expected));
             const plugin: JiraTestExecutionPolicyPlugin = new JiraTestExecutionPolicyPlugin(aftCfg, api);
             
@@ -93,12 +83,7 @@ describe('JiraTestExecutionPolicyPlugin', () => {
                 }
             });
             const api = new JiraApi(aftCfg);
-            const expected: JiraSearchResults = {
-                startAt: 0,
-                maxResults: 50,
-                total: 0,
-                issues: []
-            };
+            const expected: Array<JiraIssue> = [];
             spyOn(api, 'searchIssues').and.returnValue(Promise.resolve(expected));
             const plugin: JiraTestExecutionPolicyPlugin = new JiraTestExecutionPolicyPlugin(aftCfg, api);
             
@@ -119,41 +104,6 @@ describe('JiraTestExecutionPolicyPlugin', () => {
 
             expect(plugin).toBeDefined();
             expect(plugin.constructor.name).toEqual('JiraTestExecutionPolicyPlugin');
-        });
-
-        it('handles paginated results', async () => {
-            const aftCfg = new AftConfig({
-                JiraConfig: {
-                    url: 'http://127.0.0.1',
-                    user: 'fake@fake.fake',
-                    accesskey: 'fake_key',
-                    policyEngineEnabled: true
-                }
-            });
-            const api = new JiraApi(aftCfg);
-            const expected: JiraSearchResults = {
-                startAt: 0,
-                maxResults: 1,
-                total: 2,
-                issues: new Array({
-                    id: `${rand.getString(4, true, false, false, false)}-${rand.getString(4, false, true, false, false)}`,
-                    fields: {
-                        created: new Date().toISOString(),
-                        comment: rand.getString(100),
-                        description: rand.getString(100)
-                    } as JiraFields
-                } as JiraIssue)
-            };
-            spyOn(api, 'searchIssues').and.returnValue(Promise.resolve(expected));
-            const plugin: JiraTestExecutionPolicyPlugin = new JiraTestExecutionPolicyPlugin(aftCfg, api);
-            
-            const actual: ProcessingResult<boolean> = await plugin.shouldRun('C1234');
-
-            expect(actual).toBeDefined();
-            expect(actual.result).toBe(false);
-            expect(actual.message).toContain('C1234');
-            expect(actual.message).toMatch(/.*([a-zA-Z]{4}-[0-9]{4}).*/);
-            expect(api.searchIssues).toHaveBeenCalledTimes(2);
         });
     });
 });

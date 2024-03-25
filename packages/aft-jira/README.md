@@ -25,7 +25,7 @@ the `JiraReportingPlugin` extends from `ReportingPlugin` in `aft-core`. if enabl
 - **accesskey** - `string` a valid API access token for the above user
 - **openDefectOnFail** - `bool` if set to `true` a new defect will be created if a failed test result is received and not existing defect is found for the Test ID _(defaults to `false`)_
 - **closeDefectOnPass** - `bool` if set to `true` and a passing test result is received and an open defect is found for the Test ID then the defect will be closed as resolved, fixed _(defaults to `false`)_
-- **projectId** - `string` the Jira project in which new issues will be created if `openDefectOnFail` is true
+- **projectId** - `string` the Jira project in which new issues will be created if `openDefectOnFail` is `true`
 
 ## JiraTestExecutionPolicyPlugin
 the `JiraTestExecutionPolicyPlugin` extends from `TestExecutionPolicyPlugin` interface in `aft-core`. if enabled this plugin will search Jira for open defects referencing the specified Test IDs from the set of IDs passed in to a `Verifier.withTestId` function and if found this plugin will return a result of `false` from the `shouldRun` function. it can be enabled by including the following in your `aftconfig.json` file:

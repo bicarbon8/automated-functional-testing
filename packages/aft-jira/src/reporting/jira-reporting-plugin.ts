@@ -83,12 +83,19 @@ export class JiraReportingPlugin extends ReportingPlugin {
         const openIssues = await CommonActions.getOpenIssuesReferencingTestId(result.testId, this._api);
         if (openIssues?.length) {
             // update comments to indicate the issue still exists
+            for (const issue of openIssues) {
+                this._api.addCommentToIssue(issue.key, `test '${result.testId}' still failing due to: ${result.resultMessage}`);
+            }
         } else {
             // create a new defect
+            this._api.createIssue(result.testId, result.testName, result.resultMessage);
         }
     }
 
     private async _closeDefects(logName: string, result: TestResult): Promise<void> {
         const openIssues = await CommonActions.getOpenIssuesReferencingTestId(result.testId, this._api);
+        for (const issue of openIssues) {
+            CommonActions.closeIssue(result.testId, issue.id, this._api);
+        }
     }
 }

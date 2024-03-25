@@ -1,3 +1,14 @@
+export type JiraErrorResponse = {
+    errorMessages?: Array<string>;
+    errors?: {};
+};
+
+export type JiraCreateIssueResponse = {
+    id?: string;
+    key?: string; // issue ID
+    self?: string; // URL to issue
+};
+
 export type JiraSearchResults = {
     expand?: string;
     issues: Array<JiraIssue>;

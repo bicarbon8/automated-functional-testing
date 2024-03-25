@@ -14,17 +14,17 @@ describe('JiraApi', () => {
     });
 
     it('can cache successful responses', async () => {
+        const searchResponse = {
+            issues: new Array({
+                id: `${rand.getString(4, true, false, false, false)}-${rand.getString(4, false, true, false, false)}`,
+                fields: {
+                    created: new Date().toISOString(),
+                    comment: rand.getString(100),
+                    description: rand.getString(100)
+                } as JiraFields
+            } as JiraIssue)
+        } as JiraSearchResults;
         spyOn(httpService, 'performRequest').and.callFake(async (request: HttpRequest): Promise<HttpResponse> => {
-            const searchResponse = {
-                issues: new Array({
-                    id: `${rand.getString(4, true, false, false, false)}-${rand.getString(4, false, true, false, false)}`,
-                    fields: {
-                        created: new Date().toISOString(),
-                        comment: rand.getString(100),
-                        description: rand.getString(100)
-                    } as JiraFields
-                } as JiraIssue)
-            } as JiraSearchResults;
             const response: HttpResponse = {
                 statusCode: 200,
                 headers: {},
@@ -41,19 +41,19 @@ describe('JiraApi', () => {
             }
         });
         const api: JiraApi = new JiraApi(aftCfg);
-        const searchResults: JiraSearchResults = await api.searchIssues('fake_query');
-        const issues = searchResults.issues;
+        const jql = 'fake_query';
+        const issues: Array<JiraIssue> = await api.searchIssues(jql);
 
         expect(issues).toBeDefined();
         expect(issues.length).toEqual(1);
-        expect(issues[0].id).toMatch(/([a-zA-Z]{4}-[0-9]{4})/);
+        expect(issues[0].id).toEqual(searchResponse.issues[0].id);
         expect(httpService.performRequest).toHaveBeenCalledTimes(1);
 
-        const cachedResponse: JiraSearchResults = await api.searchIssues('fake_query');
+        const cachedResponse: Array<JiraIssue> = await api.searchIssues(jql);
 
-        expect(issues).toBeDefined();
-        expect(issues.length).toEqual(1);
-        expect(issues[0].id).toMatch(/([a-zA-Z]{4}-[0-9]{4})/);
+        expect(cachedResponse).toBeDefined();
+        expect(cachedResponse.length).toEqual(1);
+        expect(cachedResponse[0].id).toEqual(searchResponse.issues[0].id);
         expect(httpService.performRequest).toHaveBeenCalledTimes(1); // no additional call made
     });
 
