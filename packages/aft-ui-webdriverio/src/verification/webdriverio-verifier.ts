@@ -1,6 +1,5 @@
 import { Class, Err, Func, Verifier } from "aft-core";
 import { UiComponentOptions, UiSessionGeneratorManager } from "aft-ui";
-import { Browser } from "webdriverio";
 import { WebdriverIoVerifierInternals } from "./webdriverio-verifier-internals";
 import { WebdriverIoComponent } from "../components/webdriverio-component";
 
@@ -25,8 +24,8 @@ export class WebdriverIoVerifier extends Verifier {
      * after a new `Browser` session is created, this holds the instance
      * so it can be referenced from within the executing `assertion`
      */
-    get browser(): Browser {
-        return this._browser as Browser;
+    get browser(): WebdriverIO.Browser {
+        return this._browser as WebdriverIO.Browser;
     }
 
     override get internals(): WebdriverIoVerifierInternals {

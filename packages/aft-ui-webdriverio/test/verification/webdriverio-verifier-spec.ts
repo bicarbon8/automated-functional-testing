@@ -1,16 +1,16 @@
 import { AftConfig, TestExecutionPolicyManager } from "aft-core";
 import { UiSessionGeneratorManager } from "aft-ui";
-import { Browser, ChainablePromiseElement, Element } from "webdriverio";
+import { ChainablePromiseElement } from "webdriverio";
 import { WebdriverIoVerifier, verifyWithWebdriverIO } from "../../src";
 
 describe('WebdriverIoVerifier', () => {
     it('can create a MobileAppSession', async () => {
-        let mockElement: Element;
-        mockElement = jasmine.createSpyObj<Element>({
-            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element>
+        let mockElement: WebdriverIO.Element;
+        mockElement = jasmine.createSpyObj<WebdriverIO.Element>({
+            "$": Promise.resolve(mockElement) as ChainablePromiseElement<WebdriverIO.Element>
         });
-        const mockBrowser: Browser = jasmine.createSpyObj<Browser>({
-            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element>
+        const mockBrowser: WebdriverIO.Browser = jasmine.createSpyObj<WebdriverIO.Browser>({
+            "$": Promise.resolve(mockElement) as ChainablePromiseElement<WebdriverIO.Element>
         })
         const sessionMgr = new UiSessionGeneratorManager(new AftConfig({}));
         spyOn(sessionMgr, 'getSession').and.callFake((options?: Record<string, any>): Promise<unknown> => {
@@ -25,12 +25,12 @@ describe('WebdriverIoVerifier', () => {
     });
 
     it('can create a MobileAppSession using specific MobileAppSessionOptions', async () => {
-        let mockElement: Element;
-        mockElement = jasmine.createSpyObj<Element>({
-            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element>
+        let mockElement: WebdriverIO.Element;
+        mockElement = jasmine.createSpyObj<WebdriverIO.Element>({
+            "$": Promise.resolve(mockElement) as ChainablePromiseElement<WebdriverIO.Element>
         });
-        const mockBrowser: Browser = jasmine.createSpyObj<Browser>({
-            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element>
+        const mockBrowser: WebdriverIO.Browser = jasmine.createSpyObj<WebdriverIO.Browser>({
+            "$": Promise.resolve(mockElement) as ChainablePromiseElement<WebdriverIO.Element>
         })
         const sessionMgr = new UiSessionGeneratorManager(new AftConfig({}));
         spyOn(sessionMgr, 'getSession').and.callFake((options?: Record<string, any>): Promise<unknown> => {
@@ -52,12 +52,12 @@ describe('WebdriverIoVerifier', () => {
     });
 
     it('disposes of MobileAppSession on completion', async () => {
-        let mockElement: Element;
-        mockElement = jasmine.createSpyObj<Element>({
-            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element>
+        let mockElement: WebdriverIO.Element;
+        mockElement = jasmine.createSpyObj<WebdriverIO.Element>({
+            "$": Promise.resolve(mockElement) as ChainablePromiseElement<WebdriverIO.Element>
         });
-        const mockBrowser: Browser = jasmine.createSpyObj<Browser>({
-            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element>,
+        const mockBrowser: WebdriverIO.Browser = jasmine.createSpyObj<WebdriverIO.Browser>({
+            "$": Promise.resolve(mockElement) as ChainablePromiseElement<WebdriverIO.Element>,
             "deleteSession": Promise.resolve()
         });
         const sessionMgr = new UiSessionGeneratorManager(new AftConfig({}));
@@ -74,12 +74,12 @@ describe('WebdriverIoVerifier', () => {
     });
 
     it('no MobileAppSession is created if assertion should not be run', async () => {
-        let mockElement: Element;
-        mockElement = jasmine.createSpyObj<Element>({
-            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element>
+        let mockElement: WebdriverIO.Element;
+        mockElement = jasmine.createSpyObj<WebdriverIO.Element>({
+            "$": Promise.resolve(mockElement) as ChainablePromiseElement<WebdriverIO.Element>
         });
-        const mockBrowser: Browser = jasmine.createSpyObj<Browser>({
-            "$": Promise.resolve(mockElement) as ChainablePromiseElement<Element>
+        const mockBrowser: WebdriverIO.Browser = jasmine.createSpyObj<WebdriverIO.Browser>({
+            "$": Promise.resolve(mockElement) as ChainablePromiseElement<WebdriverIO.Element>
         })
         const sessionMgr = new UiSessionGeneratorManager(new AftConfig({}));
         spyOn(sessionMgr, 'getSession').and.callFake((options?: Record<string, any>): Promise<unknown> => {

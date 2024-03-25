@@ -1,14 +1,13 @@
 import { WebdriverIoComponent } from "aft-ui-webdriverio";
-import { Element } from "webdriverio";
 
 export class WikipediaView extends WebdriverIoComponent {
     override get locator(): string {
         return '//*';
     }
 
-    private _searchButton = async (): Promise<Element> => await (await this.getRoot()).$("~Search Wikipedia");
-    private _searchInput = async (): Promise<Element> => await this.driver.$('android=new UiSelector().resourceId("org.wikipedia.alpha:id/search_src_text")');
-    private _searchResults = async (): Promise<Array<Element>> => await (await this.getRoot()).$$("android.widget.TextView");
+    private _searchButton = async (): Promise<WebdriverIO.Element> => await (await this.getRoot()).$("~Search Wikipedia");
+    private _searchInput = async (): Promise<WebdriverIO.Element> => await this.driver.$('android=new UiSelector().resourceId("org.wikipedia.alpha:id/search_src_text")');
+    private _searchResults = async (): Promise<WebdriverIO.ElementArray> => await (await this.getRoot()).$$("android.widget.TextView");
 
     async searchFor(term: string): Promise<string[]> {
         await this.reporter.info("tapping on 'SearchButton'");
