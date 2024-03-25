@@ -1,15 +1,17 @@
 import { httpData, HttpRequest, HttpResponse, httpService } from "aft-web-services";
-import { aftConfig, AftConfig, CacheMap, convert, Err, JsonObject } from "aft-core";
+import { aftConfig, AftConfig, AftLogger, CacheMap, convert, Err, JsonObject } from "aft-core";
 import { JiraConfig } from "../configuration/jira-config";
 import { JiraCreateIssueResponse, JiraErrorResponse, JiraIssue, JiraSearchResults } from "./jira-custom-types";
 
 export class JiraApi {
     private readonly _aftCfg: AftConfig;
     private readonly _cache: CacheMap<string, any>;
+    private readonly _logger: AftLogger;
     
     constructor(aftCfg?: AftConfig) {
         this._aftCfg = aftCfg ?? aftConfig;
         this._cache = new CacheMap<string, any>(this.config.cacheDuration, true, this.constructor.name);
+        this._logger = new AftLogger(this._aftCfg);
     }
 
     get config(): JiraConfig {
@@ -50,7 +52,7 @@ export class JiraApi {
             }
         }
         const response = await this._post<JiraCreateIssueResponse>(path, JSON.stringify(issue));
-        return response.key;
+        return response?.key ?? 'ERROR';
     }
 
     /**
@@ -85,7 +87,7 @@ export class JiraApi {
         do {
             const path = `/search?jql=${jql}&startAt=${index}&maxResults=${maxResults}`;
             searchResults = await this._get<JiraSearchResults>(path, true);
-            issues.push(...searchResults.issues);
+            issues.push(...searchResults?.issues ?? []);
             index += searchResults.maxResults;
         } while (index < searchResults.total);
         
@@ -153,7 +155,12 @@ export class JiraApi {
         const response: HttpResponse = await httpService.performRequest(request);
         if (response.statusCode < 200 || response.statusCode > 299) {
             const err = httpData.as<JiraErrorResponse>(response);
-            throw new Error(JSON.stringify(err));
+            this._logger.log({
+                level: 'warn',
+                message: 'non 200 status code returned from Jira API call',
+                name: this.constructor.name,
+                args: [err]
+            });
         }
         return response;
     }

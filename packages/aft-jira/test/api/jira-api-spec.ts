@@ -68,6 +68,7 @@ describe('JiraApi', () => {
         });
 
         const aftCfg = new AftConfig({
+            logLevel: 'none',
             JiraConfig: {
                 url: 'http://127.0.0.1/',
                 user: 'fake@fake.fake',
