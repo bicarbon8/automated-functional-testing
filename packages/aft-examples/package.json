@@ -38,15 +38,15 @@
     "aft-ui-selenium": "^10.2.2",
     "aft-ui-webdriverio": "^10.2.2",
     "aft-web-services": "^10.2.2",
-    "webdriverio": "^8.12.1"
+    "webdriverio": "^8.35.1"
   },
   "devDependencies": {
-    "@types/chai": "^4.3.5",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "^20.4.1",
-    "@types/selenium-webdriver": "^4.1.15",
-    "chai": "^4.3.7",
-    "mocha": "^10.2.0",
+    "@types/chai": "^4.3.14",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.11.30",
+    "@types/selenium-webdriver": "^4.1.22",
+    "chai": "^4.4.1",
+    "mocha": "^10.3.0",
     "nyc": "^15.1.0",
     "rimraf": "^5.0.1",
     "ts-mocha": "^10.0.0",

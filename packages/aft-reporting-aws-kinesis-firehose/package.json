@@ -11,8 +11,8 @@
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./.nyc_output && rimraf ./coverage",
     "build": "npm run clean && tsc --build",
-    "test": "npm run build && jasmine-ts ./test/**/*-spec.ts",
-    "coverage": "npm run build && nyc jasmine-ts ./test/**/*-spec.ts"
+    "test": "npm run build && jasmine --config=./jasmine.json",
+    "coverage": "npm run build && nyc jasmine --config=./jasmine.json"
   },
   "keywords": [
     "aft",
@@ -31,17 +31,16 @@
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
     "aft-core": "^10.2.2",
-    "aws-sdk": "^2.1414.0"
+    "aws-sdk": "^2.1584.0"
   },
   "devDependencies": {
-    "@aws-sdk/types": "^3.369.0",
-    "@types/jasmine": "^4.3.5",
-    "@types/node": "^20.4.1",
-    "jasmine": "^5.0.2",
-    "jasmine-ts": "^0.4.0",
+    "@aws-sdk/types": "^3.535.0",
+    "@types/jasmine": "^4.6.4",
+    "@types/node": "^20.11.30",
+    "jasmine": "^5.1.0",
     "nyc": "^15.1.0",
     "rimraf": "^5.0.1",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.1.6"
   }
 }

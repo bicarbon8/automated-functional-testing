@@ -26,8 +26,8 @@
     "docs": "npm run build && npx typedoc --entryPointStrategy packages ./packages/* --out ./docs"
   },
   "devDependencies": {
-    "dpdm": "^3.13.1",
-    "lerna": "^7.1.1",
+    "dpdm": "^3.14.0",
+    "lerna": "^7.4.2",
     "typedoc": "^0.24.8"
   },
   "private": true
