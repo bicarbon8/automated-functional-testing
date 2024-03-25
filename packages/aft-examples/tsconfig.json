@@ -2,10 +2,11 @@
     "extends": "../../tsconfig.settings.json",
     "compilerOptions": {
         "outDir": "dist",
-        "types": ["node", "mocha", "chai"]
+        "types": ["node", "mocha", "chai", "webdriverio"]
     },
     "include": ["test"],
     "references": [
+        { "path": "../aft-jira" },
         { "path": "../aft-mocha-reporter" },
         { "path": "../aft-reporting-aws-kinesis-firehose" },
         { "path": "../aft-reporting-filesystem" },
