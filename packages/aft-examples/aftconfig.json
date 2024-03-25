@@ -2,6 +2,8 @@
     "pluginNames": [
         "testrail-reporting-plugin",
         "testrail-test-execution-policy-plugin",
+        "jira-reporting-plugin",
+        "jira-test-execution-policy-plugin",
         "kinesis-reporting-plugin",
         "html-reporting-plugin",
         "filesystem-reporting-plugin",
@@ -20,10 +22,20 @@
         "logLevel": "none",
         "policyEngineEnabled": false
     },
+    "JiraConfig": {
+        "url": "%jira_url%",
+        "user": "%jira_user%",
+        "accessKey": "%jira_pass%",
+        "projectId": 100,
+        "closeDefectOnPass": false,
+        "openDefectOnFail": false,
+        "policyEngineEnabled": false
+    },
     "KinesisReportingPluginConfig": {
         "logLevel": "none",
         "region": "eu-west-1",
-        "deliveryStream": "%aws_kinesis_delivery_stream%"
+        "deliveryStream": "%aws_kinesis_delivery_stream%",
+        "sendStrategy": "reportonly"
     },
     "UiSessionConfig": {
         "generatorName": "grid-session-generator-plugin",
