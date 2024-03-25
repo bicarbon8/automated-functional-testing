@@ -1,4 +1,4 @@
-import { ReportingPlugin, LogLevel, TestResult, machineInfo, AftConfig, BuildInfoManager, ReportingPluginConfig } from "aft-core";
+import { ReportingPlugin, LogLevel, TestResult, machineInfo, AftConfig, BuildInfoManager, ReportingPluginConfig, Err } from "aft-core";
 import * as AWS from "aws-sdk";
 import * as pkg from "../package.json";
 import { KinesisLogRecord } from "./kinesis-log-record";
@@ -8,11 +8,14 @@ type CheckAndSendOptions = {
     logName: string;
 };
 
+type SendStrategy = 'logsonly' | 'resultsonly' | 'logsandresults';
+
 export class KinesisReportingPluginConfig extends ReportingPluginConfig {
     region: string;
     deliveryStream: string;
     batch = true;
     batchSize = 10;
+    sendStrategy: SendStrategy = 'logsandresults';
 };
 
 /**
@@ -25,7 +28,8 @@ export class KinesisReportingPluginConfig extends ReportingPluginConfig {
  *       "region": "us-west-1",
  *       "deliveryStream": "your-frehose-delivery-stream",
  *       "batch": true,
- *       "batchSize": 10
+ *       "batchSize": 10,
+ *       "sendStrategy": "logsandresults"
  *     }
  * }
  * ```
@@ -85,6 +89,10 @@ export class KinesisReportingPlugin extends ReportingPlugin {
         return this.aftCfg.getSection(KinesisReportingPluginConfig).batchSize ?? 10;
     }
 
+    get sendStrategy(): SendStrategy {
+        return this.aftCfg.getSection(KinesisReportingPluginConfig).sendStrategy ?? 'logsandresults';
+    }
+
     /**
      * generates a valid AWS Credentials object by checking the following
      * (in this order):
@@ -127,11 +135,15 @@ export class KinesisReportingPlugin extends ReportingPlugin {
     }
 
     override log = async (name: string, level: LogLevel, message: string, ...data: Array<any>): Promise<void> => {
-        if (this.enabled && LogLevel.toValue(level) >= LogLevel.toValue(this.logLevel) && level !== 'none') {
+        if (this.enabled
+            && LogLevel.toValue(level) >= LogLevel.toValue(this.logLevel)
+            && level !== 'none'
+            && (this.sendStrategy === 'logsandresults' || this.sendStrategy === 'logsonly')) {
+            const dataStr = (data?.length) ? `, [${data?.map(d => Err.handle(() => JSON.stringify(d))).join(', ')}]` : '';
             const record: AWS.Firehose.Record = this._createKinesisLogRecord({
                 logName: name,
                 level: level,
-                message: message,
+                message: `${message}${dataStr}`,
                 version: pkg.version,
                 buildName: await this._buildInfo.buildName().catch((err) => 'unknown'),
                 machineInfo: machineInfo.data
@@ -148,7 +160,7 @@ export class KinesisReportingPlugin extends ReportingPlugin {
      * @param result a {TestResult} to send to Kinesis Firehose
      */
     override submitResult = async (name: string, result: TestResult): Promise<void> => {
-        if (this.enabled) {
+        if (this.enabled && (this.sendStrategy === 'logsandresults' || this.sendStrategy === 'resultsonly')) {
             name ??= result?.testName;
             if (name) {
                 const record: AWS.Firehose.Record = this._createKinesisLogRecord({

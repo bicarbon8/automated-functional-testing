@@ -147,6 +147,96 @@ describe('KinesisReportingPlugin', () => {
         expect(spySend).toHaveBeenCalledTimes(2);
     });
 
+    it('can disable log messages and only send results', async () => {
+        const aftCfg = new AftConfig();
+        const config = aftCfg.getSection(KinesisReportingPluginConfig);
+        config.logLevel = 'info';
+        config.batch = false;
+        config.batchSize = 10;
+        config.sendStrategy = 'resultsonly';
+        let plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);
+        spyOn(plugin, 'credentials').and.returnValue(Promise.resolve(new AWS.Credentials(
+            rand.getString(25, true, true),
+            rand.getString(35, true, true, true),
+            rand.getString(150, true, true, true)
+        )));
+        let spyCheckAndSendLogs = spyOn<any>(plugin, '_checkAndSendLogs').and.callThrough();
+        let spySendBatch = spyOn<any>(plugin, '_sendBatch').and.callFake((deliveryStream: string, records: Firehose.Record[]) => {
+            /* do nothing */
+        });
+        let spySend = spyOn<any>(plugin, '_send').and.callFake((deliveryStream: string, record: Firehose.Record) => {
+            /* do nothing */
+        });
+
+        const logName = rand.getString(10);
+        plugin.initialise(logName);
+        await plugin.log(logName, 'debug', rand.guid);
+        await plugin.log(logName, 'info', rand.guid);
+        await plugin.log(logName, 'warn', rand.guid);
+
+        expect(spyCheckAndSendLogs).not.toHaveBeenCalled();
+        expect(spySendBatch).not.toHaveBeenCalled();
+        expect(spySend).not.toHaveBeenCalled();
+
+        const result: TestResult = {
+            resultId: rand.guid,
+            created: Date.now(),
+            testId: 'C' + rand.getInt(100, 9999),
+            resultMessage: rand.getString(100),
+            status: 'skipped',
+            testName: logName
+        };
+        await plugin.submitResult(logName, result);
+
+        expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(1);
+        expect(spySend).toHaveBeenCalledTimes(1);
+    });
+
+    it('can disable results and only send log messages', async () => {
+        const aftCfg = new AftConfig();
+        const config = aftCfg.getSection(KinesisReportingPluginConfig);
+        config.logLevel = 'info';
+        config.batch = false;
+        config.batchSize = 10;
+        config.sendStrategy = 'logsonly';
+        let plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);
+        spyOn(plugin, 'credentials').and.returnValue(Promise.resolve(new AWS.Credentials(
+            rand.getString(25, true, true),
+            rand.getString(35, true, true, true),
+            rand.getString(150, true, true, true)
+        )));
+        let spyCheckAndSendLogs = spyOn<any>(plugin, '_checkAndSendLogs').and.callThrough();
+        let spySendBatch = spyOn<any>(plugin, '_sendBatch').and.callFake((deliveryStream: string, records: Firehose.Record[]) => {
+            /* do nothing */
+        });
+        let spySend = spyOn<any>(plugin, '_send').and.callFake((deliveryStream: string, record: Firehose.Record) => {
+            /* do nothing */
+        });
+
+        const logName = rand.getString(10);
+        plugin.initialise(logName);
+        await plugin.log(logName, 'debug', rand.guid);
+        await plugin.log(logName, 'info', rand.guid);
+        await plugin.log(logName, 'warn', rand.guid);
+
+        expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(2);
+        expect(spySendBatch).not.toHaveBeenCalled();
+        expect(spySend).toHaveBeenCalledTimes(2);
+
+        const result: TestResult = {
+            resultId: rand.guid,
+            created: Date.now(),
+            testId: 'C' + rand.getInt(100, 9999),
+            resultMessage: rand.getString(100),
+            status: 'skipped',
+            testName: logName
+        };
+        await plugin.submitResult(logName, result);
+
+        expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(2); // no additional times
+        expect(spySend).toHaveBeenCalledTimes(2); // no additional times
+    });
+
     it('adds expected fields to the log record', async () => {
         const aftCfg = new AftConfig();
         const config = aftCfg.getSection(KinesisReportingPluginConfig);

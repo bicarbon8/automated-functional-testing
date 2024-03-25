@@ -42,7 +42,8 @@ export class FilesystemReportingPlugin extends ReportingPlugin {
     override log = async (name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => {
         if (this.enabled) {
             if (data?.length > 0) {
-                message = `${message} ${data?.map(d => Err.handle(() => d?.toString())).join(', ')}`;
+                const dataStr = (data?.length) ? `, [${data?.map(d => Err.handle(() => JSON.stringify(d))).join(',')}]` : '';
+                message = `${message}${dataStr}`;
             }
             this._appendToFile({name, level, message});
         }
