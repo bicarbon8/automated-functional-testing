@@ -26,7 +26,7 @@
         "url": "%jira_url%",
         "user": "%jira_user%",
         "accessKey": "%jira_pass%",
-        "projectId": 100,
+        "projectId": "100",
         "closeDefectOnPass": false,
         "openDefectOnFail": false,
         "policyEngineEnabled": false
