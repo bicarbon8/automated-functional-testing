@@ -3,7 +3,6 @@ import { AftConfig, aftConfig } from "../configuration/aft-config";
 import { LogLevel } from "./log-level";
 import { ellide } from "../helpers/ellide";
 import { LogMessageData } from "./log-message-data";
-import { Err } from "../helpers/err";
 
 /**
  * a logging class that uses configuration to determine what
@@ -78,7 +77,13 @@ export class AftLogger {
         data.message ??= '';
         data.level ??= 'none';
         const d: string = new Date().toLocaleTimeString();
-        const args: string = (data.args?.length) ? `, [${data.args.map(d => Err.handle(() => JSON.stringify(d))).join('')}]` : '';
+        const args: string = (data.args?.length) ? `, [${data.args.map(d => {
+            try {
+                return JSON.stringify(d);
+            } catch {
+                return d?.toString();
+            }
+        }).join(',')}]` : '';
         const out = `${d} - [${data.name}] - ${ellide(data.level.toUpperCase(), 5, 'end', '')} - ${data.message}${args}`;
         return out;
     }
