@@ -1,5 +1,5 @@
 {
-  "name": "webdriverio-mocha",
+  "name": "web-services-jasmine",
   "description": "Automated Functional Testing (AFT) package containing examples of how it can be used",
   "private": true,
   "scripts": {
@@ -29,26 +29,20 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
+    "aft-jasmine-reporter": "^10.2.2",
     "aft-jira": "^10.2.2",
-    "aft-mocha-reporter": "^10.2.2",
     "aft-reporting-aws-kinesis-firehose": "^10.2.2",
     "aft-reporting-filesystem": "^10.2.2",
     "aft-reporting-html": "^10.2.2",
     "aft-testrail": "^10.2.2",
-    "aft-ui-webdriverio": "^10.2.2",
-    "aft-web-services": "^10.2.2",
-    "webdriverio": "^8.35.1"
+    "aft-web-services": "^10.2.2"
   },
   "devDependencies": {
-    "@types/chai": "^4.3.14",
-    "@types/mocha": "^10.0.6",
+    "@types/jasmine": "^5.1.4",
     "@types/node": "^20.11.30",
-    "@types/selenium-webdriver": "^4.1.22",
-    "chai": "^4.4.1",
-    "mocha": "^10.3.0",
+    "jasmine": "^5.1.0",
     "nyc": "^15.1.0",
     "rimraf": "^5.0.1",
-    "ts-mocha": "^10.0.0",
     "typescript": "^5.1.6"
   }
 }

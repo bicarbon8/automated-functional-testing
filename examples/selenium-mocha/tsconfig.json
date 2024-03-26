@@ -2,7 +2,7 @@
     "extends": "../../tsconfig.settings.json",
     "compilerOptions": {
         "outDir": "dist",
-        "types": ["node", "mocha", "chai", "webdriverio"]
+        "types": ["node", "mocha", "chai"]
     },
     "include": ["test"],
     "references": [
@@ -12,7 +12,7 @@
         { "path": "../../packages/aft-reporting-filesystem" },
         { "path": "../../packages/aft-reporting-html" },
         { "path": "../../packages/aft-testrail" },
-        { "path": "../../packages/aft-ui-webdriverio" },
+        { "path": "../../packages/aft-ui-selenium" },
         { "path": "../../packages/aft-web-services" }
     ]
 }

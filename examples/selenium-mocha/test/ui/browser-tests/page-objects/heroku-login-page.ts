@@ -1,15 +1,16 @@
+import { By, Locator } from 'selenium-webdriver';
 import { HerokuContentWidget } from './heroku-content-widget';
 import { HerokuMessagesWidget } from './heroku-messages-widget';
+import { SeleniumComponent } from 'aft-ui-selenium';
 import { Err } from 'aft-core';
-import { WebdriverIoComponent } from 'aft-ui-webdriverio';
 
-export class HerokuLoginPage extends WebdriverIoComponent {
+export class HerokuLoginPage extends SeleniumComponent {
     /**
      * this Facet sets a static locator instead of using a passed
      * in value on the constructor
      */
-    override get locator(): string {
-        return 'html';
+    override get locator(): Locator {
+        return By.css('html');
     }
 
     /* begin: widgets */
@@ -22,7 +23,7 @@ export class HerokuLoginPage extends WebdriverIoComponent {
     /* end: widgets */
 
     async navigateTo(): Promise<void> {
-        await Err.handleAsync(async () => await this.driver.navigateTo('https://the-internet.herokuapp.com/login'), {
+        await Err.handleAsync(async () => await this.driver.navigate().to('https://the-internet.herokuapp.com/login'), {
             logger: this.reporter,
             errLevel: 'error'
         });

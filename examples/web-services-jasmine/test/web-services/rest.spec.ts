@@ -4,7 +4,6 @@ import * as FormData from "form-data";
 import { Verifier, greaterThan, havingValue, lessThan, retry } from "aft-core";
 import { AftTest } from "aft-mocha-reporter";
 import { httpData, HttpResponse, httpService } from 'aft-web-services';
-import { expect } from "chai";
 import { ListUsersResponse } from "./response-objects/list-users-response";
 
 describe('REST Request', () => {
@@ -32,7 +31,7 @@ describe('REST Request', () => {
 
         await aft.verify(async (v: Verifier) => {
             await v.reporter.step('confirm response is not null...');
-            expect(response).to.exist;
+            expect(response).toBeDefined();
             await v.reporter.info('confirmed response is not null.');
             await v.reporter.info('response status code: ' + response.statusCode);
             await v.reporter.step('confirm response.data is not null...');
@@ -44,7 +43,7 @@ describe('REST Request', () => {
         await aft.verify(async (v: Verifier) => {
             await v.reporter.step('confirm can deserialise response.data into typed object...');
             let obj: ListUsersResponse = httpData.as<ListUsersResponse>(response);
-            expect(obj).to.exist;
+            expect(obj).toBeDefined();
             await v.reporter.info('confirmed can deserialise response.data into typed object.');
             await v.reporter.step('confirm object data property contains more than one result...');
             return obj.data.length;

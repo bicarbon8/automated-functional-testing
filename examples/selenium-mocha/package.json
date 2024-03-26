@@ -1,5 +1,5 @@
 {
-  "name": "webdriverio-mocha",
+  "name": "selenium-mocha",
   "description": "Automated Functional Testing (AFT) package containing examples of how it can be used",
   "private": true,
   "scripts": {
@@ -35,9 +35,8 @@
     "aft-reporting-filesystem": "^10.2.2",
     "aft-reporting-html": "^10.2.2",
     "aft-testrail": "^10.2.2",
-    "aft-ui-webdriverio": "^10.2.2",
-    "aft-web-services": "^10.2.2",
-    "webdriverio": "^8.35.1"
+    "aft-ui-selenium": "^10.2.2",
+    "aft-web-services": "^10.2.2"
   },
   "devDependencies": {
     "@types/chai": "^4.3.14",

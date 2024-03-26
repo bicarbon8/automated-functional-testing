@@ -2,17 +2,16 @@
     "extends": "../../tsconfig.settings.json",
     "compilerOptions": {
         "outDir": "dist",
-        "types": ["node", "mocha", "chai", "webdriverio"]
+        "types": ["node", "jasmine"]
     },
     "include": ["test"],
     "references": [
         { "path": "../../packages/aft-jira" },
-        { "path": "../../packages/aft-mocha-reporter" },
+        { "path": "../../packages/aft-jasmine-reporter" },
         { "path": "../../packages/aft-reporting-aws-kinesis-firehose" },
         { "path": "../../packages/aft-reporting-filesystem" },
         { "path": "../../packages/aft-reporting-html" },
         { "path": "../../packages/aft-testrail" },
-        { "path": "../../packages/aft-ui-webdriverio" },
         { "path": "../../packages/aft-web-services" }
     ]
 }

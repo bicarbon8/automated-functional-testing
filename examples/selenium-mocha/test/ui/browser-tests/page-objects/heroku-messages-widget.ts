@@ -1,19 +1,20 @@
-import { WebdriverIoComponent } from "aft-ui-webdriverio";
+import { SeleniumComponent } from "aft-ui-selenium";
+import { By, Locator, WebElement } from "selenium-webdriver";
 
-export class HerokuMessagesWidget extends WebdriverIoComponent {
+export class HerokuMessagesWidget extends SeleniumComponent {
     /**
      * this Facet sets a static locator instead of using a passed
      * in value on the constructor
      */
-    override get locator(): string {
-        return 'flash-messages';
+    override get locator(): Locator {
+        return By.id('flash-messages');
     }
 
-    private async message(): Promise<WebdriverIO.Element> {
-        let elements: WebdriverIO.ElementArray | any[];
+    private async message(): Promise<WebElement> {
+        let elements: WebElement[];
         try {
             elements = await this.getRoot()
-                .then(r => r.$$('flash'))
+                .then(r => r.findElements(By.id('flash')))
                 .catch((err) => []);
         } catch (e) {
             return null;

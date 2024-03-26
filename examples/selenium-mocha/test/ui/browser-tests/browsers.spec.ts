@@ -1,7 +1,7 @@
 import { AftConfig, BuildInfoManager, containing, pluginLoader, retry, Verifier } from "aft-core";
 import { AftTest } from "aft-mocha-reporter";
+import { SeleniumVerifier } from "aft-ui-selenium";
 import { HerokuLoginPage } from "./page-objects/heroku-login-page";
-import { WebdriverIoVerifier } from "aft-ui-webdriverio";
 
 describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
     beforeEach(() => {
@@ -16,7 +16,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
     it('[C3456][C2345][C1234] can access websites using AFT and BrowserComponents', async function() {
         const aftCfg = new AftConfig();
         const aft = new AftTest(this, aftCfg);
-        await aft.verify(async (tw: WebdriverIoVerifier) => {
+        await aft.verify(async (tw: SeleniumVerifier) => {
             let loginPage: HerokuLoginPage = tw.getComponent(HerokuLoginPage);
             
             await tw.reporter.step('navigate to LoginPage...');
@@ -33,13 +33,11 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
             
             await tw.reporter.step('get message...');
             return await loginPage.getMessage();
-        }, WebdriverIoVerifier).withAdditionalSessionOptions({
+        }, SeleniumVerifier).withAdditionalSessionOptions({
             capabilities: {
                 browserName: 'chrome',
                 "bstack:options": {
                     sessionName: aft.reporter.reporterName,
-                    os: 'windows',
-                    osVersion: '11',
                     buildName: await new BuildInfoManager().get()
                 }
             }
@@ -49,13 +47,13 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
     it('can recover from StaleElementExceptions automatically', async function() {
         const aftCfg = new AftConfig();
         const aft = new AftTest(this, aftCfg);
-        await aft.verify(async (tw: WebdriverIoVerifier) => {
+        await aft.verify(async (tw: SeleniumVerifier) => {
             let loginPage: HerokuLoginPage = tw.getComponent(HerokuLoginPage);
             
             await aft.verify(async (v: Verifier) => {
                 await v.reporter.step('navigate to LoginPage');
                 await loginPage.navigateTo();
-                return await loginPage.driver.getUrl();
+                return await loginPage.driver.getCurrentUrl();
             }).withTestIds('C4567')
             .returns(containing('the-internet.herokuapp.com/login'));
             
@@ -67,7 +65,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
 
             await aft.verify(async (v: Verifier) => {
                 await v.reporter.step('refresh page...');
-                await tw.browser.refresh();
+                await tw.driver.navigate().refresh();
                 await v.reporter.info('page refreshed');
             }).withTestIds('C6789');
 
@@ -76,13 +74,11 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                 await loginPage.content.getLoginButton().then(button => button.click());
                 await tw.reporter.info('no exception thrown on click');
             }).withTestIds('C7890');
-        }, WebdriverIoVerifier).withAdditionalSessionOptions({
+        }, SeleniumVerifier).withAdditionalSessionOptions({
             capabilities: {
                 browserName: 'chrome',
                 "bstack:options": {
                     sessionName: aft.reporter.reporterName,
-                    os: 'windows',
-                    osVersion: '11',
                     buildName: await new BuildInfoManager().get()
                 }
             }
@@ -99,7 +95,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
             const platform = Object.freeze({...uiplatform});
             const aftCfg = new AftConfig();
             const aft = new AftTest(this, aftCfg);
-            await aft.verify(async (tw: WebdriverIoVerifier) => {
+            await aft.verify(async (tw: SeleniumVerifier) => {
                 let loginPage: HerokuLoginPage = tw.getComponent(HerokuLoginPage);
                 await loginPage.navigateTo();
                 await loginPage.login("tomsmith", "SuperSecretPassword!");
@@ -109,7 +105,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                     .withMaxDuration(20000)
                     .until((res: boolean) => res);
                 return await loginPage.getMessage();
-            }, WebdriverIoVerifier).withAdditionalSessionOptions({
+            }, SeleniumVerifier).withAdditionalSessionOptions({
                 capabilities: {
                     browserName: platform.browser,
                     "bstack:options": {
