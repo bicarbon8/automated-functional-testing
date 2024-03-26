@@ -38,15 +38,15 @@
         "sendStrategy": "reportonly"
     },
     "UiSessionConfig": {
-        "generatorName": "grid-session-generator-plugin",
+        "generatorName": "webdriverio-remote-session-generator-plugin",
         "options": {
             "url": "https://hub-cloud.browserstack.com/wd/hub",
+            "user": "%browserstack_user%",
+            "key": "%browserstack_key%",
             "capabilities": {
                 "bstack:options": {
-                    "userName": "%browserstack_user%",
-                    "accessKey": "%browserstack_key%",
                     "debug": true,
-                    "projectName": "AFT-Examples"
+                    "projectName": "Examples/webdriverio-mocha"
                 }
             }
         }

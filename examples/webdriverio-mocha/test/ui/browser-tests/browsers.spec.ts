@@ -90,9 +90,8 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
     });
 
     const uiplatforms = [
-        { browser: 'safari', os: 'os x', osV: 'ventura' },
-        { browser: 'firefox', os: 'windows', osV: '11' },
-        { browser: 'edge', os: 'windows', osV: '11' },
+        { browser: 'safari', deviceName: 'iPhone 14 Pro Max', osV: '16' },
+        { browser: 'chrome', deviceName: 'Samsung Galaxy S23', osV: '13.0' }
     ];
     for (let uiplatform of uiplatforms) {
         it(`can run with multiple uiplatforms: ${JSON.stringify(uiplatform)}`, async function() {
@@ -114,7 +113,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                     browserName: platform.browser,
                     "bstack:options": {
                         sessionName: aft.reporter.reporterName,
-                        os: platform.os,
+                        deviceName: platform.deviceName,
                         osVersion: platform.osV,
                         buildName: await new BuildInfoManager(aftCfg).get()
                     }

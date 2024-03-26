@@ -6,17 +6,17 @@ export class HerokuContentWidget extends WebdriverIoComponent {
      * in value on the constructor
      */
     override get locator(): string {
-        return 'content';
+        return '#content';
     }
 
     private async usernameInput(): Promise<WebdriverIO.Element> {
         return this.getRoot()
-            .then(r => r.$("username"))
+            .then(r => r.$("#username"))
             .catch((err) => null);
     }
     private async passwordInput(): Promise<WebdriverIO.Element> {
         return this.getRoot()
-            .then(r => r.$('password'))
+            .then(r => r.$('#password'))
             .catch((err) => null);
     }
     private async loginButton(): Promise<WebdriverIO.Element> {

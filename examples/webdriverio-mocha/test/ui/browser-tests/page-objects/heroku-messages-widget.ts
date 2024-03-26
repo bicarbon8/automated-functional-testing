@@ -6,14 +6,14 @@ export class HerokuMessagesWidget extends WebdriverIoComponent {
      * in value on the constructor
      */
     override get locator(): string {
-        return 'flash-messages';
+        return '#flash-messages';
     }
 
     private async message(): Promise<WebdriverIO.Element> {
         let elements: WebdriverIO.ElementArray | any[];
         try {
             elements = await this.getRoot()
-                .then(r => r.$$('flash'))
+                .then(r => r.$$('#flash'))
                 .catch((err) => []);
         } catch (e) {
             return null;

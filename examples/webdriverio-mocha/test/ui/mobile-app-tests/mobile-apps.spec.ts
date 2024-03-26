@@ -23,8 +23,8 @@ describe('Functional Mobile App Tests using AFT-UI-WEBDRIVERIO', () => {
     before(async () => {
         const logger = new Reporter('MobileAppsSpec Before');
         const uisc = aftConfig.getSection(UiSessionConfig);
-        const username = uisc.options.capabilities?.["bstack:options"]?.userName;
-        const password = uisc.options.capabilities?.["bstack:options"]?.accessKey;
+        const username = uisc.options?.user;
+        const password = uisc.options?.key;
         const resp = await httpService.performRequest({
             url: "https://api-cloud.browserstack.com/app-automate/recent_group_apps",
             headers: {
@@ -62,10 +62,6 @@ describe('Functional Mobile App Tests using AFT-UI-WEBDRIVERIO', () => {
 
     it('can search in Wikipedia App', async function() {
         const aftCfg = new AftConfig();
-        const uisc = aftCfg.getSection(UiSessionConfig);
-        uisc.generatorName = 'webdriverio-remote-session-generator-plugin';
-        const username = uisc.options.capabilities?.["bstack:options"]?.userName;
-        const password = uisc.options.capabilities?.["bstack:options"]?.accessKey;
         const aft = new AftTest(this, aftCfg);
         await aft.verify(async (tw: WebdriverIoVerifier) => {
             await tw.reporter.step('get the WikipediaView Component from the Session...');
@@ -81,8 +77,6 @@ describe('Functional Mobile App Tests using AFT-UI-WEBDRIVERIO', () => {
                 }
             }
         }, WebdriverIoVerifier).withAdditionalSessionOptions({
-            user: username,
-            key: password,
             capabilities: {
                 browserName: 'android',
                 platformName: 'android',
