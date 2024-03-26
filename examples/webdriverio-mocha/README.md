@@ -1,5 +1,5 @@
-# AFT-Examples
-Automated Functional Testing (AFT) repo providing examples and best practices for using the Framework. This repo can serve as a quick-start project for functional testing projects.
+# Examples: WebdriverIO and Mocha
+Automated Functional Testing (AFT) repo providing examples and best practices for using the AFT libraries with WebdriverIO and Mocha test framework. This repo can serve as a quick-start project for functional testing projects.
 
 ## Usage:
 using AFT allows for setting configuration values in the `aftconfig.json` depending on the type of testing you're planning on performing.
@@ -32,6 +32,15 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
         "projectId": 3,
         "suiteIds": [744],
         "logLevel": "error",
+        "policyEngineEnabled": true
+    },
+    "JiraConfig": {
+        "url": "%jira_url%",
+        "user": "%jira_user%",
+        "accessKey": "%jira_pass%",
+        "projectId": "1000",
+        "closeDefectOnPass": true,
+        "openDefectOnFail": true,
         "policyEngineEnabled": true
     },
     "UiSessionManagerConfig": {
@@ -70,12 +79,20 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
   - **planId** - `number` containing the TestRail plan you are referencing in your tests. _NOTE: if not specified and the `testrail-reporting-plugin` is using a `logLevel` of anything other than `'none'` a new TestRail plan will be created based on your `projectId` and `suiteIds`_
   - **logLevel** - `string` containing the minimum `LogLevel` where logs will be captured and sent to TestRail on completion of a test. _NOTE: setting this to a value of `'none'` disabled sending results to TestRail, but you can still use TestRail to control test execution via the `policyEngineEnabled` configuration setting_
   - **policyEngineEnabled** - `boolean` indicating if TestRail should be used to control the execution of tests run within a `Verifier`
+- **JiraConfig** - configuration values to use for Jira integration
+  - **url** - `string` containing the URL used for accessing your Jira instance. _NOTE: this is **NOT** the API url, but the URL to access the base instance of Jira_
+  - **user** - `string` containing a valid username for logging in to Jira
+  - **accessKey** - `string` containing your API access key used to access the Jira API.
+  - **projectId** - `string` containing a valid project ID where new defects will be created if `openDefectOnFail` is set to `true`. _NOTE: new defects will not be created and this can be left unset if `openDefectOnFail` is `false`_
+  - **openDefectOnFail** - `boolean` indicating if a new defect should be created when a test failure occurs _(defaults to `false`)_
+  - **closeDefectOnPass** - `boolean` indicating if any open defects referencing the currently passing test ID should be closed on successful completion of the test _(defaults to `false`)_
+  - **policyEngineEnabled** - `boolean` indicating if each a search of open Jira issues should be performed for each test ID to determine if the test should be run when using an AFT `verifier`. _(defaults to `true`)_
 - **UiSessionConfig** - configuration for the `UiSessionGeneratorManager` to use to determine which `UiSessionGeneratorPlugin` to use
   - **generatorName** - `string` containing the name of the `UiSessionGeneratorPlugin` to use when generating UI sessions
   - **options** - `object` containing any properties that will be passed to the loaded `UiSessionGeneratorPlugin.getSession` function and that can be used by the plugin to control the type of session to create
 
 ## Test Execution
-executing the tests using `npm test` should result in the output like the following sent to the console (assuming the `Reporter.level` is set to something like `info` in your `aftconfig.json`):
+running `npm run test:e2e` will execute the tests using Mocha which should result in output like the following being sent to the console (assuming the `Reporter.level` is set to something like `info` in your `aftconfig.json`):
 ```
 14:51:33 - [can access websites using AFT and Page Widgets and Facets] - STEP  - 1: navigate to LoginPage...
 14:51:35 - [can access websites using AFT and Page Widgets and Facets] - STEP  - 2: login

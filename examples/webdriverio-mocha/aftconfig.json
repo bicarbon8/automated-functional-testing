@@ -11,7 +11,7 @@
         "local-session-generator-plugin",
         "webdriverio-remote-session-generator-plugin"
     ],
-    "pluginsSearchDir": "../",
+    "pluginsSearchDir": "../../packages/",
     "logLevel": "debug",
     "TestRailConfig": {
         "url": "%testrail_url%",

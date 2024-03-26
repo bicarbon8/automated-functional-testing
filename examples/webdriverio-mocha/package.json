@@ -1,6 +1,5 @@
 {
-  "name": "aft-examples",
-  "version": "10.2.2",
+  "name": "webdriverio-mocha",
   "description": "Automated Functional Testing (AFT) package containing examples of how it can be used",
   "private": true,
   "scripts": {
