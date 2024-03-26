@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./logs && rimraf ./FileSystemMap && rimraf ./testresults.html",
     "build": "npm run clean && tsc --build",
-    "test:e2e": "npm run build && mocha"
+    "test:e2e": "npm run build && jasmine --config=./jasmine.json"
   },
   "repository": {
     "type": "git",
