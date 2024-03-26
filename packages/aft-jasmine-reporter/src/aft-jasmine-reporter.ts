@@ -6,7 +6,7 @@ export class AftJasmineReporter implements jasmine.CustomReporter {
     private readonly _testNames: FileSystemMap<string, any>;
 
     constructor() {
-        this._async2Sync = new Array<Promise<void>>;
+        this._async2Sync = new Array<Promise<void>>; // eslint-disable-line
         this._testNames = new FileSystemMap<string, any>(this.constructor.name);
     }
     

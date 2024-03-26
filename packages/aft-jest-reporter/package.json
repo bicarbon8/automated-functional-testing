@@ -7,6 +7,7 @@
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./logs && rimraf ./FileSystemMap && rimraf ./testresults.html",
     "build": "npm run clean && tsc --build",
+    "lint": "npx eslint ./src --ext .ts",
     "test": "npm run build && jest",
     "coverage": "npm run build && nyc jest"
   },
@@ -37,8 +38,11 @@
     "@jest/reporters": "^29.7.0",
     "@jest/types": "^29.6.3",
     "@types/node": "^20.11.30",
+    "@typescript-eslint/eslint-plugin": "^7.4.0",
+    "@typescript-eslint/parser": "^7.4.0",
     "aft-reporting-filesystem": "^10.2.2",
     "aft-reporting-html": "^10.2.2",
+    "eslint": "^8.57.0",
     "nyc": "^15.1.0",
     "rimraf": "^5.0.1",
     "ts-node": "^10.9.2",

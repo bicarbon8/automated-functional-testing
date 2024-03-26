@@ -35,7 +35,7 @@ export class GridSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
                     errLevel: 'debug'
                 });
             } catch (e) {
-                this.reporter.warn(`error in creating WebDriver due to: ${Err.full(e)}`);
+                await this.reporter.warn(`error in creating WebDriver due to: ${Err.full(e)}`);
             }
         }
         return driver;

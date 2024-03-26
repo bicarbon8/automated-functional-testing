@@ -97,8 +97,8 @@ export class SeleniumVerifier extends Verifier {
         try {
             await super._resolveAssertion();
         } finally {
-            Err.handleAsync(async () => await this.driver?.close());
-            Err.handleAsync(async () => await this.driver?.quit());
+            await Err.handleAsync(async () => await this.driver?.close());
+            await Err.handleAsync(async () => await this.driver?.quit());
         }
     }
 }

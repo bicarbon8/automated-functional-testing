@@ -7,6 +7,7 @@
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./.nyc_output && rimraf ./coverage",
     "build": "npm run clean && tsc --build",
+    "lint": "npx eslint ./src --ext .ts",
     "test": "npm run build && jasmine --config=./jasmine.json",
     "coverage": "npm run build && nyc jasmine --config=./jasmine.json"
   },
@@ -41,6 +42,9 @@
     "@types/lodash": "^4.17.0",
     "@types/node": "^20.11.30",
     "@types/selenium-webdriver": "^4.1.22",
+    "@typescript-eslint/eslint-plugin": "^7.4.0",
+    "@typescript-eslint/parser": "^7.4.0",
+    "eslint": "^8.57.0",
     "jasmine": "^5.1.0",
     "nyc": "^15.1.0",
     "rimraf": "^5.0.1",

@@ -96,7 +96,7 @@ export class WebdriverIoVerifier extends Verifier {
         try {
             await super._resolveAssertion();
         } finally {
-            Err.handleAsync(async () => await this.browser.deleteSession());
+            await Err.handleAsync(async () => await this.browser.deleteSession());
         }
     }
 }
@@ -118,6 +118,6 @@ export class WebdriverIoVerifier extends Verifier {
  */
 export const verifyWithWebdriverIO = (assertion: Func<WebdriverIoVerifier, any>): WebdriverIoVerifier => {
     let v: WebdriverIoVerifier = new WebdriverIoVerifier();
-    v.verify(assertion);
+    v.verify(assertion); // eslint-disable-line
     return v;
 }

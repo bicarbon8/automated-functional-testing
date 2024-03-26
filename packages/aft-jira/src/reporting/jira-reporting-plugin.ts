@@ -1,7 +1,6 @@
-import { ReportingPlugin, LogLevel, TestResult, ellide, AftConfig, Err } from "aft-core";
+import { ReportingPlugin, LogLevel, TestResult, AftConfig, Err } from "aft-core";
 import { JiraApi } from "../api/jira-api";
 import { JiraConfig } from "../configuration/jira-config";
-import { JiraIssue, JiraSearchResults } from "../api/jira-custom-types";
 import { CommonActions } from "../helpers/common-actions";
 
 /**
@@ -85,18 +84,18 @@ export class JiraReportingPlugin extends ReportingPlugin {
         if (openIssues?.length) {
             // update comments to indicate the issue still exists
             for (const issue of openIssues) {
-                this._api.addCommentToIssue(issue.key, `test '${result.testId}' still failing due to: ${result.resultMessage}`);
+                await this._api.addCommentToIssue(issue.key, `test '${result.testId}' still failing due to: ${result.resultMessage}`);
             }
         } else {
             // create a new defect
-            this._api.createIssue(result.testId, result.testName, this.logs(logName));
+            await this._api.createIssue(result.testId, result.testName, this.logs(logName));
         }
     }
 
     private async _closeDefects(logName: string, result: TestResult): Promise<void> {
         const openIssues = await CommonActions.getOpenIssuesReferencingTestId(result.testId, this._api);
         for (const issue of openIssues) {
-            CommonActions.closeIssue(result.testId, issue.id, this._api);
+            await CommonActions.closeIssue(result.testId, issue.id, this._api);
         }
     }
 }

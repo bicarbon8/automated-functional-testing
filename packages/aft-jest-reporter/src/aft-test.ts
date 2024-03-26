@@ -1,5 +1,4 @@
 import { AftConfig, FileSystemMap, AftTestIntegration, convert } from "aft-core";
-import AftJestReporter from "./aft-jest-reporter";
 import { TestCaseResult } from "@jest/reporters";
 
 /**
