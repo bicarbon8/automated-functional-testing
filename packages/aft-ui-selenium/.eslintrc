@@ -1,8 +1,12 @@
 {
+  "extends": "eslint:recommended",
   "parser": "@typescript-eslint/parser",
   "parserOptions": { "project": "./tsconfig.json" },
   "plugins": ["@typescript-eslint"],
   "rules": {
+    "no-inner-declarations": ["off"],
+    "no-prototype-builtins": ["off"],
+    "no-case-declarations": ["off"],
     "@typescript-eslint/no-floating-promises": ["error"]
   },
   "ignorePatterns": ["/*", "!/src"]

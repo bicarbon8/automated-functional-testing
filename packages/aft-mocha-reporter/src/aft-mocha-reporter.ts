@@ -37,4 +37,4 @@ export class AftMochaReporter extends Mocha.reporters.Base {
     }
 }
 
-module.exports = AftMochaReporter;
+module.exports = AftMochaReporter; // eslint-disable-line no-undef

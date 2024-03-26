@@ -1,6 +1,6 @@
 import * as http from 'http';
 import * as https from 'https';
-import * as FormData from "form-data";
+import * as FormData from "form-data"; // eslint-disable-line no-redeclare
 import { HttpMethod, HttpRequest, HttpResponse } from "./http-custom-types";
 import { AftConfig, aftConfig, aftLogger } from 'aft-core';
 import { OutgoingHttpHeaders } from 'http2';

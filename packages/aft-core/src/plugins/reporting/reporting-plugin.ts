@@ -1,4 +1,4 @@
-import { Plugin, PluginConfig } from "../plugin";
+import { Plugin, PluginConfig } from "../plugin"; // eslint-disable-line no-redeclare
 import { LogLevel } from "../../logging/log-level";
 import { TestResult } from "./test-result";
 
@@ -32,22 +32,22 @@ export class ReportingPlugin extends Plugin {
      * themselves for a new logger
      * @param logName the name of the `Reporter` instance calling dispose
      */
-    initialise = (logName: string): Promise<void> => null;
+    initialise = (logName: string): Promise<void> => null; // eslint-disable-line no-unused-vars
     /**
      * used for reporting message strings. this function would be called often
      * @param message the `LogMessageData` to be logged by this plugin
      * @param data an array of additional data to log
      */
-    log = (name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => null;
+    log = (name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => null; // eslint-disable-line no-unused-vars
     /**
      * function will report on the passed in `TestResult`
      * @param result a `TestResult` object to be sent
      */
-    submitResult = (name: string, result: TestResult): Promise<void> => null;
+    submitResult = (name: string, result: TestResult): Promise<void> => null; // eslint-disable-line no-unused-vars
     /**
      * called by the parent `Reporter` before terminating to allow each plugin to 
      * finalise any deferred logging actions
      * @param name the name of the `Reporter` instance calling finalise
      */
-    finalise = (name: string): Promise<void> => null;
+    finalise = (name: string): Promise<void> => null; // eslint-disable-line no-unused-vars
 }

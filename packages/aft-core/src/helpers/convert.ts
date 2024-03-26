@@ -20,7 +20,7 @@ export type SafeStringOption = {
  * module providing a default set of string replacement values via the
  * `SafeStringOptions.defaults` const
  */
-export module SafeStringOption {
+export module SafeStringOption { // eslint-disable-line no-redeclare
     /**
      * a default set of characters to exclude and their replacement values that prevents
      * any curly or square brackets, forward or backslashes, commas, dashes, fullstops,
@@ -28,9 +28,9 @@ export module SafeStringOption {
      * string and the rest with underscore
      */
     export const defaults: SafeStringOption[] = [
-        {exclude: /[\/\\\{\}\(\)\,\.\-]/g, replaceWith: '_'},
+        {exclude: /[\/\\\{\}\(\)\,\.\-]/g, replaceWith: '_'}, // eslint-disable-line no-useless-escape
         {exclude: /[\s]+/g, replaceWith: '_'},
-        {exclude: /[\$\^\&\*\%\£\€\~\#\@\!\|\?\'\"\:\;\=\+\[\]\<\>]/g, replaceWith: ''}
+        {exclude: /[\$\^\&\*\%\£\€\~\#\@\!\|\?\'\"\:\;\=\+\[\]\<\>]/g, replaceWith: ''} // eslint-disable-line no-useless-escape
     ];
 }
 
@@ -40,7 +40,7 @@ class Convert {
      * @param input a string to be Base64 encoded
      */
     toBase64Encoded(input: string) {
-        return Buffer.from(input).toString('base64');
+        return Buffer.from(input).toString('base64'); // eslint-disable-line no-undef
     }
 
     /**
@@ -48,7 +48,7 @@ class Convert {
      * @param base64Str a Base64 encoded string to be decoded
      */
     fromBase64Encoded(base64Str: string) {
-        return Buffer.from(base64Str, 'base64').toString('ascii');
+        return Buffer.from(base64Str, 'base64').toString('ascii'); // eslint-disable-line no-undef
     }
 
     /**

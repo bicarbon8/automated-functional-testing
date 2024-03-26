@@ -1,3 +1,4 @@
+import process = require("process");
 import * as path from "path";
 import { convert } from "./convert";
 import { JsonKey, JsonValue } from "./custom-types";
@@ -52,7 +53,7 @@ export class FileSystemMap<Tkey extends JsonKey, Tval extends JsonValue> impleme
         this._writeToFile();
         return result;
     }
-    forEach(callbackfn: (value: Tval, key: Tkey, map: Map<Tkey, Tval>) => void, thisArg?: any): void {
+    forEach(callbackfn: (value: Tval, key: Tkey, map: Map<Tkey, Tval>) => void, thisArg?: any): void { // eslint-disable-line no-unused-vars
         this._updateMemoryMap();
         this._memoryMap.forEach(callbackfn, thisArg);
         this._writeToFile();

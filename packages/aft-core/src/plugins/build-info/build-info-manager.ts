@@ -10,7 +10,7 @@ export class BuildInfoManager {
     public readonly aftCfg: AftConfig;
     public readonly plugins: Array<BuildInfoPlugin>
 
-    private readonly _safeStrOpt: SafeStringOption[] = [{exclude: /[\()\;\\\/\|\<\>""'*&^%$#@!,.\-\+_=\?]/gi, replaceWith: ''}];
+    private readonly _safeStrOpt: SafeStringOption[] = [{exclude: /[\()\;\\\/\|\<\>""'*&^%$#@!,.\-\+_=\?]/gi, replaceWith: ''}]; // eslint-disable-line no-useless-escape
     private readonly _aftLogger: AftLogger;
     
     constructor(aftCfg?: AftConfig) {

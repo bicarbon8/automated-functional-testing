@@ -18,10 +18,10 @@ export default class AftJestReporter implements Reporter {
     }
 
     // start: required Reporter functions
-    onRunStart(results: AggregatedResult, options: ReporterOnStartOptions): Promise<void> | void {
+    onRunStart(results: AggregatedResult, options: ReporterOnStartOptions): Promise<void> | void { // eslint-disable-line no-unused-vars
         /* do nothing */
     }
-    onRunComplete(testContexts: Set<TestContext>, results: AggregatedResult): Promise<void> | void {
+    onRunComplete(testContexts: Set<TestContext>, results: AggregatedResult): Promise<void> | void { // eslint-disable-line no-unused-vars
         /* do nothing */
     }
     getLastError(): Error | void {
@@ -41,15 +41,15 @@ export default class AftJestReporter implements Reporter {
             switch (testCaseResult.status) {
                 case "skipped":
                     return t.skipped(testCaseResult.failureMessages?.join('\n'))
-                        .then(_ => t.dispose())
+                        .then(() => t.dispose())
                         .catch((err) => t.reporter.warn(err));
                 case "failed":
                     return t.fail(testCaseResult.failureMessages?.join('\n'))
-                        .then(_ => t.dispose())
+                        .then(() => t.dispose())
                         .catch((err) => t.reporter.warn(err));
                 case "passed":
                     return t.pass()
-                        .then(_ => t.dispose())
+                        .then(() => t.dispose())
                         .catch((err) => t.reporter.warn(err));
             }
         }

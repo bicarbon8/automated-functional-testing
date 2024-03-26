@@ -1,6 +1,6 @@
 export interface VerifierMatcher {
     readonly expected: any;
-    setActual(actual: any): VerifierMatcher;
+    setActual(actual: any): VerifierMatcher; // eslint-disable-line no-unused-vars
     compare(): boolean;
     failureString(): string;
 }

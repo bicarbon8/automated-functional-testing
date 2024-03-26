@@ -153,7 +153,7 @@ export class Err {
     }
 }
 
-export module Err {
+export module Err { // eslint-disable-line no-redeclare
     /**
      * @param err the `Error` to parse
      * @returns a shortened string formatted as `Error.name: Error.message (max 100 chars) --- Error.stack (max 300 chars)`

@@ -1,5 +1,5 @@
 import { httpData, HttpRequest, HttpResponse, httpService } from "aft-web-services";
-import { aftConfig, AftConfig, CacheMap, convert, ExpiringFileLock, fileio, JsonObject, wait } from "aft-core";
+import { aftConfig, AftConfig, CacheMap, convert, JsonObject, wait } from "aft-core";
 import { TestRailConfig } from "../configuration/testrail-config";
 import { AddPlanRequest, ICanHaveError, TestRailCase, TestRailGetCasesResponse, TestRailGetTestsResponse, TestRailPlan, TestRailPlanEntry, TestRailResult, TestRailResultRequest, TestRailResultResponse, TestRailRun, TestRailTest } from "./testrail-custom-types";
 
@@ -50,11 +50,11 @@ export class TestRailApi {
         let runs: TestRailRun[] = await this.getRunsInPlan(planId);
         let runIds: number[] = [];
         let test: TestRailTest = null;
-        for (var i=0; i<runs.length; i++) {
+        for (let i=0; i<runs.length; i++) {
             runIds.push(runs[i].id);
         }
         let tests: TestRailTest[] = await this.getTestsInRuns(runIds);
-        for (var i=0; i<tests.length; i++) {
+        for (let i=0; i<tests.length; i++) {
             if (`C${tests[i].case_id}` == caseId) {
                 test = tests[i];
                 break;
@@ -70,17 +70,17 @@ export class TestRailApi {
     async getCasesInSuites(projectId: number, suiteIds: number[]): Promise<TestRailCase[]> {
         const allCases: TestRailCase[] = [];
         const path: string = `/api/v2/get_cases/${projectId}&suite_id=`;
-        for (var i=0; i<suiteIds.length; i++) {
+        for (let i=0; i<suiteIds.length; i++) {
             let res: TestRailGetCasesResponse = await this._get<TestRailGetCasesResponse>(path + suiteIds[i], true);
             if (res?.cases?.length) {
-                for (var j=0; j<res.cases.length; j++) {
+                for (let j=0; j<res.cases.length; j++) {
                     allCases.push(res.cases[j]);
                 }
             }
             while (res?._links?.next) {
                 res = await this._get<TestRailGetCasesResponse>(res._links.next, true);
                 if (res?.cases?.length) {
-                    for (var j=0; j<res.cases.length; j++) {
+                    for (let j=0; j<res.cases.length; j++) {
                         allCases.push(res.cases[j]);
                     }
                 }
@@ -98,17 +98,17 @@ export class TestRailApi {
         const allTests: TestRailTest[] = [];
         const path: string = '/api/v2/get_tests/';
 
-        for (var i=0; i<runIds.length; i++) {
+        for (let i=0; i<runIds.length; i++) {
             let res: TestRailGetTestsResponse = await this._get<TestRailGetTestsResponse>(path + runIds[i], true);
             if (res?.tests?.length) {
-                for (var j=0; j<res.tests.length; j++) {
+                for (let j=0; j<res.tests.length; j++) {
                     allTests.push(res.tests[j]);
                 }
             }
             while (res?._links?.next) {
                 res = await this._get<TestRailGetTestsResponse>(res._links.next, true);
                 if (res?.tests?.length) {
-                    for (var j=0; j<res.tests.length; j++) {
+                    for (let j=0; j<res.tests.length; j++) {
                         allTests.push(res.tests[j]);
                     }
                 }

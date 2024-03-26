@@ -101,7 +101,7 @@ export class TestRailTestExecutionPolicyPlugin extends TestExecutionPolicyPlugin
                 runIds.push(r.id);
             });
             let trTests: TestRailTest[] = await this._api.getTestsInRuns(runIds);
-            for (var i=0; i<trTests.length; i++) {
+            for (let i=0; i<trTests.length; i++) {
                 let trTest: TestRailTest = trTests[i];
                 if (trTest && trTest.hasOwnProperty(field) && trTest[field]?.toString() == val) {
                     tests.push(trTest);
@@ -112,7 +112,7 @@ export class TestRailTestExecutionPolicyPlugin extends TestExecutionPolicyPlugin
             let projectId: number = cfg.projectId;
             let suiteIds: number[] = cfg.suiteIds ?? [];
             let trCases: TestRailCase[] = await this._api.getCasesInSuites(projectId, suiteIds);
-            for (var i=0; i<trCases.length; i++) {
+            for (let i=0; i<trCases.length; i++) {
                 let trCase: TestRailCase = trCases[i];
                 if (trCase && trCase.hasOwnProperty(field) && trCase[field]?.toString() == val) {
                     tests.push(trCase);

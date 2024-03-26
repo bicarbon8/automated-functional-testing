@@ -1,3 +1,4 @@
+import jasmine = require("jasmine");
 import { FileSystemMap } from "aft-core";
 import { AftTest } from "./aft-test";
 
@@ -11,11 +12,11 @@ export class AftJasmineReporter implements jasmine.CustomReporter {
     }
     
     jasmineStarted(): void {
-        beforeEach(async () => {
+        beforeEach(async () => { // eslint-disable-line no-undef
             while (this._async2Sync.length > 0) {
                 const asyncFunc = this._async2Sync.shift();
                 await asyncFunc.catch((err) => {
-                    console.error(err);
+                    console.error(err); // eslint-disable-line no-undef
                 });
             }
         });
@@ -50,4 +51,4 @@ export class AftJasmineReporter implements jasmine.CustomReporter {
     }
 }
 
-module.exports = AftJasmineReporter;
+module.exports = AftJasmineReporter; // eslint-disable-line no-undef

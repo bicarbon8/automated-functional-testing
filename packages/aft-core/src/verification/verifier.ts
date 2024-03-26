@@ -93,15 +93,15 @@ export class Verifier implements PromiseLike<void> {
     }
 
     async then<TResult1 = Verifier, TResult2 = never>(
-        onfulfilled?: (value: void) => TResult1 | PromiseLike<TResult1>,
-        onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2> {
+        onfulfilled?: (value: void) => TResult1 | PromiseLike<TResult1>, // eslint-disable-line no-unused-vars
+        onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2> { // eslint-disable-line no-unused-vars
             return this._getInnerPromise()
                 .then(onfulfilled, onrejected);
     }
 
     protected async _getInnerPromise(): Promise<void> {
         if (!this._innerPromise) {
-            this._innerPromise = new Promise(async (resolve, reject) => {
+            this._innerPromise = new Promise(async (resolve, reject) => { // eslint-disable-line no-async-promise-executor
                 try {
                     const shouldRun = await this.shouldRun();
                     if (shouldRun.result === true) {

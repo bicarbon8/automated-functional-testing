@@ -1,6 +1,6 @@
 import { AftConfig, TestExecutionPolicyPlugin, ProcessingResult } from 'aft-core';
 import { JiraApi } from '../api/jira-api';
-import { JiraIssue, JiraSearchResults } from '../api/jira-custom-types';
+import { JiraIssue } from '../api/jira-custom-types';
 import { JiraConfig } from '../configuration/jira-config';
 import { CommonActions } from '../helpers/common-actions';
 

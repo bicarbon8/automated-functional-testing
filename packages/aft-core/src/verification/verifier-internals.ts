@@ -5,8 +5,8 @@ import { TestExecutionPolicyManager } from "../plugins/test-execution-policy/tes
 import { Verifier } from "./verifier"
 
 export type VerifierInternals = {
-    usingAftConfig: (cfg: AftConfig) => Verifier,
-    usingBuildInfoManager: (mgr: BuildInfoManager) => Verifier,
-    usingReporter: (mgr: Reporter) => Verifier,
-    usingTestExecutionPolicyManager: (mgr: TestExecutionPolicyManager) => Verifier
+    usingAftConfig: (cfg: AftConfig) => Verifier, // eslint-disable-line no-unused-vars
+    usingBuildInfoManager: (mgr: BuildInfoManager) => Verifier, // eslint-disable-line no-unused-vars
+    usingReporter: (mgr: Reporter) => Verifier, // eslint-disable-line no-unused-vars
+    usingTestExecutionPolicyManager: (mgr: TestExecutionPolicyManager) => Verifier // eslint-disable-line no-unused-vars
 }

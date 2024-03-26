@@ -16,7 +16,7 @@ export class KinesisReportingPluginConfig extends ReportingPluginConfig {
     batch = true;
     batchSize = 10;
     sendStrategy: SendStrategy = 'logsandresults';
-};
+}
 
 /**
  * NOTE: this plugin accepts the following options:
@@ -145,7 +145,7 @@ export class KinesisReportingPlugin extends ReportingPlugin {
                 level: level,
                 message: `${message}${dataStr}`,
                 version: pkg.version,
-                buildName: await this._buildInfo.buildName().catch((err) => 'unknown'),
+                buildName: await this._buildInfo.buildName().catch(() => 'unknown'),
                 machineInfo: machineInfo.data
             });
             const logs = this.logs(name);
@@ -167,7 +167,7 @@ export class KinesisReportingPlugin extends ReportingPlugin {
                     logName: name,
                     result: result,
                     version: pkg.version,
-                    buildName: await this._buildInfo.buildName().catch((err) => 'unknown'),
+                    buildName: await this._buildInfo.buildName().catch(() => 'unknown'),
                     machineInfo: machineInfo.data
                 });
                 const logs = this.logs(name);

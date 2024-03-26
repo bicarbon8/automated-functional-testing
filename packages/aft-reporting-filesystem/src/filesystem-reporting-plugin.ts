@@ -1,3 +1,4 @@
+import process = require("process");
 import * as path from "path";
 import { AftConfig, convert, Err, ExpiringFileLock, fileio, ReportingPlugin, ReportingPluginConfig, LogLevel, LogMessageData, TestResult } from "aft-core";
 import * as date from "date-and-time";
@@ -35,7 +36,7 @@ export class FilesystemReportingPlugin extends ReportingPlugin {
         }
     }
 
-    override initialise = async (logName: string): Promise<void> => {
+    override initialise = async (logName: string): Promise<void> => { // eslint-disable-line no-unused-vars
         /* do nothing */
     }
     
@@ -76,7 +77,7 @@ export class FilesystemReportingPlugin extends ReportingPlugin {
         }
     }
 
-    override finalise = async (logName: string): Promise<void> => {
+    override finalise = async (logName: string): Promise<void> => { // eslint-disable-line no-unused-vars
         /* do nothing */
     }
 

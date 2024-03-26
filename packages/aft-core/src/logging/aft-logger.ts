@@ -96,26 +96,26 @@ export class AftLogger {
         switch (level) {
             case 'error':
             case 'fail':
-                console.log(colors.red(message));
+                console.log(colors.red(message)); // eslint-disable-line no-undef
                 break;
             case 'warn':
-                console.log(colors.yellow(message));
+                console.log(colors.yellow(message)); // eslint-disable-line no-undef
                 break;
             case 'info':
-                console.log(colors.white(message));
+                console.log(colors.white(message)); // eslint-disable-line no-undef
                 break;
             case 'pass':
-                console.log(colors.green(message));
+                console.log(colors.green(message)); // eslint-disable-line no-undef
                 break;
             case 'step':
-                console.log(colors.magenta(message));
+                console.log(colors.magenta(message)); // eslint-disable-line no-undef
                 break;
             case 'trace':
             case 'debug':
-                console.log(colors.blue(message));
+                console.log(colors.blue(message)); // eslint-disable-line no-undef
                 break;
             default:
-                console.log(colors.gray(message));
+                console.log(colors.gray(message)); // eslint-disable-line no-undef
                 break;
         }
     }

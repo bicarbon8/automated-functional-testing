@@ -1,3 +1,4 @@
+import Mocha = require("mocha");
 import { AftConfig, Verifier, Class, AftTestIntegration } from "aft-core";
 
 /**

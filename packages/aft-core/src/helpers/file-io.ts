@@ -1,3 +1,4 @@
+import process = require("process");
 import * as fs from "fs";
 import * as path from "path";
 import { Func } from "./custom-types";

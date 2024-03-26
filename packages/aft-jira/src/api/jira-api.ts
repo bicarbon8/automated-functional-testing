@@ -1,5 +1,5 @@
 import { httpData, HttpRequest, HttpResponse, httpService } from "aft-web-services";
-import { aftConfig, AftConfig, AftLogger, CacheMap, convert, Err, JsonObject } from "aft-core";
+import { aftConfig, AftConfig, AftLogger, CacheMap, convert, JsonObject } from "aft-core";
 import { JiraConfig } from "../configuration/jira-config";
 import { JiraCreateIssueResponse, JiraErrorResponse, JiraIssue, JiraSearchResults } from "./jira-custom-types";
 

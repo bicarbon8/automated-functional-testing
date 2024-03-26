@@ -70,12 +70,12 @@ export class JiraReportingPlugin extends ReportingPlugin {
                 await this._openNewDefectOrUpdateExisting(name, result);
             }
             if (this._closeOnPass && result.status === 'passed') {
-                await this._closeDefects(name, result);
+                await this._closeDefects(result);
             }
         }
     }
 
-    override finalise = async (logName: string): Promise<void> => {
+    override finalise = async (logName: string): Promise<void> => { // eslint-disable-line no-unused-vars
         /* do nothing */
     }
 
@@ -92,7 +92,7 @@ export class JiraReportingPlugin extends ReportingPlugin {
         }
     }
 
-    private async _closeDefects(logName: string, result: TestResult): Promise<void> {
+    private async _closeDefects(result: TestResult): Promise<void> {
         const openIssues = await CommonActions.getOpenIssuesReferencingTestId(result.testId, this._api);
         for (const issue of openIssues) {
             await CommonActions.closeIssue(result.testId, issue.id, this._api);

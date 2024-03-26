@@ -24,8 +24,8 @@ export class WebdriverIoVerifier extends Verifier {
      * after a new `Browser` session is created, this holds the instance
      * so it can be referenced from within the executing `assertion`
      */
-    get browser(): WebdriverIO.Browser {
-        return this._browser as WebdriverIO.Browser;
+    get browser(): WebdriverIO.Browser { // eslint-disable-line no-undef
+        return this._browser as WebdriverIO.Browser; // eslint-disable-line no-undef
     }
 
     override get internals(): WebdriverIoVerifierInternals {

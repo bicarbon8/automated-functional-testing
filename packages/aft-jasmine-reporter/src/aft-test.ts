@@ -1,3 +1,4 @@
+import jasmine = require("jasmine");
 import { AftConfig, Verifier, Class, AftTestIntegration, FileSystemMap } from "aft-core";
 
 /**
@@ -42,6 +43,6 @@ export class AftTest extends AftTestIntegration {
 
     protected override _getVerifier<T extends Verifier>(verifierType?: Class<T>): T {
         return super._getVerifier(verifierType)
-            .on('skipped', () => pending()) as T;
+            .on('skipped', () => pending()) as T; // eslint-disable-line no-undef
     }
 }

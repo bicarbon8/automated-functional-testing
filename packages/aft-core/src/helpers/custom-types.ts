@@ -6,7 +6,7 @@
  * ```
  */
 export type Action<T> = {
-    (item: T): void;
+    (item: T): void; // eslint-disable-line no-unused-vars
 };
 
 /**
@@ -34,7 +34,7 @@ export type Action<T> = {
  * ```
  */
 export type Class<T> = {
-    new (...args: any[]): T;
+    new (...args: any[]): T; // eslint-disable-line no-unused-vars
     readonly prototype: T;
 };
 
@@ -46,7 +46,7 @@ export type Class<T> = {
  * (input: T) => TResult
  * ```
  */
-export type Func<T, TResult> = (x: T) => TResult;
+export type Func<T, TResult> = (x: T) => TResult; // eslint-disable-line no-unused-vars
 
 /**
  * a valid key that can be used in any JSON object

@@ -7,7 +7,7 @@ class Wait {
      */
     async forDuration(durationMs: number): Promise<void> {
         return new Promise((resolve) => {
-            setTimeout(resolve, durationMs);
+            setTimeout(resolve, durationMs); // eslint-disable-line no-undef
         });
     }
 
@@ -21,7 +21,7 @@ class Wait {
     async forResult<T>(func: Func<void, T | PromiseLike<T>>, maxDurationMs: number = 30000): Promise<T> {
         return await Promise.race([
             Promise.resolve().then(func).catch((err) => Promise.reject(err)),
-            new Promise<T>((resolve) => setTimeout(resolve, maxDurationMs, undefined))
+            new Promise<T>((resolve) => setTimeout(resolve, maxDurationMs, undefined)) // eslint-disable-line no-undef
         ]);
     }
 
@@ -37,7 +37,7 @@ class Wait {
         } else {
             t = time.getTime();
         }
-        return new Promise(async (resolve) => {
+        return new Promise(async (resolve) => { // eslint-disable-line no-async-promise-executor
             while (Date.now() < t) {
                 await wait.forDuration(1);
             }

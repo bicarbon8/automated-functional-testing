@@ -1,4 +1,4 @@
-import { ReportingPlugin, LogLevel, TestResult, ellide, AftConfig, FileSystemMap, Err } from "aft-core";
+import { ReportingPlugin, LogLevel, TestResult, ellide, AftConfig, Err } from "aft-core";
 import { TestRailApi } from "../api/testrail-api";
 import { TestRailResultRequest } from "../api/testrail-custom-types";
 import { TestRailConfig } from "../configuration/testrail-config";
@@ -79,7 +79,7 @@ export class TestRailReportingPlugin extends ReportingPlugin {
         }
     }
 
-    override finalise = async (logName: string): Promise<void> => {
+    override finalise = async (logName: string): Promise<void> => { // eslint-disable-line no-unused-vars
         /* do nothing */
     }
 

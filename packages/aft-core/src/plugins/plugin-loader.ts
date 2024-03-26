@@ -1,7 +1,8 @@
+import process = require('process');
 import * as fs from 'fs';
 import * as path from 'path';
 import { convert } from '../helpers/convert';
-import { Plugin } from './plugin';
+import { Plugin } from './plugin'; // eslint-disable-line no-redeclare
 import { AftConfig, aftConfig } from '../configuration/aft-config';
 import { Class } from '../helpers/custom-types';
 import { havingProps } from '../verification/verifier-matcher';
@@ -97,9 +98,9 @@ class PluginLoader {
         let plugin: Plugin;
         let pathToPlugin: string;
         try {
-            pathToPlugin = this._findPlugin(searchRoot, new RegExp(`^${pluginName}\.js$`));
+            pathToPlugin = this._findPlugin(searchRoot, new RegExp(`^${pluginName}\.js$`)); // eslint-disable-line no-useless-escape
             if (pathToPlugin) {
-                plugin = require(pathToPlugin);
+                plugin = require(pathToPlugin); // eslint-disable-line no-undef
             } else {
                 throw new Error(`plugin could not be located`);
             }
