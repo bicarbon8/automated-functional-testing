@@ -20,10 +20,11 @@ this package comes with two helper classes that can be utilised from within your
 
 ### `AftTest`
 the `AftTest` class extends from the `AftTestIntegration` class in `aft-core` providing the ability to parse the Spec name for any referenced Test. each Test ID must be surrounded with square brackets `[ABC123]`. additionally you can then call the `AftTest.shouldRun()` async function or use `AftTest.verify(assertion)` which will determine if your test should be run based on any AFT `TestExecutionPolicyPlugin` instances referenced in your `aftconfig.json` file. using the `AftTest` class would look like the following:
+> NOTE: the `new AftTest()` command **MUST NOT** be passed a scope when running with the `aft-jasmine-reporter` so it can pull in the scope from filesystem cache set by the reporter. you may still pass an `AftConfig` instance by using the following: `new AftTest(null, new AftConfig())`
 ```javascript
 describe('YourTestSuite', () => {
     it('can check if test [C1234] should be run', async () => {
-        const aft = new AftTest();
+        const aft = new AftTest(); // no scope should be passed
         await aft.verify(async (v: Verifier) => {
             // `verify` calls `pending()` if should not be run which marks test as skipped
             await aft.reporter.step('we should never get here if C1234 should not be run');

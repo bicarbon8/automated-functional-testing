@@ -99,7 +99,7 @@ await verify(() => someTestAction())
 or, if using the `aft-jasmine-reporter` or `aft-mocha-reporter` packages, modify your test function titles to include the test case IDs like the following:
 ```typescript
 it('[C1234] can include tests [C2345] in the title [C3456]', async function() {
-    const aft = new AftTest(this); // if using Jasmine, leave off the `this`
+    const aft = new AftTest(); // MUST NOT pass a scope so we will use the scope set in cache by the aft-jasmine-reporter
     await aft.verify(() => someTestAction());
 })
 ```

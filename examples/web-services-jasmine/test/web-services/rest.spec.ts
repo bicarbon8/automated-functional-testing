@@ -7,8 +7,8 @@ import { httpData, HttpResponse, httpService } from 'aft-web-services';
 import { ListUsersResponse } from "./response-objects/list-users-response";
 
 describe('REST Request', () => {
-    it('can make GET request from JSON REST API', async function() {
-        const aft = new AftTest();
+    it('can make GET request from JSON REST API', async () => {
+        const aft = new AftTest(); // DO NOT pass a scope
         let response: HttpResponse;
         await aft.verify(async (v: Verifier) => {            
             await v.reporter.step('making request...');
@@ -52,8 +52,8 @@ describe('REST Request', () => {
         .returns(greaterThan(0));
     });
 
-    it('can make a multipart post', async function() {
-        const aft = new AftTest();
+    it('can make a multipart post', async () => {
+        const aft = new AftTest(); // DO NOT pass a scope
         await aft.verify(async (v: Verifier) => {
             let formData = new FormData();
             formData.append('file', fs.createReadStream(path.join(process.cwd(), 'LICENSE')));
