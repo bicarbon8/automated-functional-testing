@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./logs && rimraf ./FileSystemMap && rimraf ./testresults.html",
     "build": "npm run clean && tsc --build",
-    "test:e2e": "npm run build && jasmine --config=./jasmine.json"
+    "test:e2e": "npm run build && jasmine --config=./jasmine.json --reporter=../../packages/aft-jasmine-reporter/dist/src/aft-jasmine-reporter.js"
   },
   "repository": {
     "type": "git",
