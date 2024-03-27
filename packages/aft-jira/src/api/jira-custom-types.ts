@@ -1,3 +1,31 @@
+export type JiraIssueTransitionsResponse = {
+    "expand": string;
+    "transitions": Array<JiraIssueTransition>;
+}
+
+export type JiraIssueTransition = {
+    "id": string;
+    "name": string;
+    "to": JiraIssueTransitionTo;
+};
+
+export type JiraIssueTransitionTo = {
+    "self": string;
+    "description": string;
+    "iconUrl": string;
+    "name": string;
+    "id": string;
+    "statusCategory": JiraIssueTransitionToStatusCategory
+}
+
+export type JiraIssueTransitionToStatusCategory = {
+    "self": string;
+    "id": number;
+    "key": string;
+    "colorName": string;
+    "name": string;
+}
+
 export type JiraErrorResponse = {
     errorMessages?: Array<string>;
     errors?: {};

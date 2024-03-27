@@ -104,11 +104,12 @@ export class Verifier implements PromiseLike<void> {
             this._innerPromise = new Promise(async (resolve, reject) => { // eslint-disable-line no-async-promise-executor
                 try {
                     const shouldRun = await this.shouldRun();
+                    this.reporter.debug('verifier.shouldRun response:', shouldRun);
                     if (shouldRun.result === true) {
                         const action = this._actionMap.get('started');
                         if (action) {
                             Err.handle(() => action(), {
-                                errLevel: 'warn',
+                                errLevel: 'debug',
                                 logger: this.reporter
                             });
                         }
@@ -119,7 +120,7 @@ export class Verifier implements PromiseLike<void> {
                         const action = this._actionMap.get('skipped');
                         if (action) {
                             Err.handle(() => action(), {
-                                errLevel: 'warn',
+                                errLevel: 'debug',
                                 logger: this.reporter
                             });
                         }
@@ -134,7 +135,7 @@ export class Verifier implements PromiseLike<void> {
         const action = this._actionMap.get('done');
         if (action) {
             Err.handle(() => action(), {
-                errLevel: 'warn',
+                errLevel: 'debug',
                 logger: this.reporter
             });
         }

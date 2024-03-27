@@ -4,15 +4,6 @@ import { SeleniumVerifier } from "aft-ui-selenium";
 import { HerokuLoginPage } from "./page-objects/heroku-login-page";
 
 describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
-    beforeEach(() => {
-        /**
-         * normally this call would not be necessary, but because these examples switch between
-         * multiple configurations and UI Session Generators it is necessary to clear out any
-         * cached plugins and force a reload with fresh configuration before each test
-         */
-        pluginLoader.reset();
-    });
-
     it('[C3456][C2345][C1234] can access websites using AFT and BrowserComponents', async function() {
         const aftCfg = new AftConfig();
         const aft = new AftTest(this, aftCfg);

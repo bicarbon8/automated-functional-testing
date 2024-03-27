@@ -1,4 +1,4 @@
-import { AftConfig, TestExecutionPolicyPlugin, ProcessingResult } from 'aft-core';
+import { AftConfig, TestExecutionPolicyPlugin, ProcessingResult, LogLevel } from 'aft-core';
 import { JiraApi } from '../api/jira-api';
 import { JiraIssue } from '../api/jira-custom-types';
 import { JiraConfig } from '../configuration/jira-config';
@@ -35,8 +35,9 @@ export class JiraTestExecutionPolicyPlugin extends TestExecutionPolicyPlugin {
     override shouldRun = async (testId: string): Promise<ProcessingResult<boolean>> => {
         if (this.enabled) {
             const openIssues: Array<JiraIssue> = await this._getIssuesReferencingTestIds(testId);
-            if (openIssues?.length) {
-                return {result: false, message: `'${testId}' referenced in open Jira Issue: ['${openIssues.map(i => i.id)}']`};
+            this.aftLogger.log({level: 'debug', message: `found ${openIssues.length} open Jira issues for ${testId}: ['${openIssues.map(i => i?.key).join(',')}']`, name: this.constructor.name});
+            if (openIssues?.length > 0) {
+                return {result: false, message: `'${testId}' referenced in open Jira Issue(s): ['${openIssues.map(i => i?.key).join(',')}']`};
             }
             return {result: true, message: `'${testId}' not referenced in any open Jira Issues`};
         }

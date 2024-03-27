@@ -82,11 +82,21 @@ export class JiraReportingPlugin extends ReportingPlugin {
     private async _openNewDefectOrUpdateExisting(logName: string, result: TestResult): Promise<void> {
         const openIssues = await CommonActions.getOpenIssuesReferencingTestId(result.testId, this._api);
         if (openIssues?.length) {
+            this.aftLogger.log({
+                name: this.constructor.name,
+                level: 'debug',
+                message: `adding comment to Jira issues: [${openIssues.map(i => i?.key).join(',')}] because test '${result.testId}' is still failing...`
+            });
             // update comments to indicate the issue still exists
             for (const issue of openIssues) {
                 await this._api.addCommentToIssue(issue.key, `test '${result.testId}' still failing due to: ${result.resultMessage}`);
             }
         } else {
+            this.aftLogger.log({
+                name: this.constructor.name,
+                level: 'debug',
+                message: `creating new Jira issue because test '${result.testId}' failed...`
+            });
             // create a new defect
             await this._api.createIssue(result.testId, result.testName, this.logs(logName));
         }
@@ -94,8 +104,13 @@ export class JiraReportingPlugin extends ReportingPlugin {
 
     private async _closeDefects(result: TestResult): Promise<void> {
         const openIssues = await CommonActions.getOpenIssuesReferencingTestId(result.testId, this._api);
+        this.aftLogger.log({
+            name: this.constructor.name,
+            level: 'debug',
+            message: `closing the following Jira issues due to passing test '${result.testId}': [${openIssues.map(i => i?.key).join(',')}]...`
+        });
         for (const issue of openIssues) {
-            await CommonActions.closeIssue(result.testId, issue.id, this._api);
+            await CommonActions.closeIssue(result.testId, issue.key, this._api);
         }
     }
 }

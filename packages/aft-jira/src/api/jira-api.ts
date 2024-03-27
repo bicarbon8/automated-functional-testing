@@ -1,7 +1,7 @@
 import { httpData, HttpRequest, HttpResponse, httpService } from "aft-web-services";
 import { aftConfig, AftConfig, AftLogger, CacheMap, convert, JsonObject } from "aft-core";
 import { JiraConfig } from "../configuration/jira-config";
-import { JiraCreateIssueResponse, JiraErrorResponse, JiraIssue, JiraSearchResults } from "./jira-custom-types";
+import { JiraCreateIssueResponse, JiraErrorResponse, JiraIssue, JiraIssueTransition, JiraIssueTransitionsResponse, JiraSearchResults } from "./jira-custom-types";
 
 export class JiraApi {
     private readonly _aftCfg: AftConfig;
@@ -20,11 +20,11 @@ export class JiraApi {
 
     /**
      * adds a comment to a Jira Issue
-     * @param issueId the Jira issue to add the comment to
+     * @param issueKey the Jira issue to add the comment to _(i.e. `ABC-123`)_
      * @param comment the `string` to add as a comment
      */
-    async addCommentToIssue(issueId: string, comment: string): Promise<void> {
-        const path = `/issue/${issueId}/comment`;
+    async addCommentToIssue(issueKey: string, comment: string): Promise<void> {
+        const path = `/issue/${issueKey}/comment`;
         const commentRequest = {
             "body": comment
         };
@@ -38,14 +38,17 @@ export class JiraApi {
      * @param testId the id of the failing test case
      * @param summary the name of the failing test case
      * @param description the exception or error message of the failure
-     * @returns the Jira Issue identifier
+     * @returns the Jira Issue identifier _(i.e. `ABC-123`)_
      */
     async createIssue(testId: string, summary: string, description: string): Promise<string> {
         const path = '/issue';
         const issue = {
             "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
                 "project": {
-                    "id": this.config.projectId
+                    "key": this.config.projectKey
                 },
                 "summary": `[${testId}] ${summary}`,
                 "description": description
@@ -58,19 +61,60 @@ export class JiraApi {
     /**
      * updates a Jira issue by ID setting a new value for each item in the passed
      * in `updates` map
-     * @param issueId a `string` ID for the issue to edit
-     * @param updates a `map<string, string>` containing the field name and updated
+     * @param issueKey a `string` identifier for the issue to edit _(i.e. `ABC-123`)_
+     * @param updates a `map<string, any>` containing the field name and updated
      * value to be set
      */
-    async editIssue(issueId: string, updates: Map<string, string>): Promise<void> {
-        const path = `/issue/${issueId}`;
+    async editIssue(issueKey: string, updates: Map<string, any>): Promise<void> {
+        const path = `/issue/${issueKey}`;
         const updateRequest = {
-            "update": {}
+            "fields": {}
         };
         for (const [key, val] of updates) {
-            updateRequest.update[key] = [{"set": val}]
+            updateRequest.fields[key] = val;
         }
         await this._put(path, JSON.stringify(updateRequest));
+    }
+
+    /**
+     * sets the status of the specified Jira issue to the specified `desiredStatus`
+     * @param issueKey a `string` identifier for the issue being updated _(i.e. `ABC-123`)_
+     * @param desiredStatusCategoryName a `string` representing the desired status as it would be
+     * displayed in the UI _(i.e. `"Done"`)_
+     */
+    async setIssueStatus(issueKey: string, desiredStatusCategoryName: string): Promise<void> {
+        const path = `/issue/${issueKey}/transitions`;
+        // get list of available statuses
+        const availableTransitionStates = await this.getAvailableStatusTransitions(issueKey);
+        // lookup ID for `desiredStatusCategoryName`
+        let desiredStatusCategoryId: string;
+        for (const transition of availableTransitionStates) {
+            if (transition?.to?.statusCategory?.name === desiredStatusCategoryName) {
+                desiredStatusCategoryId = transition.id;
+                break;
+            }
+        }
+        if (!desiredStatusCategoryId) {
+            throw new Error(`unable to transition to desired status of '${desiredStatusCategoryName}' as only the following available: [${availableTransitionStates.map(t => t?.to?.statusCategory?.name).join(',')}]`);
+        }
+        const updateRequest = {
+            "transition": {
+                "id": `${desiredStatusCategoryId}`
+            }
+        }
+        await this._post(path, JSON.stringify(updateRequest));
+    }
+
+    /**
+     * 
+     * @param issueKey the Jira issue identifier to get transitions for _(i.e. `ABC-123`)_
+     * @returns an array of `JiraIssueTransition` objects representing the available transition
+     * states for the given issue
+     */
+    async getAvailableStatusTransitions(issueKey: string): Promise<Array<JiraIssueTransition>> {
+        const path = `/issue/${issueKey}/transitions`;
+        const response = await this._get<JiraIssueTransitionsResponse>(path, true);
+        return response?.transitions ?? [];
     }
 
     /**
@@ -146,12 +190,13 @@ export class JiraApi {
         if (url && !url.endsWith('/')) {
             url += '/';
         }
-        return `${url}rest/api/2`;
+        return `${url}rest/api/latest`;
     }
 
     private async _makeRequest(request: HttpRequest): Promise<HttpResponse> {
-        request.headers['Authorization'] = `Basic ${await this._getAuth()}`;
+        request.headers['Authorization'] = `Bearer ${await this._getAuth()}`;
         request.headers['Content-Type'] = 'application/json';
+        request.headers['Accept'] = '*/*';
         const response: HttpResponse = await httpService.performRequest(request);
         if (response.statusCode < 200 || response.statusCode > 299) {
             const err = httpData.as<JiraErrorResponse>(response);
@@ -166,8 +211,7 @@ export class JiraApi {
     }
 
     private async _getAuth(): Promise<string> {
-        const username: string = this.config.user;
         const accessKey: string = this.config.accessKey;
-        return convert.toBase64Encoded(`${username}:${accessKey}`);
+        return accessKey;
     }
 }

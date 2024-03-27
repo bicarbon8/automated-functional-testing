@@ -24,7 +24,6 @@ describe('JiraTestExecutionPolicyPlugin', () => {
             const aftCfg = new AftConfig({
                 JiraConfig: {
                     url: 'http://127.0.0.1',
-                    user: 'fake@fake.fake',
                     accesskey: 'fake_key',
                     policyEngineEnabled: true
                 }
@@ -54,7 +53,6 @@ describe('JiraTestExecutionPolicyPlugin', () => {
             const aftCfg = new AftConfig({
                 JiraConfig: {
                     url: 'http://127.0.0.1',
-                    user: 'fake@fake.fake',
                     accesskey: 'fake_key',
                     policyEngineEnabled: true
                 }
@@ -77,7 +75,6 @@ describe('JiraTestExecutionPolicyPlugin', () => {
             const aftCfg = new AftConfig({
                 JiraConfig: {
                     url: 'http://127.0.0.1',
-                    user: 'fake@fake.fake',
                     accesskey: 'fake_key',
                     policyEngineEnabled: false
                 }

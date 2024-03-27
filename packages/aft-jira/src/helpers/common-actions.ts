@@ -2,8 +2,6 @@ import { JiraApi } from "../api/jira-api";
 import { JiraIssue } from "../api/jira-custom-types";
 
 export class CommonActions {
-    private static CLOSED_STATUS = 3;
-
     /**
      * performs a JQL search for any Jira issues whose summary includes
      * the specified `testId` enclosed in square brackets
@@ -15,7 +13,7 @@ export class CommonActions {
      * the specified `testId`
      */
     public static async getOpenIssuesReferencingTestId(testId: string, api: JiraApi): Promise<Array<JiraIssue>> {
-        const jql = `statusCategory!=${this.CLOSED_STATUS}+and+issuetype=bug+and+summary~[${testId}]`;
+        const jql = `statusCategory!=${api.config.closedStatusCategoryName}+and+issuetype=bug+and+summary~"\\\\[${testId}\\\\]"`;
         const existingOpenIssues: Array<JiraIssue> = await api.searchIssues(jql);
         return existingOpenIssues;
     }
@@ -24,13 +22,11 @@ export class CommonActions {
      * adds a comment specifying that the test is passing and then marks the Jira issue
      * as closed by editing it's status
      * @param testId the ID of the passing test
-     * @param issueId the Jira Issue identifier
+     * @param issueKey the Jira Issue identifier like: `ABCD-1234`
      * @param api a `JiraApi` instance
      */
-    public static async closeIssue(testId: string, issueId: string, api: JiraApi): Promise<void> {
-        await api.addCommentToIssue(issueId, `${testId} passing so marking this issue as closed`);
-        await api.editIssue(issueId, new Map<string, string>([
-            ["status", `${this.CLOSED_STATUS}`]
-        ]));
+    public static async closeIssue(testId: string, issueKey: string, api: JiraApi): Promise<void> {
+        await api.setIssueStatus(issueKey, api.config.closedStatusCategoryName);
+        await api.addCommentToIssue(issueKey, `${testId} passing so marking this issue as closed`);
     }
 }

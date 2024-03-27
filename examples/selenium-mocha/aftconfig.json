@@ -23,12 +23,12 @@
     },
     "JiraConfig": {
         "url": "%jira_url%",
-        "user": "%jira_user%",
         "accessKey": "%jira_pass%",
-        "projectId": "100",
+        "projectKey": "ABC",
         "closeDefectOnPass": false,
         "openDefectOnFail": false,
-        "policyEngineEnabled": false
+        "policyEngineEnabled": false,
+        "closedStatusCategoryName": "Done"
     },
     "KinesisReportingPluginConfig": {
         "logLevel": "none",

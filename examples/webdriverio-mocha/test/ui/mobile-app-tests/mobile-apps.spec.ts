@@ -11,15 +11,6 @@ import { WebdriverIoVerifier } from "aft-ui-webdriverio";
 var customId: string;
 
 describe('Functional Mobile App Tests using AFT-UI-WEBDRIVERIO', () => {
-    beforeEach(() => {
-        /**
-         * normally this call would not be necessary, but because these examples switch between
-         * multiple configurations and UI Session Generators it is necessary to clear out any
-         * cached plugins and force a reload with fresh configuration before each test
-         */
-        pluginLoader.reset();
-    });
-
     before(async () => {
         const logger = new Reporter('MobileAppsSpec Before');
         const uisc = aftConfig.getSection(UiSessionConfig);

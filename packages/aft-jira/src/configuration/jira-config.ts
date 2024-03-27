@@ -7,11 +7,12 @@ import { PluginConfig } from "aft-core";
  * {
  *   "JiraConfig": {
  *     "url": "https://your-instance-of.jira.io",
- *     "user": "your-username@your-company.com",
  *     "accesskey": "your-access-key-for-jira",
  *     "policyEngineEnabled": true,
  *     "openDefectOnFail": false,
- *     "closeDefectOnPass": false
+ *     "closeDefectOnPass": false,
+ *     "projectKey": "ABCD",
+ *     "closedStatusCategoryName": "Done"
  *   }
  * }
  * ```
@@ -24,12 +25,12 @@ import { PluginConfig } from "aft-core";
  */
 export class JiraConfig extends PluginConfig {
     public url: string;
-    public user: string;
     public accessKey: string;
     public cacheDuration: number = 300000;
     public policyEngineEnabled: boolean = true;
     public openDefectOnFail: boolean = false;
     public closeDefectOnPass: boolean = false;
-    public projectId: string;
+    public projectKey: string;
+    public closedStatusCategoryName: string = "Done";
     public override enabled: boolean = this.policyEngineEnabled || this.openDefectOnFail || this.closeDefectOnPass;
 }
