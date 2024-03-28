@@ -1,4 +1,5 @@
 import * as url from "node:url";
+import { Buffer } from "node:buffer";
 import { httpData, HttpRequest, HttpResponse, httpService } from "aft-web-services";
 import { aftConfig, AftConfig, AftLogger, CacheMap, JsonObject } from "aft-core";
 import { JiraConfig } from "../configuration/jira-config";
