@@ -1,6 +1,6 @@
 export interface VerifierMatcher {
     readonly expected: any;
-    setActual(actual: any): VerifierMatcher;
+    setActual(actual: any): VerifierMatcher; // eslint-disable-line no-unused-vars
     compare(): boolean;
     failureString(): string;
 }
@@ -238,11 +238,15 @@ class ValueContaining implements VerifierMatcher {
     }
     failureString(): string {
         let _actualStr: string;
-        if (this._actual['has'] && this._actual['clear'] && this._actual['size'] !== undefined) {
-            _actualStr = Array.from(this._actual).join(', ');
-        }
-        if (Array.isArray(this._actual)) {
-            _actualStr = this._actual.join(', ');
+        if (typeof this._actual === "string") {
+            _actualStr = this._actual;
+        } else {
+            if (this._actual['has'] && this._actual['clear'] && this._actual['size'] !== undefined) {
+                _actualStr = Array.from(this._actual).join(', ');
+            }
+            if (Array.isArray(this._actual)) {
+                _actualStr = this._actual.join(', ');
+            }
         }
         return `expected '${this.expected}' to be contained in [${_actualStr}]`;
     }

@@ -31,7 +31,7 @@ export class CacheMap<K extends JsonKey, V extends JsonValue> implements Map<K, 
     delete(key: K): boolean {
         return this._internalMap.delete(key);
     }
-    forEach(callbackfn: (value: V, key: K, map: Map<K, V>) => void, thisArg?: any): void {
+    forEach(callbackfn: (value: V, key: K, map: Map<K, V>) => void, thisArg?: any): void { // eslint-disable-line no-unused-vars
         const valMap: Map<K, V> = new Map<K, V>();
         const keys: K[] = Array.from(this._internalMap.keys());
         for (const key of keys) {

@@ -1,4 +1,4 @@
-import { ReportingPlugin, LogLevel, TestResult, ellide, AftConfig, FileSystemMap } from "aft-core";
+import { ReportingPlugin, LogLevel, TestResult, ellide, AftConfig, Err } from "aft-core";
 import { TestRailApi } from "../api/testrail-api";
 import { TestRailResultRequest } from "../api/testrail-custom-types";
 import { TestRailConfig } from "../configuration/testrail-config";
@@ -63,7 +63,8 @@ export class TestRailReportingPlugin extends ReportingPlugin {
                 if (logs.length > 0) {
                     logs += '\n'; // separate new logs from previous
                 }
-                logs += message;
+                const dataStr: string = (data?.length) ? `, [${data.map(d => Err.handle(() => JSON.stringify(d))).join('')}]` : '';
+                logs += `${message}${dataStr}`;
                 logs = ellide(logs, this._maxLogChars, 'beginning');
                 this.logs(name, logs);
             }
@@ -78,7 +79,7 @@ export class TestRailReportingPlugin extends ReportingPlugin {
         }
     }
 
-    override finalise = async (logName: string): Promise<void> => {
+    override finalise = async (logName: string): Promise<void> => { // eslint-disable-line no-unused-vars
         /* do nothing */
     }
 

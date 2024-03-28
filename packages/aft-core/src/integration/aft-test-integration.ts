@@ -141,7 +141,7 @@ export class AftTestIntegration {
     }
 
     protected async _logMessage(status: TestStatus, message?: string): Promise<void> {
-        message = message || this.reporter.reporterName;
+        message = message ?? this.reporter?.reporterName ?? 'unknown';
         switch (status) {
             case 'blocked':
             case 'retest':

@@ -1,6 +1,5 @@
 import { Class, Err, Func, Verifier } from "aft-core";
 import { UiComponentOptions, UiSessionGeneratorManager } from "aft-ui";
-import { Browser } from "webdriverio";
 import { WebdriverIoVerifierInternals } from "./webdriverio-verifier-internals";
 import { WebdriverIoComponent } from "../components/webdriverio-component";
 
@@ -25,8 +24,8 @@ export class WebdriverIoVerifier extends Verifier {
      * after a new `Browser` session is created, this holds the instance
      * so it can be referenced from within the executing `assertion`
      */
-    get browser(): Browser {
-        return this._browser as Browser;
+    get browser(): WebdriverIO.Browser { // eslint-disable-line no-undef
+        return this._browser as WebdriverIO.Browser; // eslint-disable-line no-undef
     }
 
     override get internals(): WebdriverIoVerifierInternals {
@@ -97,7 +96,7 @@ export class WebdriverIoVerifier extends Verifier {
         try {
             await super._resolveAssertion();
         } finally {
-            Err.handleAsync(async () => await this.browser.deleteSession());
+            await Err.handleAsync(async () => await this.browser.deleteSession());
         }
     }
 }
@@ -119,6 +118,6 @@ export class WebdriverIoVerifier extends Verifier {
  */
 export const verifyWithWebdriverIO = (assertion: Func<WebdriverIoVerifier, any>): WebdriverIoVerifier => {
     let v: WebdriverIoVerifier = new WebdriverIoVerifier();
-    v.verify(assertion);
+    v.verify(assertion); // eslint-disable-line
     return v;
 }

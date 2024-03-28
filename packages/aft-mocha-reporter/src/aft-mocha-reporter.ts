@@ -1,5 +1,6 @@
 import * as Mocha from 'mocha';
 import { AftTest } from './aft-test';
+import { Err } from 'aft-core';
 
 const {
     EVENT_TEST_FAIL,
@@ -31,10 +32,13 @@ export class AftMochaReporter extends Mocha.reporters.Base {
         })
         .on(EVENT_TEST_FAIL, async (test: Mocha.Test, err: any) => {
             const t = new AftTest({test: test});
+            if (typeof err !== 'string') {
+                err = Err.handle(() => JSON.stringify(err));
+            }
             await t.fail(err);
             await t.dispose();
         });
     }
 }
 
-module.exports = AftMochaReporter;
+module.exports = AftMochaReporter; // eslint-disable-line no-undef

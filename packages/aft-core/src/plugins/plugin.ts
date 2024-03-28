@@ -8,7 +8,7 @@ export class PluginConfig {
 /**
  * class to be extended by any `Plugin` implementation
  */
-export class Plugin {
+export class Plugin { // eslint-disable-line no-redeclare
     private readonly _aftCfg: AftConfig;
     private readonly _aftLogger: AftLogger;
     get aftCfg(): AftConfig {

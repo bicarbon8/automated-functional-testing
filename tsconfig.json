@@ -1,12 +1,14 @@
 {
     "references": [
         { "path": "./packages/aft-core" },
-        { "path": "./packages/aft-examples" },
+        { "path": "./examples/webdriverio-mocha" },
         { "path": "./packages/aft-jasmine-reporter" },
+        { "path": "./packages/aft-jest-reporter" },
+        { "path": "./packages/aft-jira" },
+        { "path": "./packages/aft-mocha-reporter" },
         { "path": "./packages/aft-reporting-aws-kinesis-firehose" },
         { "path": "./packages/aft-reporting-filesystem" },
         { "path": "./packages/aft-reporting-html" },
-        { "path": "./packages/aft-mocha-reporter" },
         { "path": "./packages/aft-testrail" },
         { "path": "./packages/aft-ui" },
         { "path": "./packages/aft-ui-selenium" },

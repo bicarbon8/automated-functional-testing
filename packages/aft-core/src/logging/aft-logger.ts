@@ -53,10 +53,8 @@ export class AftLogger {
      * and if it is, will send the `name`, `level` and `message` to the console. if any `data`
      * is included it will be converted to a string using `JSON.stringify(...)` and appended
      * to the `message`
-     * @param name the name of the system performing the log call
-     * @param level the `LogLevel` of this message
-     * @param message the string to be logged
-     * @param data an array of additional data to be included in the logs
+     * @param data a `LogMessageData` object containing details of the log message, level, name
+     * and any additional arguments to be logged
      */
     log(data: LogMessageData): void {
         if (data?.level !== 'none'
@@ -79,7 +77,14 @@ export class AftLogger {
         data.message ??= '';
         data.level ??= 'none';
         const d: string = new Date().toLocaleTimeString();
-        const out = `${d} - [${data.name}] - ${ellide(data.level.toUpperCase(), 5, 'end', '')} - ${data.message}`;
+        const args: string = (data.args?.length) ? `, [${data.args.map(d => {
+            try {
+                return JSON.stringify(d);
+            } catch {
+                return d?.toString();
+            }
+        }).join(',')}]` : '';
+        const out = `${d} - [${data.name}] - ${ellide(data.level.toUpperCase(), 5, 'end', '')} - ${data.message}${args}`;
         return out;
     }
 
@@ -96,26 +101,26 @@ export class AftLogger {
         switch (level) {
             case 'error':
             case 'fail':
-                console.log(colors.red(message));
+                console.log(colors.red(message)); // eslint-disable-line no-undef
                 break;
             case 'warn':
-                console.log(colors.yellow(message));
+                console.log(colors.yellow(message)); // eslint-disable-line no-undef
                 break;
             case 'info':
-                console.log(colors.white(message));
+                console.log(colors.white(message)); // eslint-disable-line no-undef
                 break;
             case 'pass':
-                console.log(colors.green(message));
+                console.log(colors.green(message)); // eslint-disable-line no-undef
                 break;
             case 'step':
-                console.log(colors.magenta(message));
+                console.log(colors.magenta(message)); // eslint-disable-line no-undef
                 break;
             case 'trace':
             case 'debug':
-                console.log(colors.blue(message));
+                console.log(colors.blue(message)); // eslint-disable-line no-undef
                 break;
             default:
-                console.log(colors.gray(message));
+                console.log(colors.gray(message)); // eslint-disable-line no-undef
                 break;
         }
     }

@@ -1,14 +1,15 @@
 {
   "name": "aft-ui-webdriverio",
-  "version": "10.2.2",
+  "version": "10.3.0",
   "description": "Automated Functional Testing (AFT) package supporting UI testing in mobile apps with support for BrowserStack, Sauce Labs and Local Appium",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./.nyc_output && rimraf ./coverage",
-    "build": "npm run clean && tsc --build",
-    "test": "npm run build && jasmine-ts ./test/**/*-spec.ts",
-    "coverage": "npm run build && nyc jasmine-ts ./test/**/*-spec.ts"
+    "build": "npm run lint && npm run clean && tsc --build",
+    "lint": "npx eslint --fix ./src --ext .ts",
+    "test": "npm run build && jasmine --config=./jasmine.json",
+    "coverage": "npm run build && nyc jasmine --config=./jasmine.json"
   },
   "repository": {
     "type": "git",
@@ -33,17 +34,19 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-ui": "^10.2.2",
-    "webdriverio": "^8.12.1"
+    "aft-ui": "^10.3.0",
+    "webdriverio": "^8.35.1"
   },
   "devDependencies": {
-    "@types/jasmine": "^4.3.5",
-    "@types/node": "^20.4.1",
-    "jasmine": "^5.0.2",
-    "jasmine-ts": "^0.4.0",
+    "@types/jasmine": "^4.6.4",
+    "@types/node": "^20.11.30",
+    "@typescript-eslint/eslint-plugin": "^7.4.0",
+    "@typescript-eslint/parser": "^7.4.0",
+    "eslint": "^8.57.0",
+    "jasmine": "^5.1.0",
     "nyc": "^15.1.0",
     "rimraf": "^5.0.1",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.1.6"
   }
 }

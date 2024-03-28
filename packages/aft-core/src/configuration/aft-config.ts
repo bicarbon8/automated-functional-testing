@@ -269,7 +269,7 @@ export class AftConfig {
                 if (cfgFile.endsWith('.json')) {
                     return fileio.readAs<JsonObject>(cfgFile);
                 } else {
-                    return require(cfgFile) as JsonObject;
+                    return require(cfgFile) as JsonObject; // eslint-disable-line no-undef
                 }
             } catch {
                 /* ignore */

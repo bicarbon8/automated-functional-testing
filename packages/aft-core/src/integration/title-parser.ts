@@ -9,7 +9,7 @@ export class TitleParser {
      * @returns an array of TestId strings or empty array
      */
     static parseTestIds(title: string): Array<string> {
-        return this._parseAll(title, /\[([^\[\]]+)\]/gi);
+        return this._parseAll(title, /\[([^\[\]]+)\]/gi); // eslint-disable-line no-useless-escape
     }
 
     private static _parseAll(input: string, regex: RegExp): Array<string> {

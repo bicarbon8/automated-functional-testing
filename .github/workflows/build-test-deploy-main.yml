@@ -17,6 +17,9 @@ jobs:
       - name: Build Projects
         id: buildproj
         run: npm run build
+      - name: Check Circular Refs
+        id: circularrefs
+        run: npx dpdm -T --warning false **/index.ts
       - name: Run Unit Tests
         id: unittest
         run: npm run test

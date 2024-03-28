@@ -9,5 +9,5 @@ export type WebdriverIoVerifierInternals = Merge<VerifierInternals, {
      * @param mgr the {UiSessionGeneratorManager} instance to use
      * @returns this {Verifier} instance
      */
-    usingUiSessionGeneratorManager: (mgr: UiSessionGeneratorManager) => Verifier
+    usingUiSessionGeneratorManager: (mgr: UiSessionGeneratorManager) => Verifier // eslint-disable-line no-unused-vars
 }>;

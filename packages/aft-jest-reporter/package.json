@@ -1,12 +1,13 @@
 {
   "name": "aft-jest-reporter",
-  "version": "10.2.2",
+  "version": "10.3.0",
   "description": "Automated Functional Testing (AFT) Reporter for use with Jest Test Framework",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./logs && rimraf ./FileSystemMap && rimraf ./testresults.html",
-    "build": "npm run clean && tsc --build",
+    "build": "npm run lint && npm run clean && tsc --build",
+    "lint": "npx eslint --fix ./src --ext .ts",
     "test": "npm run build && jest",
     "coverage": "npm run build && nyc jest"
   },
@@ -30,18 +31,21 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-core": "^10.2.2",
-    "jest": "^29.6.1"
+    "aft-core": "^10.3.0",
+    "jest": "^29.7.0"
   },
   "devDependencies": {
-    "@jest/reporters": "^29.6.1",
-    "@jest/types": "^29.6.1",
-    "@types/node": "^20.4.1",
-    "aft-reporting-filesystem": "^10.2.2",
-    "aft-reporting-html": "^10.2.2",
+    "@jest/reporters": "^29.7.0",
+    "@jest/types": "^29.6.3",
+    "@types/node": "^20.11.30",
+    "@typescript-eslint/eslint-plugin": "^7.4.0",
+    "@typescript-eslint/parser": "^7.4.0",
+    "aft-reporting-filesystem": "^10.3.0",
+    "aft-reporting-html": "^10.3.0",
+    "eslint": "^8.57.0",
     "nyc": "^15.1.0",
     "rimraf": "^5.0.1",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.1.6"
   }
 }

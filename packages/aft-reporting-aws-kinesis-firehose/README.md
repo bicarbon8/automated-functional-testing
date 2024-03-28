@@ -17,7 +17,8 @@ to send values to AWS Kinesis Firehose endpoints you must specify the AWS Creden
         "region": "us-west-1",
         "deliveryStream": "your-frehose-delivery-stream",
         "batch": true,
-        "batchSize": 10
+        "batchSize": 10,
+        "sendStrategy": "logsandresults"
     }
 }
 ```
@@ -26,6 +27,7 @@ to send values to AWS Kinesis Firehose endpoints you must specify the AWS Creden
 - **deliveryStream** - a `string` containing the name of the Kinesis Firehose stream to send through. If using Elasticsearch as your back-end storage, this would be the Elasticsearch index to use.
 - **batch** - an optional `boolean` indicating whether logs should be batched before forwarding to Kinesis Firehose _(defaults to `true`)_
 - **batchSize** - an optional `number` representing the number of log records to batch before sending _(defaults to 10)_
+- **sendStrategy** - an optional `string` of `logsandresults`, `logsonly` or `resultsonly` that controls sending of log messages and results _(defaults to `logsandresults`)_
 
 > NOTE: the AWS Credentials are first attempted to be read from AFT Configuration and if no value is specified then the following are checked:
 - Environment Variables: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN
@@ -73,7 +75,11 @@ the log record that is sent to your AWS Kinesis Firehose endpoint will have the 
       "status": "passed",
       "resultId": "dbbf6fce-14db-4bd2-ba31-e3fa68d719e4",
       "created": 1655289028279,
-      "metadata": {}
+      "metadata": {
+        "durationMs": 12345,
+        "buildName": "Test Build",
+        "buildNumber": "23"
+      }
     }, 
     "buildName": "Jenkins or Team City Job Name", 
     "buildNumber": "Jenkins or Team City Job Number", 

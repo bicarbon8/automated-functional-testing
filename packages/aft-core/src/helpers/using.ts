@@ -16,7 +16,7 @@ import { Func } from "./custom-types";
  * Error
  */
 export interface Disposable {
-    dispose(error?: any): void;
+    dispose(error?: any): void; // eslint-disable-line no-unused-vars
 }
 
 /**

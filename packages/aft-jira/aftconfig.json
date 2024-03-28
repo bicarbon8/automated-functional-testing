@@ -1,0 +1,19 @@
+{
+    "Reporter": {
+        "pluginNames": ["testrail-reporting-plugin"],
+        "level": "info"
+    },
+    "testcasemanager": {
+        "pluginNames": ["testrail-test-execution-policy-plugin"]
+    },
+    "testrailconfig": {
+        "url": "%testrail_url%",
+        "user": "%testrail_user%",
+        "accesskey": "%testrail_accesskey%",
+        "projectid": 3,
+        "suiteids": [1219]
+    },
+    "testrailReportingPlugin": {
+        "maxLogCharacters": 100
+    }
+}

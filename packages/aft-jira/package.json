@@ -1,0 +1,47 @@
+{
+  "name": "aft-jira",
+  "version": "10.3.0",
+  "description": "Automated Functional Testing (AFT) package supporting Jira integration for test execution control and logging",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bicarbon8/automated-functional-testing.git"
+  },
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "scripts": {
+    "clean": "rimraf ./dist && rimraf ./.nyc_output && rimraf ./coverage",
+    "build": "npm run lint && npm run clean && tsc --build",
+    "lint": "npx eslint --fix ./src --ext .ts",
+    "test": "npm run build && jasmine --config=./jasmine.json",
+    "coverage": "npm run build && nyc jasmine --config=./jasmine.json"
+  },
+  "keywords": [
+    "aft",
+    "automation",
+    "e2e",
+    "integration",
+    "functional",
+    "jira"
+  ],
+  "author": "Jason Holt Smith <bicarbon8@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bicarbon8/automated-functional-testing/issues"
+  },
+  "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
+  "dependencies": {
+    "aft-web-services": "^10.3.0"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^4.6.4",
+    "@types/node": "^20.11.30",
+    "@typescript-eslint/eslint-plugin": "^7.4.0",
+    "@typescript-eslint/parser": "^7.4.0",
+    "eslint": "^8.57.0",
+    "jasmine": "^5.1.0",
+    "nyc": "^15.1.0",
+    "rimraf": "^5.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.1.6"
+  }
+}

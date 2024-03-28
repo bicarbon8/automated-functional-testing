@@ -1,0 +1,55 @@
+{
+    "pluginNames": [
+        "testrail-reporting-plugin",
+        "testrail-test-execution-policy-plugin",
+        "jira-reporting-plugin",
+        "jira-test-execution-policy-plugin",
+        "kinesis-reporting-plugin",
+        "html-reporting-plugin",
+        "filesystem-reporting-plugin",
+        "grid-session-generator-plugin",
+        "local-session-generator-plugin"
+    ],
+    "pluginsSearchDir": "../../packages/",
+    "logLevel": "debug",
+    "TestRailConfig": {
+        "url": "%testrail_url%",
+        "user": "%testrail_user%",
+        "accessKey": "%testrail_pass%",
+        "projectId": 3,
+        "suiteIds": [744],
+        "logLevel": "none",
+        "policyEngineEnabled": false
+    },
+    "JiraConfig": {
+        "url": "%jira_url%",
+        "accessKey": "%jira_pass%",
+        "projectKey": "ABC",
+        "closeDefectOnPass": false,
+        "openDefectOnFail": false,
+        "policyEngineEnabled": false,
+        "closedStatusCategoryName": "Done"
+    },
+    "KinesisReportingPluginConfig": {
+        "logLevel": "none",
+        "region": "eu-west-1",
+        "deliveryStream": "%aws_kinesis_delivery_stream%",
+        "sendStrategy": "reportonly"
+    },
+    "UiSessionConfig": {
+        "generatorName": "grid-session-generator-plugin",
+        "options": {
+            "url": "https://hub-cloud.browserstack.com/wd/hub",
+            "capabilities": {
+                "bstack:options": {
+                    "userName": "%browserstack_user%",
+                    "accessKey": "%browserstack_key%",
+                    "debug": true,
+                    "projectName": "Examples/selenium-mocha",
+                    "os": "windows",
+                    "osVersion": "11"
+                }
+            }
+        }
+    }
+}

@@ -1,5 +1,6 @@
+import process = require("process");
 import * as path from "path";
-import { ReportingPlugin, LogLevel, TestResult, fileio, ExpiringFileLock, FileSystemMap, convert, AftConfig, ReportingPluginConfig } from "aft-core";
+import { ReportingPlugin, LogLevel, TestResult, fileio, ExpiringFileLock, FileSystemMap, convert, AftConfig, ReportingPluginConfig, Err } from "aft-core";
 import { HtmlTestResult } from "./html-test-result";
 import { HtmlResult } from "./html-result";
 import { htmlTemplate } from "./templates/html-template";
@@ -84,7 +85,7 @@ export class HtmlReportingPlugin extends ReportingPlugin {
         return this._results.get(key);
     }
 
-    override initialise = async (logName: string): Promise<void> => {
+    override initialise = async (logName: string): Promise<void> => { // eslint-disable-line no-unused-vars
         /* do nothing */
     }
 
@@ -95,6 +96,10 @@ export class HtmlReportingPlugin extends ReportingPlugin {
         const expectedLevel: LogLevel = this.logLevel;
         if (LogLevel.toValue(level) >= LogLevel.toValue(expectedLevel) && level !== 'none') {
             const logs = this.logs(name);
+            if (data?.length > 0) {
+                const dataStr = (data?.length) ? `, [${data?.map(d => Err.handle(() => JSON.stringify(d))).join(',')}]` : '';
+                message = `${message}${dataStr}`;
+            }
             logs.push(`${level} - ${message}`);
             const max: number = this._maxLogLines;
             while (logs.length > max) {
