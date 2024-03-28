@@ -1,4 +1,4 @@
-import { AftConfig, BuildInfoManager, containing, pluginLoader, retry, Verifier } from "aft-core";
+import { AftConfig, BuildInfoManager, containing, retry, Verifier } from "aft-core";
 import { AftTest } from "aft-mocha-reporter";
 import { SeleniumVerifier } from "aft-ui-selenium";
 import { HerokuLoginPage } from "./page-objects/heroku-login-page";
