@@ -153,7 +153,13 @@ export class HttpService {
                         method: r.method
                     });
                     if (r.postData) {
-                        req.write(JSON.stringify(r.postData));
+                        let data: string;
+                        if (typeof r.postData !== "string") {
+                            data = JSON.stringify(r.postData);
+                        } else {
+                            data = r.postData;
+                        }
+                        req.write(data);
                     }
                     req.end(); // close the request
                 }

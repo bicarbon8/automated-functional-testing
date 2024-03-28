@@ -1,4 +1,4 @@
-import { AftConfig, convert, rand, retry } from "aft-core";
+import { AftConfig, rand } from "aft-core";
 import * as FormData from "form-data";
 import { httpService, HttpRequest, HttpResponse, httpData } from "../../src";
 import { HttpService, HttpServiceConfig } from "../../src/http/http-service";

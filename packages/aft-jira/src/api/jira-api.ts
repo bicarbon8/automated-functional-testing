@@ -1,3 +1,4 @@
+import * as url from "node:url";
 import { httpData, HttpRequest, HttpResponse, httpService } from "aft-web-services";
 import { aftConfig, AftConfig, AftLogger, CacheMap, JsonObject } from "aft-core";
 import { JiraConfig } from "../configuration/jira-config";
@@ -197,6 +198,10 @@ export class JiraApi {
         request.headers['Authorization'] = `Bearer ${await this._getAuth()}`;
         request.headers['Content-Type'] = 'application/json';
         request.headers['Accept'] = '*/*';
+        request.headers['Host'] = url.parse(request.url, false, true).hostname;
+        if (request.postData) {
+            request.headers['Content-Length'] = Buffer.byteLength(request.postData, 'utf-8');
+        }
         const response: HttpResponse = await httpService.performRequest(request);
         if (response.statusCode < 200 || response.statusCode > 299) {
             const err = httpData.as<JiraErrorResponse>(response);
