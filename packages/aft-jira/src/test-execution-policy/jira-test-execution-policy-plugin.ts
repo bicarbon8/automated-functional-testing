@@ -1,4 +1,4 @@
-import { AftConfig, TestExecutionPolicyPlugin, ProcessingResult, LogLevel } from 'aft-core';
+import { AftConfig, TestExecutionPolicyPlugin, ProcessingResult } from 'aft-core';
 import { JiraApi } from '../api/jira-api';
 import { JiraIssue } from '../api/jira-custom-types';
 import { JiraConfig } from '../configuration/jira-config';
