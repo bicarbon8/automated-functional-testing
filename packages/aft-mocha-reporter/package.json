@@ -37,7 +37,7 @@
   "devDependencies": {
     "@types/mocha": "^10.0.6",
     "@types/node": "^20.11.30",
-    "@types/sinon": "^10.0.20",
+    "@types/sinon": "^17.0.3",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
     "aft-reporting-filesystem": "^10.3.0",
@@ -46,7 +46,7 @@
     "eslint": "^8.57.0",
     "nyc": "^15.1.0",
     "rimraf": "^5.0.1",
-    "sinon": "^15.2.0",
+    "sinon": "^17.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.1.6"
   }
