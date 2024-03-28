@@ -30,7 +30,8 @@ describe('JiraTestExecutionPolicyPlugin', () => {
             });
             const api = new JiraApi(aftCfg);
             const expected: Array<JiraIssue> = new Array({
-                id: `${rand.getString(4, true, false, false, false)}-${rand.getString(4, false, true, false, false)}`,
+                id: `${rand.getInt(99, 999)}`,
+                key: `${rand.getString(4, true, false, false, false)}-${rand.getString(4, false, true, false, false)}`,
                 fields: {
                     created: new Date().toISOString(),
                     comment: rand.getString(100),
@@ -45,7 +46,7 @@ describe('JiraTestExecutionPolicyPlugin', () => {
             expect(actual).toBeDefined();
             expect(actual.result).toBe(false);
             expect(actual.message).toContain('C1234');
-            expect(actual.message).toContain(expected[0].id);
+            expect(actual.message).toContain(expected[0].key);
             expect(api.searchIssues).toHaveBeenCalledTimes(1);
         });
 
