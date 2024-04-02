@@ -16,7 +16,7 @@ import { Func } from "./custom-types";
  * Error
  */
 export interface Disposable {
-    dispose(error?: any): void; // eslint-disable-line no-unused-vars
+    dispose(error?: any): Promise<void>; // eslint-disable-line no-unused-vars
 }
 
 /**
@@ -41,5 +41,5 @@ export async function using<T extends Disposable>(disposable: T, func: Func<T, v
         err = e;
         return Promise.reject(e);
     })                                // and then dispose with any Error
-    .finally(() => disposable?.dispose(err));
+    .finally(async () => await disposable?.dispose(err));
 }

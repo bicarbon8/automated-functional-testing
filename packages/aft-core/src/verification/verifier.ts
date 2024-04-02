@@ -247,7 +247,7 @@ export class Verifier implements PromiseLike<void> {
     get internals(): VerifierInternals {
         return {
             /**
-             * allows for using a specifi {AftConfig} instance. if not
+             * allows for using a specific {AftConfig} instance. if not
              * set then {aftConfig} global const is used
              * @param cfg a {AftConfig} instance
              * @returns this {Verifier} instance

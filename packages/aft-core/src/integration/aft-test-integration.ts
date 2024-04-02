@@ -107,10 +107,10 @@ export class AftTestIntegration {
     }
 
     /**
-     * creates `ITestResult` objects for each `testId` and sends these
-     * to the `Reporter.logResult` function
-     * @param result an `IProcessingResult` returned from executing the 
-     * expectation
+     * creates `TestResult` objects for each `testId` and sends these
+     * to the `Reporter.submitResult` function
+     * @param status a `TestStatus` representing the test result
+     * @param message an optional `string` containing details of the status
      */
     protected async _logResult(status: TestStatus, message?: string): Promise<void> {
         try {
