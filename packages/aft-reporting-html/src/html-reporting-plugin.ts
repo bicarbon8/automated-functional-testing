@@ -10,7 +10,7 @@ const defaultFileName = 'testresults.html'
 export class HtmlReportingPluginConfig extends ReportingPluginConfig {
     fileName = defaultFileName;
     outputDir: string = path.join(process.cwd(), 'logs');
-    maxLogLines: number;
+    maxLogLines: number = 5;
     override logLevel: LogLevel = 'warn';
 }
 
@@ -119,7 +119,7 @@ export class HtmlReportingPlugin extends ReportingPlugin {
             status: result.status,
             logs: this.logs(name ?? result.testName)
         }
-        const results: Array<HtmlTestResult> = this.testResults(result.testName);
+        const results: Array<HtmlTestResult> = this.testResults(name ?? result.testName);
         results.push(htmlTestResult);
         this.testResults(result.testName, results);
     }

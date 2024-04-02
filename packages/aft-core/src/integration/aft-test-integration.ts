@@ -176,6 +176,7 @@ export class AftTestIntegration {
     protected async _generateTestResult(status: TestStatus, logMessage: string, testId?: string): Promise<TestResult> {
         const result: TestResult = {
             testId: testId,
+            testName: this.reporter.reporterName,
             created: Date.now(),
             resultId: rand.guid,
             resultMessage: logMessage,
