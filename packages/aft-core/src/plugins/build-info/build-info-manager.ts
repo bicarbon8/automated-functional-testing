@@ -8,15 +8,21 @@ import { BuildInfoPlugin } from "./build-info-plugin";
 
 export class BuildInfoManager {
     public readonly aftCfg: AftConfig;
-    public readonly plugins: Array<BuildInfoPlugin>
 
+    private readonly _plugins: Array<BuildInfoPlugin> = new Array<BuildInfoPlugin>();
     private readonly _safeStrOpt: SafeStringOption[] = [{exclude: /[\()\;\\\/\|\<\>""'*&^%$#@!,.\-\+_=\?]/gi, replaceWith: ''}]; // eslint-disable-line no-useless-escape
     private readonly _aftLogger: AftLogger;
     
     constructor(aftCfg?: AftConfig) {
         this.aftCfg = aftCfg ?? aftConfig;
         this._aftLogger = (aftCfg) ? new AftLogger(aftCfg) : aftLogger;
-        this.plugins = pluginLoader.getPluginsByType(BuildInfoPlugin, this.aftCfg);
+    }
+
+    get plugins(): Array<BuildInfoPlugin> {
+        if (this._plugins.length === 0) {
+            this._plugins.push(...pluginLoader.getPluginsByType(BuildInfoPlugin, this.aftCfg));
+        }
+        return this._plugins;
     }
 
     /**

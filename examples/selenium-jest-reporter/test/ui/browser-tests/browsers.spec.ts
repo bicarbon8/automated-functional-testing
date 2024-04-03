@@ -1,4 +1,4 @@
-import { BuildInfoManager, Verifier, retry, using } from "aft-core";
+import { Verifier, buildInfo, retry, using } from "aft-core";
 import { AftTest } from "aft-jest-reporter";
 import { HerokuLoginPage } from "./page-objects/heroku-login-page";
 import { SeleniumSession } from "aft-ui-selenium";
@@ -13,7 +13,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                         browserName: 'chrome',
                         "bstack:options": {
                             sessionName: v.reporter.reporterName,
-                            buildName: await new BuildInfoManager().get()
+                            buildName: await buildInfo.get()
                         }
                     }
                 }
