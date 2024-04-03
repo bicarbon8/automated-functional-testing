@@ -15,7 +15,7 @@ import { TestStatus } from "../plugins/reporting/test-status";
 import { Verifier } from "../verification/verifier";
 import { TitleParser } from "./title-parser";
 
-export class AftTestIntegration {
+export class AftTest {
     private readonly _aftCfg: AftConfig;
     private readonly _buildMgr: BuildInfoManager;
     private readonly _testCases: Array<string>;
@@ -128,7 +128,10 @@ export class AftTestIntegration {
             .internals.usingReporter(this.reporter)
             .internals.usingAftConfig(this.aftCfg)
             .withDescription(this.fullName)
-            .withTestIds(...this.testCases);
+            .withTestIds(...this.testCases)
+            .on('pass', () => this.pass())
+            .on('fail', () => this.fail())
+            .on('skipped', () => this.pending());
     }
 
     async dispose(): Promise<void> {
@@ -142,87 +145,6 @@ export class AftTestIntegration {
      * @param message an optional `string` containing details of the status
      */
     protected async _logResult(status: TestStatus, message?: string): Promise<void> {
-        try {
-            status = status || 'untested';
-            if (this.testCases.length) {
-                this.testCases.forEach(async (testId: string) => {
-                    if (message) {
-                        await this._logMessage(status, `${testId} - ${message}`);
-                    } else {
-                        await this._logMessage(status, testId);
-                    }
-                });
-            } else {
-                await this._logMessage(status, message);
-            }
-
-            const results: TestResult[] = await this._generateResults(status, message, ...this.testCases);
-            for (const result of results) {
-                Err.handle(() => {
-                    if (!this._resultsCache.has(result.testName)) {
-                        this._resultsCache.set(result.testName, new Array<TestResult>());
-                    }
-                    // cache the result to prevent double reporting
-                    this._resultsCache.get(result.testName)?.push(result);
-                });
-                try {
-                    await this.reporter.submitResult(result);
-                } catch (e) {
-                    await this.reporter.warn(`unable to log test result for test '${result.testId || result.resultId}' due to: ${Err.short(e)}`);
-                }
-            }
-        } finally {
-            await this.reporter.finalise();
-        }
-    }
-
-    protected async _logMessage(status: TestStatus, message?: string): Promise<void> {
-        message = message ?? this.reporter?.reporterName ?? 'unknown';
-        switch (status) {
-            case 'blocked':
-            case 'retest':
-            case 'skipped':
-            case 'untested':
-                await this.reporter.warn(message);
-                break;
-            case 'failed':
-                await this.reporter.fail(message);
-                break;
-            case 'passed':
-            default:
-                await this.reporter.pass(message);
-                break;
-        }
-    }
-
-    protected async _generateResults(status: TestStatus, logMessage: string, ...testIds: string[]): Promise<TestResult[]> {
-        const results: TestResult[] = [];
-        if (testIds.length > 0) {
-            for (const testId of testIds) {
-                const result: TestResult = await this._generateTestResult(status, logMessage, testId);
-                results.push(result);
-            }
-        } else {
-            const result: TestResult = await this._generateTestResult(status, logMessage);
-            results.push(result);
-        }
-        return results;
-    }
-
-    protected async _generateTestResult(status: TestStatus, logMessage: string, testId?: string): Promise<TestResult> {
-        const result: TestResult = {
-            testId: testId,
-            testName: this.reporter.reporterName,
-            created: Date.now(),
-            resultId: rand.guid,
-            resultMessage: logMessage,
-            status: status,
-            metadata: {
-                durationMs: convert.toElapsedMs(this.startTime),
-                buildName: await this.buildInfoMgr.buildName() || 'unknown',
-                buildNumber: await this.buildInfoMgr.buildNumber() || 'unknown'
-            }
-        };
-        return result;
+        await this._getVerifier().submitResult(status, message);
     }
 }

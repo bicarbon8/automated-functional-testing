@@ -1,21 +1,21 @@
 import jasmine = require("jasmine");
-import { AftConfig, Verifier, AftTestIntegration, FileSystemMap } from "aft-core";
+import { AftConfig, Verifier, AftTest, FileSystemMap } from "aft-core";
 
 /**
  * provides a more streamlined means of getting a `Verifier`
  * from the Jasmine test context
  */
-export class AftTest extends AftTestIntegration {
+export class AftJasmineTest extends AftTest {
     public readonly test: jasmine.SpecResult;
     
     /**
-     * expects to be passed the scope from an executing Mocha
-     * test (i.e. the `this` argument)
+     * when running inside the Jasmine Reporter Plugin a valid scope will
+     * be available, but when running inside a Jasmine test the scope is 
+     * not available and should be left unset
      * @param scope the `this` scope from within a Mocha `it`
      */
     constructor(scope?: any, aftCfg?: AftConfig) {
-        super(scope, aftCfg);
-        const testNames = new FileSystemMap<string, any>('AftJasmineReporter', [], this.aftCfg);
+        const testNames = new FileSystemMap<string, any>('AftJasmineReporter', [], aftCfg);
         if (!scope) {
             const names: Array<string> = Array.from(testNames.keys());
             scope = (names?.length > 0) ? names[0] : undefined;
@@ -23,6 +23,7 @@ export class AftTest extends AftTestIntegration {
         if (typeof scope === 'string') {
             scope = {test: {fullName: scope}};
         }
+        super(scope, aftCfg);
         this.test = scope?.test || {};
     }
 
@@ -38,11 +39,11 @@ export class AftTest extends AftTestIntegration {
         if (this.test?.failedExpectations) {
             err = this.test.failedExpectations.map(e => `${e.message}\n${e.stack}`).join('\n');
         }
-        await this._logResult('failed', err);
+        await super.fail(err);
     }
 
-    protected override _getVerifier(): Verifier {
-        return super._getVerifier()
-            .on('skipped', () => pending()); // eslint-disable-line no-undef
+    override async pending(message?: string): Promise<void> {
+        await super.pending(message);
+        pending();
     }
 }

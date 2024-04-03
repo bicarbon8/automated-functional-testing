@@ -11,7 +11,7 @@ import { BuildInfoManager } from "../plugins/build-info/build-info-manager";
 import { AftConfig, aftConfig } from "../configuration/aft-config";
 import { VerifierInternals } from "./verifier-internals";
 
-export type VerifierEvent = 'skipped' | 'started' | 'done';
+export type VerifierEvent = 'skipped' | 'pass' | 'fail' | 'started' | 'done';
 
 /**
  * class to be used for executing some Functional Test Assertion after checking with any
@@ -42,12 +42,12 @@ export class Verifier implements PromiseLike<void> {
     protected _reporter: Reporter;
     protected _policyEngMgr: TestExecutionPolicyManager;
     protected _buildInfoMgr: BuildInfoManager;
-    protected _actionMap: Map<VerifierEvent, Action<void>>;
+    protected _actionMap: Map<VerifierEvent, Array<Action<void>>>;
 
     constructor() {
         this._startTime = new Date().getTime();
         this._testIds = new Set<string>();
-        this._actionMap = new Map<VerifierEvent, Action<void>>();
+        this._actionMap = new Map<VerifierEvent, Array<Action<void>>>();
     }
 
     get aftCfg(): AftConfig {
@@ -106,37 +106,61 @@ export class Verifier implements PromiseLike<void> {
                     const shouldRun = await this.shouldRun();
                     await this.reporter.debug('verifier.shouldRun response:', shouldRun);
                     if (shouldRun.result === true) {
-                        const action = this._actionMap.get('started');
-                        if (action) {
-                            Err.handle(() => action(), {
-                                errLevel: 'debug',
-                                logger: this.reporter
+                        const startedActions: Array<Action<void>> = this._actionMap.get('started');
+                        if (startedActions?.length) {
+                            startedActions.forEach(a => {
+                                Err.handle(() => a(), {
+                                    errLevel: 'debug',
+                                    logger: this.reporter
+                                });
                             });
                         }
                         await this._resolveAssertion();
-                        await this._logResult('passed');
+                        await this.submitResult('passed');
+                        const passActions = this._actionMap.get('pass');
+                        if (passActions?.length) {
+                            passActions.forEach(a => {
+                                Err.handle(() => a(), {
+                                    errLevel: 'debug',
+                                    logger: this.reporter
+                                });
+                            });
+                        }
                     } else {
-                        await this._logResult('skipped', shouldRun.message);
-                        const action = this._actionMap.get('skipped');
-                        if (action) {
-                            Err.handle(() => action(), {
-                                errLevel: 'debug',
-                                logger: this.reporter
+                        await this.submitResult('skipped', shouldRun.message);
+                        const skippedActions = this._actionMap.get('skipped');
+                        if (skippedActions?.length) {
+                            skippedActions.forEach(a => {
+                                Err.handle(() => a(), {
+                                    errLevel: 'debug',
+                                    logger: this.reporter
+                                });
                             });
                         }
                     }
                     resolve();
                 } catch(e) {
-                    await this._logResult('failed', e);
+                    await this.submitResult('failed', e);
+                    const failActions = this._actionMap.get('fail');
+                    if (failActions?.length) {
+                        failActions.forEach(a => {
+                            Err.handle(() => a(), {
+                                errLevel: 'debug',
+                                logger: this.reporter
+                            });
+                        });
+                    }
                     reject(e);
                 }
             });
         }
-        const action = this._actionMap.get('done');
-        if (action) {
-            Err.handle(() => action(), {
-                errLevel: 'debug',
-                logger: this.reporter
+        const doneActions = this._actionMap.get('done');
+        if (doneActions?.length) {
+            doneActions.forEach(a => {
+                Err.handle(() => a(), {
+                    errLevel: 'debug',
+                    logger: this.reporter
+                });
             });
         }
         return this._innerPromise;
@@ -165,7 +189,10 @@ export class Verifier implements PromiseLike<void> {
      * @returns a reference to this {Verifier} instance
      */
     on(event: VerifierEvent, action: Action<void>): this {
-        this._actionMap.set(event, action);
+        if (!this._actionMap.has(event)) {
+            this._actionMap.set(event, new Array<Action<void>>());
+        }
+        this._actionMap.get(event).push(action);
         return this;
     }
 
@@ -322,19 +349,19 @@ export class Verifier implements PromiseLike<void> {
      * creates `TestResult` objects for each `testId` and sends these
      * to the `Reporter.logResult` function
      */
-    protected async _logResult(status: TestStatus, message?: string): Promise<void> {
+    async submitResult(status: TestStatus, message?: string): Promise<void> {
         try {
             status ??= 'untested';
             if (this._testIds.size) {
                 this._testIds.forEach(async (testId: string) => {
                     if (message) {
-                        await this._logMessage(status, `${testId} - ${message}`);
+                        await this._logResultStatus(status, `${testId} - ${message}`);
                     } else {
-                        await this._logMessage(status, testId);
+                        await this._logResultStatus(status, testId);
                     }
                 });
             } else {
-                await this._logMessage(status, message);
+                await this._logResultStatus(status, message);
             }
 
             const results: TestResult[] = await this._generateTestResults(status, message, ...Array.from(this._testIds.values()));
@@ -350,7 +377,7 @@ export class Verifier implements PromiseLike<void> {
         }
     }
 
-    protected async _logMessage(status: TestStatus, message?: string): Promise<void> {
+    protected async _logResultStatus(status: TestStatus, message?: string): Promise<void> {
         message = message || this.reporter.reporterName;
         switch (status) {
             case 'blocked':

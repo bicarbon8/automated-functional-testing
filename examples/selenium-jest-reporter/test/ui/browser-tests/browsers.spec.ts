@@ -1,13 +1,14 @@
-import { Verifier, buildInfo, retry, using } from "aft-core";
-import { AftTest } from "aft-jest-reporter";
+import { Verifier, buildInfo, containing, retry, using } from "aft-core";
+import { AftJestTest } from "aft-jest-reporter";
 import { HerokuLoginPage } from "./page-objects/heroku-login-page";
 import { SeleniumSession } from "aft-ui-selenium";
 
 describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
     test('[C1234] can access websites using AFT and BrowserComponents', async () => {
-        await new AftTest(expect).verify(async (v: Verifier) => {
+        await new AftJestTest(expect).verify(async (v: Verifier) => {
+            let loginMessage: string;
             await using(new SeleniumSession({
-                aftConfig: v.aftCfg,
+                reporter: v.reporter,
                 additionalSessionOptions: {
                     capabilities: {
                         browserName: 'chrome',
@@ -34,10 +35,9 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                 
                 await v.reporter.step('get message...');
 
-                const expected = "You logged into a secure area!";
-                const actual = await loginPage.getMessage();
-                expect(actual).toContain(expected);
+                loginMessage = await loginPage.getMessage();
             });
-        });
+            return loginMessage;
+        }).returns(containing("You logged into a secure area!"));
     });
 });

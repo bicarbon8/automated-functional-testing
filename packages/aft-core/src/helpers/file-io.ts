@@ -2,17 +2,9 @@ import * as process from 'node:process';
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { Func } from "./custom-types";
-import { AftLogger } from "../logging/aft-logger";
-import { AftConfig } from "../configuration/aft-config";
 import { Err } from "./err";
 
 export class FileIO {
-    private readonly _logger: AftLogger;
-
-    constructor(aftCfg?: AftConfig) {
-        this._logger = new AftLogger(aftCfg);
-    }
-
     /**
      * function creates a new `utf-8` encoded file and writes the passed in `data` string
      * to it. if the `file` contains directories and these directories do not already exist
@@ -103,11 +95,7 @@ export class FileIO {
         try {
             obj = parser(fileContents);
         } catch (e) {
-            this._logger.log({
-                message: `[readAs] error attempting to parse file '${file}' contents into specified type: '${fileContents}'\n${Err.short(e)}`,
-                name: this.constructor.name,
-                level: 'warn'
-            });
+            // ignore :(
         }
         return obj;
     }
@@ -128,11 +116,7 @@ export class FileIO {
             try {
                 fs.rmSync(file, opts);
             } catch (e) {
-                this._logger.log({
-                    message: `[delete] error attempting to delete file '${file}' due to: ${Err.short(e)}`,
-                    name: this.constructor.name,
-                    level: 'warn'
-                });
+                // ignore :(
             }
         }
     }

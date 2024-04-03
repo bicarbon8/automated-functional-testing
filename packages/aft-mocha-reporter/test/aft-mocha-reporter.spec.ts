@@ -1,12 +1,12 @@
 import { expect } from "chai";
-import { AftTest } from "../src";
+import { AftMochaTest } from "../src";
 import * as sinon from "sinon";
 import { Verifier, equaling } from "aft-core";
 
 describe('AftMochaReporter', () => {
-    it('passes a Mocha Test to the test that can be used by AftTest', async function () {
+    it('passes a Mocha Test to the test that can be used by AftMochaTest', async function () {
         this.timeout(10000);
-        const t = new AftTest(this);
+        const t = new AftMochaTest(this);
         const shouldRun = await t.shouldRun();
         if (!shouldRun) { 
             t.test.skip();
@@ -20,7 +20,7 @@ describe('AftMochaReporter', () => {
 
     it('can skip a test during execution', async function() {
         this.timeout(10000);
-        const t = new AftTest(this);
+        const t = new AftMochaTest(this);
         sinon.stub(t, 'shouldRun').callsFake(() => Promise.resolve(false));
         const shouldRun = await t.shouldRun();
         if (!shouldRun) { 
@@ -31,7 +31,7 @@ describe('AftMochaReporter', () => {
     });
 
     it('still works if using an arrow function', async () => {
-        const t = new AftTest(this);
+        const t = new AftMochaTest(this);
         
         expect(t).to.exist;
         expect(t.reporter).to.exist;
@@ -45,7 +45,7 @@ describe('AftMochaReporter', () => {
 
     it('provides a Verifier instance for use in test control', async function() {
         this.timeout(10000);
-        const t = new AftTest(this);
+        const t = new AftMochaTest(this);
         await t.verify(async (v: Verifier) => {
             await v.reporter.warn('returning logName');
             return v.reporter.reporterName;

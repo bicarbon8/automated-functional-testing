@@ -1,11 +1,11 @@
 import Mocha = require("mocha");
-import { AftConfig, Verifier, AftTestIntegration } from "aft-core";
+import { AftConfig, AftTest } from "aft-core";
 
 /**
  * provides a more streamlined means of getting a `Verifier`
  * from the Mocha test context
  */
-export class AftTest extends AftTestIntegration {
+export class AftMochaTest extends AftTest {
     public readonly test: Mocha.Test;
 
     /**
@@ -29,8 +29,12 @@ export class AftTest extends AftTestIntegration {
         this.test = scope?.test || {};
     }
 
-    protected override _getVerifier(): Verifier {
-        return super._getVerifier()
-            .on('skipped', () => this.test.skip());
+    override get fullName(): string {
+        return this.test?.fullTitle();
+    }
+
+    override async pending(message?: string): Promise<void> {
+        await super.pending(message);
+        this.test.skip();
     }
 }

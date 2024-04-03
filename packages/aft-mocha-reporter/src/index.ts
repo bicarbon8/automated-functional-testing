@@ -1,2 +1,2 @@
-export * from "./aft-test";
 export * from "./aft-mocha-reporter";
+export * from "./aft-mocha-test";

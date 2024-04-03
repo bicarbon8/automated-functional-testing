@@ -1,4 +1,4 @@
-import { AftTest } from "./aft-test";
+import { AftJestTest } from "./aft-jest-test";
 import { AggregatedResult, Config, Reporter, ReporterContext, TestCaseResult, TestContext } from "@jest/reporters";
 import { ReporterOnStartOptions } from "@jest/reporters";
 import { Test } from "@jest/reporters";
@@ -17,7 +17,7 @@ export default class AftJestReporter implements Reporter {
     // start: required Reporter functions
     onRunStart(results: AggregatedResult, options: ReporterOnStartOptions): Promise<void> | void { // eslint-disable-line no-unused-vars
         // clear all previously cached test results
-        AftTest.clearCache();
+        AftJestTest.clearCache();
     }
     onRunComplete(testContexts: Set<TestContext>, results: AggregatedResult): Promise<void> | void { // eslint-disable-line no-unused-vars
         /* do nothing */
@@ -29,7 +29,7 @@ export default class AftJestReporter implements Reporter {
 
     // start: optional Reporter functions
     onTestCaseResult(test: Test, testCaseResult: TestCaseResult): Promise<void> | void {
-        const t = new AftTest(testCaseResult);
+        const t = new AftJestTest(testCaseResult);
         if (t.getCachedResults(t.fullName).length === 0) {
             // AFT Verifier was NOT used in test
             switch (testCaseResult.status) {

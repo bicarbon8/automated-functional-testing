@@ -15,7 +15,7 @@ export * from './helpers/retry';
 export * from './helpers/using';
 export * from './helpers/wait';
 /** integration */
-export * from './integration/aft-test-integration';
+export * from './integration/aft-test';
 export * from './integration/title-parser';
 /** logging */
 export * from './logging/aft-logger';

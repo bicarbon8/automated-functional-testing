@@ -1,6 +1,6 @@
 import jasmine = require("jasmine");
 import { FileSystemMap } from "aft-core";
-import { AftTest } from "./aft-test";
+import { AftJasmineTest } from "./aft-jasmine-test";
 
 export class AftJasmineReporter implements jasmine.CustomReporter {
     private readonly _async2Sync: Array<Promise<any>>;
@@ -12,7 +12,7 @@ export class AftJasmineReporter implements jasmine.CustomReporter {
     }
     
     jasmineStarted(): void {
-        AftTest.clearCache();
+        AftJasmineTest.clearCache();
         beforeEach(async () => { // eslint-disable-line no-undef
             while (this._async2Sync.length > 0) {
                 const asyncFunc = this._async2Sync.shift();
@@ -24,7 +24,7 @@ export class AftJasmineReporter implements jasmine.CustomReporter {
     }
     
     specStarted(result: jasmine.SpecResult): void {
-        const t: AftTest = new AftTest({test: result});
+        const t = new AftJasmineTest({test: result});
         this._testNames.set(t.fullName, true);
     }
     specDone(result: jasmine.SpecResult): void {
@@ -32,7 +32,7 @@ export class AftJasmineReporter implements jasmine.CustomReporter {
     }
 
     private async _asyncSpecDone(result: jasmine.SpecResult): Promise<void> {
-        const t = new AftTest({test: result});
+        const t = new AftJasmineTest({test: result});
         if (t.getCachedResults(t.fullName).length === 0) {
             switch (t.test.status) {
                 case 'passed':

@@ -1,5 +1,5 @@
 import * as Mocha from 'mocha';
-import { AftTest } from './aft-test';
+import { AftMochaTest } from './aft-mocha-test';
 import { AftConfig, Err, aftConfig } from 'aft-core';
 
 const {
@@ -36,11 +36,11 @@ export class AftMochaReporter extends Mocha.reporters.Base {
         runner
         .on(EVENT_RUN_BEGIN, () => {
             // clear all previously cached test results
-            AftTest.clearCache();
+            AftMochaTest.clearCache();
         })
         .on(EVENT_TEST_PENDING, async (test: Mocha.Test) => {
             // always handle when test is manually skipped using `xit` or `xdescribe`
-            const t = new AftTest({test});
+            const t = new AftMochaTest({test});
             if (t.getCachedResults(t.fullName).length === 0) {
                 await t.pending();
                 await t.dispose();
@@ -48,7 +48,7 @@ export class AftMochaReporter extends Mocha.reporters.Base {
         })
         .on(EVENT_TEST_PASS, async (test: Mocha.Test) => {
             // conditionally handle `passing` test when not using AFT Verifier
-            const t = new AftTest({test});
+            const t = new AftMochaTest({test});
             if (t.getCachedResults(t.fullName).length === 0) {
                 await t.pass();
                 await t.dispose();
@@ -56,7 +56,7 @@ export class AftMochaReporter extends Mocha.reporters.Base {
         })
         .on(EVENT_TEST_FAIL, async (test: Mocha.Test, err: any) => {
             // conditionally handle `failing` test when not using AFT Verifier
-            const t = new AftTest({test});
+            const t = new AftMochaTest({test});
             if (t.getCachedResults(t.fullName).length === 0) {
                 if (typeof err !== 'string') {
                     err = Err.handle(() => JSON.stringify(err));
