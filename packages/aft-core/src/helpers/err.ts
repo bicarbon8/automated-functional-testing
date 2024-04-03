@@ -59,15 +59,22 @@ export type ErrOptions = {
  * [full stack trace of as much as the Error contained]
  * ```
  */
-export class Err {
+export class Err extends Object {
     readonly err: Error;
     private _verbosity: ErrVerbosity;
 
     constructor(error: any) {
+        super();
         if (this._isError(error)) {
             this.err = error;
-        } else {
+        } else if (typeof error === 'string') {
             this.err = new Error(String(error || 'unknown'));
+        } else {
+            try {
+                this.err = new Error(JSON.stringify(error));
+            } catch (e) {
+                this.err = e;
+            }
         }
     }
 
@@ -95,7 +102,7 @@ export class Err {
         return this.err?.stack ?? 'unknown';
     }
 
-    toString(): string {
+    override toString(): string {
         const message = this._processMessage(this.message);
         const stack = this._processStack(this.stack);
         let output: string;
@@ -194,13 +201,14 @@ export module Err { // eslint-disable-line no-redeclare
             opts.verbosity ??= 'short';
             opts.errLevel ??= 'warn';
             const err = new Err(e).setVerbosity(opts.verbosity);
+            const message = err.toString();
             if (opts.logger) {
-                opts.logger[opts?.errLevel](err.toString());
+                opts.logger[opts?.errLevel](message).catch();
             } else {
                 aftLogger.log({
                     name: this.constructor.name,
                     level: opts.errLevel,
-                    message: err.toString()
+                    message
                 });
             }
             return null as T;
@@ -214,20 +222,21 @@ export module Err { // eslint-disable-line no-redeclare
      * @returns the result of the passed in `func` or `null` if an error is thrown
      */
     export async function handleAsync<T>(func: Func<void, PromiseLike<T>>, opts?: Partial<ErrOptions>): Promise<T> {
-        return await Promise.resolve()
+        return Promise.resolve()
             .then(func)
             .catch(async (err) => {
                 opts ??= {};
                 opts.verbosity ??= 'short';
                 opts.errLevel ??= 'warn';
                 const e = new Err(err).setVerbosity(opts?.verbosity);
+                const message = e.toString();
                 if (opts.logger) {
-                    await opts.logger[opts?.errLevel ?? 'warn'](e.toString());
+                    await opts.logger[opts?.errLevel](message);
                 } else {
                     aftLogger.log({
                         name: this.constructor.name,
                         level: opts.errLevel,
-                        message: e.toString()
+                        message
                     });
                 }
                 return null as T;

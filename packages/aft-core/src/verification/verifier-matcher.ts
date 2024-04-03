@@ -225,7 +225,13 @@ class ValueContaining implements VerifierMatcher {
     compare(): boolean {
         if (this._actual) {
             if (Array.isArray(this._actual)) {
-                return this._actual.includes(this.expected);
+                return this._actual.some((item) => {
+                    if (typeof item === 'string') {
+                        return item.includes(String(this.expected));
+                    } else {
+                        return item === this.expected;
+                    }
+                });
             }
             if (this._actual['has'] && this._actual['clear'] && this._actual['size'] !== undefined) {
                 return (this._actual as Set<any>).has(this.expected);
@@ -263,6 +269,7 @@ class ValueContaining implements VerifierMatcher {
  * await verifier(() => new Map([[5, 'five'], [6, 'six']])).returns(containing(5)); // succeeds
  * await verifier(() => 'foo').returns(containing('oof')); // fails
  * await verifier(() => new Map([[5, 'five'], [6, 'six']])).returns(containing('five')); // fails
+ * await verifier(() => ['foobarbaz','wolfhound','racecar']).returns(containing('bar')); // succeeds
  * ```
  * @param expected the expected value
  * @returns a new `ValueContaining` instance

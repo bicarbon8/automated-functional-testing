@@ -1,5 +1,5 @@
 {
-  "name": "selenium-jest",
+  "name": "selenium-jest-reporter",
   "description": "Automated Functional Testing (AFT) package containing examples of how it can be used",
   "private": true,
   "scripts": {

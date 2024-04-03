@@ -35,9 +35,13 @@ export class JiraTestExecutionPolicyPlugin extends TestExecutionPolicyPlugin {
     override shouldRun = async (testId: string): Promise<ProcessingResult<boolean>> => {
         if (this.enabled) {
             const openIssues: Array<JiraIssue> = await this._getIssuesReferencingTestIds(testId);
-            this.aftLogger.log({level: 'debug', message: `found ${openIssues.length} open Jira issues for ${testId}: ['${openIssues.map(i => i?.key).join(',')}']`, name: this.constructor.name});
+            this.aftLogger.log({
+                level: 'debug',
+                message: `found ${openIssues.length} open Jira issues for ${testId}: [${openIssues.map(i => i?.key).join(',')}]`,
+                name: this.constructor.name
+            });
             if (openIssues?.length > 0) {
-                return {result: false, message: `'${testId}' referenced in open Jira Issue(s): ['${openIssues.map(i => i?.key).join(',')}']`};
+                return {result: false, message: `'${testId}' referenced in open Jira Issue(s): [${openIssues.map(i => i?.key).join(',')}]`};
             }
             return {result: true, message: `'${testId}' not referenced in any open Jira Issues`};
         }

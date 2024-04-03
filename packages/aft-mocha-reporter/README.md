@@ -10,13 +10,23 @@ using this `Reporter` requires either calling the `mocha` command with the follo
 // .mocharc.json
 {
     ...
-    "reporter": "aft-mocha-reporter",
+    "reporter": "/path/to/aft-mocha-reporter.js",
     ...
 }
 ```
 
 ## AFT Configuration
-while no configuration is required, the `aft-mocha-reporter` supports all AFT configuration via an `aftconfig.json` file in the root directory.
+the `aft-mocha-reporter` can be conditionally enabled or disabled from within your `aftconfig.json` file in the root directory using the following:
+```json
+// aftconfig.json
+{
+    "AftMochaReporterConfig": {
+        "enabled": true
+    }
+}
+```
+- **enabled** a `boolean` indicating if all AFT results reporting should rely on the `AftMochaReporter` (`true`) or the AFT `Verifier` (`false`). _(defaults to `true`)_
+> **!!WARNING!!** if using an AFT `Verifier` or the `AftTest.verify` function inside your `it` calls then set `AftMochaReporterConfig.enabled` to `false` in your `aftconfig.json` to avoid double reporting test results
 
 ## AFT Helpers
 this package comes with two helper classes that can be utilised from within your Mocha specs to make use of AFT features.
@@ -26,6 +36,7 @@ the `AftTest` class extends from the `AftTestIntegration` class providing the ab
 > **!!WARNING!!** using arrow functions in your Spec definition **IS NOT SUPPORTED** if using `AftTest` because it removes the `this` scope
 ```javascript
 describe('YourTestSuite', () => {
+    // use `AftTest.verify` to report results (ensure `AftMochaReporterConfig.enabled = false`)
     it('can check if test [C1234] should be run', async function() {
         const aft = new AftTest(this);
         await aft.verify(async (v: Verifier) => {
@@ -33,7 +44,18 @@ describe('YourTestSuite', () => {
             await v.reporter.error('we should never get here if C1234 should not be run');
             const result = await doStuff();
             return result;
-        }).returns(equaling('expected'));
+        }).returns(equaling('expected')); // AFT Verifier handles submitting the result to any AFT Reporter Plugins
+    });
+
+    // use `AftMochaReporter` to report results (`AftMochaReporterConfig.enabled = true` (default value))
+    it('can check if test [C2345] should be run', async function() {
+        const aft = new AftTest(this);
+        if (!(await aft.shouldRun())) {
+            await aft.pending(); // marks test as skipped
+        } else {
+            const result = await doStuff();
+            expect(result).to.equal('expected'); // AftMochaReporter handles submitting the result to any AFT Reporter Plugins
+        }
     });
 });
 ```

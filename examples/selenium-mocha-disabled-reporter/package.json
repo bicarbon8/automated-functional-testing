@@ -1,6 +1,6 @@
 {
-  "name": "selenium-mocha",
-  "description": "Automated Functional Testing (AFT) package containing examples of how it can be used",
+  "name": "selenium-mocha-disabled-reporter",
+  "description": "Demonstration of using AFT with Selenium and Mocha using the AFT Verifier instead of the AFT Mocha Reporter",
   "private": true,
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./logs && rimraf ./FileSystemMap && rimraf ./testresults.html",
@@ -29,13 +29,14 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-jira": "^10.2.2",
-    "aft-mocha-reporter": "^10.2.2",
-    "aft-reporting-aws-kinesis-firehose": "^10.2.2",
-    "aft-reporting-filesystem": "^10.2.2",
-    "aft-reporting-html": "^10.2.2",
-    "aft-testrail": "^10.2.2",
-    "aft-ui-selenium": "^10.2.2"
+    "aft-core": "^10.3.0",
+    "aft-jira": "^10.3.0",
+    "aft-mocha-reporter": "^10.3.0",
+    "aft-reporting-aws-kinesis-firehose": "^10.3.0",
+    "aft-reporting-filesystem": "^10.3.0",
+    "aft-reporting-html": "^10.3.0",
+    "aft-testrail": "^10.3.0",
+    "aft-ui-selenium": "^10.3.0"
   },
   "devDependencies": {
     "@types/chai": "^4.3.14",

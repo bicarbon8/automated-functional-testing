@@ -107,7 +107,8 @@ describe('VerifierMatcher', () => {
             {expected: 'foo', actual: new Map<string, string>([['foo','bar']]), result: true},
             {expected: 'bar', actual: new Map<string, string>([['foo','bar']]), result: false},
             {expected: 'foo', actual: new Map<string, string>(), result: false},
-            {expected: null, actual: new Map<string, string>([[null, 'bar']]), result: true}
+            {expected: null, actual: new Map<string, string>([[null, 'bar']]), result: true},
+            {expected: 'bar', actual: ['foobarbaz'], result: true}
         ];
         testData.forEach((data) => {
             it(`can get expected result from comparison: ${JSON.stringify(data)}`, () => {

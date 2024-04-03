@@ -27,7 +27,7 @@
         "projectKey": "ABC",
         "closeDefectOnPass": false,
         "openDefectOnFail": false,
-        "policyEngineEnabled": false,
+        "policyEngineEnabled": true,
         "closedStatusCategoryName": "Done"
     },
     "KinesisReportingPluginConfig": {
@@ -45,11 +45,14 @@
                     "userName": "%browserstack_user%",
                     "accessKey": "%browserstack_key%",
                     "debug": true,
-                    "projectName": "Examples/selenium-mocha",
+                    "projectName": "Examples/selenium-mocha-disabled-reporter",
                     "os": "windows",
                     "osVersion": "11"
                 }
             }
         }
+    },
+    "AftMochaReporterConfig": {
+        "enabled": false
     }
 }

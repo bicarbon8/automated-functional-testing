@@ -1,6 +1,6 @@
 import { AftConfig, aftConfig } from "../configuration/aft-config";
 import { convert } from "../helpers/convert";
-import { Class, Func } from "../helpers/custom-types";
+import { Func } from "../helpers/custom-types";
 import { Err } from "../helpers/err";
 import { rand } from "../helpers/rand";
 import { BuildInfoManager } from "../plugins/build-info/build-info-manager";
@@ -20,13 +20,11 @@ export class AftTestIntegration {
 
     public readonly startTime: number;
 
-    constructor(scope: any, aftCfg?: AftConfig) {
+    constructor(testFullName: string, aftCfg?: AftConfig) {
         this._aftCfg = aftCfg ?? aftConfig;
         this._buildMgr = new BuildInfoManager(this._aftCfg);
         this._testCases = new Array<string>();
-        if (typeof scope === 'string') {
-            this._testName = scope;
-        }
+        this._testName = testFullName ?? `${this.constructor.name}_${rand.getString(8, true, true)}`;
         this.startTime = Date.now();
     }
 
@@ -76,7 +74,7 @@ export class AftTestIntegration {
      * @returns `true` if test should be run, otherwise `false`
      */
     async shouldRun(): Promise<boolean> {
-        const shouldRun = await this._getVerifier(Verifier).shouldRun();
+        const shouldRun = await this._getVerifier().shouldRun();
         return shouldRun.result;
     }
 
@@ -85,21 +83,19 @@ export class AftTestIntegration {
      * returns `true` otherwise it will bypass execution
      * @param assertion a function that performs test actions and will accept a {Verifier} instance
      * for use during the test actions' execution
-     * @param verifierType an optional {Verifier} class to use instead of the base {Verifier} type
      * @returns a {Verifier} instance already configured with test cases, description, logger and config
      */
-    verify<T extends Verifier>(assertion: Func<T, any>, verifierType?: Class<T>): T {
-        return this._getVerifier<T>(verifierType)
+    verify(assertion: Func<Verifier, any>): Verifier {
+        return this._getVerifier()
             .verify(assertion);
     }
 
-    protected _getVerifier<T extends Verifier>(verifierType?: Class<T>): T {
-        verifierType ??= Verifier as Class<T>;
-        return new verifierType()
+    protected _getVerifier(): Verifier {
+        return new Verifier()
             .internals.usingReporter(this.reporter)
             .internals.usingAftConfig(this.aftCfg)
             .withDescription(this.fullName)
-            .withTestIds(...this.testCases) as T;
+            .withTestIds(...this.testCases);
     }
 
     async dispose(): Promise<void> {

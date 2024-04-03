@@ -1,6 +1,6 @@
 {
-  "name": "webdriverio-mocha",
-  "description": "Automated Functional Testing (AFT) package containing examples of how it can be used",
+  "name": "webdriverio-mocha-reporter",
+  "description": "Demonstration using WebdriverIO and Mocha as well as the AFT Mocha Reporter plugin instead of the AFT Verifier",
   "private": true,
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./logs && rimraf ./FileSystemMap && rimraf ./testresults.html",

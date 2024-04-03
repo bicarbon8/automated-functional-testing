@@ -58,6 +58,9 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
                 }
             }
         }
+    },
+    "AftMochaReporterConfig": {
+        "enabled": false
     }
 }
 ```
@@ -90,6 +93,8 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
 - **UiSessionConfig** - configuration for the `UiSessionGeneratorManager` to use to determine which `UiSessionGeneratorPlugin` to use
   - **generatorName** - `string` containing the name of the `UiSessionGeneratorPlugin` to use when generating UI sessions
   - **options** - `object` containing any properties that will be passed to the loaded `UiSessionGeneratorPlugin.getSession` function and that can be used by the plugin to control the type of session to create
+- **AftMochaReporterConfig** - configuration for the `AftMochaReporter` Mocha reporting plugin
+  - **enabled** - `boolean` indicating if Mocha's Pass and Fail status events will trigger sending AFT Test Results to any AFT reporter plugins (not to be confused with Mocha reporter plugins). This is used to prevent double reporting if a user is using AFT's `Verifier` which handles submitting Test Results. _(NOTE: a value of `false` will still use the `AftMochaReporter` to handle Pending test events so manually disabled tests `xit` or `xdescribe` will still result in a Test Result being submitted)_
 
 ## Test Execution
 running `npm run test:e2e` will execute the tests using Mocha which should result in output like the following being sent to the console (assuming the `Reporter.level` is set to something like `info` in your `aftconfig.json`):
