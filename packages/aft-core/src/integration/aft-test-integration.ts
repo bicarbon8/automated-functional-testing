@@ -1,7 +1,12 @@
+import path = require("node:path");
+import process = require("node:process");
 import { AftConfig, aftConfig } from "../configuration/aft-config";
 import { convert } from "../helpers/convert";
 import { Func } from "../helpers/custom-types";
 import { Err } from "../helpers/err";
+import { ExpiringFileLock } from "../helpers/expiring-file-lock";
+import { fileio } from "../helpers/file-io";
+import { FileSystemMap } from "../helpers/file-system-map";
 import { rand } from "../helpers/rand";
 import { BuildInfoManager } from "../plugins/build-info/build-info-manager";
 import { Reporter } from "../plugins/reporting/reporter";
@@ -14,6 +19,7 @@ export class AftTestIntegration {
     private readonly _aftCfg: AftConfig;
     private readonly _buildMgr: BuildInfoManager;
     private readonly _testCases: Array<string>;
+    private readonly _resultsCache: FileSystemMap<string, Array<TestResult>>; // { key: fullName, val: [{TestId: 1}, {TestId: 2}] }
     private _rep: Reporter;
     
     private readonly _testName: string;
@@ -22,6 +28,7 @@ export class AftTestIntegration {
 
     constructor(testFullName: string, aftCfg?: AftConfig) {
         this._aftCfg = aftCfg ?? aftConfig;
+        this._resultsCache = new FileSystemMap<string, Array<TestResult>>(this.constructor.name, null, this._aftCfg);
         this._buildMgr = new BuildInfoManager(this._aftCfg);
         this._testCases = new Array<string>();
         this._testName = testFullName ?? `${this.constructor.name}_${rand.getString(8, true, true)}`;
@@ -52,6 +59,32 @@ export class AftTestIntegration {
             this._testCases.splice(0, 0, ...TitleParser.parseTestIds(this.fullName));
         }
         return this._testCases;
+    }
+
+    /**
+     * searches the filesystem cache for any logged test results for a named
+     * test and returns the results as an array of `TestResult` objects with
+     * each object corresponding to a Test ID referenced in the test name
+     * @param fullName the full test name under which the results are cached
+     * @returns an array of `TestResult` objects for the named test where each
+     * entry corresponds to a referenced Test ID parsed from the `fullName`
+     */
+    getCachedResults(fullName: string): Array<TestResult> {
+        return this._resultsCache.get(fullName) ?? [];
+    }
+
+    /**
+     * clears any cached test results
+     */
+    static clearCache(): void {
+        const lock: ExpiringFileLock = new ExpiringFileLock(this.constructor.name);
+        try {
+            const dir = aftConfig.fsMapDirectory;
+            const fullpath = path.join(process.cwd(), dir);
+            fileio.delete(fullpath);
+        } finally {
+            lock?.unlock();
+        }
     }
 
     async pass(): Promise<void> {
@@ -99,7 +132,7 @@ export class AftTestIntegration {
     }
 
     async dispose(): Promise<void> {
-        await this.reporter.dispose();
+        await this.reporter.finalise();
     }
 
     /**
@@ -125,6 +158,13 @@ export class AftTestIntegration {
 
             const results: TestResult[] = await this._generateResults(status, message, ...this.testCases);
             for (const result of results) {
+                Err.handle(() => {
+                    if (!this._resultsCache.has(result.testName)) {
+                        this._resultsCache.set(result.testName, new Array<TestResult>());
+                    }
+                    // cache the result to prevent double reporting
+                    this._resultsCache.get(result.testName)?.push(result);
+                });
                 try {
                     await this.reporter.submitResult(result);
                 } catch (e) {
@@ -132,7 +172,7 @@ export class AftTestIntegration {
                 }
             }
         } finally {
-            await this.reporter.dispose();
+            await this.reporter.finalise();
         }
     }
 

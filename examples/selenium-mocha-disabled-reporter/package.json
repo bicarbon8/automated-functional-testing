@@ -3,7 +3,7 @@
   "description": "Demonstration of using AFT with Selenium and Mocha using the AFT Verifier instead of the AFT Mocha Reporter",
   "private": true,
   "scripts": {
-    "clean": "rimraf ./dist && rimraf ./logs && rimraf ./FileSystemMap && rimraf ./testresults.html",
+    "clean": "rimraf ./dist && rimraf ./logs",
     "build": "npm run clean && tsc --build",
     "test:e2e": "npm run build && mocha"
   },

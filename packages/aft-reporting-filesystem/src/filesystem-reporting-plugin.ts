@@ -1,5 +1,5 @@
-import process = require("process");
-import * as path from "path";
+import * as process from 'node:process';
+import * as path from "node:path";
 import { AftConfig, convert, Err, ExpiringFileLock, fileio, ReportingPlugin, ReportingPluginConfig, LogLevel, LogMessageData, TestResult } from "aft-core";
 import * as date from "date-and-time";
 

@@ -346,7 +346,7 @@ export class Verifier implements PromiseLike<void> {
                 }
             }
         } finally {
-            await this.reporter.dispose();
+            await this.reporter.finalise();
         }
     }
 

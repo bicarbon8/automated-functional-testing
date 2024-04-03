@@ -1,5 +1,5 @@
-import process = require("process");
-import * as path from "path";
+import * as process from 'node:process';
+import * as path from "node:path";
 import { convert } from "./convert";
 import { JsonKey, JsonValue } from "./custom-types";
 import { ExpiringFileLock } from "./expiring-file-lock";

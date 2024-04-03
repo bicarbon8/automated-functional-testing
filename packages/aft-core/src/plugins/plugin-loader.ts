@@ -1,6 +1,6 @@
-import process = require('process');
-import * as fs from 'fs';
-import * as path from 'path';
+import * as process from 'node:process';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { convert } from '../helpers/convert';
 import { Plugin } from './plugin'; // eslint-disable-line no-redeclare
 import { AftConfig, aftConfig } from '../configuration/aft-config';

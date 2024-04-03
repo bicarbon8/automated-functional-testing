@@ -193,10 +193,10 @@ export class Reporter {
 
     /**
      * loops through any loaded `ReportingPlugin` objects and calls
-     * their `dispose` function. This should be called upon completion
+     * their `finalise` function. This should be called upon completion
      * of any logging actions before destroying the `AftLogger` instance
      */
-    async dispose(error?: Error): Promise<void> {
+    async finalise(): Promise<void> {
         const name = this.reporterName;
         for (const plugin of this.enabledPlugins) {
             try {
@@ -204,17 +204,10 @@ export class Reporter {
             } catch (e) {
                 this._aftLogger.log({
                     level: 'warn',
-                    message: `unable to call dispose on '${plugin?.constructor.name || 'unknown'}' due to: ${e}`,
+                    message: `unable to call 'finalise' on '${plugin?.constructor.name || 'unknown'}' due to: ${e}`,
                     name: name
                 });
             }
-        }
-        if (error) {
-            this._aftLogger.log({
-                level: 'error',
-                message: error.message,
-                name: name
-            });
         }
     }
 }

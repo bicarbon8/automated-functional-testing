@@ -1,9 +1,18 @@
-import process = require("process");
-import * as fs from "fs";
-import * as path from "path";
+import * as process from 'node:process';
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { Func } from "./custom-types";
+import { AftLogger } from "../logging/aft-logger";
+import { AftConfig } from "../configuration/aft-config";
+import { Err } from "./err";
 
-class FileIO {
+export class FileIO {
+    private readonly _logger: AftLogger;
+
+    constructor(aftCfg?: AftConfig) {
+        this._logger = new AftLogger(aftCfg);
+    }
+
     /**
      * function creates a new `utf-8` encoded file and writes the passed in `data` string
      * to it. if the `file` contains directories and these directories do not already exist
@@ -12,6 +21,9 @@ class FileIO {
      * @param data the contents to write
      */
     write(file: string, data: string = ''): void {
+        if (!path.isAbsolute(file)) {
+            file = fs.realpathSync(path.join(process.cwd(), file));
+        }
         let fd: number;
         try {
             fd = fs.openSync(file, 'w+');
@@ -41,6 +53,9 @@ class FileIO {
      * @param data the contents to append
      */
     append(file: string, data: string = ''): void {
+        if (!path.isAbsolute(file)) {
+            file = fs.realpathSync(path.join(process.cwd(), file));
+        }
         let fd: number;
         try {
             fd = fs.openSync(file, 'a+');
@@ -67,11 +82,11 @@ class FileIO {
      * @returns the contents of the specified file parsed into a simple object
      */
     readAs<T>(file: string, jsonParser?: Func<string, T>): T {
-        if (fs.statSync(file).isDirectory()) {
-            throw `[fileio.readAs<T>] expected filename but received directory instead: ${file}`;
-        }
         if (!path.isAbsolute(file)) {
             file = fs.realpathSync(path.join(process.cwd(), file));
+        }
+        if (fs.statSync(file).isDirectory()) {
+            throw `[fileio.readAs<T>] expected filename but received directory instead: ${file}`;
         }
         const fd: number = fs.openSync(file, 'rs+');
         let fileContents: string;
@@ -88,9 +103,38 @@ class FileIO {
         try {
             obj = parser(fileContents);
         } catch (e) {
-            /* ignore */
+            this._logger.log({
+                message: `[readAs] error attempting to parse file '${file}' contents into specified type: '${fileContents}'\n${Err.short(e)}`,
+                name: this.constructor.name,
+                level: 'warn'
+            });
         }
         return obj;
+    }
+
+    /**
+     * deletes the passed in file or directory
+     * @param file the relative or full path to a file or directory to delete
+     */
+    delete(file: string): void {
+        if (!path.isAbsolute(file)) {
+            file = fs.realpathSync(path.join(process.cwd(), file));
+        }
+        if (fs.existsSync(file)) {
+            const opts: fs.RmOptions = {force: true};
+            if (fs.statSync(file).isDirectory()) {
+                opts.recursive = true;
+            }
+            try {
+                fs.rmSync(file, opts);
+            } catch (e) {
+                this._logger.log({
+                    message: `[delete] error attempting to delete file '${file}' due to: ${Err.short(e)}`,
+                    name: this.constructor.name,
+                    level: 'warn'
+                });
+            }
+        }
     }
 }
 

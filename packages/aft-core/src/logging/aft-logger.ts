@@ -26,6 +26,10 @@ import { LogMessageData } from "./log-message-data";
 export class AftLogger {
     public readonly aftCfg: AftConfig;
     
+    constructor(aftCfg?: AftConfig) {
+        this.aftCfg = aftCfg ?? aftConfig;
+    }
+
     /**
      * allows for filtering out of erroneous information from logs by assigning
      * values to different types of logging. the purpose of each log level is
@@ -42,10 +46,6 @@ export class AftLogger {
      */
     get logLevel(): LogLevel {
         return this.aftCfg.logLevel ?? 'warn';
-    }
-
-    constructor(aftCfg?: AftConfig) {
-        this.aftCfg = aftCfg ?? aftConfig;
     }
 
     /**

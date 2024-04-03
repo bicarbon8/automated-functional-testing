@@ -84,14 +84,13 @@ describe('Reporter', () => {
         expect(logs[0].message).toBe(expected);
     });
 
-    it('calls ReportingPlugin.finalise on logger.dispose', async () => {
-        const reporterName = 'calls ReportingPlugin.finalise on logger.dispose';
+    it('calls ReportingPlugin.finalise on reporter.finalise', async () => {
+        const reporterName = 'calls ReportingPlugin.finalise on reporter.finalise';
         const reporter = new Reporter(reporterName, new AftConfig({
             pluginNames: ['mock-reporting-plugin'],
             logLevel: 'trace'
         }));
         const plugin = reporter.plugins.find(p => p.enabled);
-        const errors = new Array<LogMessageData>();
         const names = new Array<string>();
         const disposeSpy = spyOn(plugin, 'finalise').and.callFake((logName: string) => {
             names.push(logName);
@@ -101,8 +100,7 @@ describe('Reporter', () => {
 
         expect(disposeSpy).not.toHaveBeenCalled();
 
-        const expectedErr = new Error(rand.getString(10, false, false, false, true));
-        await reporter.dispose(expectedErr);
+        await reporter.finalise();
 
         expect(disposeSpy).toHaveBeenCalledTimes(1);
         expect(names[0]).toEqual(reporterName);
@@ -115,7 +113,7 @@ describe('Reporter', () => {
         }));
 
         expect(async () => await reporter.log('error', rand.guid)).withContext('log').not.toThrow();
-        expect(async () => await reporter.dispose()).withContext('dispose').not.toThrow();
+        expect(async () => await reporter.finalise()).withContext('dispose').not.toThrow();
     });
 
     it('passes manager LogLevel to plugins if not set in PluginConfig', () => {
@@ -163,7 +161,7 @@ describe('Reporter', () => {
         const finSpy = spyOn(plugin, 'finalise');
 
         await reporter.log('error', rand.getString(33));
-        reporter.dispose();
+        reporter.finalise();
 
         expect(initSpy).not.toHaveBeenCalled();
         expect(logSpy).not.toHaveBeenCalled();
