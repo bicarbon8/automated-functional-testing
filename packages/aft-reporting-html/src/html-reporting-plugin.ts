@@ -115,8 +115,7 @@ export class HtmlReportingPlugin extends ReportingPlugin {
             return;
         }
         const htmlTestResult: HtmlTestResult = {
-            testId: result.testId,
-            status: result.status,
+            ...result,
             logs: this.logs(name ?? result.testName)
         }
         const results: Array<HtmlTestResult> = this.testResults(name ?? result.testName);
