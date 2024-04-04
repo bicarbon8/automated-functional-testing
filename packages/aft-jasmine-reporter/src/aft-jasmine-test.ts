@@ -1,5 +1,6 @@
 import jasmine = require("jasmine");
-import { AftConfig, Verifier, AftTest, FileSystemMap } from "aft-core";
+import { AftTest, FileSystemMap } from "aft-core";
+import { AftJasmineReporter } from "./aft-jasmine-reporter";
 
 /**
  * provides a more streamlined means of getting a `Verifier`
@@ -14,8 +15,8 @@ export class AftJasmineTest extends AftTest {
      * not available and should be left unset
      * @param scope the `this` scope from within a Mocha `it`
      */
-    constructor(scope?: any, aftCfg?: AftConfig) {
-        const testNames = new FileSystemMap<string, any>('AftJasmineReporter', [], aftCfg);
+    constructor(scope?: any) {
+        const testNames = new FileSystemMap<string, any>(AftJasmineReporter.name);
         if (!scope) {
             const names: Array<string> = Array.from(testNames.keys());
             scope = (names?.length > 0) ? names[0] : undefined;
@@ -23,15 +24,8 @@ export class AftJasmineTest extends AftTest {
         if (typeof scope === 'string') {
             scope = {test: {fullName: scope}};
         }
-        super(scope, aftCfg);
+        super(scope?.test.fullName);
         this.test = scope?.test || {};
-    }
-
-    /**
-     * the value from `jasmine.SpecResult.fullName`
-     */
-    override get fullName(): string {
-        return this.test?.fullName ?? 'unknown';
     }
 
     override async fail(message?: string): Promise<void> {

@@ -10,6 +10,7 @@ import { Err } from "../helpers/err";
 import { BuildInfoManager } from "../plugins/build-info/build-info-manager";
 import { AftConfig, aftConfig } from "../configuration/aft-config";
 import { VerifierInternals } from "./verifier-internals";
+import { FileSystemMap } from "../helpers/file-system-map";
 
 export type VerifierEvent = 'skipped' | 'pass' | 'fail' | 'started' | 'done';
 
@@ -43,7 +44,9 @@ export class Verifier implements PromiseLike<void> {
     protected _policyEngMgr: TestExecutionPolicyManager;
     protected _buildInfoMgr: BuildInfoManager;
     protected _actionMap: Map<VerifierEvent, Array<Action<void>>>;
-
+    protected _cacheResults: boolean;
+    protected _resultsCache: FileSystemMap<string, Array<TestResult>>; // { key: fullName, val: [{TestId: 1}, {TestId: 2}] }
+    
     constructor() {
         this._startTime = new Date().getTime();
         this._testIds = new Set<string>();
@@ -92,6 +95,10 @@ export class Verifier implements PromiseLike<void> {
         return this._buildInfoMgr;
     }
 
+    get cacheResults(): boolean {
+        return Boolean(this._cacheResults);
+    }
+
     async then<TResult1 = Verifier, TResult2 = never>(
         onfulfilled?: (value: void) => TResult1 | PromiseLike<TResult1>, // eslint-disable-line no-unused-vars
         onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2> { // eslint-disable-line no-unused-vars
@@ -99,61 +106,60 @@ export class Verifier implements PromiseLike<void> {
                 .then(onfulfilled, onrejected);
     }
 
-    protected async _getInnerPromise(): Promise<void> {
-        if (!this._innerPromise) {
-            this._innerPromise = new Promise(async (resolve, reject) => { // eslint-disable-line no-async-promise-executor
-                try {
-                    const shouldRun = await this.shouldRun();
-                    await this.reporter.debug('verifier.shouldRun response:', shouldRun);
-                    if (shouldRun.result === true) {
-                        const startedActions: Array<Action<void>> = this._actionMap.get('started');
-                        if (startedActions?.length) {
-                            startedActions.forEach(a => {
-                                Err.handle(() => a(), {
-                                    errLevel: 'debug',
-                                    logger: this.reporter
-                                });
-                            });
-                        }
-                        await this._resolveAssertion();
-                        await this.submitResult('passed');
-                        const passActions = this._actionMap.get('pass');
-                        if (passActions?.length) {
-                            passActions.forEach(a => {
-                                Err.handle(() => a(), {
-                                    errLevel: 'debug',
-                                    logger: this.reporter
-                                });
-                            });
-                        }
-                    } else {
-                        await this.submitResult('skipped', shouldRun.message);
-                        const skippedActions = this._actionMap.get('skipped');
-                        if (skippedActions?.length) {
-                            skippedActions.forEach(a => {
-                                Err.handle(() => a(), {
-                                    errLevel: 'debug',
-                                    logger: this.reporter
-                                });
-                            });
-                        }
-                    }
-                    resolve();
-                } catch(e) {
-                    await this.submitResult('failed', e);
-                    const failActions = this._actionMap.get('fail');
-                    if (failActions?.length) {
-                        failActions.forEach(a => {
-                            Err.handle(() => a(), {
-                                errLevel: 'debug',
-                                logger: this.reporter
-                            });
-                        });
-                    }
-                    reject(e);
-                }
+    async pass(): Promise<void> {
+        const passActions = this._actionMap.get('pass');
+        if (passActions?.length) {
+            passActions.forEach(a => {
+                Err.handle(() => a(), {
+                    errLevel: 'debug',
+                    logger: this.reporter
+                });
             });
         }
+        await this.submitResult('passed');
+    }
+
+    async fail(message?: string): Promise<void> {
+        const err: string = message ?? 'unknown error occurred';
+        const failActions = this._actionMap.get('fail');
+        if (failActions?.length) {
+            failActions.forEach(a => {
+                Err.handle(() => a(), {
+                    errLevel: 'debug',
+                    logger: this.reporter
+                });
+            });
+        }
+        await this.submitResult('failed', err);
+    }
+
+    async pending(message?: string): Promise<void> {
+        message ??= 'test skipped';
+        const skippedActions = this._actionMap.get('skipped');
+        if (skippedActions?.length) {
+            skippedActions.forEach(a => {
+                Err.handle(() => a(), {
+                    errLevel: 'debug',
+                    logger: this.reporter
+                });
+            });
+        }
+        await this.submitResult('skipped', message);
+    }
+
+    async started(): Promise<void> {
+        const startedActions: Array<Action<void>> = this._actionMap.get('started');
+        if (startedActions?.length) {
+            startedActions.forEach(a => {
+                Err.handle(() => a(), {
+                    errLevel: 'debug',
+                    logger: this.reporter
+                });
+            });
+        }
+    }
+
+    async done(): Promise<void> {
         const doneActions = this._actionMap.get('done');
         if (doneActions?.length) {
             doneActions.forEach(a => {
@@ -163,6 +169,29 @@ export class Verifier implements PromiseLike<void> {
                 });
             });
         }
+    }
+
+    protected async _getInnerPromise(): Promise<void> {
+        if (!this._innerPromise) {
+            this._innerPromise = new Promise(async (resolve, reject) => { // eslint-disable-line no-async-promise-executor
+                try {
+                    const shouldRun = await this.shouldRun();
+                    await this.reporter.debug('verifier.shouldRun response:', shouldRun);
+                    if (shouldRun.result === true) {
+                        await this.started();
+                        await this._resolveAssertion();
+                        await this.pass();
+                    } else {
+                        await this.pending(shouldRun.message);
+                    }
+                    resolve();
+                } catch(e) {
+                    await this.fail(Err.full(e));
+                    reject(e);
+                }
+            });
+        }
+        await this.done();
         return this._innerPromise;
     }
 
@@ -280,7 +309,7 @@ export class Verifier implements PromiseLike<void> {
              * @returns this {Verifier} instance
              */
             usingAftConfig: (cfg: AftConfig): this => {
-                this._aftCfg = cfg;
+                this._aftCfg = cfg ?? aftConfig;
                 return this;
             },
             /**
@@ -314,7 +343,44 @@ export class Verifier implements PromiseLike<void> {
             usingBuildInfoManager: (buildMgr: BuildInfoManager): this => {
                 this._buildInfoMgr = buildMgr;
                 return this;
-            }
+            },
+
+            /**
+             * enables results caching which can be used to prevent sending the same result multiple times
+             * when using an external test framework reporter plugin
+             * @returns this `Verifier` instance
+             */
+            withResultsCaching: (): this => {
+                this._cacheResults = true;
+                this._resultsCache = new FileSystemMap<string, Array<TestResult>>(this.constructor.name, null, this.aftCfg);
+                return this;
+            },
+
+            /**
+             * disables results caching if previously enabled
+             * @returns this `Verifier` instance
+             */
+            withoutResultsCaching: (): this => {
+                this._cacheResults = false;
+                this._resultsCache?.clear();
+                FileSystemMap.removeCacheFile(this.constructor.name);
+                return this;
+            },
+
+            /**
+             * searches the filesystem cache for any logged test results for a named
+             * test and returns the results as an array of `TestResult` objects with
+             * each object corresponding to a Test ID referenced in the test name
+             * @param fullName the full test name under which the results are cached
+             * @returns an array of `TestResult` objects for the named test where each
+             * entry corresponds to a referenced Test ID parsed from the `fullName`
+             */
+            getCachedResults: (fullName: string): Array<TestResult> => {
+                if (this.cacheResults) {
+                    return this._resultsCache.get(fullName) ?? [];
+                }
+                return [];
+            },
         }
     }
 
@@ -365,6 +431,15 @@ export class Verifier implements PromiseLike<void> {
             }
 
             const results: TestResult[] = await this._generateTestResults(status, message, ...Array.from(this._testIds.values()));
+            if (this.cacheResults) {
+                const cacheKey = this.reporter.reporterName;
+                if (!this._resultsCache.has(cacheKey)) {
+                    this._resultsCache.set(cacheKey, new Array<TestResult>());
+                }
+                const cacheArray: Array<TestResult> = this._resultsCache.get(this.reporter.reporterName);
+                cacheArray.push(...results);
+                this._resultsCache.set(cacheKey, cacheArray);
+            }
             for (const result of results) {
                 try {
                     await this.reporter.submitResult(result);

@@ -131,4 +131,16 @@ describe('FileSystemMap', () => {
             }
         }
     }, 40000);
+
+    it('can remove a filesystem cache file using the same name used to create the file', () => {
+        const filename = rand.getString(17);
+        const fm = new FileSystemMap<string, string>(filename);
+        fm.set(rand.getString(10), rand.getString(15));
+
+        expect(fs.existsSync(path.join(process.cwd(), 'FileSystemMap', `${filename}.json`))).toBeTrue();
+
+        FileSystemMap.removeCacheFile(filename);
+
+        expect(fs.existsSync(path.join(process.cwd(), 'FileSystemMap', `${filename}.json`))).toBeFalse();
+    });
 });

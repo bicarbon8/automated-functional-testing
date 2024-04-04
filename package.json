@@ -19,7 +19,7 @@
     "test:webdriverio": "npm run test --workspace=aft-ui-webdriverio",
     "test:web-services": "npm run test --workspace=aft-web-services",
     "test:html": "npm run test --workspace=aft-reporting-html",
-    "test:examples": "npm run test:e2e --workspace=selenium-jest-reporter",
+    "test:examples": "npm run test:e2e --workspaces --if-present",
     "test-examples": "npm run test:examples",
     "test:filesystem": "npm run test --workspace=aft-reporting-filesystem",
     "test:mocha": "npm run test --workspace=aft-mocha-reporter",

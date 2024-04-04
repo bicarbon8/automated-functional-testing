@@ -12,7 +12,7 @@ export class AftJasmineReporter implements jasmine.CustomReporter {
     }
     
     jasmineStarted(): void {
-        AftJasmineTest.clearCache();
+        FileSystemMap.removeCacheFile(AftJasmineTest.name);
         beforeEach(async () => { // eslint-disable-line no-undef
             while (this._async2Sync.length > 0) {
                 const asyncFunc = this._async2Sync.shift();
@@ -33,7 +33,7 @@ export class AftJasmineReporter implements jasmine.CustomReporter {
 
     private async _asyncSpecDone(result: jasmine.SpecResult): Promise<void> {
         const t = new AftJasmineTest({test: result});
-        if (t.getCachedResults(t.fullName).length === 0) {
+        if (t.internals.getCachedResults(t.fullName).length === 0) {
             switch (t.test.status) {
                 case 'passed':
                     await t.pass();
@@ -48,7 +48,6 @@ export class AftJasmineReporter implements jasmine.CustomReporter {
                     await t.reporter.warn(`unknown test.status of '${t.test.status}' returned`);
                     break;
             }
-            await t.dispose();
         }
         this._testNames.delete(t.fullName);
     }

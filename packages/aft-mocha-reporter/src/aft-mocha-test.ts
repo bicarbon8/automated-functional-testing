@@ -1,5 +1,5 @@
 import Mocha = require("mocha");
-import { AftConfig, AftTest } from "aft-core";
+import { AftTest } from "aft-core";
 
 /**
  * provides a more streamlined means of getting a `Verifier`
@@ -24,13 +24,9 @@ export class AftMochaTest extends AftTest {
      * >
      * @param scope the `this` scope from within a Mocha `it`
      */
-    constructor(scope?: any, aftCfg?: AftConfig) {
-        super(scope.test?.fullTitle(), aftCfg);
+    constructor(scope?: any) {
+        super(scope.test?.fullTitle());
         this.test = scope?.test || {};
-    }
-
-    override get fullName(): string {
-        return this.test?.fullTitle();
     }
 
     override async pending(message?: string): Promise<void> {

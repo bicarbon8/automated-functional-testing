@@ -2,6 +2,7 @@ import { AftJestTest } from "./aft-jest-test";
 import { AggregatedResult, Config, Reporter, ReporterContext, TestCaseResult, TestContext } from "@jest/reporters";
 import { ReporterOnStartOptions } from "@jest/reporters";
 import { Test } from "@jest/reporters";
+import { FileSystemMap } from "aft-core";
 
 export default class AftJestReporter implements Reporter {
     private readonly _globalConfig: Config.GlobalConfig;
@@ -17,7 +18,7 @@ export default class AftJestReporter implements Reporter {
     // start: required Reporter functions
     onRunStart(results: AggregatedResult, options: ReporterOnStartOptions): Promise<void> | void { // eslint-disable-line no-unused-vars
         // clear all previously cached test results
-        AftJestTest.clearCache();
+        FileSystemMap.removeCacheFile(AftJestTest.name);
     }
     onRunComplete(testContexts: Set<TestContext>, results: AggregatedResult): Promise<void> | void { // eslint-disable-line no-unused-vars
         /* do nothing */
@@ -30,20 +31,17 @@ export default class AftJestReporter implements Reporter {
     // start: optional Reporter functions
     onTestCaseResult(test: Test, testCaseResult: TestCaseResult): Promise<void> | void {
         const t = new AftJestTest(testCaseResult);
-        if (t.getCachedResults(t.fullName).length === 0) {
+        if (t.internals.getCachedResults(t.fullName).length === 0) {
             // AFT Verifier was NOT used in test
             switch (testCaseResult.status) {
                 case "skipped":
                     return t.skipped(testCaseResult.failureMessages?.join('\n'))
-                        .then(() => t.dispose())
                         .catch((err) => t.reporter.warn(err));
                 case "failed":
                     return t.fail(testCaseResult.failureMessages?.join('\n'))
-                        .then(() => t.dispose())
                         .catch((err) => t.reporter.warn(err));
                 case "passed":
                     return t.pass()
-                        .then(() => t.dispose())
                         .catch((err) => t.reporter.warn(err));
             }
         }

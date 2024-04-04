@@ -43,7 +43,7 @@ describe('Err', () => {
         it('can handle null argument to contstuctor', () => {
             const actual: string = Err.short(null);
     
-            expect(actual).toMatch(/^(Error: unknown --- )[ \w\d]+/gi);
+            expect(actual).toMatch(/^(Error: null --- )[ \w\d]+/gi);
         });
     });
 
@@ -59,7 +59,7 @@ describe('Err', () => {
         it('can handle null argument to contstuctor', () => {
             const actual: string = Err.full(null);
     
-            expect(actual).toMatch(/^(Error: unknown\n)[\s\w\d]+/gi);
+            expect(actual).toMatch(/^(Error: null\n)[\s\w\d]+/gi);
         });
     });
 

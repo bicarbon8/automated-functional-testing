@@ -1,5 +1,5 @@
 import { test, jest, expect } from "@jest/globals";
-import { Verifier, equaling } from "aft-core";
+import { ProcessingResult, Verifier, equaling } from "aft-core";
 import { AftJestTest } from "../src";
 
 describe('AftJestReporter', () => {
@@ -19,9 +19,9 @@ describe('AftJestReporter', () => {
 
     test('can skip test [C4567] if should not be run', async () => {
         const t = new AftJestTest(expect);
-        jest.spyOn(t, 'shouldRun').mockImplementation(() => Promise.resolve(false));
-        const shouldRun: boolean = await t.shouldRun();
-        if (!shouldRun) {
+        jest.spyOn(t, 'shouldRun').mockImplementation(() => Promise.resolve({result: false, message: 'fake'}));
+        const shouldRun: ProcessingResult<boolean> = await t.shouldRun();
+        if (!shouldRun.result) {
             t.skipped();
             return; // jest refuses to provide programmatic skip / pending capabilities
         }

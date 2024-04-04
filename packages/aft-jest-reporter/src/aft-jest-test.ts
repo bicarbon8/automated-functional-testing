@@ -13,31 +13,23 @@ export class AftJestTest extends AftTest {
      * test (i.e. the `this` argument)
      * @param scope the `this` scope from within a Jest `test`
      */
-    constructor(scope?: any, aftCfg?: AftConfig) {
-        super(scope, aftCfg);
+    constructor(scope?: any) {
+        let test: TestCaseResult;
+        let fullName: string;
         if (typeof scope === 'string') {
-            this.test = {
-                fullName: scope,
-                get duration(): number { return convert.toElapsedMs(this.startTime) / 1000; }
-            } as TestCaseResult;
+            fullName = scope;
         }else if (scope?.['fullName']) {
             // 'scope' is a 'TestCaseResult'
-            this.test = scope;
-        } else if (scope?.getState?.()) {
+            test = scope;
+            fullName = test.fullName;
+        } else if (scope?.getState) {
             // 'scope' is an 'expect' object
             const state = scope.getState();
-            this.test = {
-                fullName: state.currentTestName,
-                get duration(): number { return convert.toElapsedMs(this.startTime) / 1000; }
-            } as TestCaseResult;
+            fullName = state.currentTestName;
         }
-    }
-
-    /**
-     * the value from `jest.TestCaseResult.fullName`
-     */
-    override get fullName(): string {
-        return this.test?.fullName ?? 'unknown';
+        super(fullName);
+        this.internals.withResultsCaching();
+        this.test = test;
     }
 
     override async fail(reason?: string): Promise<void> {
@@ -45,7 +37,13 @@ export class AftJestTest extends AftTest {
         if (this.test) {
             err = this.test.failureMessages?.join('\n') ?? err;
         }
-        await this._logResult('failed', err);
+        await super.fail(err);
+        fail(err);
+    }
+
+    override async pending(message?: string): Promise<void> {
+        await super.pending(message);
+        pending(message);
     }
 
     /**
@@ -53,6 +51,6 @@ export class AftJestTest extends AftTest {
      * @param reason the reason for skipping this test
      */
     async skipped(reason?: string): Promise<void> {
-        await this.pending(reason);
+        return this.pending(reason);
     }
 }
