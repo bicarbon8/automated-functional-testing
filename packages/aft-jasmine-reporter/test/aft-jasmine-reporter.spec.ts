@@ -12,8 +12,8 @@ describe('AftJasmineReporter', () => {
 
     it('can check if test should be run [C1234]', async () => {
         const t = new AftJasmineTest();
-        const shouldRun: boolean = await t.shouldRun();
-        if (!shouldRun) {
+        const shouldRun = await t.shouldRun();
+        if (!shouldRun.result) {
             pending();
         }
 
@@ -23,8 +23,8 @@ describe('AftJasmineReporter', () => {
     it('can skip test [C4567] if should not be run', async () => {
         const t = new AftJasmineTest();
         spyOn(t, 'shouldRun').and.returnValue(Promise.resolve(false));
-        const shouldRun: boolean = await t.shouldRun();
-        if (!shouldRun) {
+        const shouldRun = await t.shouldRun();
+        if (!shouldRun.result) {
             pending();
         }
 

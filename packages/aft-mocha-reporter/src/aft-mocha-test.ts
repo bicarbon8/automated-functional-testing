@@ -25,7 +25,8 @@ export class AftMochaTest extends AftTest {
      * @param scope the `this` scope from within a Mocha `it`
      */
     constructor(scope?: any) {
-        super(scope.test?.fullTitle());
+        super(scope?.test?.fullTitle());
+        this.internals.withResultsCaching(); // eslint-disable-line
         this.test = scope?.test || {};
     }
 

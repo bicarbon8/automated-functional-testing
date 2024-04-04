@@ -21,7 +21,7 @@ describe('AftMochaReporter', () => {
     it('can skip a test during execution', async function() {
         this.timeout(10000);
         const t = new AftMochaTest(this);
-        sinon.stub(t, 'shouldRun').callsFake(() => Promise.resolve(false));
+        sinon.stub(t, 'shouldRun').callsFake(() => Promise.resolve({result: false, message: 'fake'}));
         const shouldRun = await t.shouldRun();
         if (!shouldRun) { 
             t.test.skip();

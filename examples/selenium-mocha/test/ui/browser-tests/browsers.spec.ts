@@ -1,12 +1,12 @@
-import { BuildInfoManager, Verifier, buildInfo, retry, using } from "aft-core";
-import { AftTest } from "aft-mocha-reporter";
+import { Verifier, containing, retry, using } from "aft-core";
+import { AftMochaTest } from "aft-mocha-reporter";
 import { SeleniumSession } from "aft-ui-selenium";
 import { HerokuLoginPage } from "./page-objects/heroku-login-page";
 import { expect } from "chai";
 
 describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
     it('[C1234] can access websites using AFT and BrowserComponents', async function() {
-        await new AftTest(this).verify(async (v: Verifier) => {
+        await new AftMochaTest(this).verify(async (v: Verifier) => {
             await using(new SeleniumSession({
                 reporter: v.reporter,
                 additionalSessionOptions: {
@@ -14,7 +14,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                         browserName: 'chrome',
                         "bstack:options": {
                             sessionName: v.reporter.reporterName,
-                            buildName: await buildInfo.get()
+                            buildName: await v.buildInfoMgr.get()
                         }
                     }
                 }
@@ -43,40 +43,43 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
     });
 
     it('[C2345] can recover from StaleElementExceptions automatically', async function() {
-        await new AftTest(this).verify(async (v: Verifier) => {
-            await using(new SeleniumSession({
-                reporter: v.reporter,
-                additionalSessionOptions: {
-                    capabilities: {
-                        browserName: 'chrome',
-                        "bstack:options": {
-                            sessionName: v.reporter.reporterName,
-                            buildName: await buildInfo.get()
-                        }
+        const aft = new AftMochaTest(this);
+        const shouldRun = await aft.shouldRun();
+        if (shouldRun.result !== true) {
+            this.skip();
+        }
+        await using(new SeleniumSession({
+            reporter: aft.reporter,
+            additionalSessionOptions: {
+                capabilities: {
+                    browserName: 'chrome',
+                    "bstack:options": {
+                        sessionName: aft.reporter.reporterName,
+                        buildName: await aft.buildInfoMgr.get()
                     }
                 }
-            }), async (session) => {
-                const loginPage: HerokuLoginPage = await session.getComponent(HerokuLoginPage);
-                
-                await v.reporter.step('navigate to LoginPage');
-                await loginPage.navigateTo();
-                
-                const actual: string =  await loginPage.driver.getCurrentUrl();
-                const expected = 'the-internet.herokuapp.com/login';
-                expect(actual).to.contain(expected);
-                
-                await v.reporter.step('click login button...');
-                await loginPage.content.getLoginButton().then(button => button.click());
-                await v.reporter.info('no exception thrown on click');
+            }
+        }), async (session) => {
+            const loginPage: HerokuLoginPage = await session.getComponent(HerokuLoginPage);
+            
+            await session.reporter.step('navigate to LoginPage');
+            await loginPage.navigateTo();
+            
+            const actual: string =  await loginPage.driver.getCurrentUrl();
+            const expected = 'the-internet.herokuapp.com/login';
+            expect(actual).to.contain(expected);
+            
+            await session.reporter.step('click login button...');
+            await loginPage.content.getLoginButton().then(button => button.click());
+            await session.reporter.info('no exception thrown on click');
 
-                await v.reporter.step('refresh page...');
-                await loginPage.driver.navigate().refresh();
-                await v.reporter.info('page refreshed');
+            await session.reporter.step('refresh page...');
+            await loginPage.driver.navigate().refresh();
+            await session.reporter.info('page refreshed');
 
-                await v.reporter.step('click login button after refresh...');
-                await loginPage.content.getLoginButton().then(button => button.click());
-                await v.reporter.info('no exception thrown on click');
-            });
+            await session.reporter.step('click login button after refresh...');
+            await loginPage.content.getLoginButton().then(button => button.click());
+            await session.reporter.info('no exception thrown on click');
         });
     });
 
@@ -87,7 +90,8 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
     ];
     for (const uiplatform of uiplatforms) {
         it(`${uiplatform.testId} can run with multiple uiplatforms: ${uiplatform.os} ${uiplatform.osV} ${uiplatform.browser}`, async function() {
-            await new AftTest(this).verify(async (v: Verifier) => {
+            await new AftMochaTest(this).verify(async (v: Verifier) => {
+                let loginMessage = '';
                 await using(new SeleniumSession({
                     reporter: v.reporter,
                     additionalSessionOptions: {
@@ -97,7 +101,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                                 sessionName: v.reporter.reporterName,
                                 os: uiplatform.os,            // override os in `aftconfig.json` file
                                 osVersion: uiplatform.osV,    // override osVersion in `aftconfig.json` file
-                                buildName: await buildInfo.get()
+                                buildName: await v.buildInfoMgr.get()
                             }
                         }
                     }
@@ -111,11 +115,10 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                         .withMaxDuration(20000)
                         .until((res: boolean) => res);
                     
-                    const actual: string = await loginPage.getMessage();
-                    const expected = "You logged into a secure area!";
-                    expect(actual).to.contain(expected);
+                    loginMessage = await loginPage.getMessage();
                 });
-            });
+                return loginMessage;
+            }).returns(containing("You logged into a secure area!"));
         });
     }
 });

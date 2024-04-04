@@ -97,13 +97,3 @@ export class BuildInfoManager {
         return now;
     }
 }
-
-/**
- * provides a `get` function that can be used to generate a build
- * specific string for use in identifying individual
- * test execution runs across multiple projects in a CICD environment
- * in the form of a string containing `buildName_buildNumber` or
- * if there are no enabled `BuildInfoPlugin` instances, a string
- * containing `USERNAME_MACHINENAME_YYYYMMDD`
- */
-export const buildInfo = new BuildInfoManager();

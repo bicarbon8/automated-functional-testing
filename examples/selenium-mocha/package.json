@@ -1,6 +1,6 @@
 {
-  "name": "selenium-mocha-disabled-reporter",
-  "description": "Demonstration of using AFT with Selenium and Mocha using the AFT Verifier instead of the AFT Mocha Reporter",
+  "name": "selenium-mocha",
+  "description": "Demonstration of using AFT with Selenium and Mocha",
   "private": true,
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./logs",

@@ -25,6 +25,7 @@ export class AftJasmineTest extends AftTest {
             scope = {test: {fullName: scope}};
         }
         super(scope?.test.fullName);
+        this.internals.withResultsCaching(); // eslint-disable-line
         this.test = scope?.test || {};
     }
 
@@ -38,6 +39,6 @@ export class AftJasmineTest extends AftTest {
 
     override async pending(message?: string): Promise<void> {
         await super.pending(message);
-        pending();
+        pending(); // eslint-disable-line no-undef
     }
 }

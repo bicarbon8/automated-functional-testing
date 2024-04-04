@@ -1,4 +1,4 @@
-import { AftConfig, AftTest, convert } from "aft-core";
+import { AftTest } from "aft-core";
 import { TestCaseResult } from "@jest/reporters";
 
 /**
@@ -28,7 +28,7 @@ export class AftJestTest extends AftTest {
             fullName = state.currentTestName;
         }
         super(fullName);
-        this.internals.withResultsCaching();
+        this.internals.withResultsCaching(); // eslint-disable-line
         this.test = test;
     }
 
@@ -38,12 +38,12 @@ export class AftJestTest extends AftTest {
             err = this.test.failureMessages?.join('\n') ?? err;
         }
         await super.fail(err);
-        fail(err);
+        fail(err); // eslint-disable-line no-undef
     }
 
     override async pending(message?: string): Promise<void> {
         await super.pending(message);
-        pending(message);
+        pending(message); // eslint-disable-line no-undef
     }
 
     /**

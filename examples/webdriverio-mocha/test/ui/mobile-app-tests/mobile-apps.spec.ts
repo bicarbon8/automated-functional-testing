@@ -1,9 +1,9 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as FormData from "form-data";
-import { BuildInfoManager, Reporter, aftConfig, buildInfo, using } from "aft-core";
+import { Reporter, Verifier, aftConfig, containing, using } from "aft-core";
 import { WikipediaView } from "./page-objects/wikipedia-view";
-import { AftTest } from "aft-mocha-reporter";
+import { AftMochaTest } from "aft-mocha-reporter";
 import { httpService, httpData, HttpHeaders } from "aft-web-services";
 import { UiSessionConfig } from "aft-ui";
 import { WebdriverIoSession } from "aft-ui-webdriverio";
@@ -26,8 +26,7 @@ describe('Functional Mobile App Tests using AFT-UI-WEBDRIVERIO', () => {
         });
         let app: any;
         const uploadedApps = httpData.as<Array<any>>(resp);
-        for (let i=0; i<uploadedApps?.length; i++) {
-            const a = uploadedApps[i];
+        for (const a of uploadedApps) {
             if (a.app_name === 'WikipediaSample.apk') {
                 app = a;
                 break;
@@ -53,13 +52,11 @@ describe('Functional Mobile App Tests using AFT-UI-WEBDRIVERIO', () => {
     });
 
     it('can search in Wikipedia App', async function() {
-        const aft = new AftTest(this);
-        if (!(await aft.shouldRun())) {
-            await aft.pending();
-        } else {
+        await new AftMochaTest(this).verify(async (v: Verifier) => {
+            let res = new Array<string>();
             await using(new WebdriverIoSession({
-                aftConfig: aft.aftCfg,
-                reporter: aft.reporter,
+                aftConfig: v.aftCfg,
+                reporter: v.reporter,
                 additionalSessionOptions: {
                     capabilities: {
                         browserName: 'android',
@@ -68,8 +65,8 @@ describe('Functional Mobile App Tests using AFT-UI-WEBDRIVERIO', () => {
                         "appium:deviceName": 'Samsung Galaxy S23',
                         "appium:app": customId,
                         "bstack:options": {
-                            "sessionName": aft.reporter.reporterName,
-                            buildName: await buildInfo.get()
+                            "sessionName": v.reporter.reporterName,
+                            buildName: await v.buildInfoMgr.get()
                         }
                     }
                 }
@@ -80,15 +77,9 @@ describe('Functional Mobile App Tests using AFT-UI-WEBDRIVERIO', () => {
                 await view.searchFor('pizza');
                 await session.reporter.step('get the results and ensure they contain the search term...');
                 const results: string[] = await view.getResults();
-                let result: boolean;
-                for (const res of results) {
-                    if (res.toLowerCase().includes('pizza')) {
-                        result = true;
-                        break;
-                    }
-                }
-                expect(result).to.eql(true);
+                res = results.map(r => r?.toLocaleLowerCase());
             });
-        }
+            return res;
+        }).returns(containing('pizza'));
     });
 });

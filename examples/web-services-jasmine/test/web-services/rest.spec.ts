@@ -2,13 +2,13 @@ import * as fs from "fs";
 import * as path from "path";
 import * as FormData from "form-data";
 import { Verifier, greaterThan, havingValue, lessThan, retry } from "aft-core";
-import { AftTest } from "aft-jasmine-reporter";
+import { AftJasmineTest } from "aft-jasmine-reporter";
 import { httpData, HttpResponse, httpService } from 'aft-web-services';
 import { ListUsersResponse } from "./response-objects/list-users-response";
 
 describe('REST Request', () => {
     it('can make GET request from JSON REST API', async () => {
-        const aft = new AftTest(); // DO NOT pass a scope
+        const aft = new AftJasmineTest(); // DO NOT pass a scope
         let response: HttpResponse;
         await aft.verify(async (v: Verifier) => {            
             await v.reporter.step('making request...');
@@ -53,7 +53,7 @@ describe('REST Request', () => {
     });
 
     it('can make a multipart post', async () => {
-        const aft = new AftTest(); // DO NOT pass a scope
+        const aft = new AftJasmineTest(); // DO NOT pass a scope
         await aft.verify(async (v: Verifier) => {
             let formData = new FormData();
             formData.append('file', fs.createReadStream(path.join(process.cwd(), 'LICENSE')));
