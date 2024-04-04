@@ -1,6 +1,5 @@
 import jasmine = require("jasmine");
 import { AftTest, FileSystemMap } from "aft-core";
-import { AftJasmineReporter } from "./aft-jasmine-reporter";
 
 /**
  * provides a more streamlined means of getting a `Verifier`
@@ -16,7 +15,7 @@ export class AftJasmineTest extends AftTest {
      * @param scope the `this` scope from within a Mocha `it`
      */
     constructor(scope?: any) {
-        const testNames = new FileSystemMap<string, any>(AftJasmineReporter.name);
+        const testNames = new FileSystemMap<string, any>("AftJasmineReporter");
         if (!scope) {
             const names: Array<string> = Array.from(testNames.keys());
             scope = (names?.length > 0) ? names[0] : undefined;
