@@ -76,9 +76,9 @@ verify(() => {throw new Error('failure');}) // AFT will report as 'failed'
 
 ## Packages (click on name for more info)
 - [`aft-core`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-core/README.md) - base library containing helpers and configuration and plugin managers
-- [`aft-examples`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-examples/README.md) - provides real-world examples of how the AFT libraries can be used in functional tests
 - [`aft-jasmine-reporter`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-jasmine-reporter/README.md) - a Jasmine Reporter Plugin that integrates with AFT to simplify logging and test execution via AFT
 - [`aft-jest-reporter`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-jest-reporter/README.md) - a Jest Reporter Plugin that integrates with AFT to simplify logging and test execution via AFT
+- [`aft-jira`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-jira/README.md) - reporting and test execution policy plugins supporting opening and closing Jira tickets and filtering test execution based on status of Jira tickets (opened vs. closed)
 - [`aft-mocha-reporter`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-mocha-reporter/README.md) - provides Mocha Reporter Plugin that integrates with AFT to simplify logging and test execution via AFT
 - [`aft-reporting-aws-kinesis-firehose`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-reporting-aws-kinesis-firehose/README.md) - reporting plugin supporting logging to AWS Kinesis Firehose
 - [`aft-reporting-filesystem`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-reporting-filesystem/README.md) - reporting plugin supporting logging to .log files for all log output

@@ -1,0 +1,7 @@
+{
+    "entryPoints": ["packages/**/src/index.ts"],
+    "name": "Packages Example",
+    "entryPointStrategy": "expand",
+    "out": "./docs",
+    "excludeExternals": true
+}
