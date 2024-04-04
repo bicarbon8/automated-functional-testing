@@ -87,8 +87,8 @@ running `npm run test:e2e` will execute the tests using Jasmine which should res
 14:51:41 - [can access websites using AFT and Page Widgets and Facets] - PASS  - C1234
 ```
 
-## TestRail Logging
-if using the TestRail Policy Engine plugin (`testrail-test-execution-policy-plugin`) and / or the Jira Policy Engine plugin (`jira-test-execution-policy-plugin`) then you must ensure your `verify(assertion)`, `verifyWithSelenium(assertion)`, or `Verifier` instances have valid Test Case ID's referenced. The values specified for the `withTestIds` function must be the TestRail Case ID's referenced by your existing TestRail Plan (not to be confused with the TestRail Test ID's that start with the letter _T_). Modifications will need to be made in two places per test:
+## TestRail and Jira integration
+if using `testrail-reporting-plugin`, `testrail-test-execution-policy-plugin`, `jira-reporting-plugin` or `jira-test-execution-policy-plugin` then you must ensure your `verify(assertion)`, or `Verifier` instances have valid Test Case ID's referenced. The values specified for the `withTestIds` function must be the TestRail Case ID's referenced by your existing TestRail Plan (not to be confused with the TestRail Test ID's that start with the letter _T_). Modifications will need to be made in two places per test:
 
 ### Specifying Test IDs
 on the `Verifier` instance, set the following:
@@ -99,7 +99,12 @@ await verify(() => someTestAction())
 or, if using the `aft-jasmine-reporter` or `aft-mocha-reporter` packages, modify your test function titles to include the test case IDs like the following:
 ```typescript
 it('[C1234] can include tests [C2345] in the title [C3456]', async function() {
-    const aft = new AftTest(); // MUST NOT pass a scope so we will use the scope set in cache by the aft-jasmine-reporter
+    /**
+     * - for Jest use: `const aft = new AftJestTest(expect);`
+     * - for Mocha use: `const aft = new AftMochaTest(this);`
+     * - for Jasmine use: `const aft = new AftJasmineTest();`
+     */
+    const aft = new AftJasmineTest(); // MUST NOT pass a scope so we will use the scope set in cache by the aft-jasmine-reporter
     await aft.verify(() => someTestAction());
 })
 ```

@@ -53,6 +53,10 @@ export class Verifier implements PromiseLike<void> {
         this._actionMap = new Map<VerifierEvent, Array<Action<void>>>();
     }
 
+    get description(): string {
+        return this._description ?? this.reporter.reporterName;
+    }
+
     get aftCfg(): AftConfig {
         if (!this._aftCfg) {
             this._aftCfg = aftConfig;
@@ -67,15 +71,15 @@ export class Verifier implements PromiseLike<void> {
      * will be used if other values are also present)
      */
     get reporter(): Reporter {
-        let logName: string;
-        if (this._description) {
-            logName = this._description;
-        } else if (this._testIds.size > 0) {
-            logName = Array.from(this._testIds).join('_');
-        } else {
-            logName = this.constructor.name;
-        }
         if (!this._reporter) {
+            let logName: string;
+            if (this._description) {
+                logName = this._description;
+            } else if (this._testIds.size > 0) {
+                logName = Array.from(this._testIds).join('_');
+            } else {
+                logName = this.constructor.name;
+            }
             this._reporter = new Reporter(logName, this.aftCfg);
         }
         return this._reporter;

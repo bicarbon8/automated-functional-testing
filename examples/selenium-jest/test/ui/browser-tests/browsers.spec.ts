@@ -47,38 +47,39 @@ describe('Functional Browser Tests using Selenium and Jest', () => {
         if (shouldRun.result !== true) {
             // mark test as pending and bail out
             pending(shouldRun.message);
-        }
-        await using(new SeleniumSession({
-            reporter: aft.reporter,
-            additionalSessionOptions: {
-                capabilities: {
-                    browserName: 'chrome',
-                    "bstack:options": {
-                        sessionName: aft.reporter.reporterName,
-                        buildName: await aft.buildInfoMgr.get()
+        } else {
+            await using(new SeleniumSession({
+                reporter: aft.reporter,
+                additionalSessionOptions: {
+                    capabilities: {
+                        browserName: 'chrome',
+                        "bstack:options": {
+                            sessionName: aft.reporter.reporterName,
+                            buildName: await aft.buildInfoMgr.get()
+                        }
                     }
                 }
-            }
-        }), async (session) => {
-            const loginPage = await session.getComponent(HerokuLoginPage);
-            
-            await aft.reporter.step('navigate to LoginPage...');
-            await loginPage.navigateTo();
-            
-            await aft.reporter.step('login');
-            await loginPage.login("tomsmith", "SuperSecretPassword!");
+            }), async (session) => {
+                const loginPage = await session.getComponent(HerokuLoginPage);
+                
+                await aft.reporter.step('navigate to LoginPage...');
+                await loginPage.navigateTo();
+                
+                await aft.reporter.step('login');
+                await loginPage.login("tomsmith", "SuperSecretPassword!");
 
-            await aft.reporter.step('wait for message to appear...')
-            await retry(() => loginPage.hasMessage())
-                .withDelay(100)
-                .withBackOff('exponential')
-                .withMaxDuration(20000);
-            
-            await aft.reporter.step('get message...');
+                await aft.reporter.step('wait for message to appear...')
+                await retry(() => loginPage.hasMessage())
+                    .withDelay(100)
+                    .withBackOff('exponential')
+                    .withMaxDuration(20000);
+                
+                await aft.reporter.step('get message...');
 
-            const expected = "You logged into a secure area!";
-            const actual = await loginPage.getMessage();
-            expect(actual).toContain(expected);
-        });
+                const expected = "You logged into a secure area!";
+                const actual = await loginPage.getMessage();
+                expect(actual).toContain(expected);
+            });
+        }
     });
 });

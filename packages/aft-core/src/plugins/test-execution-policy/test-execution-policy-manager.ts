@@ -33,7 +33,7 @@ export class TestExecutionPolicyManager {
                 try {
                     return await p.shouldRun(testId);
                 } catch (e) {
-                    let logData: LogMessageData = {
+                    const logData: LogMessageData = {
                         name: this.constructor.name,
                         level: 'warn',
                         message: `error calling '${plugins.constructor.name}.shouldRun(${testId})': ${Err.short(e)}`

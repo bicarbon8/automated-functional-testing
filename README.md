@@ -7,11 +7,11 @@ library providing a framework for creating Functional Test Automation supporting
 describe('Sample Test', () => {
     it('[C1234] can perform a demonstration of AFT', async function() {
         /**
-         * - for Jest use: `const aft = new AftTest(expect);`
-         * - for Mocha use: `const aft = new AftTest(this);`
-         * - for Jasmine use: `const aft = new AftTest();`
+         * - for Jest use: `const aft = new AftJestTest(expect);`
+         * - for Mocha use: `const aft = new AftMochaTest(this);`
+         * - for Jasmine use: `const aft = new AftJasmineTest();`
          */
-        const aft = new AftTest();
+        const aft = new AftJasmineTest();
         const feature: FeatureObj = new FeatureObj();
         /**
          * the `verify(assertion).returns(expectation)` function
@@ -35,11 +35,11 @@ in more complex scenarios you can perform multiple actions inside the _expectati
 describe('Sample Test', () => {
     it('[C2345][C3344] can perform a more complex demonstration of AFT', async function() {
         /**
-         * - for Jest use: `const aft = new AftTest(expect);`
-         * - for Mocha use: `const aft = new AftTest(this);`
-         * - for Jasmine use: `const aft = new AftTest();`
+         * - for Jest use: `const aft = new AftJestTest(expect);`
+         * - for Mocha use: `const aft = new AftMochaTest(this);`
+         * - for Jasmine use: `const aft = new AftJasmineTest();`
          */
-        const aft = new AftTest();
+        const aft = new AftJasmineTest();
         /**
          * the passed in expectation can accept a `Verifier` which can be used
          * during more complex actions

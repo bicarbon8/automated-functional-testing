@@ -47,40 +47,41 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
         const shouldRun = await aft.shouldRun();
         if (shouldRun.result !== true) {
             this.skip();
-        }
-        await using(new SeleniumSession({
-            reporter: aft.reporter,
-            additionalSessionOptions: {
-                capabilities: {
-                    browserName: 'chrome',
-                    "bstack:options": {
-                        sessionName: aft.reporter.reporterName,
-                        buildName: await aft.buildInfoMgr.get()
+        } else {
+            await using(new SeleniumSession({
+                reporter: aft.reporter,
+                additionalSessionOptions: {
+                    capabilities: {
+                        browserName: 'chrome',
+                        "bstack:options": {
+                            sessionName: aft.reporter.reporterName,
+                            buildName: await aft.buildInfoMgr.get()
+                        }
                     }
                 }
-            }
-        }), async (session) => {
-            const loginPage: HerokuLoginPage = await session.getComponent(HerokuLoginPage);
-            
-            await session.reporter.step('navigate to LoginPage');
-            await loginPage.navigateTo();
-            
-            const actual: string =  await loginPage.driver.getCurrentUrl();
-            const expected = 'the-internet.herokuapp.com/login';
-            expect(actual).to.contain(expected);
-            
-            await session.reporter.step('click login button...');
-            await loginPage.content.getLoginButton().then(button => button.click());
-            await session.reporter.info('no exception thrown on click');
+            }), async (session) => {
+                const loginPage: HerokuLoginPage = await session.getComponent(HerokuLoginPage);
+                
+                await session.reporter.step('navigate to LoginPage');
+                await loginPage.navigateTo();
+                
+                const actual: string =  await loginPage.driver.getCurrentUrl();
+                const expected = 'the-internet.herokuapp.com/login';
+                expect(actual).to.contain(expected);
+                
+                await session.reporter.step('click login button...');
+                await loginPage.content.getLoginButton().then(button => button.click());
+                await session.reporter.info('no exception thrown on click');
 
-            await session.reporter.step('refresh page...');
-            await loginPage.driver.navigate().refresh();
-            await session.reporter.info('page refreshed');
+                await session.reporter.step('refresh page...');
+                await loginPage.driver.navigate().refresh();
+                await session.reporter.info('page refreshed');
 
-            await session.reporter.step('click login button after refresh...');
-            await loginPage.content.getLoginButton().then(button => button.click());
-            await session.reporter.info('no exception thrown on click');
-        });
+                await session.reporter.step('click login button after refresh...');
+                await loginPage.content.getLoginButton().then(button => button.click());
+                await session.reporter.info('no exception thrown on click');
+            });
+        }
     });
 
     const uiplatforms = [
