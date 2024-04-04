@@ -13,9 +13,10 @@ export abstract class UiSession implements Disposable {
     public readonly aftCfg: AftConfig;
     public readonly reporter: Reporter;
 
+    private readonly _addtlOpts: Record<string, any>;
+
     private _driver: any;
-    private _addtlOpts: Record<string, any>;
-    
+        
     constructor(options?: UiSessionOptions) {
         this.aftCfg = options?.aftConfig ?? aftConfig;
         this.reporter = options?.reporter ?? new Reporter(this.constructor.name, this.aftCfg);

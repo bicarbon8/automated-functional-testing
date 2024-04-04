@@ -1,7 +1,11 @@
 {
     "references": [
-        { "path": "./packages/aft-core" },
+        { "path": "./examples/selenium-jest" },
+        { "path": "./examples/selenium-mocha" },
+        { "path": "./examples/web-services-jasmine" },
         { "path": "./examples/webdriverio-mocha" },
+
+        { "path": "./packages/aft-core" },
         { "path": "./packages/aft-jasmine-reporter" },
         { "path": "./packages/aft-jest-reporter" },
         { "path": "./packages/aft-jira" },

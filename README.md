@@ -5,7 +5,12 @@ library providing a framework for creating Functional Test Automation supporting
 ### Example Jasmine Test:
 ```typescript
 describe('Sample Test', () => {
-    it('[C1234] can perform a demonstration of AFT', async () => {
+    it('[C1234] can perform a demonstration of AFT', async function() {
+        /**
+         * - for Jest use: `const aft = new AftTest(expect);`
+         * - for Mocha use: `const aft = new AftTest(this);`
+         * - for Jasmine use: `const aft = new AftTest();`
+         */
         const aft = new AftTest();
         const feature: FeatureObj = new FeatureObj();
         /**
@@ -28,7 +33,12 @@ the above results in the following console output if the expectation does not re
 in more complex scenarios you can perform multiple actions inside the _expectation_ like in the following example:
 ```typescript
 describe('Sample Test', () => {
-    it('[C2345][C3344] can perform a more complex demonstration of AFT', async () => {
+    it('[C2345][C3344] can perform a more complex demonstration of AFT', async function() {
+        /**
+         * - for Jest use: `const aft = new AftTest(expect);`
+         * - for Mocha use: `const aft = new AftTest(this);`
+         * - for Jasmine use: `const aft = new AftTest();`
+         */
         const aft = new AftTest();
         /**
          * the passed in expectation can accept a `Verifier` which can be used

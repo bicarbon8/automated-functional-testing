@@ -15,7 +15,7 @@ export type LogLevel = typeof levels[number];
  * - `error` - used for unexpected errors that are **not** recoverable
  * - `none` - used when no logging is desired (disables logging)
  */
-export module LogLevel { // eslint-disable-line no-redeclare
+export namespace LogLevel { // eslint-disable-line no-redeclare
     /**
      * indicates whether a value is a valid `LogLevel` or not
      * @param level some value that may or may not be a `LogLevel`

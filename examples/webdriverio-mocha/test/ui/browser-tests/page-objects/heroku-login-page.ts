@@ -22,7 +22,7 @@ export class HerokuLoginPage extends WebdriverIoComponent {
     /* end: widgets */
 
     async navigateTo(): Promise<void> {
-        await Err.handleAsync(async () => await this.driver.navigateTo('https://the-internet.herokuapp.com/login'), {
+        await Err.handleAsync(() => this.driver.navigateTo('https://the-internet.herokuapp.com/login'), {
             logger: this.reporter,
             errLevel: 'error'
         });
@@ -30,15 +30,15 @@ export class HerokuLoginPage extends WebdriverIoComponent {
 
     /* begin: page actions */
     async login(username: string, password: string): Promise<void> {
-        return await this.content.login(username, password);
+        return this.content.login(username, password);
     }
 
     async hasMessage(): Promise<boolean> {
-        return await this.messages.hasMessage();
+        return this.messages.hasMessage();
     }
 
     async getMessage(): Promise<string> {
-        return await this.messages.getMessage();
+        return this.messages.getMessage();
     }
     /* end: page actions */
 }

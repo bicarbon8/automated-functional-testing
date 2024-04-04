@@ -44,7 +44,7 @@ export class ExpiringFileLock {
     
     constructor(lockFileName: string, aftCfg?: AftConfig) {
         if (!lockFileName) {
-            throw `[${this.constructor.name}] - lockFileName must be set`;
+            throw new Error(`[${this.constructor.name}] - lockFileName must be set`);
         }
         this.aftCfg = aftCfg ?? aftConfig;
         this.lockDuration = Math.abs(this.aftCfg.fileLockMaxHold ?? 10000); // ensure positive value; defaults to 10 s
@@ -85,13 +85,11 @@ export class ExpiringFileLock {
             }
         }
         if (!lockFileDescriptor) {
-            throw `unable to acquire lock on '${this.lockName}' within '${this.waitDuration}ms'`;
+            throw new Error(`unable to acquire lock on '${this.lockName}' within '${this.waitDuration}ms'`);
         }
         return lockFileDescriptor;
     }
-}
 
-export module ExpiringFileLock { // eslint-disable-line no-redeclare
     /**
      * creates a new {ExpiringFileLock} that can be used to ensure separate processes cannot cause
      * a race condition when accessing a shared resource
@@ -100,10 +98,11 @@ export module ExpiringFileLock { // eslint-disable-line no-redeclare
      * @param hold the number of milliseconds that a lock can be held before it automatically releases
      * @returns an {ExpiringFileLock} instance
      */
-    export function get(name: string, wait?: number, hold?: number): ExpiringFileLock {
+    static get(name: string, wait?: number, hold?: number): ExpiringFileLock {
         const aftCfg = new AftConfig();
         aftCfg.set('fileLockMaxHold', hold ?? aftCfg.fileLockMaxHold);
         aftCfg.set('fileLockMaxWait', wait ?? aftCfg.fileLockMaxWait);
         return new ExpiringFileLock(name, aftCfg);
     }
 }
+

@@ -20,7 +20,7 @@ export type SafeStringOption = {
  * module providing a default set of string replacement values via the
  * `SafeStringOptions.defaults` const
  */
-export module SafeStringOption { // eslint-disable-line no-redeclare
+export namespace SafeStringOption { // eslint-disable-line no-redeclare
     /**
      * a default set of characters to exclude and their replacement values that prevents
      * any curly or square brackets, forward or backslashes, commas, dashes, fullstops,

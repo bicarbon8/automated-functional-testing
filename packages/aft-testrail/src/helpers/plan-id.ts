@@ -3,14 +3,14 @@ import { TestRailApi } from "../api/testrail-api";
 import { TestRailConfig } from "../configuration/testrail-config";
 import { TestRailPlan } from "../api/testrail-custom-types";
 
-export module PlanId {
+export class PlanId {
     /**
      * looks for an existing TestRail plan id
      * @param aftCfg an instance of {AftConfig}
      * @param api an instance of {TestRailApi}
      * @returns either an existing TestRail plan id or a newly created plan id
      */
-    export async function get(aftCfg?: AftConfig, api?: TestRailApi): Promise<number> {
+    static async get(aftCfg?: AftConfig, api?: TestRailApi): Promise<number> {
         aftCfg ??= aftConfig;
         api ??= new TestRailApi(aftCfg);
         const trc = aftCfg.getSection(TestRailConfig);

@@ -15,13 +15,6 @@ import { UiSessionConfig } from "../configuration/ui-session-config";
  *   ...
  *   "UiSessionConfig": {
  *     "generatorName": "grid-session-generator-plugin",
- *     "uiplatform": {
- *       "os": "android",
- *       "osValue": "13",
- *       "browser": "chrome",
- *       "browserVersion": "112",
- *       "deviceName": "Samsung Galaxy S23"
- *     },
  *     "options": {
  *       "url": "https://hub-cloud.browserstack.com/wd/hub"
  *       "capabilities": {
@@ -48,8 +41,8 @@ export class UiSessionGeneratorManager {
     }
 
     /**
-     * instantiates a new Session using the `sessionGeneratorName` specified in 
-     * `UiSessionConfig`
+     * instantiates a new Session using the `UiSessionConfig.generatorName` specified in 
+     * `aftconfig.json`
      */
     async getSession(sessionOptions?: Record<string, any>): Promise<unknown> {
         const uic = this.aftCfg.getSection(UiSessionConfig);
