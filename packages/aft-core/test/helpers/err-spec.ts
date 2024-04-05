@@ -82,7 +82,7 @@ describe('Err', () => {
             const func = () => Promise.reject('foo');
             const val = await Err.handleAsync(func);
 
-            expect(val).toBeNull();
+            expect(val.result).toBeNull();
         });
 
         it('will log a warning if a Reporter is supplied and the Func throws', async () => {
@@ -95,7 +95,7 @@ describe('Err', () => {
             const func = function () { throw 'foo'; };
             const val = await Err.handleAsync(func, {logger, errLevel: 'warn'});
 
-            expect(val).toBeNull();
+            expect(val.result).toBeNull();
             expect(logger.log).toHaveBeenCalledTimes(1);
             expect(logMessage).toContain('Error: foo');
         });
@@ -116,7 +116,7 @@ describe('Err', () => {
                 logger
             });
 
-            expect(val).toBeNull();
+            expect(val.result).toBeNull();
             expect(actualLevel).toEqual('info');
             expect(actualMessage).not.toContain('\n');
         });

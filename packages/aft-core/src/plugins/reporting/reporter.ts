@@ -43,7 +43,7 @@ export class Reporter extends AftLogger {
      * and handling any exceptions as a `false` enabled state
      */
     get enabledPlugins() {
-        return this.plugins?.filter(p => Err.handle(() => p?.enabled)) ?? [];
+        return this.plugins?.filter(p => Err.handle(() => p?.enabled).result) ?? [];
     }
 
     /**
