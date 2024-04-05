@@ -8,8 +8,8 @@ describe('AftMochaReporter', () => {
         this.timeout(10000);
         const t = new AftMochaTest(this);
         const shouldRun = await t.shouldRun();
-        if (!shouldRun) { 
-            t.test.skip();
+        if (!shouldRun.result) { 
+            await t.pending(shouldRun.message);
         }
         expect(t).to.exist;
         expect(t.reporter).to.exist;
@@ -23,8 +23,8 @@ describe('AftMochaReporter', () => {
         const t = new AftMochaTest(this);
         sinon.stub(t, 'shouldRun').callsFake(() => Promise.resolve({result: false, message: 'fake'}));
         const shouldRun = await t.shouldRun();
-        if (!shouldRun) { 
-            t.test.skip();
+        if (!shouldRun.result) { 
+            await t.pending(shouldRun.message);
         }
         
         expect(true).to.be.false;
@@ -35,7 +35,7 @@ describe('AftMochaReporter', () => {
         
         expect(t).to.exist;
         expect(t.reporter).to.exist;
-        expect(t.reporter.reporterName).to.eql('unknown');
+        expect(t.reporter.reporterName).to.contain(AftMochaTest.name);
         
         // NOTE: arrow functions have no `this` so `this.test.fullTitle` doesn't exist
         // expect(t.reporter.logName).to.equal(t.fullTitle);
@@ -47,7 +47,7 @@ describe('AftMochaReporter', () => {
         this.timeout(10000);
         const t = new AftMochaTest(this);
         await t.verify(async (v: Verifier) => {
-            await v.reporter.warn('returning logName');
+            await v.reporter.info('returning logName');
             return v.reporter.reporterName;
         }).returns(equaling(t.reporter.reporterName));
     });

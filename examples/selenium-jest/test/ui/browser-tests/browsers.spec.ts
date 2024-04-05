@@ -46,7 +46,8 @@ describe('Functional Browser Tests using Selenium and Jest', () => {
         const shouldRun = await aft.shouldRun();
         if (shouldRun.result !== true) {
             // mark test as pending and bail out
-            pending(shouldRun.message);
+            await aft.pending(shouldRun.message);
+            return; // Jest doesn't support programmatic skip https://github.com/jestjs/jest/issues/7245
         } else {
             await using(new SeleniumSession({
                 reporter: aft.reporter,

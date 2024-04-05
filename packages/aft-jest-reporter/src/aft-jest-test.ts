@@ -6,6 +6,12 @@ import { TestCaseResult } from "@jest/reporters";
  * from the Mocha test context
  */
 export class AftJestTest extends AftTest {
+    /**
+     * reference to the Jest.TestCaseResult
+     * > NOTE: this is only set from inside the Jest
+     * Reporter plugin and not available within a
+     * Jest `test` function
+     */
     public readonly test: TestCaseResult;
 
     /**
@@ -39,11 +45,6 @@ export class AftJestTest extends AftTest {
         }
         await super.fail(err);
         fail(err); // eslint-disable-line no-undef
-    }
-
-    override async pending(message?: string): Promise<void> {
-        await super.pending(message);
-        pending(message); // eslint-disable-line no-undef
     }
 
     /**

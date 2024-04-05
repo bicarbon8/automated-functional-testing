@@ -18,13 +18,13 @@ while no configuration is required, the `aft-jasmine-reporter` supports all AFT 
 ## AFT Helpers
 this package comes with two helper classes that can be utilised from within your Jasmine specs to make use of AFT features.
 
-### `AftTest`
-the `AftTest` class extends from the `AftTestIntegration` class in `aft-core` providing the ability to parse the Spec name for any referenced Test. each Test ID must be surrounded with square brackets `[ABC123]`. additionally you can then call the `AftTest.shouldRun()` async function or use `AftTest.verify(assertion)` which will determine if your test should be run based on any AFT `TestExecutionPolicyPlugin` instances referenced in your `aftconfig.json` file. using the `AftTest` class would look like the following:
-> NOTE: the `new AftTest()` command **MUST NOT** be passed a scope when running with the `aft-jasmine-reporter` so it can pull in the scope from filesystem cache set by the reporter. you may still pass an `AftConfig` instance by using the following: `new AftTest(null, new AftConfig())`
+### `AftJasmineTest`
+the `AftJasmineTest` class extends from the `AftTest` class in `aft-core` providing the ability to parse the Spec name for any referenced Test. each Test ID must be surrounded with square brackets `[ABC123]`. additionally you can then call the `AftJasmineTest.shouldRun()` async function or use `AftJasmineTest.verify(assertion)` which will determine if your test should be run based on any AFT `TestExecutionPolicyPlugin` instances referenced in your `aftconfig.json` file. using the `AftJasmineTest` class would look like the following:
+> NOTE: the `new AftJasmineTest()` command **MUST NOT** be passed a scope when running with the `aft-jasmine-reporter` so it can pull in the scope from filesystem cache set by the reporter. you may still pass an `AftConfig` instance by using the following: `new AftJasmineTest(null, new AftConfig())`
 ```javascript
 describe('YourTestSuite', () => {
     it('can check if test [C1234] should be run', async () => {
-        const aft = new AftTest(); // no scope should be passed
+        const aft = new AftJasmineTest(); // no scope should be passed
         await aft.verify(async (v: Verifier) => {
             // `verify` calls `pending()` if should not be run which marks test as skipped
             await aft.reporter.step('we should never get here if C1234 should not be run');
@@ -41,10 +41,10 @@ which would output the following to your console and any AFT `ReportingPlugin` i
 ```
 
 ## NOTES
-- this Jasmine `CustomReporter` expects that there is only one instance of Jasmine running from a single location as it writes to a file when each Spec is started so that from within a given Spec the `AftTest` class can automatically get the Spec description. this causes a performance degradation since there is a locked filesystem read and write operation associated with each test
-- you can use the AFT `Verifier` in combination with the `AftTest` classes like follows:
+- this Jasmine `CustomReporter` expects that there is only one instance of Jasmine running from a single location as it writes to a file when each Spec is started so that from within a given Spec the `AftJasmineTest` class can automatically get the Spec description. this causes a performance degradation since there is a locked filesystem read and write operation associated with each test
+- you can use the AFT `Verifier` in combination with the `AftJasmineTest` classes like follows:
 ```javascript
-const aft = new AftTest();
+const aft = new AftJasmineTest();
 await aft.verify(() => {
     /* perform testing here */
 }).returns(expected);

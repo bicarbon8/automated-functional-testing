@@ -6,6 +6,13 @@ import { AftTest } from "aft-core";
  * from the Mocha test context
  */
 export class AftMochaTest extends AftTest {
+    /**
+     * an instance of a `Mocha.Test` from the `this` scope
+     * from within a Mocha `it` function taken from
+     * `this.test`
+     * > NOTE: if using an arrow function in your `it`
+     * this will not be set
+     */
     public readonly test: Mocha.Test;
 
     /**
@@ -27,11 +34,11 @@ export class AftMochaTest extends AftTest {
     constructor(scope?: any) {
         super(scope?.test?.fullTitle());
         this.internals.withResultsCaching(); // eslint-disable-line
-        this.test = scope?.test || {};
+        this.test = scope?.test;
     }
 
     override async pending(message?: string): Promise<void> {
         await super.pending(message);
-        this.test.skip();
+        this.test?.skip();
     }
 }

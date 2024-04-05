@@ -6,7 +6,7 @@ describe('AftJestReporter', () => {
     test('can create an AftJestTest instance', async () => {
         const aft = new AftJestTest(expect);
         await aft.reporter.info('starting AftJestReporter test...');
-        expect(aft.test).toBeDefined();
+        expect(aft.test).not.toBeDefined(); // only defined inside the Jest Reporter
         expect(aft.fullName).toEqual('AftJestReporter can create an AftJestTest instance');
         await aft.reporter.info('completed AftJestReporter test.');
     });
@@ -22,8 +22,8 @@ describe('AftJestReporter', () => {
         jest.spyOn(t, 'shouldRun').mockImplementation(() => Promise.resolve({result: false, message: 'fake'}));
         const shouldRun: ProcessingResult<boolean> = await t.shouldRun();
         if (!shouldRun.result) {
-            t.skipped();
-            return; // jest refuses to provide programmatic skip / pending capabilities
+            await t.pending(shouldRun.message);
+            return; // Jest doesn't support programmic skip https://github.com/jestjs/jest/issues/7245
         }
 
         expect(true).toBe(false);
