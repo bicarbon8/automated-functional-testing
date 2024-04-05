@@ -1,4 +1,4 @@
-# Examples: WebdriverIO and Mocha
+# Examples: Selenium and Mocha
 Automated Functional Testing (AFT) repo providing examples and best practices for using the AFT libraries with WebdriverIO and Mocha test framework. This repo can serve as a quick-start project for functional testing projects.
 
 ## Usage:
