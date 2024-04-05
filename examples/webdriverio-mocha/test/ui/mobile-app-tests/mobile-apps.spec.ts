@@ -65,7 +65,8 @@ describe('Functional Mobile App Tests using AFT-UI-WEBDRIVERIO', () => {
                         "appium:app": customId,
                         "bstack:options": {
                             "sessionName": v.reporter.reporterName,
-                            buildName: await v.buildInfoMgr.get()
+                            buildName: await v.buildInfoMgr.get(),
+                            "osVersion": null
                         }
                     }
                 }

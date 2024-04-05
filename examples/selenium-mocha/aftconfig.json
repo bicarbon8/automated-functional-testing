@@ -27,7 +27,7 @@
         "projectKey": "ABC",
         "closeDefectOnPass": false,
         "openDefectOnFail": false,
-        "policyEngineEnabled": true,
+        "policyEngineEnabled": false,
         "closedStatusCategoryName": "Done"
     },
     "KinesisReportingPluginConfig": {
