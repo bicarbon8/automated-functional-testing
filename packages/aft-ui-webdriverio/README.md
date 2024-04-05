@@ -48,7 +48,7 @@ export class WikipediaView extends WebdriverIoComponent {
 // wikipedia-app.spec.ts mocha test using AftMochaReporter
 describe('WebdriverIoSession', () => {
     it('[C1234] can access mobile apps using AFT and UiComponents with Verifier', async function() {
-        await new AftTest(this).verify(async (v: Verifier) => {
+        await new AftMochaTest(this).verify(async (v: Verifier) => {
             const lowercaseResults = new Array<string>();
             await using(new WebdriverIoSession({reporter: v.reporter}), async (session) => {
                 await session.reporter.step('get the WikipediaView Facet from the Session...');
@@ -65,7 +65,7 @@ describe('WebdriverIoSession', () => {
     })
 
     it('[C2345] can access mobile apps using AFT and UiComponents with AftMochaReporter', async function() {
-        const aft = new AftTest(this);
+        const aft = new AftMochaTest(this);
         if (!(await aft.shouldRun())) {
             await aft.pending();
         } else {
@@ -84,4 +84,4 @@ describe('WebdriverIoSession', () => {
 })
 ```
 ## aftconfig.json keys and values supported by aft-ui-webdriverio package
-this package does not support any additional configuration. see [aft-ui](../aft-ui/README.md#aftconfigjson-keys-and-values-supported-by-aft-selenium-package) for values relevant in the `UiSessionConfig`
+this package does not support any additional configuration. see [aft-ui](../aft-ui/README.md#aftconfigjson-keys-and-values-supported-by-aft-ui-selenium-package) for values relevant in the `UiSessionConfig`

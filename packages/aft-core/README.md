@@ -171,10 +171,10 @@ export class TestRailTestExecutionPolicyPlugin extends TestExecutionPolicyPlugin
 ```
 
 ## Integration with javascript test frameworks
-the `aft-core` package comes with an `AftTestIntegration` class which can be extended from to allow near seamless integration of AFT's reporting and test execution flow control features. AFT already has packages for integration with a few of the major test frameworks such as Jasmine, Mocha and Jest and these can be used as examples for implementing your own as needed if you are using some other test framework _(NOTE: the Mocha integration also works with Cypress)_. 
-- `aft-jasmine-reporter`: [aft-test](../aft-jasmine-reporter/README.md#afttest)
-- `aft-mocha-reporter`: [aft-test](../aft-mocha-reporter/README.md#afttest)
-- `aft-jest-reporter`: [aft-test](../aft-jest-reporter/README.md#afttest)
+the `aft-core` package comes with an `AftTest` class which can be extended from to allow near seamless integration of AFT's reporting and test execution flow control features. AFT already has packages for integration with a few of the major test frameworks such as Jasmine, Mocha and Jest and these can be used as examples for implementing your own as needed if you are using some other test framework _(NOTE: the Mocha integration also works with Cypress)_. 
+- `aft-jasmine-reporter`: [aft-test](../aft-jasmine-reporter/README.md#aftjasminetest)
+- `aft-mocha-reporter`: [aft-test](../aft-mocha-reporter/README.md#aftmochatest)
+- `aft-jest-reporter`: [aft-test](../aft-jest-reporter/README.md#aftjesttest)
 
 ## Testing with the Verifier
 the `Verifier` class and `verify` functions of `aft-core` enable testing with pre-execution filtering based on integration with external test execution policy managers via plugin packages extending the `TestExecutionPolicyPlugin` class (see examples above).
@@ -183,7 +183,12 @@ the `Verifier` class and `verify` functions of `aft-core` enable testing with pr
 // jasmine spec using `aft-jasmine-reporter` package
 describe('Sample Test', () => {
     it("[C1234] expect that performAction will return 'result of action'", async () => {
-        const aft = new AftTest();
+        /**
+         * - for Jest use: `const aft = new AftJestTest(expect);`
+         * - for Mocha use: `const aft = new AftMochaTest(this);`
+         * - for Jasmine use: `const aft = new AftJasmineTest();`
+         */
+        const aft = new AftJasmineTest();
         const feature: FeatureObj = new FeatureObj();
         /**
          * the `verify(assertion).returns(expectation)` function
