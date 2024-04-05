@@ -33,6 +33,11 @@ export class AftMochaReporter extends Mocha.reporters.Base {
     }
 
     addListeners(runner: Mocha.Runner): void {
+        /** 
+         * NOTE: Mocha events happen out of order for async tests so we cannot rely on 
+         * `EVENT_TEST_BEGIN` and run `AftMochaTest.shouldRun` to skip test before entering
+         * the `it` function
+         */
         runner
         .on(EVENT_RUN_BEGIN, () => {
             // clear all previously cached test results
