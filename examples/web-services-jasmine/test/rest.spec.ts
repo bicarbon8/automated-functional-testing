@@ -4,9 +4,9 @@ import * as FormData from "form-data";
 import { Verifier, greaterThan, havingValue, lessThan, retry, verify } from "aft-core";
 import { AftJasmineTest } from "aft-jasmine-reporter";
 import { httpData, HttpResponse, httpService } from 'aft-web-services';
-import { ListUsersResponse } from "./response-objects/list-users-response";
+import { ListUsersResponse } from "../lib/response-objects/list-users-response";
 
-describe('REST Request', () => {
+describe('Functional API tests using HttpService', () => {
     it('can make GET request from JSON REST API', async () => {
         const aft = new AftJasmineTest(); // DO NOT pass a scope
         let response: HttpResponse;
@@ -55,7 +55,7 @@ describe('REST Request', () => {
         .returns(greaterThan(0));
     });
 
-    it('[C9876] can make a multipart post', async () => {
+    it('can make a multipart post [C9876]', async () => {
         const aft = new AftJasmineTest(); // DO NOT pass a scope
         const shouldRun = await aft.shouldRun();
         if (shouldRun.result !== true) {

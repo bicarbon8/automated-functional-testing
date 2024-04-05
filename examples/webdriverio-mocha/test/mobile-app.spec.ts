@@ -2,7 +2,7 @@ import * as path from "path";
 import * as fs from "fs";
 import * as FormData from "form-data";
 import { Reporter, Verifier, aftConfig, containing, using } from "aft-core";
-import { WikipediaView } from "./page-objects/wikipedia-view";
+import { WikipediaView } from "../lib/page-objects/mobile-app/wikipedia-view";
 import { AftMochaTest } from "aft-mocha-reporter";
 import { httpService, httpData, HttpHeaders } from "aft-web-services";
 import { UiSessionConfig } from "aft-ui";
@@ -10,7 +10,7 @@ import { WebdriverIoSession } from "aft-ui-webdriverio";
 
 let customId: string;
 
-describe('Functional Mobile App Tests using AFT-UI-WEBDRIVERIO', () => {
+describe('Functional Mobile App Tests using WebdriverIO and Mocha', () => {
     before(async () => {
         const logger = new Reporter('MobileAppsSpec Before');
         const uisc = aftConfig.getSection(UiSessionConfig);
@@ -50,7 +50,7 @@ describe('Functional Mobile App Tests using AFT-UI-WEBDRIVERIO', () => {
         customId = app.shareable_id ?? app.custom_id ?? app.app_url ?? 'AFT.WikipediaApp';
     });
 
-    it('can search in Wikipedia App', async function() {
+    it('can search in Wikipedia App [C5432]', async function() {
         await new AftMochaTest(this).verify(async (v: Verifier) => {
             let res = new Array<string>();
             await using(new WebdriverIoSession({

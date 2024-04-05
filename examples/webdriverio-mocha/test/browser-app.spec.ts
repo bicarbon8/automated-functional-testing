@@ -1,6 +1,6 @@
 import { Verifier, containing, retry, using } from "aft-core";
 import { AftMochaTest } from "aft-mocha-reporter";
-import { HerokuLoginPage } from "./page-objects/heroku-login-page";
+import { HerokuLoginPage } from "../lib/page-objects/browser-app/heroku-login-page";
 import { WebdriverIoSession } from "aft-ui-webdriverio";
 
 describe('Functional Browser Tests using WebdriverIO and Mocha', () => {

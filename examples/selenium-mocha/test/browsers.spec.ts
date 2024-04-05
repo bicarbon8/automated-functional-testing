@@ -1,7 +1,7 @@
 import { Verifier, containing, retry, using } from "aft-core";
 import { AftMochaTest } from "aft-mocha-reporter";
 import { SeleniumSession } from "aft-ui-selenium";
-import { HerokuLoginPage } from "./page-objects/heroku-login-page";
+import { HerokuLoginPage } from "../lib/page-objects/heroku-login-page";
 import { expect } from "chai";
 
 describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {

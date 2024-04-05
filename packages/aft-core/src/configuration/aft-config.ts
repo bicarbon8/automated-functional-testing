@@ -28,7 +28,8 @@ export class AftConfig {
     }
     
     /**
-     * the relative path from `process.cwd()` to begin searching for plugins
+     * the relative path from `process.cwd()` to begin recursively
+     * searching for plugins
      * @default process.cwd()
      */
     get pluginsSearchDir(): string {
@@ -185,7 +186,7 @@ export class AftConfig {
             if (val && typeof className === "function") {
                 // copy props to class
                 const config = new className();
-                for (var prop of Object.getOwnPropertyNames(val)) {
+                for (const prop of Object.getOwnPropertyNames(val)) {
                     if (val[prop] != null) {
                         config[prop] = val[prop];
                     }
@@ -221,7 +222,7 @@ export class AftConfig {
      */
     processProperties<T extends {}>(input: T): T {
         if (input) {
-            for (var prop of Object.keys(input)) {
+            for (const prop of Object.keys(input)) {
                 let val = input[prop];
                 if (val != null) {
                     if (typeof val === "string") {
@@ -245,13 +246,12 @@ export class AftConfig {
      */
     processEnvVars(input: string): string {
         if (input && typeof input === 'string') {
-            let regx = /^%(.*)%$/;
+            const regx = /^%(.*)%$/;
             if ((input?.match(regx)?.length ?? 0) > 0) {
-                var envVarKey = input.match(regx)?.[1];
+                const envVarKey = input.match(regx)?.[1];
                 if (envVarKey) {
-                    let result = process.env[envVarKey];
-                    if (result)
-                    {
+                    const result = process.env[envVarKey];
+                    if (result) {
                         input = result;
                     }
                 }
