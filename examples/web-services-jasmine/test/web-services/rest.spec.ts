@@ -59,23 +59,22 @@ describe('REST Request', () => {
         const aft = new AftJasmineTest(); // DO NOT pass a scope
         const shouldRun = await aft.shouldRun();
         if (shouldRun.result !== true) {
-            await aft.pending();
-        } else {
-            const formData = new FormData();
-            formData.append('file', fs.createReadStream(path.join(process.cwd(), 'LICENSE')));
-            await aft.reporter.step('about to send multipart post...');
-            const resp = await httpService.performRequest({
-                multipart: true,
-                url: 'https://httpbin.org/post',
-                postData: formData,
-                method: 'POST',
-                reporter: aft.reporter
-            });
-
-            if (resp) {
-                await aft.reporter.info(`received response.`);
-            }
-            expect(resp.data).toBeDefined();
+            await aft.pending(shouldRun.message); // calls Jasmine `pending()` function
         }
+        const formData = new FormData();
+        formData.append('file', fs.createReadStream(path.join(process.cwd(), 'LICENSE')));
+        await aft.reporter.step('about to send multipart post...');
+        const resp = await httpService.performRequest({
+            multipart: true,
+            url: 'https://httpbin.org/post',
+            postData: formData,
+            method: 'POST',
+            reporter: aft.reporter
+        });
+
+        if (resp) {
+            await aft.reporter.info(`received response.`);
+        }
+        expect(resp.data).toBeDefined();
     });
 });

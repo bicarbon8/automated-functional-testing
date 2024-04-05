@@ -7,7 +7,6 @@ import { AftMochaTest } from "aft-mocha-reporter";
 import { httpService, httpData, HttpHeaders } from "aft-web-services";
 import { UiSessionConfig } from "aft-ui";
 import { WebdriverIoSession } from "aft-ui-webdriverio";
-import { expect } from "chai";
 
 let customId: string;
 
