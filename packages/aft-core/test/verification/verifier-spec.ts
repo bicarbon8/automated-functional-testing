@@ -1,6 +1,6 @@
 import { Reporter, rand, TestExecutionPolicyManager, Verifier, verify, TestResult, LogLevel, ProcessingResult, AftConfig, pluginLoader, containing, equaling } from "../../src";
 
-var consoleLog = console.log;
+let consoleLog = console.log;
 describe('Verifier', () => {
     /* comment `beforeAll` and `afterAll` out to see actual test output */
     beforeAll(() => {
@@ -16,9 +16,9 @@ describe('Verifier', () => {
     });
 
     it('uses "description" as reporter name if provided', async () => {
-        let description: string = rand.getString(22);
+        const description: string = rand.getString(22);
         await verify(async (v: Verifier) => {
-            expect(v.reporter.reporterName).toEqual(description);
+            expect(v.reporter.loggerName).toEqual(description);
         })
         .withDescription(description);
     });
@@ -30,7 +30,7 @@ describe('Verifier', () => {
         });
 
         await verify(async (v: Verifier) => {
-            expect(v.reporter.reporterName).toEqual('C1234_C2345');
+            expect(v.reporter.loggerName).toEqual('C1234_C2345');
         })
         .withTestIds('C1234','C2345')
         .internals.usingTestExecutionPolicyManager(peMgr);
@@ -167,7 +167,7 @@ describe('Verifier', () => {
         spyOn(reporter, 'pass').and.callThrough();
         const peMgr = new TestExecutionPolicyManager();
         spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
-            if (testId == 'C1234') {
+            if (testId === 'C1234') {
                 return Promise.resolve({result: false, message: 'do not run C1234'});
             } else {
                 return Promise.resolve({result: true});

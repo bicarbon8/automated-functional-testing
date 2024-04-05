@@ -33,7 +33,7 @@ describe('AftJestReporter', () => {
         const t = new AftJestTest(expect);
         await t.verify(async (v: Verifier) => {
             await v.reporter.warn('returning logName');
-            return v.reporter.reporterName;
-        }).returns(equaling(t.reporter.reporterName));
+            return v.reporter.loggerName;
+        }).returns(equaling(t.reporter.loggerName));
     });
 });

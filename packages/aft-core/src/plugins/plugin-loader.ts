@@ -19,8 +19,8 @@ class PluginLoader {
     private _load(aftCfg?: AftConfig): void {
         if (!this._loaded) {
             aftCfg ??= aftConfig;
-            for (var pname of aftCfg.pluginNames ?? []) {
-                let searchDir: string = (path.isAbsolute(aftCfg.pluginsSearchDir ?? ".")) 
+            for (const pname of aftCfg.pluginNames ?? []) {
+                const searchDir: string = (path.isAbsolute(aftCfg.pluginsSearchDir ?? ".")) 
                     ? aftCfg.pluginsSearchDir : path.join(process.cwd(), aftCfg.pluginsSearchDir);
                 if (!this._pluginsMap.has(pname)) {
                     this._findAndInstantiatePlugin(pname, searchDir, aftCfg);
@@ -51,9 +51,9 @@ class PluginLoader {
         this._load(aftCfg);
         const plugins = new Array<T>();
         const classInst = new clazz();
-        for (var pKey of this._pluginsMap.keys()) {
-            let plugin = this._pluginsMap.get(pKey);
-            let isMatch = havingProps(classInst, 1).setActual(plugin).compare();
+        for (const pKey of this._pluginsMap.keys()) {
+            const plugin = this._pluginsMap.get(pKey);
+            const isMatch = havingProps(classInst, 1).setActual(plugin).compare();
             if (isMatch) {
                 plugins.push(plugin as T);
             }
@@ -111,10 +111,9 @@ class PluginLoader {
         if (plugin) {
             try {
                 let constructorName: string;
-                let keys: string[] = Object.keys(plugin);
+                const keys: string[] = Object.keys(plugin);
                 const name = convert.toSafeString(pluginName, [{exclude: /[-_.\s\d]/gi, replaceWith: ''}]);
-                for (var i=0; i<keys.length; i++) {
-                    let key: string = keys[i];
+                for (const key of keys) {
                     if (name.toLowerCase() == key.toLowerCase()) {
                         constructorName = key;
                         break;
@@ -135,12 +134,11 @@ class PluginLoader {
         try {
             const filesOrDirectories: string[] = fs.readdirSync(dir);
             if (filesOrDirectories) {
-                for (var i=0; i<filesOrDirectories.length; i++) {
-                    let fileOrDirectory: string = filesOrDirectories[i];
-                    let fileAndPath: string = path.join(dir, fileOrDirectory);
-                    let isDir: boolean = this._isDir(fileAndPath);
+                for (const fileOrDirectory of filesOrDirectories) {
+                    const fileAndPath: string = path.join(dir, fileOrDirectory);
+                    const isDir: boolean = this._isDir(fileAndPath);
                     if (isDir) {
-                        let found: string = this._findPlugin(fileAndPath, name);
+                        const found: string = this._findPlugin(fileAndPath, name);
                         if (found) {
                             filePath = found;
                         }
@@ -152,7 +150,7 @@ class PluginLoader {
                     }
                 }
             } else {
-                throw `no files found at path: '${dir}'`;
+                throw new Error(`no files found at path: '${dir}'`);
             }
         } catch (e) {
             /* ignore */

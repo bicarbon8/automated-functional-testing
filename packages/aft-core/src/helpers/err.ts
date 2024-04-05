@@ -1,26 +1,25 @@
+import { AftLogger, aftLogger } from '../logging/aft-logger';
 import { LogLevel } from '../logging/log-level';
-import { Reporter } from '../plugins/reporting/reporter';
-import { aftLogger } from '../logging/aft-logger';
 import { convert } from './convert';
-import { Func } from './custom-types';
+import { Func, ProcessingResult } from './custom-types';
 import { ellide } from './ellide';
 
 export type ErrVerbosity = 'full' | 'short';
 
 export type ErrOptions = {
     /**
-     * an optional `Reporter` instance to use in logging the error message
-     * and stack
+     * an optional `AftLogger` instance to use for logging to console.
+     * @default aftLogger
      */
-    logger: Reporter;
+    logger?: AftLogger;
     /**
-     * the `LogLevel` to use when logging any caught `Error`. defaults to
-     * `warn`
+     * the `LogLevel` to use when logging any caught `Error`.
+     * @default none
      */
     errLevel: LogLevel;
     /**
-     * the amount of detail to include in the output message. defaults to
-     * `full`
+     * the amount of detail to include in the output message.
+     * @default full
      */
     verbosity: ErrVerbosity;
 }
@@ -188,47 +187,50 @@ export class Err extends Object {
     /**
      * calls the passed in `Func<void, T>` and handles any errors
      * @param func a function to be run inside a try-catch
-     * @param opts an `ErrOptions` object containing options for this call to `handle`
-     * @returns the result of the passed in `func` or `null` if an error is thrown
+     * @param opts an `ErrOptions` object containing options for this call
+     * @returns a `ProcessingResult` where `result` is the output of the passed in `func`
+     * and `message` will **ONLY** be set if an error was caught
      */
-    static handle<T>(func: Func<void, T>, opts?: Partial<ErrOptions>): T {
+    static handle<T>(func: Func<void, T>, opts?: Partial<ErrOptions>): ProcessingResult<T> {
         try {
-            return func();
+            const res = func();
+            return { result: res };
         } catch (e) {
-            Err._processException(e, opts);
-            return null as T;
+            return {result: null as T, message: Err._processException(e, opts)};
         }
     }
 
     /**
      * calls the passed in `Func<void, PromiseLike<T>>` and handles any errors
-     * @param func a function to be run inside a try-catch
-     * @param opts an `ErrOptions` object containing options for this call to `handle`
-     * @returns the result of the passed in `func` or `null` if an error is thrown
+     * @param func an async function to be awaited inside a try-catch
+     * @param opts an `ErrOptions` object containing options for this call
+     * @returns a `ProcessingResult` where `result` is the output of the passed in `func`
+     * and `message` will **ONLY** be set if an error was caught
      */
-    static async handleAsync<T>(func: Func<void, PromiseLike<T>>, opts?: Partial<ErrOptions>): Promise<T> {
+    static async handleAsync<T>(func: Func<void, PromiseLike<T>>, opts?: Partial<ErrOptions>): Promise<ProcessingResult<T>> {
         try {
-            return await func();
+            const res = await func();
+            return { result: res };
         } catch(e) {
-            Err._processException(e, opts);
-            return null as T;
+            return { result: null as T, message: Err._processException(e, opts)};
         }
     }
 
-    private static _processException(e: Error, opts?: Partial<ErrOptions>): void {
+    private static _processException(e: Error, opts?: Partial<ErrOptions>): string {
         opts ??= {};
         opts.verbosity ??= 'short';
         opts.errLevel ??= 'warn';
-        const err = new Err(e).setVerbosity(opts.verbosity);
+        opts.logger ??= aftLogger;
+        const err = new Err(e)
+            .setVerbosity(opts.verbosity);
         const message = err.toString();
-        if (opts.logger) {
-            opts.logger[opts?.errLevel](message).catch();
-        } else {
-            aftLogger.log({
+        if (opts.errLevel !== 'none') {
+            opts.logger.log({
                 name: Err.name,
-                level: opts.errLevel,
-                message
+                message,
+                level: opts.errLevel 
             });
         }
+        return message
     }
 }

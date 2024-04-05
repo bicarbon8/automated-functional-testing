@@ -13,7 +13,7 @@ describe('Functional Browser Tests using WebdriverIO and Mocha', () => {
                     capabilities: {
                         browserName: 'chrome',
                         "bstack:options": {
-                            sessionName: v.reporter.reporterName,
+                            sessionName: v.reporter.loggerName,
                             buildName: await v.buildInfoMgr.get()
                         }
                     }

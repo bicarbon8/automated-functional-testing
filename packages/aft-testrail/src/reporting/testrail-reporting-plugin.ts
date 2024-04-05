@@ -1,4 +1,4 @@
-import { ReportingPlugin, LogLevel, TestResult, ellide, AftConfig, Err } from "aft-core";
+import { AftReporterPlugin, LogLevel, TestResult, ellide, AftConfig, Err } from "aft-core";
 import { TestRailApi } from "../api/testrail-api";
 import { TestRailResultRequest } from "../api/testrail-custom-types";
 import { TestRailConfig } from "../configuration/testrail-config";
@@ -25,7 +25,7 @@ import { PlanId } from "../helpers/plan-id";
  * then a new TestRail Plan will be created from the specified `projectId` and `suiteIds`
  * configuration keys
  */
-export class TestRailReportingPlugin extends ReportingPlugin {
+export class TestRailReportingPlugin extends AftReporterPlugin {
     private readonly _level: LogLevel;
     public override get logLevel(): LogLevel {
         return this._level;

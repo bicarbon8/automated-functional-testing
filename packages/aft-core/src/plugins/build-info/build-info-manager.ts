@@ -1,5 +1,5 @@
 import { AftConfig, aftConfig } from "../../configuration/aft-config";
-import { AftLogger, aftLogger } from "../../logging/aft-logger";
+import { AftLogger } from "../../logging/aft-logger";
 import { SafeStringOption, convert } from "../../helpers/convert";
 import { Err } from "../../helpers/err";
 import { MachineInfoData, machineInfo } from "../../helpers/machine-info";
@@ -15,7 +15,7 @@ export class BuildInfoManager {
     
     constructor(aftCfg?: AftConfig) {
         this.aftCfg = aftCfg ?? aftConfig;
-        this._aftLogger = (aftCfg) ? new AftLogger(aftCfg) : aftLogger;
+        this._aftLogger = new AftLogger(this.constructor.name, aftCfg);
     }
 
     get plugins(): Array<BuildInfoPlugin> {
@@ -51,7 +51,6 @@ export class BuildInfoManager {
                 return plugin.buildName();
             } catch (e) {
                 this._aftLogger.log({
-                    name: this.constructor.name,
                     level: 'warn',
                     message: `error calling '${plugin.constructor.name}.buildName': ${Err.short(e)}`
                 });
@@ -76,13 +75,12 @@ export class BuildInfoManager {
                 return plugin.buildNumber();
             } catch (e) {
                 this._aftLogger.log({
-                    name: this.constructor.name,
                     level: 'warn',
                     message: `error calling '${plugin.constructor.name}.buildNumber': ${Err.short(e)}`
                 });
             }
         }
-        let d = new Date();
+        const d = new Date();
         const month: number = d.getUTCMonth() + 1;
         let monthStr: string = month.toString();
         if (month < 10) {

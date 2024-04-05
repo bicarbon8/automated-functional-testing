@@ -1,10 +1,10 @@
-import { ReportingPlugin, LogLevel, AftConfig, ReportingPluginConfig, TestResult } from "../../../src";
+import { AftReporterPlugin, LogLevel, AftConfig, AftReporterPluginConfig, TestResult } from "../../../src";
 
-export class MockReportingPluginConfig extends ReportingPluginConfig {
+export class MockReportingPluginConfig extends AftReporterPluginConfig {
     mockConfigKey: string;
 };
 
-export class MockReportingPlugin extends ReportingPlugin {
+export class MockReportingPlugin extends AftReporterPlugin {
     public readonly results = new Array<TestResult>();
     private readonly _level: LogLevel;
     public override get logLevel(): LogLevel {

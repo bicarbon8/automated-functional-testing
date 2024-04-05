@@ -1,4 +1,4 @@
-import { rand, Err, Reporter, LogLevel, AftConfig } from "../../src";
+import { rand, Err, LogLevel, AftConfig, AftLogger, LogMessageData } from "../../src";
 
 const consolelog = console.log;
 
@@ -68,14 +68,14 @@ describe('Err', () => {
             const func = function () { return 'foo'; };
             const val = Err.handle(func);
 
-            expect(val).toEqual('foo');
+            expect(val.result).toEqual('foo');
         });
 
         it('can handle try-catch for a Func<void, any> that throws', async () => {
             const func = function () { throw 'foo'; };
             const val = Err.handle(func);
 
-            expect(val).toBeNull();
+            expect(val.result).toBeNull();
         });
 
         it('can handle try-catch for a Func<void, any> that rejects a Promise', async () => {
@@ -86,34 +86,34 @@ describe('Err', () => {
         });
 
         it('will log a warning if a Reporter is supplied and the Func throws', async () => {
-            const reporter = new Reporter('will log a warning if a Reporter is supplied and the Func throws', new AftConfig({ pluginNames: [] }));
+            const logger = new AftLogger('will log a warning if a Reporter is supplied and the Func throws', new AftConfig({ pluginNames: [] }));
             let logMessage: string;
-            spyOn(reporter, 'warn').and.callFake((message: string) => {
-                logMessage = message;
+            spyOn(logger, 'log').and.callFake((data: LogMessageData) => {
+                logMessage = data.message;
                 return Promise.resolve();
             });
             const func = function () { throw 'foo'; };
-            const val = await Err.handleAsync(func, {logger: reporter});
+            const val = await Err.handleAsync(func, {logger, errLevel: 'warn'});
 
             expect(val).toBeNull();
-            expect(reporter.warn).toHaveBeenCalledTimes(1);
+            expect(logger.log).toHaveBeenCalledTimes(1);
             expect(logMessage).toContain('Error: foo');
         });
 
         it('accepts ErrOptions as a second argument', async () => {
             const func = function () { throw 'foo'; };
-            const logger = new Reporter('accepts ErrOptions as a second argument');
+            const logger = new AftLogger('accepts ErrOptions as a second argument');
             let actualLevel: LogLevel;
             let actualMessage: string;
-            spyOn(logger, 'log').and.callFake((level: LogLevel, message: string, ...data: any[]) => {
-                actualLevel = level;
-                actualMessage = message;
+            spyOn(logger, 'log').and.callFake((data: LogMessageData) => {
+                actualLevel = data.level;
+                actualMessage = data.message;
                 return Promise.resolve();
             });
             const val = await Err.handleAsync(func, {
                 verbosity: 'short',
                 errLevel: 'info',
-                logger: logger
+                logger
             });
 
             expect(val).toBeNull();

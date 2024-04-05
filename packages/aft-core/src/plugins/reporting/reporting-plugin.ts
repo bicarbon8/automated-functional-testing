@@ -2,11 +2,11 @@ import { Plugin, PluginConfig } from "../plugin"; // eslint-disable-line no-rede
 import { LogLevel } from "../../logging/log-level";
 import { TestResult } from "./test-result";
 
-export class ReportingPluginConfig extends PluginConfig {
+export class AftReporterPluginConfig extends PluginConfig {
     logLevel: LogLevel;
 }
 
-export class ReportingPlugin extends Plugin {
+export class AftReporterPlugin extends Plugin {
     override get enabled(): boolean {
         return this.logLevel !== 'none';
     }

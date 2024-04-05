@@ -54,7 +54,7 @@ export class Verifier implements PromiseLike<void> {
     }
 
     get description(): string {
-        return this._description ?? this.reporter.reporterName;
+        return this._description ?? this.reporter.loggerName;
     }
 
     get aftCfg(): AftConfig {
@@ -436,11 +436,11 @@ export class Verifier implements PromiseLike<void> {
 
             const results: TestResult[] = await this._generateTestResults(status, message, ...Array.from(this._testIds.values()));
             if (this.cacheResults) {
-                const cacheKey = this.reporter.reporterName;
+                const cacheKey = this.reporter.loggerName;
                 if (!this._resultsCache.has(cacheKey)) {
                     this._resultsCache.set(cacheKey, new Array<TestResult>());
                 }
-                const cacheArray: Array<TestResult> = this._resultsCache.get(this.reporter.reporterName);
+                const cacheArray: Array<TestResult> = this._resultsCache.get(this.reporter.loggerName);
                 cacheArray.push(...results);
                 this._resultsCache.set(cacheKey, cacheArray);
             }
@@ -457,7 +457,7 @@ export class Verifier implements PromiseLike<void> {
     }
 
     protected async _logResultStatus(status: TestStatus, message?: string): Promise<void> {
-        message = message || this.reporter.reporterName;
+        message = message || this.reporter.loggerName;
         switch (status) {
             case 'blocked':
             case 'retest':
@@ -491,12 +491,12 @@ export class Verifier implements PromiseLike<void> {
 
     protected async _generateTestResult(status: TestStatus, logMessage: string, testId?: string): Promise<TestResult> {
         const result: TestResult = {
-            testName: this.reporter.reporterName,
-            testId: testId,
+            testName: this.reporter.loggerName,
+            testId,
             created: Date.now(),
             resultId: rand.guid,
             resultMessage: logMessage,
-            status: status,
+            status,
             metadata: {
                 durationMs: convert.toElapsedMs(this._startTime),
                 buildName: await this.buildInfoMgr.buildName() || 'unknown',

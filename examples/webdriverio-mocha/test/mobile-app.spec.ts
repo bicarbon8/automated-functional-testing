@@ -64,7 +64,7 @@ describe('Functional Mobile App Tests using WebdriverIO and Mocha', () => {
                         "appium:deviceName": 'Samsung Galaxy S23',
                         "appium:app": customId,
                         "bstack:options": {
-                            "sessionName": v.reporter.reporterName,
+                            "sessionName": v.reporter.loggerName,
                             buildName: await v.buildInfoMgr.get(),
                             "osVersion": null
                         }

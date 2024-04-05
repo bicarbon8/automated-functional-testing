@@ -13,7 +13,7 @@ describe('Functional Browser Tests using Selenium and Jest', () => {
                     capabilities: {
                         browserName: 'chrome',
                         "bstack:options": {
-                            sessionName: v.reporter.reporterName,
+                            sessionName: v.reporter.loggerName,
                             buildName: await v.buildInfoMgr.get()
                         }
                     }
@@ -55,7 +55,7 @@ describe('Functional Browser Tests using Selenium and Jest', () => {
                 capabilities: {
                     browserName: 'chrome',
                     "bstack:options": {
-                        sessionName: aft.reporter.reporterName,
+                        sessionName: aft.reporter.loggerName,
                         buildName: await aft.buildInfoMgr.get()
                     }
                 }

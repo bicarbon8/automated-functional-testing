@@ -142,7 +142,10 @@ export class Retry<T> implements PromiseLike<T> {
             .catch(() => false);
     }
     
-    async then<TResult1, TResult2 = never>(onfulfilled?: (value: T) => TResult1 | PromiseLike<TResult1>, onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2> { // eslint-disable-line no-unused-vars
+    async then<TResult1, TResult2 = never>(
+        onfulfilled?: (value: T) => TResult1 | PromiseLike<TResult1>, // eslint-disable-line no-unused-vars
+        onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2> // eslint-disable-line no-unused-vars
+    ): Promise<TResult1 | TResult2> {
         if (this._maxDuration < Infinity) {
             return wait.forResult(() => this._getInnerPromise(), this._maxDuration)
                 .then(onfulfilled, onrejected);
@@ -157,7 +160,10 @@ export class Retry<T> implements PromiseLike<T> {
         this._currentDelay = this._delay;
         this._success = false;
         this._totalDuration = 0;
-        while (!this._success && this._totalAttempts < this._maxAttempts && this._totalDuration < this._maxDuration) {
+        while (!this._success
+            && this._totalAttempts < this._maxAttempts
+            && this._totalDuration < this._maxDuration
+        ) {
             this._result = await Promise.resolve()
                 .then(this._retryable)
                 .catch((e) => {

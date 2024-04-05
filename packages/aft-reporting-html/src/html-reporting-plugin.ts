@@ -1,20 +1,20 @@
 import * as process from 'node:process';
 import * as path from "node:path";
-import { ReportingPlugin, LogLevel, TestResult, fileio, ExpiringFileLock, FileSystemMap, convert, AftConfig, ReportingPluginConfig, Err } from "aft-core";
+import { AftReporterPlugin, LogLevel, TestResult, fileio, ExpiringFileLock, FileSystemMap, convert, AftConfig, AftReporterPluginConfig, Err } from "aft-core";
 import { HtmlTestResult } from "./html-test-result";
 import { HtmlResult } from "./html-result";
 import { htmlTemplate } from "./templates/html-template";
 
 const defaultFileName = 'testresults.html'
 
-export class HtmlReportingPluginConfig extends ReportingPluginConfig {
+export class HtmlReportingPluginConfig extends AftReporterPluginConfig {
     fileName = defaultFileName;
     outputDir: string = path.join(process.cwd(), 'logs');
     maxLogLines: number = 5;
     override logLevel: LogLevel = 'warn';
 }
 
-export class HtmlReportingPlugin extends ReportingPlugin {
+export class HtmlReportingPlugin extends AftReporterPlugin {
     public override get logLevel(): LogLevel {
         return this._level;
     }

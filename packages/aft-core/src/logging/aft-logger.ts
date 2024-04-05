@@ -25,8 +25,14 @@ import { LogMessageData } from "./log-message-data";
  */
 export class AftLogger {
     public readonly aftCfg: AftConfig;
+    /**
+     * a name unique to a given `AftLogger` instance intended to uniquely identify output by
+     * the associated class doing the logging
+     */
+    public readonly loggerName: string;
     
-    constructor(aftCfg?: AftConfig) {
+    constructor(loggerName?: string, aftCfg?: AftConfig) {
+        this.loggerName = loggerName ?? this.constructor.name;
         this.aftCfg = aftCfg ?? aftConfig;
     }
 
@@ -73,7 +79,7 @@ export class AftLogger {
      */
     format(data: LogMessageData) {
         data ??= {} as LogMessageData;
-        data.name ??= 'AFT';
+        data.name ??= this.loggerName;
         data.message ??= '';
         data.level ??= 'none';
         const d: string = new Date().toLocaleTimeString();

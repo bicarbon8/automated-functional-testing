@@ -1,5 +1,5 @@
 import { AftConfig, aftConfig } from "../configuration/aft-config";
-import { AftLogger, aftLogger } from "../logging/aft-logger";
+import { AftLogger } from "../logging/aft-logger";
 
 export class PluginConfig {
     enabled: boolean = false;
@@ -22,6 +22,6 @@ export class Plugin { // eslint-disable-line no-redeclare
     }
     constructor(aftCfg?: AftConfig) {
         this._aftCfg = aftCfg ?? aftConfig;
-        this._aftLogger = (aftCfg) ? new AftLogger(aftCfg) : aftLogger;
+        this._aftLogger = new AftLogger(this.constructor.name, this.aftCfg);
     }
 }

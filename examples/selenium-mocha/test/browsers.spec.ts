@@ -13,7 +13,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                     capabilities: {
                         browserName: 'chrome',
                         "bstack:options": {
-                            sessionName: v.reporter.reporterName,
+                            sessionName: v.reporter.loggerName,
                             buildName: await v.buildInfoMgr.get()
                         }
                     }
@@ -54,7 +54,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                 capabilities: {
                     browserName: 'chrome',
                     "bstack:options": {
-                        sessionName: aft.reporter.reporterName,
+                        sessionName: aft.reporter.loggerName,
                         buildName: await aft.buildInfoMgr.get()
                     }
                 }
@@ -98,7 +98,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                         capabilities: {
                             browserName: uiplatform.browser,
                             "bstack:options": {
-                                sessionName: v.reporter.reporterName,
+                                sessionName: v.reporter.loggerName,
                                 os: uiplatform.os,            // override os in `aftconfig.json` file
                                 osVersion: uiplatform.osV,    // override osVersion in `aftconfig.json` file
                                 buildName: await v.buildInfoMgr.get()

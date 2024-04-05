@@ -13,7 +13,7 @@ describe('AftMochaReporter', () => {
         }
         expect(t).to.exist;
         expect(t.reporter).to.exist;
-        expect(t.reporter.reporterName).to.equal(t.fullName);
+        expect(t.reporter.loggerName).to.equal(t.fullName);
 
         await t.reporter.trace('sample log message');
     });
@@ -35,7 +35,7 @@ describe('AftMochaReporter', () => {
         
         expect(t).to.exist;
         expect(t.reporter).to.exist;
-        expect(t.reporter.reporterName).to.contain(AftMochaTest.name);
+        expect(t.reporter.loggerName).to.contain(AftMochaTest.name);
         
         // NOTE: arrow functions have no `this` so `this.test.fullTitle` doesn't exist
         // expect(t.reporter.logName).to.equal(t.fullTitle);
@@ -48,7 +48,7 @@ describe('AftMochaReporter', () => {
         const t = new AftMochaTest(this);
         await t.verify(async (v: Verifier) => {
             await v.reporter.info('returning logName');
-            return v.reporter.reporterName;
-        }).returns(equaling(t.reporter.reporterName));
+            return v.reporter.loggerName;
+        }).returns(equaling(t.reporter.loggerName));
     });
 });

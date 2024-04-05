@@ -1,8 +1,8 @@
-import { ReportingPlugin } from "./reporting-plugin";
+import { AftReporterPlugin } from "./reporting-plugin";
 import { LogLevel } from "../../logging/log-level";
 import { AftConfig } from "../../configuration/aft-config";
 import { pluginLoader } from "../plugin-loader";
-import { AftLogger, aftLogger } from "../../logging/aft-logger";
+import { AftLogger } from "../../logging/aft-logger";
 import { TestResult } from "./test-result";
 import { Err } from "../../helpers/err";
 import { cloneDeep } from "lodash";
@@ -26,50 +26,16 @@ import { cloneDeep } from "lodash";
  * const r2 = new Reporter('reporter for test 2');
  * ```
  */
-export class Reporter {
-    readonly plugins: Array<ReportingPlugin>;
-    private readonly _aftLogger: AftLogger;
+export class Reporter extends AftLogger {
+    readonly plugins: Array<AftReporterPlugin>;
     private _stepCount = 0;
 
-    /**
-     * a name unique to a given reporter instance intended to uniquely identify output by
-     * either the associated test or class doing the reporting
-     */
-    public readonly reporterName: string;
-    /**
-     * allows for filtering out of erroneous information from logs by assigning
-     * values to different types of logging. the purpose of each log level is
-     * as follows:
-     * - `trace` - used when logging low-level debug events that occur within a loop
-     * - `debug` - used for debug logging that does not run within a loop or at a high frequency
-     * - `info` - used for informational events providing current state of a system
-     * - `step` - used within a test to denote where within the test steps we are
-     * - `warn` - used for unexpected errors that are recoverable
-     * - `pass` - used to indicate the success of a test expectation or assertion
-     * - `fail` - used to indicate the failure of a test expectation or assertion
-     * - `error` - used for unexpected errors that are **not** recoverable
-     * - `none` - used when no logging is desired (disables logging)
-     */
-    public readonly logLevel: LogLevel;
-
     constructor(logName: string, aftCfg?: AftConfig) {
-        this.reporterName = logName ?? 'AFT';
-        this._aftLogger = (aftCfg) ? new AftLogger(aftCfg) : aftLogger;
-        this.logLevel = this._aftLogger.logLevel;
-        this.plugins = pluginLoader.getPluginsByType(ReportingPlugin, this._aftLogger.aftCfg);
-        this.plugins.filter(p => {
-            try {
-                return p?.enabled;
-            } catch (e) {
-                return false;
-            }
-        }).forEach((p: ReportingPlugin) => {
-            p?.initialise(logName)?.catch((err) => this._aftLogger.log({
-                level: 'warn',
-                message: err,
-                name: logName
-            }));
-        })
+        super(logName, aftCfg);
+        this.plugins = pluginLoader.getPluginsByType(AftReporterPlugin, this.aftCfg);
+        this.enabledPlugins.forEach((p: AftReporterPlugin) => {
+            p?.initialise(this.loggerName)?.catch((err) => this.out('warn', err));
+        });
     }
 
     /**
@@ -85,7 +51,7 @@ export class Reporter {
      * @param message the message to be logged
      */
     async trace(message: string, ...data: Array<any>): Promise<void> {
-        await this.log('trace', message, ...data);
+        await this.out('trace', message, ...data);
     }
 
     /**
@@ -93,7 +59,7 @@ export class Reporter {
      * @param message the message to be logged
      */
     async debug(message: string, ...data: Array<any>): Promise<void> {
-        await this.log('debug', message, ...data);
+        await this.out('debug', message, ...data);
     }
 
     /**
@@ -101,7 +67,7 @@ export class Reporter {
      * @param message the message to be logged
      */
     async info(message: string, ...data: Array<any>): Promise<void> {
-        await this.log('info', message, ...data);
+        await this.out('info', message, ...data);
     }
 
     /**
@@ -110,7 +76,7 @@ export class Reporter {
      */
     async step(message: string, ...data: Array<any>): Promise<void> {
         this._stepCount += 1;
-        await this.log('step', `${this._stepCount}: ${message}`, ...data);
+        await this.out('step', `${this._stepCount}: ${message}`, ...data);
     }
 
     /**
@@ -118,7 +84,7 @@ export class Reporter {
      * @param message the message to be logged
      */
     async warn(message: string, ...data: Array<any>): Promise<void> {
-        await this.log('warn', message, ...data);
+        await this.out('warn', message, ...data);
     }
 
     /**
@@ -126,7 +92,7 @@ export class Reporter {
      * @param message the message to be logged
      */
     async pass(message: string, ...data: Array<any>): Promise<void> {
-        await this.log('pass', message, ...data);
+        await this.out('pass', message, ...data);
     }
 
     /**
@@ -134,7 +100,7 @@ export class Reporter {
      * @param message the message to be logged
      */
     async fail(message: string, ...data: Array<any>): Promise<void> {
-        await this.log('fail', message, ...data);
+        await this.out('fail', message, ...data);
     }
 
     /**
@@ -142,34 +108,31 @@ export class Reporter {
      * @param message the message to be logged
      */
     async error(message: string, ...data: Array<any>): Promise<void> {
-        await this.log('error', message, ...data);
+        await this.out('error', message, ...data);
     }
 
     /**
-     * function will send the `LogLevel` and `message` on to any 
-     * loaded `ReportingPlugin` objects
+     * function will log to the console and then send the `LogLevel`,
+     * `message` and `data` on to any loaded `ReportingPlugin` objects
      * @param level the `LogLevel` of this message
      * @param message the string to be logged
      * @param data an array of additional data to be included in the logs
      */
-    async log(level: LogLevel, message: string, ...data: any[]): Promise<void> {
-        this._aftLogger.log({
-            name: this.reporterName, 
+    async out(level: LogLevel, message: string, ...data: any[]): Promise<void> {
+        this.log({
             level, 
             message, 
             args: data
         });
-        for (const plugin of this.enabledPlugins) {
-            try {
-                await plugin?.log(this.reporterName, level, message, ...data);
-            } catch (e) {
-                this._aftLogger.log({
-                    level: 'warn',
-                    message: `unable to send log message to '${plugin?.constructor.name || 'unknown'}' due to: ${e}`,
-                    name: this.reporterName
+        this.enabledPlugins.forEach(async (plugin) => {
+            const handled = await Err.handleAsync(() => plugin?.log(this.loggerName, level, message, ...data));
+            if (handled.message) {
+                this.log({
+                    message: handled.message,
+                    level: 'warn'
                 });
             }
-        }
+        });
     }
 
     /**
@@ -178,17 +141,15 @@ export class Reporter {
      * @param result a `TestResult` object to be sent
      */
     async submitResult(result: TestResult): Promise<void> {
-        for (const plugin of this.enabledPlugins) {
-            try {
-                await plugin?.submitResult(this.reporterName, cloneDeep(result));
-            } catch (e) { 
-                this._aftLogger.log({
-                    level: 'warn',
-                    message: `unable to send result to '${plugin?.constructor.name || 'unknown'}' due to: ${Err.short(e)}`,
-                    name: result?.testName ?? this.constructor.name
+        this.enabledPlugins.forEach(async (plugin) => {
+            const handled = await Err.handleAsync(() => plugin?.submitResult(this.loggerName, cloneDeep(result)));
+            if (handled.message) {
+                this.log({
+                    message: handled.message,
+                    level: 'warn'
                 });
             }
-        }
+        });
     }
 
     /**
@@ -197,17 +158,16 @@ export class Reporter {
      * of any logging actions before destroying the `AftLogger` instance
      */
     async finalise(): Promise<void> {
-        const name = this.reporterName;
-        for (const plugin of this.enabledPlugins) {
-            try {
-                await plugin?.finalise(name);
-            } catch (e) {
-                this._aftLogger.log({
-                    level: 'warn',
-                    message: `unable to call 'finalise' on '${plugin?.constructor.name || 'unknown'}' due to: ${e}`,
-                    name: name
+        const name = this.loggerName;
+        this.enabledPlugins.forEach(async (plugin) => {
+            const handled = await Err.handleAsync(() => plugin?.finalise(name));
+            if (handled.message) {
+                this.log({
+                    name: this.loggerName,
+                    message: handled.message,
+                    level: 'warn'
                 });
             }
-        }
+        });
     }
 }

@@ -35,7 +35,7 @@ describe('AftJasmineReporter', () => {
         const t = new AftJasmineTest(this);
         await t.verify(async (v: Verifier) => {
             await v.reporter.info('returning logName');
-            return v.reporter.reporterName;
-        }).returns(equaling(t.reporter.reporterName));
+            return v.reporter.loggerName;
+        }).returns(equaling(t.reporter.loggerName));
     });
 });

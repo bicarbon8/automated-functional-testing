@@ -13,7 +13,7 @@ export class JiraApi {
     constructor(aftCfg?: AftConfig) {
         this._aftCfg = aftCfg ?? aftConfig;
         this._cache = new CacheMap<string, any>(this.config.cacheDuration, true, this.constructor.name);
-        this._logger = new AftLogger(this._aftCfg);
+        this._logger = new AftLogger(this.constructor.name, this._aftCfg);
     }
 
     get config(): JiraConfig {

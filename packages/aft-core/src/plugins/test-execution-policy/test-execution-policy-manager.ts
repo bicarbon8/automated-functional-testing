@@ -1,5 +1,5 @@
 import { AftConfig, aftConfig } from "../../configuration/aft-config";
-import { AftLogger, aftLogger } from "../../logging/aft-logger";
+import { AftLogger } from "../../logging/aft-logger";
 import { ProcessingResult } from "../../helpers/custom-types";
 import { Err } from "../../helpers/err";
 import { pluginLoader } from "../plugin-loader";
@@ -14,7 +14,7 @@ export class TestExecutionPolicyManager {
 
     constructor(aftCfg?: AftConfig) {
         this.aftCfg = aftCfg ?? aftConfig;
-        this._aftLogger = (aftCfg) ? new AftLogger(aftCfg) : aftLogger;
+        this._aftLogger = new AftLogger(this.constructor.name, aftCfg);
         this.plugins = pluginLoader.getPluginsByType(TestExecutionPolicyPlugin, this.aftCfg);
     }
 
@@ -34,9 +34,8 @@ export class TestExecutionPolicyManager {
                     return await p.shouldRun(testId);
                 } catch (e) {
                     const logData: LogMessageData = {
-                        name: this.constructor.name,
                         level: 'warn',
-                        message: `error calling '${plugins.constructor.name}.shouldRun(${testId})': ${Err.short(e)}`
+                        message: `error calling '${p?.constructor.name || 'unknown'}.shouldRun(${testId})': ${Err.short(e)}`
                     };
                     this._aftLogger.log(logData);
                     return { result: true, message: logData.message };
