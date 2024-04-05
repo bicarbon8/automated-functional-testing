@@ -129,8 +129,11 @@ the purpose of a `TestExecutionPolicyPlugin` implementation is to provide execut
 ```
 > NOTE: if no plugin is specified then external Policy Engine integration will be disabled and _assertions_ will be executed without first checking that they should be run based on associated Test IDs
 
-## Example Test Project
-- [`aft-examples`](./packages/aft-examples/README.md) - a demonstration of how to develop UI and REST based functional test automation using AFT is located under `./packages/aft-examples`
+## Example Test Projects
+- [`selenium-jest`](./examples/selenium-jest/README.md) - demonstrates how to use the `SeleniumSession`, `SeleniumComponent`, `AftJestTest` and `AftJestReporter` within Jest tests
+- [`selenium-mocha`](./examples/selenium-mocha/README.md) - demonstrates how to use the `SeleniumSession`, `SeleniumComponent`, `AftMochaTest` and `AftMochaReporter` within Mocha tests
+- [`web-services-jasmine`](./examples/web-services-jasmine/README.md) - demonstrates how to use the `HttpService`, `AftJasmineTest` and `AftJasmineReporter` within Jasmine tests
+- [`webdriverio-mocha`](./examples/webdriverio-mocha/README.md) - demonstrates how to use the `WebdriverIoSession`, `WebdriverIoComponent`, `AftMochaTest` and `AftMochaReporter` within Mocha tests
 
 ## Contributing to AFT
 - create a Fork of the repo in GitHub
