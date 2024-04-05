@@ -36,7 +36,7 @@ export class HerokuMessagesWidget extends SeleniumComponent {
     async getMessage(): Promise<string> {
         if (await this.hasMessage()) {
             const messageEl = await this.message();
-            return await messageEl.getText();
+            return messageEl.getText();
         }
         return null;
     }

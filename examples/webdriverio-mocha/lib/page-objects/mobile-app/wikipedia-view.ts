@@ -5,15 +5,23 @@ export class WikipediaView extends WebdriverIoComponent {
         return '//*';
     }
 
-    private _searchButton = async (): Promise<WebdriverIO.Element> => await (await this.getRoot()).$("~Search Wikipedia");
-    private _searchInput = async (): Promise<WebdriverIO.Element> => await this.driver.$('android=new UiSelector().resourceId("org.wikipedia.alpha:id/search_src_text")');
-    private _searchResults = async (): Promise<WebdriverIO.ElementArray> => await (await this.getRoot()).$$("android.widget.TextView");
+    private async _searchButton(): Promise<WebdriverIO.Element> {
+        return this.getRoot().then(r => r.$("~Search Wikipedia"));
+    }
+
+    private async _searchInput(): Promise<WebdriverIO.Element> {
+        return this.driver.$('android=new UiSelector().resourceId("org.wikipedia.alpha:id/search_src_text")');
+    }
+
+    private async _searchResults(): Promise<WebdriverIO.ElementArray> {
+        return this.getRoot().then(r => r.$$("android.widget.TextView"));
+    }
 
     async searchFor(term: string): Promise<string[]> {
         await this.reporter.info("tapping on 'SearchButton'");
         await this._searchButton().then(b => b.click());
         await this.sendTextToSearch(term);
-        return await this.getResults();
+        return this.getResults();
     }
 
     async sendTextToSearch(text: string): Promise<void> {
@@ -23,12 +31,11 @@ export class WikipediaView extends WebdriverIoComponent {
 
     async getResults(): Promise<string[]> {
         await this.reporter.info("getting text from 'SearchResults' to return as 'string[]'");
-        let resultsText: string[] = [];
+        const resultsText: string[] = [];
 
-        var searchResults = await this._searchResults();
-        for (var i=0; i<searchResults.length; i++) {
-            let res = searchResults[i];
-            let txt: string = await res.getText().catch(err => err);
+        const searchResults = await this._searchResults();
+        for (const res of searchResults) {
+            const txt: string = await res.getText().catch(err => err);
             resultsText.push(txt);
         }
         await this.reporter.info(`found results of: [${resultsText.join(', ')}]`);

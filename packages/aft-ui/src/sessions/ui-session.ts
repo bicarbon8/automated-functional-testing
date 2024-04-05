@@ -24,6 +24,9 @@ export abstract class UiSession implements Disposable {
         this._addtlOpts = options?.additionalSessionOptions ?? {};
     }
 
+    /**
+     * the top-level interface between the application DOM and the code.
+     */
     async driver<T extends any>(): Promise<T> {
         if (!this._driver) {
             const sessionGeneratorManager = new UiSessionGeneratorManager(this.aftCfg);
@@ -32,11 +35,21 @@ export abstract class UiSession implements Disposable {
         return this._driver as T;
     }
 
+    /**
+     * creates a new `UiComponent` instance of the specified type passing in
+     * the `driver`, `aftConfig`, `reporter` and `() => this.driver()` as `parent`
+     * @param componentType a class extending from `UiComponent` providing a
+     * Page Object Model interface with the DOM
+     * @param options an object allowing for overrides to the default `driver`,
+     * `locator`, `parent`, `reporter` and `aftConfig` objects
+     * @returns an instance of the specified `UiComponent` class
+     */
     async getComponent<T extends UiComponent>(componentType: Class<T>, opts?: UiComponentOptions): Promise<T> {
         opts ??= {} as UiComponentOptions;
         opts.aftCfg ??= this.aftCfg;
         opts.driver ??= await this.driver();
         opts.reporter ??= this.reporter;
+        opts.parent ??= () => this.driver();
         return new componentType(opts);
     }
 

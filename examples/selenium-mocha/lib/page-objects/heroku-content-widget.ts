@@ -13,25 +13,34 @@ export class HerokuContentWidget extends SeleniumComponent {
     private async usernameInput(): Promise<WebElement> {
         return this.getRoot()
             .then(r => r.findElement(By.id("username")))
-            .catch((err) => null);
+            .catch(async (err) => {
+                await this.reporter.error(`unable to locate username input`)
+                return null;
+            });
     }
     private async passwordInput(): Promise<WebElement> {
         return this.getRoot()
             .then(r => r.findElement(By.id('password')))
-            .catch((err) => null);
+            .catch(async (err) => {
+                await this.reporter.error(`unable to locate password input`)
+                return null;
+            });
     }
     private async loginButton(): Promise<WebElement> {
         return this.getRoot()
             .then(r => r.findElement(By.css('button.radius')))
-            .catch((err) => null);
+            .catch(async (err) => {
+                await this.reporter.error(`unable to locate login button`)
+                return null;
+            });
     }
 
     async login(username: string, password: string): Promise<void> {
-        let ui: WebElement = await this.usernameInput();
+        const ui: WebElement = await this.usernameInput();
         await this.reporter.info(`sending ${username} to the Username Input`);
         await ui.sendKeys(username);
         await this.reporter.info('username entered');
-        let pi: WebElement = await this.passwordInput();
+        const pi: WebElement = await this.passwordInput();
         await this.reporter.info(`sending ${password} to the Password Input`);
         await pi.sendKeys(password);
         await this.reporter.info('password entered');
@@ -40,12 +49,12 @@ export class HerokuContentWidget extends SeleniumComponent {
 
     async clickLoginButton(): Promise<void> {
         await this.reporter.info('clicking Login Button...');
-        let lb: WebElement = await this.loginButton();
+        const lb: WebElement = await this.loginButton();
         await lb.click();
         await this.reporter.info('Login Button clicked');
     }
 
     async getLoginButton(): Promise<WebElement> {
-        return await this.loginButton();
+        return this.loginButton();
     }
 }
