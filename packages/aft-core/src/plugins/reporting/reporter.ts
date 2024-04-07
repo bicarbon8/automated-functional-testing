@@ -125,13 +125,10 @@ export class Reporter extends AftLogger {
             args: data
         });
         this.enabledPlugins.forEach(async (plugin) => {
-            const handled = await Err.handleAsync(() => plugin?.log(this.loggerName, level, message, ...data));
-            if (handled.message) {
-                this.log({
-                    message: handled.message,
-                    level: 'warn'
-                });
-            }
+            await Err.handleAsync(() => plugin?.log(this.loggerName, level, message, ...data), {
+                errLevel: 'warn',
+                logger: this
+            });
         });
     }
 
@@ -142,13 +139,10 @@ export class Reporter extends AftLogger {
      */
     async submitResult(result: TestResult): Promise<void> {
         this.enabledPlugins.forEach(async (plugin) => {
-            const handled = await Err.handleAsync(() => plugin?.submitResult(this.loggerName, cloneDeep(result)));
-            if (handled.message) {
-                this.log({
-                    message: handled.message,
-                    level: 'warn'
-                });
-            }
+            await Err.handleAsync(() => plugin?.submitResult(this.loggerName, cloneDeep(result)), {
+                errLevel: 'warn',
+                logger: this
+            });
         });
     }
 
@@ -160,14 +154,10 @@ export class Reporter extends AftLogger {
     async finalise(): Promise<void> {
         const name = this.loggerName;
         this.enabledPlugins.forEach(async (plugin) => {
-            const handled = await Err.handleAsync(() => plugin?.finalise(name));
-            if (handled.message) {
-                this.log({
-                    name: this.loggerName,
-                    message: handled.message,
-                    level: 'warn'
-                });
-            }
+            await Err.handleAsync(() => plugin?.finalise(name), {
+                errLevel: 'warn',
+                logger: this
+            });
         });
     }
 }

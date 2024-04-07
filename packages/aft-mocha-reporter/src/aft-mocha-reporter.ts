@@ -62,7 +62,8 @@ export class AftMochaReporter extends Mocha.reporters.Base {
             const t = new AftMochaTest({test});
             if (t.internals.getCachedResults(t.fullName).length === 0) {
                 if (typeof err !== 'string') {
-                    err = Err.handle(() => JSON.stringify(err));
+                    const handled = Err.handle(() => JSON.stringify(err))
+                    err = handled?.result ?? handled?.message;
                 }
                 await t.fail(err);
             }

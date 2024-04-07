@@ -58,7 +58,10 @@ export class JiraReportingPlugin extends AftReporterPlugin {
             if (logs.length > 0) {
                 logs += '\n'; // separate new logs from previous
             }
-            const dataStr: string = (data?.length) ? `, [${data.map(d => Err.handle(() => JSON.stringify(d))).join('')}]` : '';
+            const dataStr: string = (data?.length) ? `, [${data.map(d => {
+                const dHandled = Err.handle(() => JSON.stringify(d));
+                return dHandled.result ?? dHandled.message;
+            }).join('')}]` : '';
             logs += `${message}${dataStr}`;
             this.logs(name, logs);
         }

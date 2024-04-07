@@ -97,7 +97,10 @@ export class HtmlReportingPlugin extends AftReporterPlugin {
         if (LogLevel.toValue(level) >= LogLevel.toValue(expectedLevel) && level !== 'none') {
             const logs = this.logs(name);
             if (data?.length > 0) {
-                const dataStr = (data?.length) ? `, [${data?.map(d => Err.handle(() => JSON.stringify(d))).join(',')}]` : '';
+                const dataStr = (data?.length) ? `, [${data?.map(d => {
+                    const dHandled = Err.handle(() => JSON.stringify(d));
+                    return dHandled.result ?? dHandled.message;
+                }).join(',')}]` : '';
                 message = `${message}${dataStr}`;
             }
             logs.push(`${level} - ${message}`);

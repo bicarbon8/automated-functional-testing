@@ -49,7 +49,7 @@ export class UiSessionGeneratorManager {
         sessionOptions ??= {};
         sessionOptions = merge(uic.options, sessionOptions);
         try {
-            const plugin = this.plugins.find(p => Err.handle(() => p?.enabled));
+            const plugin = this.plugins.find(p => Err.handle(() => p?.enabled).result);
             aftLogger.log({
                 name: this.constructor.name,
                 level: 'debug',

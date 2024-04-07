@@ -43,7 +43,10 @@ export class FilesystemReportingPlugin extends AftReporterPlugin {
     override log = async (name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => {
         if (this.enabled) {
             if (data?.length > 0) {
-                const dataStr = (data?.length) ? `, [${data?.map(d => Err.handle(() => JSON.stringify(d))).join(',')}]` : '';
+                const dataStr = (data?.length) ? `, [${data?.map(d => {
+                    const dHandled = Err.handle(() => JSON.stringify(d));
+                    return dHandled.result ?? dHandled.message;
+                }).join(',')}]` : '';
                 message = `${message}${dataStr}`;
             }
             this._appendToFile({name, level, message});

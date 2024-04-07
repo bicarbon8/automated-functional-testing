@@ -113,11 +113,11 @@ export class Verifier implements PromiseLike<void> {
     async pass(): Promise<void> {
         const passActions = this._actionMap.get('pass');
         if (passActions?.length) {
-            passActions.forEach(a => {
-                Err.handle(() => a(), {
-                    errLevel: 'debug',
-                    logger: this.reporter
-                });
+            passActions.forEach(async a => {
+                const handledPass = Err.handle(() => a());
+                if (handledPass.message) {
+                    await this.reporter.warn(handledPass.message);
+                }
             });
         }
         await this.submitResult('passed');
@@ -127,11 +127,11 @@ export class Verifier implements PromiseLike<void> {
         const err: string = message ?? 'unknown error occurred';
         const failActions = this._actionMap.get('fail');
         if (failActions?.length) {
-            failActions.forEach(a => {
-                Err.handle(() => a(), {
-                    errLevel: 'debug',
-                    logger: this.reporter
-                });
+            failActions.forEach(async a => {
+                const handledFail = Err.handle(() => a());
+                if (handledFail.message) {
+                    await this.reporter.warn(handledFail.message);
+                }
             });
         }
         await this.submitResult('failed', err);
@@ -141,11 +141,11 @@ export class Verifier implements PromiseLike<void> {
         message ??= 'test skipped';
         const skippedActions = this._actionMap.get('skipped');
         if (skippedActions?.length) {
-            skippedActions.forEach(a => {
-                Err.handle(() => a(), {
-                    errLevel: 'debug',
-                    logger: this.reporter
-                });
+            skippedActions.forEach(async a => {
+                const handledSkip = Err.handle(() => a());
+                if (handledSkip.message) {
+                    await this.reporter.warn(handledSkip.message);
+                }
             });
         }
         await this.submitResult('skipped', message);
@@ -154,11 +154,11 @@ export class Verifier implements PromiseLike<void> {
     async started(): Promise<void> {
         const startedActions: Array<Action<void>> = this._actionMap.get('started');
         if (startedActions?.length) {
-            startedActions.forEach(a => {
-                Err.handle(() => a(), {
-                    errLevel: 'debug',
-                    logger: this.reporter
-                });
+            startedActions.forEach(async a => {
+                const handledStart = Err.handle(() => a());
+                if (handledStart.message) {
+                    await this.reporter.warn(handledStart.message);
+                }
             });
         }
     }
@@ -166,11 +166,11 @@ export class Verifier implements PromiseLike<void> {
     async done(): Promise<void> {
         const doneActions = this._actionMap.get('done');
         if (doneActions?.length) {
-            doneActions.forEach(a => {
-                Err.handle(() => a(), {
-                    errLevel: 'debug',
-                    logger: this.reporter
-                });
+            doneActions.forEach(async a => {
+                const handledDone = Err.handle(() => a());
+                if (handledDone.message) {
+                    await this.reporter.warn(handledDone.message);
+                }
             });
         }
     }
@@ -409,7 +409,7 @@ export class Verifier implements PromiseLike<void> {
                 return {result: false, message: `none of the supplied tests should be run: [${testIds.join(', ')}]`};
             }
             return {result: true, message: `the following supplied tests should be run: [${shouldRunTests.join(', ')}]`};
-        } else if (this.policyEngMgr.plugins?.filter(p => Err.handle(() => p?.enabled)).length > 0) {
+        } else if (this.policyEngMgr.plugins?.filter(p => Err.handle(() => p?.enabled).result).length > 0) {
             return {result: false, message: `no associated testIds found for test, but enabled 'ITestExecutionPolicyPlugins' exist so test should not be run`}
         }
         return {result: true};

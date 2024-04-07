@@ -139,7 +139,10 @@ export class KinesisReportingPlugin extends AftReporterPlugin {
             && LogLevel.toValue(level) >= LogLevel.toValue(this.logLevel)
             && level !== 'none'
             && (this.sendStrategy === 'logsandresults' || this.sendStrategy === 'logsonly')) {
-            const dataStr = (data?.length) ? `, [${data?.map(d => Err.handle(() => JSON.stringify(d))).join(', ')}]` : '';
+            const dataStr = (data?.length) ? `, [${data?.map(d => {
+                const dHandled = Err.handle(() => JSON.stringify(d));
+                return dHandled.result ?? dHandled.message;
+            }).join(', ')}]` : '';
             const record: AWS.Firehose.Record = this._createKinesisLogRecord({
                 logName: name,
                 level: level,

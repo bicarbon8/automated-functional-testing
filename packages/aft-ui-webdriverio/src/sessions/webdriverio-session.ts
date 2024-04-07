@@ -4,6 +4,9 @@ import { UiSession } from "aft-ui";
 export class WebdriverIoSession extends UiSession {
     override async dispose(error?: any): Promise<void> {
         await super.dispose(error);
-        await Err.handleAsync(() => this.driver<WebdriverIO.Browser>().then(d => d.deleteSession())); // eslint-disable-line no-undef
+        const handled = await Err.handleAsync(() => this.driver<WebdriverIO.Browser>().then(d => d.deleteSession())); // eslint-disable-line no-undef
+        if (handled.message) {
+            await this.reporter.debug(handled.message);
+        }
     }
 }

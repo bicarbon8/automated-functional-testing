@@ -51,6 +51,6 @@ export class TestExecutionPolicyManager {
     }
 
     private _getEnabledPlugins(): Array<TestExecutionPolicyPlugin> {
-        return this.plugins.filter(p => Err.handle(() => p?.enabled));
+        return this.plugins.filter(p => Err.handle(() => p?.enabled).result);
     }
 }

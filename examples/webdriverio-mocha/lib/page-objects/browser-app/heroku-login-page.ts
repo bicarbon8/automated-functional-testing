@@ -22,10 +22,10 @@ export class HerokuLoginPage extends WebdriverIoComponent {
     /* end: widgets */
 
     async navigateTo(): Promise<void> {
-        await Err.handleAsync(() => this.driver.navigateTo('https://the-internet.herokuapp.com/login'), {
-            logger: this.reporter,
-            errLevel: 'error'
-        });
+        const handled = await Err.handleAsync(() => this.driver.navigateTo('https://the-internet.herokuapp.com/login'));
+        if (handled.message) {
+            await this.reporter.error(handled.message);
+        }
     }
 
     /* begin: page actions */

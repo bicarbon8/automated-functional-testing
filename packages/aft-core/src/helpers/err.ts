@@ -89,14 +89,23 @@ export class Err extends Object {
         return this;
     }
 
+    /**
+     * the type of `Error`
+     */
     get type(): string {
         return this.err?.name ?? 'Error';
     }
 
+    /**
+     * the `message` portion of the `Error`
+     */
     get message(): string {
         return this.err?.message ?? 'unknown';
     }
 
+    /**
+     * the stack trace of the `Error` object
+     */
     get stack(): string {
         return this.err?.stack ?? 'unknown';
     }
