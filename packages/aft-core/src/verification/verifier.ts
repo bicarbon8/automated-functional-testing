@@ -1,6 +1,6 @@
 import { Reporter } from "../plugins/reporting/reporter";
 import { TestResult } from "../plugins/reporting/test-result";
-import { TestExecutionPolicyManager } from "../plugins/test-execution-policy/test-execution-policy-manager";
+import { PolicyManager } from "../plugins/policy/policy-manager";
 import { TestStatus } from "../plugins/reporting/test-status";
 import { convert } from "../helpers/convert";
 import { Action, Func, ProcessingResult } from "../helpers/custom-types";
@@ -16,7 +16,7 @@ export type VerifierEvent = 'skipped' | 'pass' | 'fail' | 'started' | 'done';
 
 /**
  * class to be used for executing some Functional Test Assertion after checking with any
- * `TestExecutionPolicyPlugin` instances that have been loaded to confirm that the
+ * `PolicyPlugin` instances that have been loaded to confirm that the
  * assertion should be executed based on referenced Test ID(s)
  * 
  * Ex:
@@ -26,7 +26,7 @@ export type VerifierEvent = 'skipped' | 'pass' | 'fail' | 'started' | 'done';
  *   let feature = new FeatureObj();
  *   return await feature.returnExpectedValue();
  * }).withDescription('example usage for Verifier')
- * .and.withTestIds('C1234') // if TestExecutionPolicyPlugin.shouldRun('C1234') returns `false` the assertion is not run
+ * .and.withTestIds('C1234') // if PolicyPlugin.shouldRun('C1234') returns `false` the assertion is not run
  * .returns('expected value');
  * ```
  * @param assertion the `Func<Verifier, any>` function to be executed by this `Verifier`
@@ -41,7 +41,7 @@ export class Verifier implements PromiseLike<void> {
     protected _innerPromise: Promise<void>;
     protected _testIds: Set<string>;
     protected _reporter: Reporter;
-    protected _policyEngMgr: TestExecutionPolicyManager;
+    protected _policyEngMgr: PolicyManager;
     protected _buildInfoMgr: BuildInfoManager;
     protected _actionMap: Map<VerifierEvent, Array<Action<void>>>;
     protected _cacheResults: boolean;
@@ -85,9 +85,9 @@ export class Verifier implements PromiseLike<void> {
         return this._reporter;
     }
 
-    get policyEngMgr(): TestExecutionPolicyManager {
+    get policyEngMgr(): PolicyManager {
         if (!this._policyEngMgr) {
-            this._policyEngMgr = new TestExecutionPolicyManager(this.aftCfg);
+            this._policyEngMgr = new PolicyManager(this.aftCfg);
         }
         return this._policyEngMgr;
     }
@@ -265,10 +265,10 @@ export class Verifier implements PromiseLike<void> {
      * allows for setting a `testId` to be checked before executing the `assertion`
      * and to be reported to from any connected logging plugins that connect to
      * your test case management system. if all the referenced `testId` values should not be
-     * run (as returned by your `TestExecutionPolicyPlugin.shouldRun(testId)`) then
+     * run (as returned by your `PolicyPlugin.shouldRun(testId)`) then
      * the `assertion` will not be run.
      * NOTE: multiple `testId` values can be chained together
-     * @param testIds a test identifier for your connected `TestExecutionPolicyPlugin`
+     * @param testIds a test identifier for your connected `PolicyPlugin`
      * @returns this `Verifier` instance
      */
     withTestIds(...testIds: string[]): this {
@@ -301,7 +301,7 @@ export class Verifier implements PromiseLike<void> {
      * creates an object exposing internal functions allowing setting custom instances
      * to internal objects
      * @returns a `VerifierInternals` object containing functions allowing users to
-     * set values for the `Reporter`, `TestExecutionPolicyManager`, `BuildInfoManager` and
+     * set values for the `Reporter`, `PolicyManager`, `BuildInfoManager` and
      * `ResultsManager`
      */
     get internals(): VerifierInternals {
@@ -328,12 +328,12 @@ export class Verifier implements PromiseLike<void> {
             },
 
             /**
-             * allows for using a specific `TestExecutionPolicyManager` instance. if not
-             * set then the global `TestExecutionPolicyManager.instance()` will be used
-             * @param policyMgr a `TestExecutionPolicyManager` instance
+             * allows for using a specific `PolicyManager` instance. if not
+             * set then the global `PolicyManager.instance()` will be used
+             * @param policyMgr a `PolicyManager` instance
              * @returns this `Verifier` instance
              */
-            usingTestExecutionPolicyManager: (policyMgr: TestExecutionPolicyManager): this => {
+            usingPolicyManager: (policyMgr: PolicyManager): this => {
                 this._policyEngMgr = policyMgr;
                 return this;
             },
@@ -391,7 +391,7 @@ export class Verifier implements PromiseLike<void> {
     /**
      * checks if any of the supplied test ids should be run and returns `true` if at least
      * one of them should
-     * @param testIds iterates over all test ids checking the `TestExecutionPolicyManager` to see
+     * @param testIds iterates over all test ids checking the `PolicyManager` to see
      * if any should be run and returns `true` if any should be run, otherwise `false`
      * @returns a `ProcessingResult<boolean>` indicating if the testing should proceed
      */
@@ -410,7 +410,7 @@ export class Verifier implements PromiseLike<void> {
             }
             return {result: true, message: `the following supplied tests should be run: [${shouldRunTests.join(', ')}]`};
         } else if (this.policyEngMgr.plugins?.filter(p => Err.handle(() => p?.enabled).result).length > 0) {
-            return {result: false, message: `no associated testIds found for test, but enabled 'ITestExecutionPolicyPlugins' exist so test should not be run`}
+            return {result: false, message: `no associated testIds found for test, but enabled 'IPolicyPlugins' exist so test should not be run`}
         }
         return {result: true};
     }
@@ -518,7 +518,7 @@ export class Verifier implements PromiseLike<void> {
  *   let feature = new FeatureObj();
  *   return await feature.returnExpectedValue();
  * }).withDescription('example usage for Verifier')
- * .and.withTestIds('C1234') // if TestExecutionPolicyManager.shouldRun('C1234') returns `false` the assertion is not run
+ * .and.withTestIds('C1234') // if PolicyManager.shouldRun('C1234') returns `false` the assertion is not run
  * .returns('expected value');
  * ```
  * @param assertion the `Func<Verifier, any>` function to be executed by this `Verifier`

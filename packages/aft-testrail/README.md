@@ -1,5 +1,5 @@
 # AFT-TestRail
-provides TestRail result logging as well as test execution filtering for users of `aft-core` by implementing plugins for the `ReportingPlugin` and `TestExecutionPolicyPlugin` plugin base classes.
+provides TestRail result logging as well as test execution filtering for users of `aft-core` by implementing plugins for the `ReportingPlugin` and `PolicyPlugin` plugin base classes.
 
 ## TestRailReportingPlugin
 the `TestRailReportingPlugin` extends from `ReportingPlugin` in `aft-core`. if enabled, this plugin will log test results to test cases in a TestRail Plan (if no plan is specified a new one is created the first time one is attempted to be accessed by the plugin). it can be enabled by including the following in your `aftconfig.json` file:
@@ -25,13 +25,13 @@ the `TestRailReportingPlugin` extends from `ReportingPlugin` in `aft-core`. if e
 - **maxLogCharacters** - [OPTIONAL] `number` for the maximum number of additional log characters to send to TestRail when logging a `TestResult` _(defaults to 250)_
 - **policyEngineEnabled** - `bool` if set to `true` then any `verifier` with a Test ID will first check that the test should be run via this plugin. any matching test in a Test Plan with a `Passing` or `Failing` result or if not using a Test Plan, if the Test ID does not exist in the referenced Project and Suites will result in a `false` response. _(defaults to `true`)_
 
-## TestRailTestExecutionPolicyPlugin
-the `TestRailTestExecutionPolicyPlugin` extends from `TestExecutionPolicyPlugin` interface in `aft-core`. if enabled this plugin will lookup the status of TestRail tests based on their case ID from the set of IDs passed in to a `Verifier.withTestId` function. it can be enabled by including the following in your `aftconfig.json` file:
+## TestRailPolicyPlugin
+the `TestRailPolicyPlugin` extends from `PolicyPlugin` interface in `aft-core`. if enabled this plugin will lookup the status of TestRail tests based on their case ID from the set of IDs passed in to a `Verifier.withTestId` function. it can be enabled by including the following in your `aftconfig.json` file:
 ```json
 {
     "logLevel": "info",
     "plugin": [
-        {"name": "testrail-test-execution-policy-plugin", "searchDir": "./node_modules/"}
+        {"name": "testrail-policy-plugin", "searchDir": "./node_modules/"}
     ],
     "TestRailConfig": {
         "url": "https://your.testrail.instance/",

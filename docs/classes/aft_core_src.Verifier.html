@@ -18,10 +18,10 @@
 <h1>Class Verifier</h1></div>
 <section class="tsd-panel tsd-comment">
 <div class="tsd-comment tsd-typography"><p>class to be used for executing some Functional Test Assertion after checking with any
-<code>TestExecutionPolicyPlugin</code> instances that have been loaded to confirm that the
+<code>PolicyPlugin</code> instances that have been loaded to confirm that the
 assertion should be executed based on referenced Test ID(s)</p>
 <p>Ex:</p>
-<pre><code><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-0">verify</span><span class="hl-1">(</span><span class="hl-3">async</span><span class="hl-1"> (</span><span class="hl-8">v</span><span class="hl-1">: </span><span class="hl-6">Verifier</span><span class="hl-1">) </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-8">v</span><span class="hl-1">.</span><span class="hl-8">reporter</span><span class="hl-1">.</span><span class="hl-0">info</span><span class="hl-1">(</span><span class="hl-2">&#39;doing some testing...&#39;</span><span class="hl-1">);</span><br/><span class="hl-1">  </span><span class="hl-3">let</span><span class="hl-1"> </span><span class="hl-8">feature</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">FeatureObj</span><span class="hl-1">();</span><br/><span class="hl-1">  </span><span class="hl-7">return</span><span class="hl-1"> </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-8">feature</span><span class="hl-1">.</span><span class="hl-0">returnExpectedValue</span><span class="hl-1">();</span><br/><span class="hl-1">}).</span><span class="hl-0">withDescription</span><span class="hl-1">(</span><span class="hl-2">&#39;example usage for Verifier&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">.</span><span class="hl-8">and</span><span class="hl-1">.</span><span class="hl-0">withTestIds</span><span class="hl-1">(</span><span class="hl-2">&#39;C1234&#39;</span><span class="hl-1">) </span><span class="hl-4">// if TestExecutionPolicyPlugin.shouldRun(&#39;C1234&#39;) returns `false` the assertion is not run</span><br/><span class="hl-1">.</span><span class="hl-0">returns</span><span class="hl-1">(</span><span class="hl-2">&#39;expected value&#39;</span><span class="hl-1">);</span>
+<pre><code><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-0">verify</span><span class="hl-1">(</span><span class="hl-3">async</span><span class="hl-1"> (</span><span class="hl-8">v</span><span class="hl-1">: </span><span class="hl-6">Verifier</span><span class="hl-1">) </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-8">v</span><span class="hl-1">.</span><span class="hl-8">reporter</span><span class="hl-1">.</span><span class="hl-0">info</span><span class="hl-1">(</span><span class="hl-2">&#39;doing some testing...&#39;</span><span class="hl-1">);</span><br/><span class="hl-1">  </span><span class="hl-3">let</span><span class="hl-1"> </span><span class="hl-8">feature</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">FeatureObj</span><span class="hl-1">();</span><br/><span class="hl-1">  </span><span class="hl-7">return</span><span class="hl-1"> </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-8">feature</span><span class="hl-1">.</span><span class="hl-0">returnExpectedValue</span><span class="hl-1">();</span><br/><span class="hl-1">}).</span><span class="hl-0">withDescription</span><span class="hl-1">(</span><span class="hl-2">&#39;example usage for Verifier&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">.</span><span class="hl-8">and</span><span class="hl-1">.</span><span class="hl-0">withTestIds</span><span class="hl-1">(</span><span class="hl-2">&#39;C1234&#39;</span><span class="hl-1">) </span><span class="hl-4">// if PolicyPlugin.shouldRun(&#39;C1234&#39;) returns `false` the assertion is not run</span><br/><span class="hl-1">.</span><span class="hl-0">returns</span><span class="hl-1">(</span><span class="hl-2">&#39;expected value&#39;</span><span class="hl-1">);</span>
 </code><button>Copy</button></pre>
 </div>
 <div class="tsd-comment tsd-typography">
@@ -152,7 +152,7 @@ assertion should be executed based on referenced Test ID(s)</p>
 <li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/caf35dc/packages/aft-core/src/verification/verifier.ts#L38">aft-core/src/verification/verifier.ts:38</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected"><a id="_policyEngMgr" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_policy<wbr/>Eng<wbr/>Mgr</span><a href="#_policyEngMgr" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">_policy<wbr/>Eng<wbr/>Mgr</span><span class="tsd-signature-symbol">:</span> <a href="aft_core_src.TestExecutionPolicyManager.html" class="tsd-signature-type tsd-kind-class">TestExecutionPolicyManager</a></div><aside class="tsd-sources">
+<div class="tsd-signature"><span class="tsd-kind-property">_policy<wbr/>Eng<wbr/>Mgr</span><span class="tsd-signature-symbol">:</span> <a href="aft_core_src.PolicyManager.html" class="tsd-signature-type tsd-kind-class">PolicyManager</a></div><aside class="tsd-sources">
 <ul>
 <li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/caf35dc/packages/aft-core/src/verification/verifier.ts#L44">aft-core/src/verification/verifier.ts:44</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected"><a id="_reporter" class="tsd-anchor"></a>
@@ -229,7 +229,7 @@ assertion should be executed based on referenced Test ID(s)</p>
 to internal objects</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="../types/aft_core_src.VerifierInternals.html" class="tsd-signature-type tsd-kind-type-alias">VerifierInternals</a></h4><p>a <code>VerifierInternals</code> object containing functions allowing users to
-set values for the <code>Reporter</code>, <code>TestExecutionPolicyManager</code>, <code>BuildInfoManager</code> and
+set values for the <code>Reporter</code>, <code>PolicyManager</code>, <code>BuildInfoManager</code> and
 <code>ResultsManager</code></p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
@@ -238,9 +238,9 @@ set values for the <code>Reporter</code>, <code>TestExecutionPolicyManager</code
 <section class="tsd-panel tsd-member"><a id="policyEngMgr" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>policy<wbr/>Eng<wbr/>Mgr</span><a href="#policyEngMgr" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
-<li class="tsd-signature" id="policyEngMgr.policyEngMgr-1"><span class="tsd-signature-symbol">get</span> policyEngMgr<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_core_src.TestExecutionPolicyManager.html" class="tsd-signature-type tsd-kind-class">TestExecutionPolicyManager</a></li>
+<li class="tsd-signature" id="policyEngMgr.policyEngMgr-1"><span class="tsd-signature-symbol">get</span> policyEngMgr<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_core_src.PolicyManager.html" class="tsd-signature-type tsd-kind-class">PolicyManager</a></li>
 <li class="tsd-description">
-<h4 class="tsd-returns-title">Returns <a href="aft_core_src.TestExecutionPolicyManager.html" class="tsd-signature-type tsd-kind-class">TestExecutionPolicyManager</a></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <a href="aft_core_src.PolicyManager.html" class="tsd-signature-type tsd-kind-class">PolicyManager</a></h4><aside class="tsd-sources">
 <ul>
 <li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/caf35dc/packages/aft-core/src/verification/verifier.ts#L88">aft-core/src/verification/verifier.ts:88</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="reporter" class="tsd-anchor"></a>
@@ -552,7 +552,7 @@ logging output from this <code>Verifier</code></p>
 <div class="tsd-comment tsd-typography"><p>allows for setting a <code>testId</code> to be checked before executing the <code>assertion</code>
 and to be reported to from any connected logging plugins that connect to
 your test case management system. if all the referenced <code>testId</code> values should not be
-run (as returned by your <code>TestExecutionPolicyPlugin.shouldRun(testId)</code>) then
+run (as returned by your <code>PolicyPlugin.shouldRun(testId)</code>) then
 the <code>assertion</code> will not be run.
 NOTE: multiple <code>testId</code> values can be chained together</p>
 </div>
@@ -561,7 +561,7 @@ NOTE: multiple <code>testId</code> values can be chained together</p>
 <ul class="tsd-parameter-list">
 <li>
 <h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">testIds</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
-<div class="tsd-comment tsd-typography"><p>a test identifier for your connected <code>TestExecutionPolicyPlugin</code></p>
+<div class="tsd-comment tsd-typography"><p>a test identifier for your connected <code>PolicyPlugin</code></p>
 </div>
 <div class="tsd-comment tsd-typography"></div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="aft_core_src.Verifier.html" class="tsd-signature-type tsd-kind-class">Verifier</a></h4><p>this <code>Verifier</code> instance</p>
@@ -652,8 +652,8 @@ NOTE: multiple <code>testId</code> values can be chained together</p>
 <li><a href="aft_core_src.PluginConfig.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Plugin<wbr/>Config</span></a></li>
 <li><a href="aft_core_src.Reporter.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Reporter</span></a></li>
 <li><a href="aft_core_src.Retry.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Retry</span></a></li>
-<li><a href="aft_core_src.TestExecutionPolicyManager.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Test<wbr/>Execution<wbr/>Policy<wbr/>Manager</span></a></li>
-<li><a href="aft_core_src.TestExecutionPolicyPlugin.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Test<wbr/>Execution<wbr/>Policy<wbr/>Plugin</span></a></li>
+<li><a href="aft_core_src.PolicyManager.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Test<wbr/>Execution<wbr/>Policy<wbr/>Manager</span></a></li>
+<li><a href="aft_core_src.PolicyPlugin.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Test<wbr/>Execution<wbr/>Policy<wbr/>Plugin</span></a></li>
 <li><a href="aft_core_src.TitleParser.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Title<wbr/>Parser</span></a></li>
 <li><a href="aft_core_src.Verifier.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Verifier</span></a></li>
 <li><a href="../interfaces/aft_core_src.Disposable.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-256"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-interface)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.51 16V15.016H11.298V8.224H9.51V7.24H14.19V8.224H12.402V15.016H14.19V16H9.51Z" fill="var(--color-text)"></path></g></svg><span>Disposable</span></a></li>

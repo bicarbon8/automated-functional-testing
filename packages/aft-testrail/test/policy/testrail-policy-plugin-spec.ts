@@ -1,13 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { TestExecutionPolicyManager, AftConfig } from 'aft-core';
+import { PolicyManager, AftConfig } from 'aft-core';
 import { httpService } from 'aft-web-services';
-import { TestRailTestExecutionPolicyPlugin } from "../../src";
+import { TestRailPolicyPlugin } from "../../src";
 import { TestRailApi } from '../../src/api/testrail-api';
 import { TestRailCase, TestRailTest } from '../../src/api/testrail-custom-types';
 import { statusConverter } from '../../src/helpers/status-converter';
 
-describe('TestRailTestExecutionPolicyPlugin', () => {
+describe('TestRailPolicyPlugin', () => {
     beforeEach(() => {
         spyOn(httpService, 'performRequest').and.returnValue(Promise.resolve({
             headers: {'content-type': 'application/json'},
@@ -39,7 +39,7 @@ describe('TestRailTestExecutionPolicyPlugin', () => {
             status_id: statusConverter.toTestRailStatus('passed')
         };
         spyOn(api, 'getTestsInRuns').and.returnValue(Promise.resolve([expected]));
-        const plugin: TestRailTestExecutionPolicyPlugin = new TestRailTestExecutionPolicyPlugin(aftCfg, api);
+        const plugin: TestRailPolicyPlugin = new TestRailPolicyPlugin(aftCfg, api);
         
         const actual: TestRailTest = await plugin.getTestCase('C1234');
 
@@ -70,7 +70,7 @@ describe('TestRailTestExecutionPolicyPlugin', () => {
             created_on: Date.now()
         } as TestRailCase;
         spyOn(api, 'getCasesInSuites').and.returnValue(Promise.resolve([expected]));
-        let plugin: TestRailTestExecutionPolicyPlugin = new TestRailTestExecutionPolicyPlugin(aftCfg, api);
+        let plugin: TestRailPolicyPlugin = new TestRailPolicyPlugin(aftCfg, api);
         
         let actual: TestRailCase = await plugin.getTestCase('C1234');
 
@@ -83,12 +83,12 @@ describe('TestRailTestExecutionPolicyPlugin', () => {
 
     it('can be loaded by the testcasemanager', async () => {
         const aftCfg = new AftConfig({
-            plugins: ['testrail-test-execution-policy-plugin']
+            plugins: ['testrail-policy-plugin']
         });
-        let mgr: TestExecutionPolicyManager = new TestExecutionPolicyManager(aftCfg);
+        let mgr: PolicyManager = new PolicyManager(aftCfg);
         let plugin = await mgr.plugins[0];
 
         expect(plugin).toBeDefined();
-        expect(plugin.constructor.name).toEqual('TestRailTestExecutionPolicyPlugin');
+        expect(plugin.constructor.name).toEqual('TestRailPolicyPlugin');
     });
 });

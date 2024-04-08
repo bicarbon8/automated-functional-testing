@@ -1,5 +1,5 @@
 # AFT-Jira
-provides Jira result logging as well as test execution filtering for users of `aft-core` by implementing plugins for the `ReportingPlugin` and `TestExecutionPolicyPlugin` plugin base classes.
+provides Jira result logging as well as test execution filtering for users of `aft-core` by implementing plugins for the `ReportingPlugin` and `PolicyPlugin` plugin base classes.
 
 ## JiraReportingPlugin
 the `JiraReportingPlugin` extends from `ReportingPlugin` in `aft-core`. if enabled, this plugin will, upon receiving a failing test result, check for any existing open defects referencing the Test ID and if found, add a comment that the issue still exists or, if not found, will mark the defect as resolved. it can be enabled by including the following in your `aftconfig.json` file:
@@ -27,13 +27,13 @@ the `JiraReportingPlugin` extends from `ReportingPlugin` in `aft-core`. if enabl
 - **projectKey** - `string` the Jira project key (value displayed after `projects` in the URL when viewing the Jira Project) in which new issues will be created if `openDefectOnFail` is `true`
 - **closedStatusCategoryName** - `string` containing the name visible in the UI for closed Jira issues. this is used to lookup open issues and when transitioning issues to a closed state if `closeDefectOnPass` is `true`. _(defaults to `"Done"`)_
 
-## JiraTestExecutionPolicyPlugin
-the `JiraTestExecutionPolicyPlugin` extends from `TestExecutionPolicyPlugin` interface in `aft-core`. if enabled this plugin will search Jira for open defects referencing the specified Test IDs from the set of IDs passed in to a `Verifier.withTestId` function and if found this plugin will return a result of `false` from the `shouldRun` function. it can be enabled by including the following in your `aftconfig.json` file:
+## JiraPolicyPlugin
+the `JiraPolicyPlugin` extends from `PolicyPlugin` interface in `aft-core`. if enabled this plugin will search Jira for open defects referencing the specified Test IDs from the set of IDs passed in to a `Verifier.withTestId` function and if found this plugin will return a result of `false` from the `shouldRun` function. it can be enabled by including the following in your `aftconfig.json` file:
 ```json
 {
     "logLevel": "info",
     "plugins": [
-        {"name": "jira-test-execution-policy-plugin", "searchDir": "./node_modules"}
+        {"name": "jira-policy-plugin", "searchDir": "./node_modules"}
     ],
     "JiraConfig": {
         "url": "https://your.jira.instance/",

@@ -1,4 +1,4 @@
-import { AftConfig, TestExecutionPolicyPlugin, ProcessingResult } from 'aft-core';
+import { AftConfig, PolicyPlugin, ProcessingResult } from 'aft-core';
 import { TestRailApi } from '../api/testrail-api';
 import { TestRailCase, TestRailRun, TestRailTest } from '../api/testrail-custom-types';
 import { TestRailConfig } from '../configuration/testrail-config';
@@ -10,7 +10,7 @@ import { PlanId } from '../helpers/plan-id';
  * all retrieved from `TestRailConfig` under the `TestRailConfig`
  * section of your `aftconfig.json` file
  */
-export class TestRailTestExecutionPolicyPlugin extends TestExecutionPolicyPlugin {
+export class TestRailPolicyPlugin extends PolicyPlugin {
     private readonly _enabled: boolean;
     public override get enabled(): boolean {
         return this._enabled;
@@ -33,7 +33,7 @@ export class TestRailTestExecutionPolicyPlugin extends TestExecutionPolicyPlugin
         }
         let searchTerm: string;
         // if logging enabled then use TestRail Plan
-        if (this.aftCfg.getSection(TestRailConfig).logLevel != 'none') {
+        if (this.aftCfg.getSection(TestRailConfig).logLevel !== 'none') {
             searchTerm = `case_id=${caseId}`;
         } else {
             // use Project and Suite IDs
@@ -54,11 +54,11 @@ export class TestRailTestExecutionPolicyPlugin extends TestExecutionPolicyPlugin
      */
     async findTestCases(searchTerm: string): Promise<Array<TestRailCase | TestRailTest>> {
         if (searchTerm) {
-            let keyVal: string[] = searchTerm.split('=');
+            const keyVal: string[] = searchTerm.split('=');
             if (keyVal && keyVal.length > 1) {
-                let key: string = keyVal[0];
-                let val: string = keyVal[1];
-                return await this._findTestsByField(key, val);
+                const key: string = keyVal[0];
+                const val: string = keyVal[1];
+                return this._findTestsByField(key, val);
             }
         }
         return [];
@@ -74,10 +74,10 @@ export class TestRailTestExecutionPolicyPlugin extends TestExecutionPolicyPlugin
     override shouldRun = async (caseId: string): Promise<ProcessingResult<boolean>> => {
         if (this.enabled) {
             const cfg = this.aftCfg.getSection(TestRailConfig);
-            let test: TestRailCase = await this.getTestCase(caseId);
+            const test: TestRailCase = await this.getTestCase(caseId);
             if (test) {
                 if (test['status_id']) {
-                    if (statusConverter.fromTestRailStatus(test['status_id']) != 'passed') {
+                    if (statusConverter.fromTestRailStatus(test['status_id']) !== 'passed') {
                         return {result: true, message: `'${caseId}' results found, but none of them were passing so re-run`};
                     }
                     return {result: false, message: `'${caseId}' results found and already marked as passing`};
@@ -91,30 +91,28 @@ export class TestRailTestExecutionPolicyPlugin extends TestExecutionPolicyPlugin
 
     private async _findTestsByField(field: string, val: string): Promise<Array<TestRailCase | TestRailTest>> {
         const cfg = this.aftCfg.getSection(TestRailConfig);
-        let tests = new Array<TestRailCase | TestRailTest>();
+        const tests = new Array<TestRailCase | TestRailTest>();
         if ((cfg.logLevel ?? this.aftCfg.logLevel ?? 'warn') !== 'none') {
             // look for TestRailTests in TestRail Plan
-            let planId: number = await PlanId.get(this.aftCfg, this._api);
-            let trRuns: TestRailRun[] = await this._api.getRunsInPlan(planId);
-            let runIds: number[] = [];
+            const planId: number = await PlanId.get(this.aftCfg, this._api);
+            const trRuns: TestRailRun[] = await this._api.getRunsInPlan(planId);
+            const runIds: number[] = [];
             trRuns.forEach((r) => {
                 runIds.push(r.id);
             });
-            let trTests: TestRailTest[] = await this._api.getTestsInRuns(runIds);
-            for (let i=0; i<trTests.length; i++) {
-                let trTest: TestRailTest = trTests[i];
-                if (trTest && trTest.hasOwnProperty(field) && trTest[field]?.toString() == val) {
+            const trTests: TestRailTest[] = await this._api.getTestsInRuns(runIds);
+            for (const trTest of trTests) {
+                if (trTest?.[field]?.toString() === val) {
                     tests.push(trTest);
                 }
             }
         } else {
             // look for TestRailCases in Project and Suites
-            let projectId: number = cfg.projectId;
-            let suiteIds: number[] = cfg.suiteIds ?? [];
-            let trCases: TestRailCase[] = await this._api.getCasesInSuites(projectId, suiteIds);
-            for (let i=0; i<trCases.length; i++) {
-                let trCase: TestRailCase = trCases[i];
-                if (trCase && trCase.hasOwnProperty(field) && trCase[field]?.toString() == val) {
+            const projectId: number = cfg.projectId;
+            const suiteIds: number[] = cfg.suiteIds ?? [];
+            const trCases: TestRailCase[] = await this._api.getCasesInSuites(projectId, suiteIds);
+            for (const trCase of trCases) {
+                if (trCase?.[field]?.toString() === val) {
                     tests.push(trCase);
                 }
             }

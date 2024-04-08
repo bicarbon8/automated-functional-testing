@@ -98,8 +98,8 @@ class PluginLoader {
      * returns a plugin by it's name
      * ex: 
      * ```typescript
-     * let TestExecutionPolicyPlugin = pluginloader.getPluginByName<TestRailTestExecutionPolicyPlugin>('testrail-test-execution-policy-plugin');
-     * // TestExecutionPolicyPlugin will be `undefined` if not found
+     * let PolicyPlugin = pluginloader.getPluginByName<TestRailPolicyPlugin>('testrail-policy-plugin');
+     * // PolicyPlugin will be `undefined` if not found
      * ```
      * 
      * NOTE: if this is the first time the `pluginloader` is being called then plugins will

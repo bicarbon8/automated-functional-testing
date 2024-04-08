@@ -2,7 +2,7 @@ import { AftConfig } from "../configuration/aft-config";
 import { BuildInfoManager } from "../plugins/build-info/build-info-manager"
 import { Reporter } from "../plugins/reporting/reporter";
 import { TestResult } from "../plugins/reporting/test-result";
-import { TestExecutionPolicyManager } from "../plugins/test-execution-policy/test-execution-policy-manager";
+import { PolicyManager } from "../plugins/policy/policy-manager";
 import { Verifier } from "./verifier"
 
 export type VerifierInternals = {
@@ -28,12 +28,12 @@ export type VerifierInternals = {
      */
     usingReporter: (mgr: Reporter) => Verifier; // eslint-disable-line no-unused-vars
     /**
-     * allows for using a specific `TestExecutionPolicyManager` instance. if not
-     * set then the global `TestExecutionPolicyManager.instance()` will be used
-     * @param policyMgr a `TestExecutionPolicyManager` instance
+     * allows for using a specific `PolicyManager` instance. if not
+     * set then the global `PolicyManager.instance()` will be used
+     * @param policyMgr a `PolicyManager` instance
      * @returns this `Verifier` instance
      */
-    usingTestExecutionPolicyManager: (mgr: TestExecutionPolicyManager) => Verifier; // eslint-disable-line no-unused-vars
+    usingPolicyManager: (mgr: PolicyManager) => Verifier; // eslint-disable-line no-unused-vars
     /**
      * enables results caching which can be used to prevent sending the same result multiple times
      * when using an external test framework reporter plugin

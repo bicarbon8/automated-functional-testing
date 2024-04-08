@@ -1,7 +1,7 @@
 {
     "plugins": [
         "testrail-reporting-plugin",
-        "testrail-test-execution-policy-plugin"
+        "testrail-policy-plugin"
     ],
     "TestRailConfig": {
         "url": "%testrail_url%",

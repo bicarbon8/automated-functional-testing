@@ -1,4 +1,4 @@
-import { AftConfig, TestExecutionPolicyPlugin, ProcessingResult } from 'aft-core';
+import { AftConfig, PolicyPlugin, ProcessingResult } from 'aft-core';
 import { JiraApi } from '../api/jira-api';
 import { JiraIssue } from '../api/jira-custom-types';
 import { JiraConfig } from '../configuration/jira-config';
@@ -9,7 +9,7 @@ import { CommonActions } from '../helpers/common-actions';
  * all retrieved from `JiraConfig` under the `JiraConfig`
  * section of your `aftconfig.json` file
  */
-export class JiraTestExecutionPolicyPlugin extends TestExecutionPolicyPlugin {
+export class JiraPolicyPlugin extends PolicyPlugin {
     private readonly _enabled: boolean;
     public override get enabled(): boolean {
         return this._enabled;

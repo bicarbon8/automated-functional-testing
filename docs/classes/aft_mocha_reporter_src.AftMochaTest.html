@@ -171,7 +171,7 @@ are written using</p>
 <li>Defined in aft-core/dist/src/verification/verifier.d.ts:33</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_policyEngMgr" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_policy<wbr/>Eng<wbr/>Mgr</span><a href="#_policyEngMgr" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">_policy<wbr/>Eng<wbr/>Mgr</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">TestExecutionPolicyManager</span></div><aside class="tsd-sources">
+<div class="tsd-signature"><span class="tsd-kind-property">_policy<wbr/>Eng<wbr/>Mgr</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">PolicyManager</span></div><aside class="tsd-sources">
 <p>Inherited from AftTest._policyEngMgr</p>
 <ul>
 <li>Defined in aft-core/dist/src/verification/verifier.d.ts:39</li></ul></aside></section>
@@ -281,7 +281,7 @@ this will not be set</p>
 to internal objects</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">VerifierInternals</span></h4><p>a <code>VerifierInternals</code> object containing functions allowing users to
-set values for the <code>Reporter</code>, <code>TestExecutionPolicyManager</code>, <code>BuildInfoManager</code> and
+set values for the <code>Reporter</code>, <code>PolicyManager</code>, <code>BuildInfoManager</code> and
 <code>ResultsManager</code></p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
@@ -291,9 +291,9 @@ set values for the <code>Reporter</code>, <code>TestExecutionPolicyManager</code
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="policyEngMgr" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>policy<wbr/>Eng<wbr/>Mgr</span><a href="#policyEngMgr" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-signature" id="policyEngMgr.policyEngMgr-1"><span class="tsd-signature-symbol">get</span> policyEngMgr<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">TestExecutionPolicyManager</span></li>
+<li class="tsd-signature" id="policyEngMgr.policyEngMgr-1"><span class="tsd-signature-symbol">get</span> policyEngMgr<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">PolicyManager</span></li>
 <li class="tsd-description">
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">TestExecutionPolicyManager</span></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">PolicyManager</span></h4><aside class="tsd-sources">
 <p>Inherited from AftTest.policyEngMgr</p>
 <ul>
 <li>Defined in aft-core/dist/src/verification/verifier.d.ts:54</li></ul></aside></li></ul></section>
@@ -623,7 +623,7 @@ logging output from this <code>Verifier</code></p>
 <div class="tsd-comment tsd-typography"><p>allows for setting a <code>testId</code> to be checked before executing the <code>assertion</code>
 and to be reported to from any connected logging plugins that connect to
 your test case management system. if all the referenced <code>testId</code> values should not be
-run (as returned by your <code>TestExecutionPolicyPlugin.shouldRun(testId)</code>) then
+run (as returned by your <code>PolicyPlugin.shouldRun(testId)</code>) then
 the <code>assertion</code> will not be run.
 NOTE: multiple <code>testId</code> values can be chained together</p>
 </div>
@@ -632,7 +632,7 @@ NOTE: multiple <code>testId</code> values can be chained together</p>
 <ul class="tsd-parameter-list">
 <li>
 <h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">testIds</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
-<div class="tsd-comment tsd-typography"><p>a test identifier for your connected <code>TestExecutionPolicyPlugin</code></p>
+<div class="tsd-comment tsd-typography"><p>a test identifier for your connected <code>PolicyPlugin</code></p>
 </div>
 <div class="tsd-comment tsd-typography"></div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="aft_mocha_reporter_src.AftMochaTest.html" class="tsd-signature-type tsd-kind-class">AftMochaTest</a></h4><p>this <code>Verifier</code> instance</p>

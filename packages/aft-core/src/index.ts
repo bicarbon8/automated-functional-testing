@@ -33,9 +33,9 @@ export * from './plugins/reporting/reporting-plugin';
 export * from './plugins/reporting/reporter';
 export * from './plugins/reporting/test-result';
 export * from './plugins/reporting/test-status';
-/** plugins/test-execution-policy */
-export * from './plugins/test-execution-policy/test-execution-policy-plugin';
-export * from './plugins/test-execution-policy/test-execution-policy-manager';
+/** plugins/policy */
+export * from './plugins/policy/policy-plugin';
+export * from './plugins/policy/policy-manager';
 /** verification */
 export * from './verification/verifier';
 export * from './verification/verifier-internals';

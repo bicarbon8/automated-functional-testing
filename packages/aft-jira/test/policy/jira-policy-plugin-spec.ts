@@ -1,12 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { TestExecutionPolicyManager, AftConfig, rand, ProcessingResult } from 'aft-core';
+import { PolicyManager, AftConfig, rand, ProcessingResult } from 'aft-core';
 import { httpService } from 'aft-web-services';
-import { JiraTestExecutionPolicyPlugin } from "../../src";
+import { JiraPolicyPlugin } from "../../src";
 import { JiraApi } from '../../src/api/jira-api';
 import { JiraFields, JiraIssue } from '../../src/api/jira-custom-types';
 
-describe('JiraTestExecutionPolicyPlugin', () => {
+describe('JiraPolicyPlugin', () => {
     beforeEach(() => {
         spyOn(httpService, 'performRequest').and.returnValue(Promise.resolve({
             headers: {'content-type': 'application/json'},
@@ -39,7 +39,7 @@ describe('JiraTestExecutionPolicyPlugin', () => {
                 } as JiraFields
             } as JiraIssue);
             spyOn(api, 'searchIssues').and.returnValue(Promise.resolve(expected));
-            const plugin: JiraTestExecutionPolicyPlugin = new JiraTestExecutionPolicyPlugin(aftCfg, api);
+            const plugin: JiraPolicyPlugin = new JiraPolicyPlugin(aftCfg, api);
             
             const actual: ProcessingResult<boolean> = await plugin.shouldRun('C1234');
 
@@ -61,7 +61,7 @@ describe('JiraTestExecutionPolicyPlugin', () => {
             const api = new JiraApi(aftCfg);
             const expected: Array<JiraIssue> = [];
             spyOn(api, 'searchIssues').and.returnValue(Promise.resolve(expected));
-            const plugin: JiraTestExecutionPolicyPlugin = new JiraTestExecutionPolicyPlugin(aftCfg, api);
+            const plugin: JiraPolicyPlugin = new JiraPolicyPlugin(aftCfg, api);
             
             const actual: ProcessingResult<boolean> = await plugin.shouldRun('C1234');
 
@@ -83,7 +83,7 @@ describe('JiraTestExecutionPolicyPlugin', () => {
             const api = new JiraApi(aftCfg);
             const expected: Array<JiraIssue> = [];
             spyOn(api, 'searchIssues').and.returnValue(Promise.resolve(expected));
-            const plugin: JiraTestExecutionPolicyPlugin = new JiraTestExecutionPolicyPlugin(aftCfg, api);
+            const plugin: JiraPolicyPlugin = new JiraPolicyPlugin(aftCfg, api);
             
             const actual: ProcessingResult<boolean> = await plugin.shouldRun('C1234');
 
@@ -95,13 +95,13 @@ describe('JiraTestExecutionPolicyPlugin', () => {
 
         it('can be loaded by the testcasemanager', async () => {
             const aftCfg = new AftConfig({
-                plugins: ['jira-test-execution-policy-plugin']
+                plugins: ['jira-policy-plugin']
             });
-            let mgr: TestExecutionPolicyManager = new TestExecutionPolicyManager(aftCfg);
+            let mgr: PolicyManager = new PolicyManager(aftCfg);
             let plugin = mgr.plugins[0];
 
             expect(plugin).toBeDefined();
-            expect(plugin.constructor.name).toEqual('JiraTestExecutionPolicyPlugin');
+            expect(plugin.constructor.name).toEqual('JiraPolicyPlugin');
         });
     });
 });

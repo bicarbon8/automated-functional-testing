@@ -10,7 +10,7 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
 {
     "plugins": [
         {"name": "testrail-reporting-plugin", "searchDir": "../"},
-        {"name": "testrail-test-execution-policy-plugin", "searchDir": "../"},
+        {"name": "testrail-policy-plugin", "searchDir": "../"},
         {"name": "kinesis-reporting-plugin", "searchDir": "../"},
         {"name": "html-reporting-plugin", "searchDir": "../"},
         {"name": "filesystem-reporting-plugin", "searchDir": "../"}
@@ -80,7 +80,7 @@ running `npm run test:e2e` will execute the tests using Jasmine which should res
 ```
 
 ## TestRail and Jira integration
-if using `testrail-reporting-plugin`, `testrail-test-execution-policy-plugin`, `jira-reporting-plugin` or `jira-test-execution-policy-plugin` then you must ensure your `verify(assertion)`, or `Verifier` instances have valid Test Case ID's referenced. The values specified for the `withTestIds` function must be the TestRail Case ID's referenced by your existing TestRail Plan (not to be confused with the TestRail Test ID's that start with the letter _T_). Modifications will need to be made in two places per test:
+if using `testrail-reporting-plugin`, `testrail-policy-plugin`, `jira-reporting-plugin` or `jira-policy-plugin` then you must ensure your `verify(assertion)`, or `Verifier` instances have valid Test Case ID's referenced. The values specified for the `withTestIds` function must be the TestRail Case ID's referenced by your existing TestRail Plan (not to be confused with the TestRail Test ID's that start with the letter _T_). Modifications will need to be made in two places per test:
 
 ### Specifying Test IDs
 on the `Verifier` instance, set the following:

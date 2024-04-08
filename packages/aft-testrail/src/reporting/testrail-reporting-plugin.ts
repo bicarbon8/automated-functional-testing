@@ -58,7 +58,7 @@ export class TestRailReportingPlugin extends AftReportingPlugin {
 
     override log = async (name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => {
         if (this.enabled) {
-            if (LogLevel.toValue(level) >= LogLevel.toValue(this.logLevel) && level != 'none') {
+            if (LogLevel.toValue(level) >= LogLevel.toValue(this.logLevel) && level !== 'none') {
                 let logs = this.logs(name);
                 if (logs.length > 0) {
                     logs += '\n'; // separate new logs from previous
@@ -87,14 +87,14 @@ export class TestRailReportingPlugin extends AftReportingPlugin {
     }
 
     private async _getTestRailResultForTestResult(logName: string, result: TestResult): Promise<TestRailResultRequest> {
-        let maxChars: number = this._maxLogChars;
+        const maxChars: number = this._maxLogChars;
         let elapsed: number = 0;
         if (result.metadata) {
-            let millis: number = result.metadata['durationMs'] || 0;
+            const millis: number = result.metadata['durationMs'] || 0;
             elapsed = Math.floor(millis / 60000); // elapsed is in minutes
         }
         const logs = this.logs(logName);
-        let trResult: TestRailResultRequest = {
+        const trResult: TestRailResultRequest = {
             comment: ellide(`${logs}\n${result.resultMessage}`, maxChars, 'beginning'),
             elapsed: elapsed.toString(),
             status_id: statusConverter.toTestRailStatus(result.status)

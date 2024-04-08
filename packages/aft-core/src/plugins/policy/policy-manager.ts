@@ -3,23 +3,23 @@ import { AftLogger } from "../../logging/aft-logger";
 import { ProcessingResult } from "../../helpers/custom-types";
 import { Err } from "../../helpers/err";
 import { pluginLoader } from "../plugin-loader";
-import { TestExecutionPolicyPlugin } from "./test-execution-policy-plugin";
+import { PolicyPlugin } from "./policy-plugin";
 import { LogMessageData } from "../../logging/log-message-data";
 
-export class TestExecutionPolicyManager {
+export class PolicyManager {
     public readonly aftCfg: AftConfig;
-    public readonly plugins: Array<TestExecutionPolicyPlugin>;
+    public readonly plugins: Array<PolicyPlugin>;
 
     private readonly _aftLogger: AftLogger;
 
     constructor(aftCfg?: AftConfig) {
         this.aftCfg = aftCfg ?? aftConfig;
         this._aftLogger = new AftLogger(this.constructor.name, aftCfg);
-        this.plugins = pluginLoader.getEnabledPluginsByType(TestExecutionPolicyPlugin, this.aftCfg);
+        this.plugins = pluginLoader.getEnabledPluginsByType(PolicyPlugin, this.aftCfg);
     }
 
     /**
-     * iterates over all enabled `ITestExecutionPolicyPlugin` implementations calling `shouldRun`
+     * iterates over all enabled `IPolicyPlugin` implementations calling `shouldRun`
      * and if any of the results return `false` then a `ShouldRunResult` containing `false`
      * and a reason comprised of all plugin reasons will be returned, otherwise `true`
      * @param testId the test case id to check

@@ -137,7 +137,7 @@ export class OnDisposeConsoleReportingPlugin extends ReportingPlugin {
 }
 ```
 
-### Example TestExecutionPolicyPlugin (TestRail)
+### Example PolicyPlugin (TestRail)
 ```typescript
 export class TestRailConfig {
     username: string;
@@ -148,7 +148,7 @@ export class TestRailConfig {
     planId: number;
     enabled: boolean = false;
 }
-export class TestRailTestExecutionPolicyPlugin extends TestExecutionPolicyPlugin {
+export class TestRailPolicyPlugin extends PolicyPlugin {
     public override get enabled(): boolean { return this._enabled; }
     private readonly _client: TestRailClient;
     private readonly _enabled: boolean;
@@ -177,7 +177,7 @@ the `aft-core` package comes with an `AftTest` class which can be extended from 
 - `aft-jest-reporter`: [aft-test](../aft-jest-reporter/README.md#aftjesttest)
 
 ## Testing with the Verifier
-the `Verifier` class and `verify` functions of `aft-core` enable testing with pre-execution filtering based on integration with external test execution policy managers via plugin packages extending the `TestExecutionPolicyPlugin` class (see examples above).
+the `Verifier` class and `verify` functions of `aft-core` enable testing with pre-execution filtering based on integration with external test execution policy managers via plugin packages extending the `PolicyPlugin` class (see examples above).
 
 ```typescript
 // jasmine spec using `aft-jasmine-reporter` package
@@ -192,7 +192,7 @@ describe('Sample Test', () => {
         const feature: FeatureObj = new FeatureObj();
         /**
          * the `verify(assertion).returns(expectation)` function
-         * checks any specified `TestExecutionPolicyPlugin` implementations
+         * checks any specified `PolicyPlugin` implementations
          * to ensure the test should be run. It will then
          * report to any `ReportingPlugin` implementations
          * with an `TestResult` indicating the success,
@@ -204,9 +204,9 @@ describe('Sample Test', () => {
 });
 ```
 
-in the above example, the `await feature.performAction()` call will only be run if a `TestExecutionPolicyPlugin` is loaded and returns `true` from it's `shouldRun(testId: string)` function (or no `TestExecutionPolicyPlugin` is loaded). additionally, any logs associated with the above `verify` call will use a `logName` of `"expect_that_performAction_will_return_result_of_action"` resulting in log lines like the following:
+in the above example, the `await feature.performAction()` call will only be run if a `PolicyPlugin` is loaded and returns `true` from it's `shouldRun(testId: string)` function (or no `PolicyPlugin` is loaded). additionally, any logs associated with the above `verify` call will use a `logName` of `"expect_that_performAction_will_return_result_of_action"` resulting in log lines like the following:
 ```
-09:14:01 - [expect that performAction will return 'result of action'] - TRACE - no TestExecutionPolicyPlugin in use so run all tests
+09:14:01 - [expect that performAction will return 'result of action'] - TRACE - no PolicyPlugin in use so run all tests
 ```
 
 ### VerifierMatcher

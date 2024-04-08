@@ -23,7 +23,7 @@ while no configuration is required, the `aft-jest-reporter` supports all AFT con
 this package comes with two helper classes that can be utilised from within your Jest specs to make use of AFT features.
 
 ### `AftJestTest`
-the `AftJestTest` class extends from the `AftTest` class providing the ability to parse the Spec name for any referenced Test. each Test ID must be surrounded with square brackets `[ABC123]`. additionally you can then call the `AftJestTest.shouldRun()` async function or use `AftJestTest.verify(assertion)` which will determine if your test should be run based on any AFT `TestExecutionPolicyPlugin` instances referenced in your `aftconfig.json` file. using the `AftJestTest` class would look like the following:
+the `AftJestTest` class extends from the `AftTest` class providing the ability to parse the Spec name for any referenced Test. each Test ID must be surrounded with square brackets `[ABC123]`. additionally you can then call the `AftJestTest.shouldRun()` async function or use `AftJestTest.verify(assertion)` which will determine if your test should be run based on any AFT `PolicyPlugin` instances referenced in your `aftconfig.json` file. using the `AftJestTest` class would look like the following:
 ```javascript
 describe('YourTestSuite', () => {
     test('can check if test [C1234] should be run', async () => {
@@ -43,7 +43,7 @@ which would output the following to your console and any AFT `ReportingPlugin` i
 ```
 
 ## NOTES
-- because Jest refuses to allow programmatic skipping of tests (see: [7245](https://github.com/jestjs/jest/issues/7245)) you will either need to perform all test verification inside an AFT `Verifier` or if using `AftJestTest` you may call `if (await new AftJestTest(expect).shouldRun().result !== true) { return; }` at the top of your test function to ensure AFT can skip tests that should not be run based on any `TestExecutionPolicyPlugin` responses. this means Jest will report the test as `'passing'`, but AFT will correctly report `'skipped'`
+- because Jest refuses to allow programmatic skipping of tests (see: [7245](https://github.com/jestjs/jest/issues/7245)) you will either need to perform all test verification inside an AFT `Verifier` or if using `AftJestTest` you may call `if (await new AftJestTest(expect).shouldRun().result !== true) { return; }` at the top of your test function to ensure AFT can skip tests that should not be run based on any `PolicyPlugin` responses. this means Jest will report the test as `'passing'`, but AFT will correctly report `'skipped'`
 - this Jest `Reporter` expects that there is only one instance of Jest running from a single location as it writes to a file to track the actual status of the test on completion
 - you can use the AFT `Verifier` in combination with the `AftTest` classes like follows:
 ```typescript

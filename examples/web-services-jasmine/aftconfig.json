@@ -1,9 +1,9 @@
 {
     "plugins": [
         {"name": "testrail-reporting-plugin", "searchDir": "../../packages/"},
-        {"name": "testrail-test-execution-policy-plugin", "searchDir": "../../packages/"},
+        {"name": "testrail-policy-plugin", "searchDir": "../../packages/"},
         {"name": "jira-reporting-plugin", "searchDir": "../../packages/"},
-        {"name": "jira-test-execution-policy-plugin", "searchDir": "../../packages/"},
+        {"name": "jira-policy-plugin", "searchDir": "../../packages/"},
         {"name": "kinesis-reporting-plugin", "searchDir": "../../packages/"},
         {"name": "html-reporting-plugin", "searchDir": "../../packages/"},
         {"name": "filesystem-reporting-plugin", "searchDir": "../../packages/"}

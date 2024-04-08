@@ -1,7 +1,7 @@
-import { AftConfig, TestExecutionPolicyManager, ProcessingResult, pluginLoader } from "../../../src";
-import { MockTestExecutionPolicyPlugin } from "./mock-test-execution-policy-plugin";
+import { AftConfig, PolicyManager, ProcessingResult, pluginLoader } from "../../../src";
+import { MockPolicyPlugin } from "./mock-policy-plugin";
 
-describe('TestExecutionPolicyManager', () => {
+describe('PolicyManager', () => {
     beforeEach(() => {
         pluginLoader.reset();
     })
@@ -10,10 +10,10 @@ describe('TestExecutionPolicyManager', () => {
         pluginLoader.reset();
     })
 
-    it('can load a specified TestExecutionPolicyPlugin', async () => {
-        let tcm: TestExecutionPolicyManager = new TestExecutionPolicyManager(new AftConfig({
-            plugins: ['mock-test-execution-policy-plugin'],
-            MockTestExecutionPolicyPluginConfig: {
+    it('can load a specified PolicyPlugin', async () => {
+        let tcm: PolicyManager = new PolicyManager(new AftConfig({
+            plugins: ['mock-policy-plugin'],
+            MockPolicyPluginConfig: {
                 enabled: true
             }
         }));
@@ -22,12 +22,12 @@ describe('TestExecutionPolicyManager', () => {
         expect(actual).toBeDefined();
         expect(actual.length).withContext('plugins array length').toBe(1);
         expect(actual[0]).toBeDefined();
-        expect(actual[0].constructor.name).withContext('plugin should be instance of MockTestExecutionPolicyPlugin').toEqual(MockTestExecutionPolicyPlugin.name);
+        expect(actual[0].constructor.name).withContext('plugin should be instance of MockPolicyPlugin').toEqual(MockPolicyPlugin.name);
     });
 
     describe('shouldRun', () => {
         it('returns true if no plugins found or loaded', async () => {
-            let tcm = new TestExecutionPolicyManager();
+            let tcm = new PolicyManager();
             const plugins = tcm.plugins;
             expect(plugins.length).toBe(0);
 
@@ -38,9 +38,9 @@ describe('TestExecutionPolicyManager', () => {
 
         it('returns true if no enabled plugins found', async () => {
             pluginLoader.reset();
-            let tcm: TestExecutionPolicyManager = new TestExecutionPolicyManager(new AftConfig({
-                plugins: ['mock-test-execution-policy-plugin'],
-                MockTestExecutionPolicyPluginConfig: {
+            let tcm: PolicyManager = new PolicyManager(new AftConfig({
+                plugins: ['mock-policy-plugin'],
+                MockPolicyPluginConfig: {
                     enabled: false
                 }
             }));

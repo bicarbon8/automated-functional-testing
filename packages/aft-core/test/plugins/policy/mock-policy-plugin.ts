@@ -1,11 +1,11 @@
-import { TestExecutionPolicyPlugin, AftConfig, ProcessingResult } from "../../../src";
+import { PolicyPlugin, AftConfig, ProcessingResult } from "../../../src";
 
-export class MockTestExecutionPolicyPluginConfig {
+export class MockPolicyPluginConfig {
     enabled: boolean = false;
     expectedResults: Map<string, ProcessingResult<boolean>> = new Map<string, ProcessingResult<boolean>>();
 }
 
-export class MockTestExecutionPolicyPlugin extends TestExecutionPolicyPlugin {
+export class MockPolicyPlugin extends PolicyPlugin {
     private readonly _enabled: boolean;
     public override get enabled(): boolean {
         return this._enabled;
@@ -13,7 +13,7 @@ export class MockTestExecutionPolicyPlugin extends TestExecutionPolicyPlugin {
     private readonly _tests: Map<string, ProcessingResult<boolean>>;
     constructor(aftCfg?: AftConfig) {
         super(aftCfg);
-        const cfg = this.aftCfg.getSection(MockTestExecutionPolicyPluginConfig);
+        const cfg = this.aftCfg.getSection(MockPolicyPluginConfig);
         this._enabled = cfg.enabled ?? false;
         if (this.enabled) {
             this._tests = cfg.expectedResults ?? new Map<string, ProcessingResult<boolean>>();
