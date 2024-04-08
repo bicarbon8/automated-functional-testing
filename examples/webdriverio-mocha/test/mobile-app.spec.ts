@@ -25,16 +25,18 @@ describe('Functional Mobile App Tests using WebdriverIO and Mocha', () => {
         });
         let app: any;
         const uploadedApps = httpData.as<Array<any>>(resp);
-        for (const a of uploadedApps) {
-            if (a.app_name === 'WikipediaSample.apk') {
-                app = a;
-                break;
+        if (Array.isArray(uploadedApps)) {
+            for (const a of uploadedApps) {
+                if (a.app_name === 'WikipediaSample.apk') {
+                    app = a;
+                    break;
+                }
             }
         }
         if (!app) {
             const formData = new FormData();
             formData.append('custom_id', 'AFT.WikipediaApp');
-            formData.append('file', fs.createReadStream(path.join(process.cwd(), './test/ui/mobile-app-tests/mobile-apps/WikipediaSample.apk')));
+            formData.append('file', fs.createReadStream(path.join(process.cwd(), './lib/mobile-apps/WikipediaSample.apk')));
             const result: any = await httpService.performRequest({
                 url: "https://api-cloud.browserstack.com/app-automate/upload",
                 postData: formData,
