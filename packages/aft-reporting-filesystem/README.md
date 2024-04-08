@@ -10,9 +10,8 @@ this plugin accepts configuration options in the following format:
 `aftconfig.json`
 ```json
 {
-    "pluginsSearchDir": "../node_modules",
-    "pluginNames": [
-      "filesystem-reporting-plugin"
+    "plugins": [
+      {"name": "filesystem-reporting-plugin", "searchDir": "./node_modules"}
     ],
     "FilesystemReportingPluginConfig": {
         "logLevel": "trace",

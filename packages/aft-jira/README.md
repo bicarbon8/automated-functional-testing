@@ -6,8 +6,8 @@ the `JiraReportingPlugin` extends from `ReportingPlugin` in `aft-core`. if enabl
 ```json
 {
     "logLevel": "info",
-    "pluginNames": [
-        "jira-reporting-plugin"
+    "plugins": [
+        {"name": "jira-reporting-plugin", "searchDir": "./node_modules"}
     ],
     "JiraConfig": {
         "url": "https://your.jira.instance/",
@@ -32,8 +32,8 @@ the `JiraTestExecutionPolicyPlugin` extends from `TestExecutionPolicyPlugin` int
 ```json
 {
     "logLevel": "info",
-    "pluginNames": [
-        "jira-test-execution-policy-plugin"
+    "plugins": [
+        {"name": "jira-test-execution-policy-plugin", "searchDir": "./node_modules"}
     ],
     "JiraConfig": {
         "url": "https://your.jira.instance/",

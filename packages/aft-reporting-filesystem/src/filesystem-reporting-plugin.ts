@@ -1,16 +1,16 @@
 import * as process from 'node:process';
 import * as path from "node:path";
-import { AftConfig, convert, Err, ExpiringFileLock, fileio, AftReporterPlugin, AftReporterPluginConfig, LogLevel, LogMessageData, TestResult } from "aft-core";
+import { AftConfig, convert, Err, ExpiringFileLock, fileio, AftReportingPlugin, AftReportingPluginConfig, LogLevel, LogMessageData, TestResult } from "aft-core";
 import * as date from "date-and-time";
 
-export class FilesystemReportingPluginConfig extends AftReporterPluginConfig {
+export class FilesystemReportingPluginConfig extends AftReportingPluginConfig {
     override logLevel: LogLevel = 'trace';
     outputPath: string = path.join(process.cwd(), 'logs');
     includeResults = true;
     dateFormat = 'YYYY-MM-DD HH:mm:ss.SSS';
 }
 
-export class FilesystemReportingPlugin extends AftReporterPlugin {
+export class FilesystemReportingPlugin extends AftReportingPlugin {
     public override get logLevel(): LogLevel {
         return this._level;
     }

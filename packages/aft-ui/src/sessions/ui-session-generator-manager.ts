@@ -8,8 +8,8 @@ import { UiSessionConfig } from "../configuration/ui-session-config";
  * and call it's `getSession` function
  * ```
  * {
- *   "pluginNames": [
- *     "grid-session-generator-plugin",
+ *   "plugins": [
+ *     {"name": "grid-session-generator-plugin", "searchDir": "./node_modules/"},
  *     "local-browser-session-generator-plugin"
  *   ]
  *   ...

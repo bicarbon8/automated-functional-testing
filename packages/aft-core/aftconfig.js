@@ -1,6 +1,6 @@
 module.exports = {
     logLevel: 'none',
-    pluginNames: [],
+    plugins: [],
     ReporterConfig: {
         logLevel: 'none'
     }

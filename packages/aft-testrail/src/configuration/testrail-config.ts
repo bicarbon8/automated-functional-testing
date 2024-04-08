@@ -1,4 +1,4 @@
-import { LogLevel, AftReporterPluginConfig } from "aft-core";
+import { LogLevel, AftReportingPluginConfig } from "aft-core";
 
 /**
  * reads configuration from either the passed in `TestRailConfigOptions`
@@ -21,7 +21,7 @@ import { LogLevel, AftReporterPluginConfig } from "aft-core";
  * TestRail plan will be created and the value stored in a shared file for access
  * by other processes and subsequent test executions
  */
-export class TestRailConfig extends AftReporterPluginConfig {
+export class TestRailConfig extends AftReportingPluginConfig {
     public url: string;
     public user: string;
     public accessKey: string;

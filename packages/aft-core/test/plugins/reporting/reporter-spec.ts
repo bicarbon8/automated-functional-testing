@@ -24,7 +24,7 @@ describe('Reporter', () => {
         const reporterName = 'will send logs to any registered ReportingPlugin implementations';
         const reporter: Reporter = new Reporter(reporterName, new AftConfig({
             logLevel: 'trace',
-            pluginNames: [mockReportingPluginName]
+            plugins: [mockReportingPluginName]
         }));
         const plugin = reporter.plugins.find(p => p?.enabled);
         const logs = new Array<LogMessageData>();
@@ -56,7 +56,7 @@ describe('Reporter', () => {
         const reporterName = 'will not output if level set to LogLevel of none';
         const reporter: Reporter = new Reporter(reporterName, new AftConfig({
             logLevel: 'none',
-            pluginNames: []
+            plugins: []
         }));
         const consoleSpy = spyOn(console, 'log').and.callThrough();
 
@@ -69,7 +69,7 @@ describe('Reporter', () => {
     it('will send cloned LogMessageData to any registered ReportingPlugin implementations', async () => {
         const reporterName = 'will send cloned LogMessageData to any registered ReportingPlugin implementations';
         const reporter = new Reporter(reporterName, new AftConfig({
-            pluginNames: [mockReportingPluginName],
+            plugins: [mockReportingPluginName],
             logLevel: 'trace'
         }));
         const plugin = reporter.plugins.find(p => p.enabled) as MockReportingPlugin;
@@ -88,7 +88,7 @@ describe('Reporter', () => {
     it('calls ReportingPlugin.finalise on reporter.finalise', async () => {
         const reporterName = 'calls ReportingPlugin.finalise on reporter.finalise';
         const reporter = new Reporter(reporterName, new AftConfig({
-            pluginNames: [mockReportingPluginName],
+            plugins: [mockReportingPluginName],
             logLevel: 'trace'
         }));
         const plugin = reporter.plugins.find(p => p.enabled);
@@ -110,7 +110,7 @@ describe('Reporter', () => {
     it('handles exceptions thrown by loaded plugins', async () => {
         const reporterName = 'handles exceptions thrown by loaded plugins';
         const reporter = new Reporter(reporterName, new AftConfig({
-            pluginNames: ['mock-reporting-plugin', 'throws-reporting-plugin']
+            plugins: ['mock-reporting-plugin', 'throws-reporting-plugin']
         }));
 
         expect(async () => await reporter.out('error', rand.guid)).withContext('log').not.toThrow();
@@ -121,7 +121,7 @@ describe('Reporter', () => {
         const reporterName = 'passes manager LogLevel to plugins if not set in PluginConfig';
         const reporter: Reporter = new Reporter(reporterName, new AftConfig({
             logLevel: 'error',
-            pluginNames: [mockReportingPluginName]
+            plugins: [mockReportingPluginName]
         }));
 
         expect(reporter.plugins.length).withContext('expect at least 1 loaded plugin').toBeGreaterThan(0);
@@ -135,7 +135,7 @@ describe('Reporter', () => {
         const reporterName = 'passes manager LogLevel to plugins if not set in PluginConfig';
         const reporter: Reporter = new Reporter(reporterName, new AftConfig({
             logLevel: 'error',
-            pluginNames: [mockReportingPluginName], 
+            plugins: [mockReportingPluginName], 
             MockReportingPluginConfig: {
                 logLevel: 'trace'
             }
@@ -150,7 +150,7 @@ describe('Reporter', () => {
     it('will not call any plugin methods if plugin is not enabled', async () => {
         const logName = 'will not call any plugin methods if plugin is not enabled';
         const reporter: Reporter = new Reporter(logName, new AftConfig({
-            pluginNames: [mockReportingPluginName], 
+            plugins: [mockReportingPluginName], 
             MockReportingPluginConfig: {
                 logLevel: 'none'
             }
@@ -165,7 +165,7 @@ describe('Reporter', () => {
     it('sends cloned results to all loaded and enabled plugins', async () => {
         const name = rand.getString(12);
         const reporter = new Reporter(name, new AftConfig({
-            pluginNames: [mockReportingPluginName],
+            plugins: [mockReportingPluginName],
             MockReportingPluginConfig: {
                 logLevel: 'trace'
             }

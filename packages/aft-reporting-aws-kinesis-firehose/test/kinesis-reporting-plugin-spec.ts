@@ -300,7 +300,7 @@ describe('KinesisReportingPlugin', () => {
 
     it('can be loaded by the Reporter', async () => {
         const config = {
-            pluginNames: [
+            plugins: [
                 'kinesis-reporting-plugin'
             ],
             KinesisReportingPluginConfig: {

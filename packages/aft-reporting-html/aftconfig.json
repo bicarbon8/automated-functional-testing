@@ -1,9 +1,8 @@
 {
-    "Reporter": {
-        "pluginNames": ["html-reporting-plugin"],
-        "searchDir": "../"
-    },
-    "htmlReportingPlugin": {
+    "plugins": [
+        {"name": "html-reporting-plugin", "searchDir": "../"}
+    ],
+    "HtmlReporterPluginConfig": {
         "fileName": "TestSummary.html",
         "outputDir": "./dist",
         "maxLogLines": 4,

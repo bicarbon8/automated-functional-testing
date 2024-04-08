@@ -144,7 +144,7 @@ describe('TestRailReportingPlugin', () => {
 
     it('can be loaded by the Reporter', async () => {
         const aftCfg = new AftConfig({
-            pluginNames: ['testrail-reporting-plugin']
+            plugins: ['testrail-reporting-plugin']
         });
         const mgr: Reporter = new Reporter('can be loaded by the Reporter', aftCfg);
         const plugin = mgr.plugins[0];

@@ -95,7 +95,7 @@ describe('JiraTestExecutionPolicyPlugin', () => {
 
         it('can be loaded by the testcasemanager', async () => {
             const aftCfg = new AftConfig({
-                pluginNames: ['jira-test-execution-policy-plugin']
+                plugins: ['jira-test-execution-policy-plugin']
             });
             let mgr: TestExecutionPolicyManager = new TestExecutionPolicyManager(aftCfg);
             let plugin = mgr.plugins[0];

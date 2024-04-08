@@ -24,6 +24,7 @@ export * from './logging/log-message-data';
 /** plugins */
 export * from './plugins/plugin';
 export * from './plugins/plugin-loader';
+export * from './plugins/plugin-locator';
 /** plugins/build-info */
 export * from './plugins/build-info/build-info-manager';
 export * from './plugins/build-info/build-info-plugin';

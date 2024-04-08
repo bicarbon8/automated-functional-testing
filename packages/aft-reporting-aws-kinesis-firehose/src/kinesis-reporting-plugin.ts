@@ -1,4 +1,4 @@
-import { AftReporterPlugin, LogLevel, TestResult, machineInfo, AftConfig, BuildInfoManager, AftReporterPluginConfig, Err } from "aft-core";
+import { AftReportingPlugin, LogLevel, TestResult, machineInfo, AftConfig, BuildInfoManager, AftReportingPluginConfig, Err } from "aft-core";
 import * as AWS from "aws-sdk";
 import * as pkg from "../package.json";
 import { KinesisLogRecord } from "./kinesis-log-record";
@@ -10,7 +10,7 @@ type CheckAndSendOptions = {
 
 type SendStrategy = 'logsonly' | 'resultsonly' | 'logsandresults';
 
-export class KinesisReportingPluginConfig extends AftReporterPluginConfig {
+export class KinesisReportingPluginConfig extends AftReportingPluginConfig {
     region: string;
     deliveryStream: string;
     batch = true;
@@ -41,7 +41,7 @@ export class KinesisReportingPluginConfig extends AftReporterPluginConfig {
  * - ECS Credentials: similar to the EC2 Metadata, but on ECS
  * - Process Credentials: any credentials set on the current process
  */
-export class KinesisReportingPlugin extends AftReporterPlugin {
+export class KinesisReportingPlugin extends AftReportingPlugin {
     private readonly _logs: Map<string, AWS.Firehose.Record[]>;
     private readonly _buildInfo: BuildInfoManager;
     private readonly _level: LogLevel;

@@ -13,7 +13,7 @@ describe('PluginLoader', () => {
     describe('getPluginByName', () => {
         it('can load a plugin by name', () => {
             const plugin = pluginLoader.getPluginByName<MockPlugin>('mock-plugin', new AftConfig({
-                pluginNames: ['mock-plugin'],
+                plugins: ['mock-plugin'],
                 MockPluginConfig: {
                     enabled: true
                 }
@@ -25,7 +25,7 @@ describe('PluginLoader', () => {
 
         it('will still return a plugin if not enabled', () => {
             const plugin = pluginLoader.getPluginByName<MockPlugin>('mock-plugin', new AftConfig({
-                pluginNames: ['mock-plugin'],
+                plugins: ['mock-plugin'],
                 MockPluginConfig: {
                     enabled: false
                 }
@@ -39,7 +39,7 @@ describe('PluginLoader', () => {
     describe('getPluginsByType', () => {
         it('can load a class implementing IPlugin', () => {
             const plugins = pluginLoader.getPluginsByType(Plugin, new AftConfig({
-                pluginNames: ['mock-plugin'],
+                plugins: ['mock-plugin'],
                 MockPluginConfig: {
                     enabled: true
                 }
@@ -52,7 +52,7 @@ describe('PluginLoader', () => {
 
         it('will return a plugin if not enabled', () => {
             const plugins = pluginLoader.getPluginsByType(Plugin, new AftConfig({
-                pluginNames: ['mock-plugin'],
+                plugins: ['mock-plugin'],
                 MockPluginConfig: {
                     enabled: false
                 }
@@ -67,7 +67,7 @@ describe('PluginLoader', () => {
     describe('getEnabledPluginsByType', () => {
         it('will not return a plugin if not enabled', () => {
             const plugins = pluginLoader.getEnabledPluginsByType(Plugin, new AftConfig({
-                pluginNames: ['mock-plugin'],
+                plugins: ['mock-plugin'],
                 MockPluginConfig: {
                     enabled: false
                 }

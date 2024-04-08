@@ -8,14 +8,13 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
 
 ```json
 {
-    "pluginNames": [
-        "testrail-reporting-plugin",
-        "testrail-test-execution-policy-plugin",
-        "kinesis-reporting-plugin",
-        "html-reporting-plugin",
-        "filesystem-reporting-plugin",
+    "plugins": [
+        {"name": "testrail-reporting-plugin", "searchDir": "../"},
+        {"name": "testrail-test-execution-policy-plugin", "searchDir": "../"},
+        {"name": "kinesis-reporting-plugin", "searchDir": "../"},
+        {"name": "html-reporting-plugin", "searchDir": "../"},
+        {"name": "filesystem-reporting-plugin", "searchDir": "../"}
     ],
-    "pluginsSearchDir": "../",
     "logLevel": "info",
     "KinesisReportingPluginConfig": {
         "logLevel": "warn",
@@ -42,8 +41,7 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
     }
 }
 ```
-- **pluginNames** - `Array<string>` containing names that should match the filename and classname (if you remove characters like `-`, `_` and `.`) of the plugins to load
-- **pluginsSearchDir** - `string` containing a relative path (to `process.cwd()`) used to search for the plugins listed in the `pluginNames` array. _(defaults to `process.cwd()`)_
+- **plugins** - `Array<string | PluginLocator>` containing names that should match the filename and classname (if you remove characters like `-`, `_` and `.`) of the plugins to load. the array can contain either a `string` in which case the plugin will be loaded by searching starting from the current NodeJs execution directory or it can be a `PluginLocator` containing a `name` and `searchDir` field in which case the plugin will be loaded by searching starting from the `searchDir`. _(if not set, `searchDir` defaults to `process.cwd()`)_
 - **logLevel** - `string` containing the minimum `LogLevel` where logs will be sent to the console. this value can also serve as a global fall-back for logging plugin implementations using `aftConfig.logLevel` if no value is specified for the given plugin. _(defaults to `'warn'`)_
 - **KinesisReportingPluginConfig** - configuration for the `kinesis-reporting-plugin`
   - **logLevel** - the minimum level where logs will be forwarded to your AWS Kinesis Firehose delivery stream. _(defaults to `'none'`)_

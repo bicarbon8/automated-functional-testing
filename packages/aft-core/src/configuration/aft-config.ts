@@ -5,6 +5,7 @@ import * as dotenv from "dotenv";
 import { Class, JsonObject, JsonValue, RetryBackOffType } from "../helpers/custom-types";
 import { fileio } from "../helpers/file-io";
 import { LogLevel } from "../logging/log-level";
+import { PluginLocator } from '../plugins/plugin-locator';
 
 export class AftConfig {
     private readonly _cfg: JsonObject;
@@ -26,15 +27,6 @@ export class AftConfig {
         this._sectionCache = new Map<string, {}>();
         dotenv.config();
     }
-    
-    /**
-     * the relative path from `process.cwd()` to begin recursively
-     * searching for plugins
-     * @default process.cwd()
-     */
-    get pluginsSearchDir(): string {
-        return this.get('pluginsSearchDir', process.cwd());
-    }
     /**
      * an array of plugin filenames (these must also match the lowercase plugin class name minus
      * any `-`, `_` and `.` characters) to load via the `pluginLoader`
@@ -43,20 +35,30 @@ export class AftConfig {
      * ```json
      * // aftconfig.json
      * {
-     *     "pluginNames": ["my-plugin"]
+     *     "plugins": [
+     *         "my-plugin",
+     *         {"name": "my-other-plugin", "searchDir": "/full/path/to/my-other-plugin/"}
+     *     ]
      * }
      * ```
-     * would match with the following plugin class
+     * would match with the following plugin classes
      * ```javascript
-     * // my-plugin.js
+     * // <project-root>/any/subdirectory/my-plugin.js
      * export class MyPlugin extends Plugin {
      *     doStuff = () => 'stuff';
      * }
      * ```
+     * and
+     * ```javascript
+     * // /full/path/to/my-other-plugin.js
+     * export class MyOtherPlugin extends Plugin {
+     *     doOtherStuff = () => 'other stuff';
+     * }
+     * ```
      * @default []
      */
-    get pluginNames(): Array<string> {
-        return this.get('pluginNames', new Array<string>());
+    get plugins(): Array<string | PluginLocator> {
+        return this.get('plugins', new Array<string | PluginLocator>());
     }
     /** 
      * used by `Reporter` 

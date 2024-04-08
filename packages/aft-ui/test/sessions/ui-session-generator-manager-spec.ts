@@ -19,7 +19,7 @@ describe('UiSessionGeneratorManager', () => {
 
     it('will get only specified plugin for use', async () => {
         const aftCfg = new AftConfig({
-            pluginNames: [
+            plugins: [
                 'fake-session-generator-plugin-throws',
                 'fake-session-generator-plugin'
             ],
@@ -37,7 +37,7 @@ describe('UiSessionGeneratorManager', () => {
 
     it('rejects with error if plugin unable to getSession', async () => {
         const aftCfg = new AftConfig({
-            pluginNames: ['fake-session-generator-plugin-throws'],
+            plugins: ['fake-session-generator-plugin-throws'],
             UiSessionConfig: {
                 generatorName: 'fake-session-generator-plugin-throws'
             }

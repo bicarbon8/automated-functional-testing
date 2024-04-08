@@ -6,8 +6,8 @@ the `TestRailReportingPlugin` extends from `ReportingPlugin` in `aft-core`. if e
 ```json
 {
     "logLevel": "info",
-    "pluginNames": [
-        "testrail-reporting-plugin"
+    "plugin": [
+        {"name": "testrail-reporting-plugin", "searchDir": "./node_modules/"}
     ],
     "TestRailConfig": {
         "url": "https://your.testrail.instance/",
@@ -30,8 +30,8 @@ the `TestRailTestExecutionPolicyPlugin` extends from `TestExecutionPolicyPlugin`
 ```json
 {
     "logLevel": "info",
-    "pluginNames": [
-        "testrail-test-execution-policy-plugin"
+    "plugin": [
+        {"name": "testrail-test-execution-policy-plugin", "searchDir": "./node_modules/"}
     ],
     "TestRailConfig": {
         "url": "https://your.testrail.instance/",

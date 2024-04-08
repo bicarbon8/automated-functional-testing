@@ -1,4 +1,4 @@
-import { AftReporterPlugin } from "./reporting-plugin";
+import { AftReportingPlugin } from "./reporting-plugin";
 import { LogLevel } from "../../logging/log-level";
 import { AftConfig } from "../../configuration/aft-config";
 import { pluginLoader } from "../plugin-loader";
@@ -27,13 +27,13 @@ import { cloneDeep } from "lodash";
  * ```
  */
 export class Reporter extends AftLogger {
-    readonly plugins: Array<AftReporterPlugin>;
+    readonly plugins: Array<AftReportingPlugin>;
     private _stepCount = 0;
 
     constructor(logName: string, aftCfg?: AftConfig) {
         super(logName, aftCfg);
-        this.plugins = pluginLoader.getEnabledPluginsByType(AftReporterPlugin, this.aftCfg);
-        this.plugins.forEach((p: AftReporterPlugin) => {
+        this.plugins = pluginLoader.getEnabledPluginsByType(AftReportingPlugin, this.aftCfg);
+        this.plugins.forEach((p: AftReportingPlugin) => {
             p?.initialise(this.loggerName)?.catch((err) => this.out('warn', err));
         });
     }

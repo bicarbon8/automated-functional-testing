@@ -12,7 +12,7 @@ describe('TestExecutionPolicyManager', () => {
 
     it('can load a specified TestExecutionPolicyPlugin', async () => {
         let tcm: TestExecutionPolicyManager = new TestExecutionPolicyManager(new AftConfig({
-            pluginNames: ['mock-test-execution-policy-plugin'],
+            plugins: ['mock-test-execution-policy-plugin'],
             MockTestExecutionPolicyPluginConfig: {
                 enabled: true
             }
@@ -39,7 +39,7 @@ describe('TestExecutionPolicyManager', () => {
         it('returns true if no enabled plugins found', async () => {
             pluginLoader.reset();
             let tcm: TestExecutionPolicyManager = new TestExecutionPolicyManager(new AftConfig({
-                pluginNames: ['mock-test-execution-policy-plugin'],
+                plugins: ['mock-test-execution-policy-plugin'],
                 MockTestExecutionPolicyPluginConfig: {
                     enabled: false
                 }

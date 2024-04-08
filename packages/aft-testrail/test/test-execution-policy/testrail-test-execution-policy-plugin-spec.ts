@@ -83,7 +83,7 @@ describe('TestRailTestExecutionPolicyPlugin', () => {
 
     it('can be loaded by the testcasemanager', async () => {
         const aftCfg = new AftConfig({
-            pluginNames: ['testrail-test-execution-policy-plugin']
+            plugins: ['testrail-test-execution-policy-plugin']
         });
         let mgr: TestExecutionPolicyManager = new TestExecutionPolicyManager(aftCfg);
         let plugin = await mgr.plugins[0];

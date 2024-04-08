@@ -41,7 +41,7 @@ describe('AftConfig', () => {
         const aftcfg = new AftConfig();
 
         expect(aftcfg.logLevel).toEqual('none');
-        expect(aftcfg.pluginNames.length).toBe(0);
+        expect(aftcfg.plugins.length).toBe(0);
         expect(aftcfg.getSection(ReporterConfig).logLevel).toEqual('none');
     })
 })

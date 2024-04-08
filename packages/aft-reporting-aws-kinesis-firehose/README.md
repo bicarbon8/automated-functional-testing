@@ -8,9 +8,8 @@ an Automated Functional Testing (AFT) library providing logging to an AWS Kinesi
 to send values to AWS Kinesis Firehose endpoints you must specify the AWS Credentials, the AWS Region Endpoint and the AWS Kinesis Delivery Stream. These take the following form in your `aftconfig.json`:
 ```json
 {
-    "pluginsSearchDir": "../node_modules",
-    "pluginNames": [
-      "kinesis-reporting-plugin"
+    "plugins": [
+      {"name": "kinesis-reporting-plugin", "searchDir": "./node_modules/"}
     ],
     "KinesisReportingPluginConfig": {
         "logLevel": "info",

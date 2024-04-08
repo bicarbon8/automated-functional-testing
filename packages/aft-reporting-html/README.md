@@ -8,9 +8,8 @@ an Automated Functional Testing (AFT) library providing logging to an HTML file 
 to specify the filename and output directory for the generated HTML results add the following to your `aftconfig.json`:
 ```json
 {
-    "pluginsSearchDir": "../node_modules",
-    "pluginNames": [
-      "html-reporting-plugin"
+    "plugins": [
+      {"name": "html-reporting-plugin", "searchDir": "./node_modules/"}
     ],
     "HtmlReportingPluginConfig": {
         "fileName": "testresults.html",

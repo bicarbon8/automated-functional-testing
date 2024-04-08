@@ -84,7 +84,7 @@ describe('HtmlReportingPlugin', () => {
 
     it('can be loaded successfully from the Reporter', async () => {
         const aftCfg = new AftConfig({
-            pluginNames: ['html-reporting-plugin']
+            plugins: ['html-reporting-plugin']
         });
         let reporter: Reporter = new Reporter('can be loaded successfully from the Reporter', aftCfg);
         let plugin = reporter.plugins[0];

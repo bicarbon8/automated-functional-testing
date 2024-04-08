@@ -25,7 +25,7 @@ describe('JiraReportingPlugin', () => {
 
     it('can be loaded by the Reporter', async () => {
         const aftCfg = new AftConfig({
-            pluginNames: ['jira-reporting-plugin'],
+            plugins: ['jira-reporting-plugin'],
             JiraConfig: {
                 openDefectOnFail: true,
                 closeDefectOnPass: true
@@ -40,7 +40,7 @@ describe('JiraReportingPlugin', () => {
 
     it('is enabled if either openDefectOnFail is true and closeDefectOnPass is false', async () => {
         const aftCfg = new AftConfig({
-            pluginNames: ['jira-reporting-plugin'],
+            plugins: ['jira-reporting-plugin'],
             JiraConfig: {
                 openDefectOnFail: true,
                 closeDefectOnPass: false
@@ -52,7 +52,7 @@ describe('JiraReportingPlugin', () => {
 
     it('is enabled if either closeDefectOnPass is true and openDefectOnFail is false', async () => {
         const aftCfg = new AftConfig({
-            pluginNames: ['jira-reporting-plugin'],
+            plugins: ['jira-reporting-plugin'],
             JiraConfig: {
                 openDefectOnFail: false,
                 closeDefectOnPass: true
@@ -64,7 +64,7 @@ describe('JiraReportingPlugin', () => {
 
     it('is not enabled if both closeDefectOnPass and openDefectOnFail are false', async () => {
         const aftCfg = new AftConfig({
-            pluginNames: ['jira-reporting-plugin'],
+            plugins: ['jira-reporting-plugin'],
             JiraConfig: {
                 openDefectOnFail: false,
                 closeDefectOnPass: false

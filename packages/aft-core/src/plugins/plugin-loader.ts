@@ -6,6 +6,7 @@ import { Plugin } from './plugin'; // eslint-disable-line no-redeclare
 import { AftConfig, aftConfig } from '../configuration/aft-config';
 import { Class } from '../helpers/custom-types';
 import { havingProps } from '../verification/verifier-matcher';
+import { PluginLocator } from './plugin-locator';
 
 class PluginLoader {
     private readonly _pluginsMap: Map<string, Plugin>;
@@ -19,11 +20,20 @@ class PluginLoader {
     private _load(aftCfg?: AftConfig): void {
         if (!this._loaded) {
             aftCfg ??= aftConfig;
-            for (const pname of aftCfg.pluginNames ?? []) {
-                const searchDir: string = (path.isAbsolute(aftCfg.pluginsSearchDir ?? ".")) 
-                    ? aftCfg.pluginsSearchDir : path.join(process.cwd(), aftCfg.pluginsSearchDir);
-                if (!this._pluginsMap.has(pname)) {
-                    this._findAndInstantiatePlugin(pname, searchDir, aftCfg);
+            for (const pname of aftCfg.plugins ?? []) {
+                let locator: PluginLocator = {name: '', searchDir: process.cwd()};
+                if (typeof pname === 'string') {
+                    locator.name = pname;
+                } else {
+                    locator = {
+                        ...locator,
+                        ...pname
+                    }
+                }
+                const searchDir: string = (path.isAbsolute(locator.searchDir ?? ".")) 
+                    ? locator.searchDir : path.join(process.cwd(), locator.searchDir);
+                if (!this._pluginsMap.has(locator.name)) {
+                    this._findAndInstantiatePlugin(locator.name, searchDir, aftCfg);
                 }
             }
             this._loaded = true;
@@ -31,7 +41,7 @@ class PluginLoader {
     }
 
     /**
-     * iterates over all plugins listed in `AftConfig.pluginNames` looking for any that 
+     * iterates over all plugins listed in `AftConfig.plugins` looking for any that 
      * extend the passed in `clazz` and returns those that do as an array of objects.
      * ex: 
      * ```typescript
@@ -62,7 +72,7 @@ class PluginLoader {
     }
 
     /**
-     * iterates over all plugins listed in `AftConfig.pluginNames` looking for any that 
+     * iterates over all plugins listed in `AftConfig.plugins` looking for any that 
      * extend the passed in `clazz` and are enabled and returns those that do as an
      * array of objects.
      * ex: 
@@ -199,21 +209,20 @@ class PluginLoader {
  * ```json
  * // aftconfig.json
  * {
- *   "pluginsSearchDir": "../",
- *   "pluginNames": [
+ *   "plugins": [
  *     "testrail-reporting-plugin",
- *     "testrail-test-execution-policy-plugin"
- *     "html-reporting-plugin"
+ *     {"name": "html-reporting-plugin", "searchDir": "../"}
  *   ]
  * }
  * ```
  * 
- * **NOTE:** the above will attempt to load a `testrail-reporting-plugin`,
- * `testrail-test-execution-policy-plugin` and `html-reporting-plugin` class. if loading
- * fails then it will search the filesystem, starting at the relative
- * `pluginsSearchDir` path (relative to current nodejs execution dir)
- * and searching all subdirectories, for a file named `custom-plugin.js` 
- * which, if found, will be imported and a new instance will be created 
- * and added to the internal cache and the array to be returned
+ * **NOTE:** the above will attempt to load a `TestRailReportingPlugin`,
+ * and `HtmlReportingPlugin` class. if loading fails then it will search
+ * the filesystem, starting at the current NodeJs execution directory
+ * and searching all subdirectories for a file named `testrail-reporting-plugin.js`
+ * and starting at the parent of the current NodeJs execution directory
+ * for a file named `html-reporting-plugin.js` which, if either is found,
+ * will be imported and a new instance will be created and added to the
+ * internal cache and the array to be returned
  */
 export const pluginLoader = new PluginLoader();

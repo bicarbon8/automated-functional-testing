@@ -1,4 +1,4 @@
-import { AftReporterPlugin, LogLevel, TestResult, AftConfig, Err } from "aft-core";
+import { AftReportingPlugin, LogLevel, TestResult, AftConfig, Err } from "aft-core";
 import { JiraApi } from "../api/jira-api";
 import { JiraConfig } from "../configuration/jira-config";
 import { CommonActions } from "../helpers/common-actions";
@@ -21,7 +21,7 @@ import { CommonActions } from "../helpers/common-actions";
  * > NOTE: if `openDefectOnFail` and `closeDefectOnPass` are both `false` this plugin will
  * be disabled
  */
-export class JiraReportingPlugin extends AftReporterPlugin {
+export class JiraReportingPlugin extends AftReportingPlugin {
     private readonly _api: JiraApi;
     private readonly _openOnFail: boolean;
     private readonly _closeOnPass: boolean;
