@@ -94,19 +94,19 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
 ## Test Execution
 running `npm run test:e2e` will execute the tests using Mocha which should result in output like the following being sent to the console (assuming the `Reporter.level` is set to something like `info` in your `aftconfig.json`):
 ```
-14:51:33 - [can access websites using AFT and Page Widgets and Facets] - STEP  - 1: navigate to LoginPage...
-14:51:35 - [can access websites using AFT and Page Widgets and Facets] - STEP  - 2: login
-14:51:36 - [can access websites using AFT and Page Widgets and Facets] - INFO  - sending tomsmith to the Username Input
-14:51:36 - [can access websites using AFT and Page Widgets and Facets] - INFO  - username entered
-14:51:37 - [can access websites using AFT and Page Widgets and Facets] - INFO  - sending SuperSecretPassword! to the Password Input
-14:51:37 - [can access websites using AFT and Page Widgets and Facets] - INFO  - password entered
-14:51:37 - [can access websites using AFT and Page Widgets and Facets] - INFO  - clicking Login Button...
-14:51:39 - [can access websites using AFT and Page Widgets and Facets] - INFO  - Login Button clicked
-14:51:39 - [can access websites using AFT and Page Widgets and Facets] - STEP  - 3: wait for message to appear...
-14:51:39 - [can access websites using AFT and Page Widgets and Facets] - STEP  - 4: get message...
-14:51:41 - [can access websites using AFT and Page Widgets and Facets] - PASS  - C3456
-14:51:41 - [can access websites using AFT and Page Widgets and Facets] - PASS  - C2345
-14:51:41 - [can access websites using AFT and Page Widgets and Facets] - PASS  - C1234
+14:51:33 - [can access websites using AFT and Browser Components] - STEP  - 1: navigate to LoginPage...
+14:51:35 - [can access websites using AFT and Browser Components] - STEP  - 2: login
+14:51:36 - [can access websites using AFT and Browser Components] - INFO  - sending tomsmith to the Username Input
+14:51:36 - [can access websites using AFT and Browser Components] - INFO  - username entered
+14:51:37 - [can access websites using AFT and Browser Components] - INFO  - sending SuperSecretPassword! to the Password Input
+14:51:37 - [can access websites using AFT and Browser Components] - INFO  - password entered
+14:51:37 - [can access websites using AFT and Browser Components] - INFO  - clicking Login Button...
+14:51:39 - [can access websites using AFT and Browser Components] - INFO  - Login Button clicked
+14:51:39 - [can access websites using AFT and Browser Components] - STEP  - 3: wait for message to appear...
+14:51:39 - [can access websites using AFT and Browser Components] - STEP  - 4: get message...
+14:51:41 - [can access websites using AFT and Browser Components] - PASS  - C3456
+14:51:41 - [can access websites using AFT and Browser Components] - PASS  - C2345
+14:51:41 - [can access websites using AFT and Browser Components] - PASS  - C1234
 ```
 
 ## TestRail and Jira integration

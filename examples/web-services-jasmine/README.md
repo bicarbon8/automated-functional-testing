@@ -72,19 +72,13 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
 ## Test Execution
 running `npm run test:e2e` will execute the tests using Jasmine which should result in output like the following being sent to the console (assuming the `Reporter.level` is set to something like `info` in your `aftconfig.json`):
 ```
-14:51:33 - [can access websites using AFT and Page Widgets and Facets] - STEP  - 1: navigate to LoginPage...
-14:51:35 - [can access websites using AFT and Page Widgets and Facets] - STEP  - 2: login
-14:51:36 - [can access websites using AFT and Page Widgets and Facets] - INFO  - sending tomsmith to the Username Input
-14:51:36 - [can access websites using AFT and Page Widgets and Facets] - INFO  - username entered
-14:51:37 - [can access websites using AFT and Page Widgets and Facets] - INFO  - sending SuperSecretPassword! to the Password Input
-14:51:37 - [can access websites using AFT and Page Widgets and Facets] - INFO  - password entered
-14:51:37 - [can access websites using AFT and Page Widgets and Facets] - INFO  - clicking Login Button...
-14:51:39 - [can access websites using AFT and Page Widgets and Facets] - INFO  - Login Button clicked
-14:51:39 - [can access websites using AFT and Page Widgets and Facets] - STEP  - 3: wait for message to appear...
-14:51:39 - [can access websites using AFT and Page Widgets and Facets] - STEP  - 4: get message...
-14:51:41 - [can access websites using AFT and Page Widgets and Facets] - PASS  - C3456
-14:51:41 - [can access websites using AFT and Page Widgets and Facets] - PASS  - C2345
-14:51:41 - [can access websites using AFT and Page Widgets and Facets] - PASS  - C1234
+14:51:33 - [can access APIs using AFT HttpService] - STEP  - 1: make request to url: https://some.url.fake...
+14:51:36 - [can access APIs using AFT HttpService] - DEBUG - data included in request is: '{field: val, ...}'
+14:51:39 - [can access APIs using AFT HttpService] - STEP  - 2: ensure response status code is within 200 range...
+14:51:39 - [can access APIs using AFT HttpService] - DEBUG - response status code is 201...
+14:51:41 - [can access APIs using AFT HttpService] - PASS  - C3456
+14:51:41 - [can access APIs using AFT HttpService] - PASS  - C2345
+14:51:41 - [can access APIs using AFT HttpService] - PASS  - C1234
 ```
 
 ## TestRail and Jira integration
