@@ -33,7 +33,7 @@ export class AftMochaTest extends AftTest {
      */
     constructor(scope?: any) {
         super(scope?.test?.fullTitle());
-        this.internals.withResultsCaching(); // eslint-disable-line
+        this.internals.withFileSystemCache(); // eslint-disable-line
         this.test = scope?.test;
     }
 

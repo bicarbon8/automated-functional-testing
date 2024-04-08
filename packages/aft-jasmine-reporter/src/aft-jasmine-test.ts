@@ -34,7 +34,7 @@ export class AftJasmineTest extends AftTest {
             }
         }
         super(fullName);
-        this.internals.withResultsCaching(); // eslint-disable-line
+        this.internals.withFileSystemCache(); // eslint-disable-line
         this.test = scope?.test;
     }
 

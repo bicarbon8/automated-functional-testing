@@ -28,7 +28,7 @@ the `JiraReportingPlugin` extends from `ReportingPlugin` in `aft-core`. if enabl
 - **closedStatusCategoryName** - `string` containing the name visible in the UI for closed Jira issues. this is used to lookup open issues and when transitioning issues to a closed state if `closeDefectOnPass` is `true`. _(defaults to `"Done"`)_
 
 ## JiraPolicyPlugin
-the `JiraPolicyPlugin` extends from `PolicyPlugin` interface in `aft-core`. if enabled this plugin will search Jira for open defects referencing the specified Test IDs from the set of IDs passed in to a `Verifier.withTestId` function and if found this plugin will return a result of `false` from the `shouldRun` function. it can be enabled by including the following in your `aftconfig.json` file:
+the `JiraPolicyPlugin` extends from `PolicyPlugin` interface in `aft-core`. if enabled this plugin will search Jira for open defects referencing the specified Test IDs from the set of IDs passed in to a `Verifier.withTestIds` function and if found this plugin will return a result of `false` from the `shouldRun` function. it can be enabled by including the following in your `aftconfig.json` file:
 ```json
 {
     "logLevel": "info",

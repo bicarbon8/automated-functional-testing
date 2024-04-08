@@ -11,6 +11,7 @@ import { BuildInfoManager } from "../plugins/build-info/build-info-manager";
 import { AftConfig, aftConfig } from "../configuration/aft-config";
 import { VerifierInternals } from "./verifier-internals";
 import { FileSystemMap } from "../helpers/file-system-map";
+import { CacheMap } from "../helpers/cache-map";
 
 export type VerifierEvent = 'skipped' | 'pass' | 'fail' | 'started' | 'done';
 
@@ -44,8 +45,8 @@ export class Verifier implements PromiseLike<void> {
     protected _policyEngMgr: PolicyManager;
     protected _buildInfoMgr: BuildInfoManager;
     protected _actionMap: Map<VerifierEvent, Array<Action<void>>>;
-    protected _cacheResults: boolean;
-    protected _resultsCache: FileSystemMap<string, Array<TestResult>>; // { key: fullName, val: [{TestId: 1}, {TestId: 2}] }
+    protected _cacheResultsToFile: boolean;
+    protected _resultsCache: CacheMap<string, Array<TestResult>>; // { key: fullName, val: [{TestId: 1}, {TestId: 2}] }
     
     constructor() {
         this._startTime = new Date().getTime();
@@ -99,10 +100,15 @@ export class Verifier implements PromiseLike<void> {
         return this._buildInfoMgr;
     }
 
-    get cacheResults(): boolean {
-        return Boolean(this._cacheResults);
-    }
-
+    /**
+     * called either directly using `new Verifier.verify().then((v: Verifier) => {...});` or indirectly using
+     * `const v: Verifier = await new Verifier().verify();`
+     * @param onfulfilled the function called on successful execution of this
+     * Verifier's `verify` function
+     * @param onrejected the function called on unsuccessful execution of this
+     * Verifier's `verify` function
+     * @returns this `Verifier` on success or an `Error` on failure
+     */
     async then<TResult1 = Verifier, TResult2 = never>(
         onfulfilled?: (value: void) => TResult1 | PromiseLike<TResult1>, // eslint-disable-line no-unused-vars
         onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2> { // eslint-disable-line no-unused-vars
@@ -110,7 +116,16 @@ export class Verifier implements PromiseLike<void> {
                 .then(onfulfilled, onrejected);
     }
 
-    async pass(): Promise<void> {
+    /**
+     * executes any `.on('pass')` actions and then submits
+     * a 'passed' result for each passed in test ID or for
+     * the overall result if no `testIds` specified
+     * @param testIds an optional array of test IDs
+     */
+    async pass(...testIds: Array<string>): Promise<void> {
+        if (testIds.length > 0 && testIds.filter(id => this._testIds.has(id)).length === 0) {
+            return Promise.reject(`test IDs [${testIds.join(',')}] do not exist in this Verifier`);
+        }
         const passActions = this._actionMap.get('pass');
         if (passActions?.length) {
             passActions.forEach(async a => {
@@ -120,10 +135,19 @@ export class Verifier implements PromiseLike<void> {
                 }
             });
         }
-        await this.submitResult('passed');
+        return this._submitResult('passed', null, ...testIds);
     }
 
-    async fail(message?: string): Promise<void> {
+    /**
+     * executes any `.on('fail')` actions and then submits
+     * a 'failed' result for each passed in test ID or for
+     * the overall result if no `testIds` specified
+     * @param testIds an optional array of test IDs
+     */
+    async fail(message?: string, ...testIds: Array<string>): Promise<void> {
+        if (testIds.length > 0 && testIds.filter(id => this._testIds.has(id)).length === 0) {
+            return Promise.reject(`test IDs [${testIds.join(',')}] do not exist in this Verifier`);
+        }
         const err: string = message ?? 'unknown error occurred';
         const failActions = this._actionMap.get('fail');
         if (failActions?.length) {
@@ -134,10 +158,19 @@ export class Verifier implements PromiseLike<void> {
                 }
             });
         }
-        await this.submitResult('failed', err);
+        return this._submitResult('failed', err, ...testIds);
     }
 
-    async pending(message?: string): Promise<void> {
+    /**
+     * executes any `.on('skipped')` actions and then submits
+     * a 'skipped' result for each passed in test ID or for
+     * the overall result if no `testIds` specified
+     * @param testIds an optional array of test IDs
+     */
+    async pending(message?: string, ...testIds: Array<string>): Promise<void> {
+        if (testIds.length > 0 && testIds.filter(id => this._testIds.has(id)).length === 0) {
+            return Promise.reject(`test IDs [${testIds.join(',')}] do not exist in this Verifier`);
+        }
         message ??= 'test skipped';
         const skippedActions = this._actionMap.get('skipped');
         if (skippedActions?.length) {
@@ -148,10 +181,10 @@ export class Verifier implements PromiseLike<void> {
                 }
             });
         }
-        await this.submitResult('skipped', message);
+        return this._submitResult('skipped', message, ...testIds);
     }
 
-    async started(): Promise<void> {
+    protected async _started(): Promise<void> {
         const startedActions: Array<Action<void>> = this._actionMap.get('started');
         if (startedActions?.length) {
             startedActions.forEach(async a => {
@@ -163,7 +196,7 @@ export class Verifier implements PromiseLike<void> {
         }
     }
 
-    async done(): Promise<void> {
+    protected async _done(): Promise<void> {
         const doneActions = this._actionMap.get('done');
         if (doneActions?.length) {
             doneActions.forEach(async a => {
@@ -182,7 +215,7 @@ export class Verifier implements PromiseLike<void> {
                     const shouldRun = await this.shouldRun();
                     await this.reporter.debug('verifier.shouldRun response:', shouldRun);
                     if (shouldRun.result === true) {
-                        await this.started();
+                        await this._started();
                         await this._resolveAssertion();
                         await this.pass();
                     } else {
@@ -195,7 +228,7 @@ export class Verifier implements PromiseLike<void> {
                 }
             });
         }
-        await this.done();
+        await this._done();
         return this._innerPromise;
     }
 
@@ -239,7 +272,7 @@ export class Verifier implements PromiseLike<void> {
      *   let feature = new FeatureObj();
      *   return await feature.returnExpectedValue();
      * }).withDescription('example usage for Verifier')
-     * .and.withTestId('C1234')
+     * .and.withTestIds('C1234')
      * .returns('expected value');
      * ```
      * @param assertion the `Func<Verifier, any>` function to be executed by this `Verifier`
@@ -262,16 +295,19 @@ export class Verifier implements PromiseLike<void> {
     }
 
     /**
-     * allows for setting a `testId` to be checked before executing the `assertion`
+     * allows for setting one or more `testId` to be checked before executing the `assertion`
      * and to be reported to from any connected logging plugins that connect to
      * your test case management system. if all the referenced `testId` values should not be
      * run (as returned by your `PolicyPlugin.shouldRun(testId)`) then
      * the `assertion` will not be run.
-     * NOTE: multiple `testId` values can be chained together
+     * 
+     * **NOTE:**
+     * > multiple `testId` values can be specified
      * @param testIds a test identifier for your connected `PolicyPlugin`
      * @returns this `Verifier` instance
      */
-    withTestIds(...testIds: string[]): this {
+    withTestIds(...testIds: Array<string>): this {
+        this._testIds.clear();
         if (testIds?.length) {
             for (const id of testIds) {
                 this._testIds.add(id);
@@ -306,84 +342,33 @@ export class Verifier implements PromiseLike<void> {
      */
     get internals(): VerifierInternals {
         return {
-            /**
-             * allows for using a specific {AftConfig} instance. if not
-             * set then {aftConfig} global const is used
-             * @param cfg a {AftConfig} instance
-             * @returns this {Verifier} instance
-             */
             usingAftConfig: (cfg: AftConfig): this => {
                 this._aftCfg = cfg ?? aftConfig;
                 return this;
             },
-            /**
-             * allows for using a specific `Reporter` instance. if not
-             * set then one will be created for use by this `Verifier`
-             * @param reporter a `Reporter` instance
-             * @returns this `Verifier` instance
-             */
             usingReporter: (reporter: Reporter): this => {
                 this._reporter = reporter;
                 return this;
             },
-
-            /**
-             * allows for using a specific `PolicyManager` instance. if not
-             * set then the global `PolicyManager.instance()` will be used
-             * @param policyMgr a `PolicyManager` instance
-             * @returns this `Verifier` instance
-             */
             usingPolicyManager: (policyMgr: PolicyManager): this => {
                 this._policyEngMgr = policyMgr;
                 return this;
             },
-
-            /**
-             * allows for using a specific `BuildInfoManager` instance. if not
-             * set then the global `BuildInfoManager.instance()` will be used
-             * @param buildMgr a `BuildInfoManager` instance
-             * @returns this `Verifier` instance
-             */
             usingBuildInfoManager: (buildMgr: BuildInfoManager): this => {
                 this._buildInfoMgr = buildMgr;
                 return this;
             },
-
-            /**
-             * enables results caching which can be used to prevent sending the same result multiple times
-             * when using an external test framework reporter plugin
-             * @returns this `Verifier` instance
-             */
-            withResultsCaching: (): this => {
-                this._cacheResults = true;
-                this._resultsCache = new FileSystemMap<string, Array<TestResult>>(this.constructor.name, null, this.aftCfg);
+            withFileSystemCache: (): this => {
+                this._cacheResultsToFile = true;
                 return this;
             },
-
-            /**
-             * disables results caching if previously enabled
-             * @returns this `Verifier` instance
-             */
-            withoutResultsCaching: (): this => {
-                this._cacheResults = false;
-                this._resultsCache?.clear();
+            withoutFileSystemCache: (): this => {
+                this._cacheResultsToFile = false;
                 FileSystemMap.removeCacheFile(this.constructor.name);
                 return this;
             },
-
-            /**
-             * searches the filesystem cache for any logged test results for a named
-             * test and returns the results as an array of `TestResult` objects with
-             * each object corresponding to a Test ID referenced in the test name
-             * @param fullName the full test name under which the results are cached
-             * @returns an array of `TestResult` objects for the named test where each
-             * entry corresponds to a referenced Test ID parsed from the `fullName`
-             */
-            getCachedResults: (fullName: string): Array<TestResult> => {
-                if (this.cacheResults) {
-                    return this._resultsCache.get(fullName) ?? [];
-                }
-                return [];
+            getCachedResults: (): Array<TestResult> => {
+                return this._resultsCache.get(this.description) ?? [];
             },
         }
     }
@@ -417,33 +402,40 @@ export class Verifier implements PromiseLike<void> {
 
     /**
      * creates `TestResult` objects for each `testId` and sends these
-     * to the `Reporter.logResult` function
+     * to the `Reporter.submitResult` function
      */
-    async submitResult(status: TestStatus, message?: string): Promise<void> {
+    protected async _submitResult(status: TestStatus, message?: string, ...testIds: Array<string>): Promise<void> {
         try {
+            if (!this._resultsCache) {
+                // lazy init to allow time for `this._cacheResultsToFile` to be set
+                this._resultsCache = new CacheMap<string, Array<TestResult>>(
+                    Infinity,
+                    Boolean(this._cacheResultsToFile),
+                    this.constructor.name
+                );
+            }
             status ??= 'untested';
-            if (this._testIds.size) {
-                this._testIds.forEach(async (testId: string) => {
-                    if (message) {
-                        await this._logResultStatus(status, `${testId} - ${message}`);
-                    } else {
-                        await this._logResultStatus(status, testId);
+            testIds = (testIds?.length > 0) ? testIds : Array.from(this._testIds.values());
+            if (testIds?.length > 0) {
+                testIds.forEach(async (testId: string) => {
+                    if (!this._hasResult(testId)) {
+                        if (message) {
+                            await this._logResultStatus(status, `${testId} - ${message}`);
+                        } else {
+                            await this._logResultStatus(status, testId);
+                        }
                     }
                 });
             } else {
-                await this._logResultStatus(status, message);
+                if (!this._hasResult()) {
+                    await this._logResultStatus(status, message);
+                }
             }
 
-            const results: TestResult[] = await this._generateTestResults(status, message, ...Array.from(this._testIds.values()));
-            if (this.cacheResults) {
-                const cacheKey = this.reporter.loggerName;
-                if (!this._resultsCache.has(cacheKey)) {
-                    this._resultsCache.set(cacheKey, new Array<TestResult>());
-                }
-                const cacheArray: Array<TestResult> = this._resultsCache.get(this.reporter.loggerName);
-                cacheArray.push(...results);
-                this._resultsCache.set(cacheKey, cacheArray);
-            }
+            const results: TestResult[] = await this._generateTestResults(status, message, ...testIds);
+            const cacheArray: Array<TestResult> = this.internals.getCachedResults();
+            cacheArray.push(...results);
+            this._resultsCache.set(this.description, cacheArray);
             for (const result of results) {
                 try {
                     await this.reporter.submitResult(result);
@@ -479,12 +471,16 @@ export class Verifier implements PromiseLike<void> {
         const results: TestResult[] = [];
         if (testIds.length > 0) {
             for (const testId of testIds) {
-                const result: TestResult = await this._generateTestResult(status, logMessage, testId);
-                results.push(result);
+                if (!this._hasResult(testId)) {
+                    const result: TestResult = await this._generateTestResult(status, logMessage, testId);
+                    results.push(result);
+                }
             }
         } else {
-            const result: TestResult = await this._generateTestResult(status, logMessage);
-            results.push(result);
+            if (!this._hasResult()) {
+                const result: TestResult = await this._generateTestResult(status, logMessage);
+                results.push(result);
+            }
         }
         return results;
     }
@@ -504,6 +500,17 @@ export class Verifier implements PromiseLike<void> {
             }
         };
         return result;
+    }
+
+    protected _hasResult(testId: string = null): boolean {
+        const results = this.internals.getCachedResults();
+        for (const result of results) {
+            // match on `null` == `undefined` too
+            if (testId == result.testId) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 

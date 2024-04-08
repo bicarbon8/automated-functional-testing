@@ -37,4 +37,9 @@ export class AftTest extends Verifier {
     get fullName(): string {
         return this._testName;
     }
+
+    override withDescription(description: string): this { // eslint-disable-line no-unused-vars
+        // do NOT set since this is set via constructor
+        return this;
+    }
 }

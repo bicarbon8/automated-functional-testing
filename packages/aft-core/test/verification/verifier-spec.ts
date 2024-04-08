@@ -1,6 +1,6 @@
 import { Reporter, rand, PolicyManager, Verifier, verify, TestResult, LogLevel, ProcessingResult, AftConfig, pluginLoader, containing, equaling } from "../../src";
 
-let consoleLog = console.log;
+const consoleLog = console.log;
 describe('Verifier', () => {
     /* comment `beforeAll` and `afterAll` out to see actual test output */
     beforeAll(() => {
@@ -97,7 +97,7 @@ describe('Verifier', () => {
             .internals.usingReporter(reporter)
             .internals.usingPolicyManager(peMgr)
                 .withDescription('true should be true')
-            .and.withTestIds('C1234').and.withTestIds('C2345');
+            .and.withTestIds('C1234','C2345');
 
             expect(true).toBe(false); // force failure
         } catch (e) {
@@ -121,11 +121,11 @@ describe('Verifier', () => {
 
         try {
             await verify(() => true)
-            .returns(false)
-            .internals.usingReporter(reporter)
-            .internals.usingPolicyManager(peMgr)
-                .and.withDescription('failure expected due to true not being false')
-            .and.withTestIds('C1234').and.withTestIds('C2345');
+                .returns(false)
+                .internals.usingReporter(reporter)
+                .internals.usingPolicyManager(peMgr)
+                    .and.withDescription('failure expected due to true not being false')
+                .and.withTestIds('C1234','C2345');
 
             expect('foo').toBe('bar'); // force failure
         } catch (e) {
@@ -215,8 +215,57 @@ describe('Verifier', () => {
 
     it('assertion return value not checked if "returns" not used', async () => {
         await verify(() => {
-            return 'foo';
+            return false;
         });
+    });
+
+    it('will only log a result for a given test ID one time', async () => {
+        const reporter = new Reporter('will only log a result for a given test ID one time');
+        spyOn(reporter, 'pass').and.callFake((message: string) => Promise.resolve());
+        spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
+        const peMgr = new PolicyManager();
+        spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
+            return Promise.resolve({result: true});
+        });
+
+        await verify(async (v: Verifier) => {
+            await v.pass('C1234');
+        }).internals.usingReporter(reporter)
+        .internals.usingPolicyManager(peMgr)
+        .and.withDescription('true should be true')
+        .and.withTestIds('C1234');
+
+        expect(peMgr.shouldRun).toHaveBeenCalledTimes(1);
+        expect(reporter.submitResult).toHaveBeenCalledTimes(1);
+        expect(reporter.pass).toHaveBeenCalledTimes(1);
+    });
+
+    it('rejects with error for a test ID that is not associated with this instance', async () => {
+        const reporter = new Reporter('will only log a result for a test ID that is not associated with this instance');
+        spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
+        spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
+        const peMgr = new PolicyManager();
+        spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
+            return Promise.resolve({result: true});
+        });
+
+        let actual: any;
+        try {
+            await verify(async (v: Verifier) => {
+                await v.pass('C2345');
+            }).internals.usingReporter(reporter)
+                .internals.usingPolicyManager(peMgr)
+                .and.withDescription('true should be true')
+                .and.withTestIds('C1234');
+
+            expect(true).toBeFalse(); // force failure if we get here
+        } catch(e) {
+            actual = e;
+        }
+
+        expect(peMgr.shouldRun).toHaveBeenCalledTimes(1);
+        expect(reporter.submitResult).toHaveBeenCalledTimes(1);
+        expect(actual).toContain('test IDs [C2345] do not exist in this Verifier');
     });
 });
 

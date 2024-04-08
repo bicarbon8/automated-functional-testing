@@ -34,7 +34,7 @@ export class AftJestTest extends AftTest {
             fullName = state.currentTestName;
         }
         super(fullName);
-        this.internals.withResultsCaching(); // eslint-disable-line
+        this.internals.withFileSystemCache(); // eslint-disable-line
         this.test = test;
     }
 

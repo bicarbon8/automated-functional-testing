@@ -35,23 +35,25 @@ export type VerifierInternals = {
      */
     usingPolicyManager: (mgr: PolicyManager) => Verifier; // eslint-disable-line no-unused-vars
     /**
-     * enables results caching which can be used to prevent sending the same result multiple times
-     * when using an external test framework reporter plugin
+     * enables results caching to store results on the file system which can be used
+     * to prevent sending the same result multiple times when using an external test
+     * framework reporter plugin
      * @returns this `Verifier` instance
      */
-    withResultsCaching: () => Verifier;
+    withFileSystemCache: () => Verifier;
     /**
-     * disables results caching if previously enabled
+     * disables file system results caching if previously enabled
      * @returns this `Verifier` instance
      */
-    withoutResultsCaching: () => Verifier;
+    withoutFileSystemCache: () => Verifier;
     /**
-     * searches the filesystem cache for any logged test results for a named
-     * test and returns the results as an array of `TestResult` objects with
-     * each object corresponding to a Test ID referenced in the test name
-     * @param fullName the full test name under which the results are cached
+     * returns an array of `TestResult` objects for each result already submitted.
+     * if `withFilesystemCache` is enabled this includes searching the filesystem
+     * cache for any logged test results for a named test and returning the
+     * results as an array of `TestResult` objects with each object corresponding
+     * to a Test ID referenced in the test name
      * @returns an array of `TestResult` objects for the named test where each
      * entry corresponds to a referenced Test ID parsed from the `fullName`
      */
-    getCachedResults: (fullName: string) => Array<TestResult>; // eslint-disable-line no-unused-vars
+    getCachedResults: () => Array<TestResult>; // eslint-disable-line no-unused-vars
 }
