@@ -304,7 +304,7 @@ describe('KinesisReportingPlugin', () => {
                 'kinesis-reporting-plugin'
             ],
             KinesisReportingPluginConfig: {
-                logLevel: 'none',
+                logLevel: 'error',
                 batch: false
             }
         };
@@ -315,9 +315,9 @@ describe('KinesisReportingPlugin', () => {
         const plugin = plugins[0];
 
         expect(plugin).toBeDefined();
-        expect(plugin.logLevel).toEqual('none');
+        expect(plugin.logLevel).toEqual('error');
         expect((plugin as KinesisReportingPlugin).batch).toBe(false);
         expect(plugin.constructor.name).toEqual('KinesisReportingPlugin');
-        expect(plugin.enabled).toBeFalse();
+        expect(plugin.enabled).toBeTrue();
     });
 });

@@ -30,10 +30,8 @@ describe('UiSessionGeneratorManager', () => {
         const manager = new UiSessionGeneratorManager(aftCfg);
 
         expect(manager).toBeDefined();
-        expect(manager.plugins.length).toBe(2);
-        const enabled: Array<UiSessionGeneratorPlugin> = manager.plugins.filter(p => p.enabled);
-        expect(enabled.length).toBe(1);
-        expect(enabled[0].constructor.name).toEqual(FakeSessionGeneratorPlugin.name);
+        expect(manager.plugins.length).toBe(1); // only enabled plugins
+        expect(manager.plugins[0].constructor.name).toEqual(FakeSessionGeneratorPlugin.name);
         expect(await manager.getSession()).not.toBeNull();
     });
 
