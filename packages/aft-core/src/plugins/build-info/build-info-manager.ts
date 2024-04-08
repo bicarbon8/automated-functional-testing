@@ -20,7 +20,7 @@ export class BuildInfoManager {
 
     get plugins(): Array<BuildInfoPlugin> {
         if (this._plugins.length === 0) {
-            this._plugins.push(...pluginLoader.getPluginsByType(BuildInfoPlugin, this.aftCfg));
+            this._plugins.push(...pluginLoader.getEnabledPluginsByType(BuildInfoPlugin, this.aftCfg));
         }
         return this._plugins;
     }

@@ -15,7 +15,7 @@ export class TestExecutionPolicyManager {
     constructor(aftCfg?: AftConfig) {
         this.aftCfg = aftCfg ?? aftConfig;
         this._aftLogger = new AftLogger(this.constructor.name, aftCfg);
-        this.plugins = pluginLoader.getPluginsByType(TestExecutionPolicyPlugin, this.aftCfg);
+        this.plugins = pluginLoader.getEnabledPluginsByType(TestExecutionPolicyPlugin, this.aftCfg);
     }
 
     /**
@@ -27,9 +27,8 @@ export class TestExecutionPolicyManager {
      * otherwise `false` and a `reason` stating why
      */
     async shouldRun(testId: string): Promise<ProcessingResult<boolean>> {
-        const plugins = this._getEnabledPlugins();
-        if (plugins?.length > 0) {
-            const results = await Promise.all(plugins.map(async p => {
+        if (this.plugins?.length > 0) {
+            const results = await Promise.all(this.plugins.map(async p => {
                 try {
                     return await p.shouldRun(testId);
                 } catch (e) {
@@ -48,9 +47,5 @@ export class TestExecutionPolicyManager {
             return mgrResult;
         }
         return { result: true };
-    }
-
-    private _getEnabledPlugins(): Array<TestExecutionPolicyPlugin> {
-        return this.plugins.filter(p => Err.handle(() => p?.enabled).result);
     }
 }

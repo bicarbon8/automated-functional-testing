@@ -156,20 +156,13 @@ describe('Reporter', () => {
             }
         }));
 
-        const plugin = reporter.plugins[0];
-        const initSpy = spyOn(plugin, 'initialise');
-        const logSpy = spyOn(plugin, 'log');
-        const finSpy = spyOn(plugin, 'finalise');
+        expect(reporter.plugins.length).toBe(0);
 
         await reporter.out('error', rand.getString(33));
-        reporter.finalise();
-
-        expect(initSpy).not.toHaveBeenCalled();
-        expect(logSpy).not.toHaveBeenCalled();
-        expect(finSpy).not.toHaveBeenCalled();
+        await reporter.finalise();
     })
 
-    it('sends cloned results to all loaded and enabled plugins', () => {
+    it('sends cloned results to all loaded and enabled plugins', async () => {
         const name = rand.getString(12);
         const reporter = new Reporter(name, new AftConfig({
             pluginNames: [mockReportingPluginName],
@@ -184,7 +177,7 @@ describe('Reporter', () => {
             testId: rand.guid,
             testName: name
         }
-        reporter.submitResult(result);
+        await reporter.submitResult(result);
 
         expect(reporter.plugins.length).toBe(1);
         expect(reporter.plugins[0].constructor.name).toEqual(MockReportingPlugin.name);

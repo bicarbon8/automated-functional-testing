@@ -62,6 +62,29 @@ class PluginLoader {
     }
 
     /**
+     * iterates over all plugins listed in `AftConfig.pluginNames` looking for any that 
+     * extend the passed in `clazz` and are enabled and returns those that do as an
+     * array of objects.
+     * ex: 
+     * ```typescript
+     * const reportingPlugins = pluginloader.getEnabledPluginsByType(ReportingPlugin);
+     * // ReportingPlugins will all extend from ReportingPlugin base class and be enabled
+     * ```
+     * 
+     * NOTE: if this is the first time the `pluginloader` is being called then plugins will
+     * also be loaded
+     * @param clazz a `Class<T: Plugin>` base class like `ReportingPlugin` that must be extended
+     * by any of the objects returned by this call
+     * @param aftCfg an optional `AftConfig` instance to use when loading plugins if not
+     * already loaded
+     * @returns an array of plugin objects that all extend the passed in `clazz` class
+     */
+    getEnabledPluginsByType<T extends Plugin>(clazz: Class<T>, aftCfg?: AftConfig): Array<T> {
+        const plugins: Array<T> = this.getPluginsByType<T>(clazz, aftCfg);
+        return plugins.filter(e => e?.enabled);
+    }
+
+    /**
      * returns a plugin by it's name
      * ex: 
      * ```typescript

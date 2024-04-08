@@ -32,18 +32,10 @@ export class Reporter extends AftLogger {
 
     constructor(logName: string, aftCfg?: AftConfig) {
         super(logName, aftCfg);
-        this.plugins = pluginLoader.getPluginsByType(AftReporterPlugin, this.aftCfg);
-        this.enabledPlugins.forEach((p: AftReporterPlugin) => {
+        this.plugins = pluginLoader.getEnabledPluginsByType(AftReporterPlugin, this.aftCfg);
+        this.plugins.forEach((p: AftReporterPlugin) => {
             p?.initialise(this.loggerName)?.catch((err) => this.out('warn', err));
         });
-    }
-
-    /**
-     * creates a filtered array by checking all plugins' `enabled` property
-     * and handling any exceptions as a `false` enabled state
-     */
-    get enabledPlugins() {
-        return this.plugins?.filter(p => Err.handle(() => p?.enabled).result) ?? [];
     }
 
     /**
@@ -124,7 +116,7 @@ export class Reporter extends AftLogger {
             message, 
             args: data
         });
-        this.enabledPlugins.forEach(async (plugin) => {
+        this.plugins.forEach(async (plugin) => {
             await Err.handleAsync(() => plugin?.log(this.loggerName, level, message, ...data), {
                 errLevel: 'warn',
                 logger: this
@@ -138,7 +130,7 @@ export class Reporter extends AftLogger {
      * @param result a `TestResult` object to be sent
      */
     async submitResult(result: TestResult): Promise<void> {
-        this.enabledPlugins.forEach(async (plugin) => {
+        this.plugins.forEach(async (plugin) => {
             await Err.handleAsync(() => plugin?.submitResult(this.loggerName, cloneDeep(result)), {
                 errLevel: 'warn',
                 logger: this
@@ -153,7 +145,7 @@ export class Reporter extends AftLogger {
      */
     async finalise(): Promise<void> {
         const name = this.loggerName;
-        this.enabledPlugins.forEach(async (plugin) => {
+        this.plugins.forEach(async (plugin) => {
             await Err.handleAsync(() => plugin?.finalise(name), {
                 errLevel: 'warn',
                 logger: this

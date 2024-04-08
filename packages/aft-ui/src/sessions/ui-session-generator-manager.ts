@@ -37,7 +37,7 @@ export class UiSessionGeneratorManager {
 
     constructor(aftCfg?: AftConfig) {
         this.aftCfg = aftCfg ?? aftConfig;
-        this.plugins = pluginLoader.getPluginsByType(UiSessionGeneratorPlugin, this.aftCfg);
+        this.plugins = pluginLoader.getEnabledPluginsByType(UiSessionGeneratorPlugin, this.aftCfg);
     }
 
     /**
@@ -49,7 +49,7 @@ export class UiSessionGeneratorManager {
         sessionOptions ??= {};
         sessionOptions = merge(uic.options, sessionOptions);
         try {
-            const plugin = this.plugins.find(p => Err.handle(() => p?.enabled).result);
+            const plugin = this.plugins.find(p => p); // get ONLY first result
             aftLogger.log({
                 name: this.constructor.name,
                 level: 'debug',
