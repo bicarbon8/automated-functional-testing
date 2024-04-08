@@ -16,12 +16,50 @@
 <li><a href="../modules/aft_core_src.html">aft-core/src</a></li>
 <li><a href="aft_core_src.AftConfig.html">AftConfig</a></li></ul>
 <h1>Class AftConfig</h1></div>
+<section class="tsd-panel tsd-comment">
+<div class="tsd-comment tsd-typography"><p>class providing configuration used by AFT and it&#39;s plugins
+for reading in configuration an <code>aftconfig.json</code>, <code>aftconfig.js</code>, <code>aftconfig.cjs</code>
+or <code>aftconfig.mjs</code> file at the project root. this configuration can be read as a
+top-level field using <code>aftConfig.get(&#39;field_name&#39;)</code> or <code>aftConfig.get(&#39;field_name&#39;, defaultVal)</code> and can also be set without actually modifying the values in your
+<code>aftconfig.json</code> using <code>aftConfig.set(&#39;field_name&#39;, val)</code>. additionally,
+configuration classes can be read using <code>AftConfig</code> with the
+<code>aftConfig.getSection(ConfigClass)</code> which will read from your <code>aftconfig.json</code>
+file for a field named <code>ConfigClass</code></p>
+<blockquote>
+<p>NOTE: </p>
+<ul>
+<li>when a new instance of <code>AftConfig</code> is created the <code>dotenv</code> package is run and any
+<code>.env</code> file found at your project root (<code>process.cwd()</code>) will be processed into your
+environment variables making it easier to load values when developing and testing locally.</li>
+<li>if using a javascript <code>aftconfig</code> file, you must export the config object using
+<code>module.exports = { ... }</code></li>
+</ul>
+</blockquote>
+<p>Ex: with an <code>aftconfig.json</code> containing:</p>
+<pre><code class="language-json"><span class="hl-1">{</span><br/><span class="hl-1">    </span><span class="hl-10">&quot;SomeCustomClassConfig&quot;</span><span class="hl-1">: {</span><br/><span class="hl-1">        </span><span class="hl-10">&quot;configField1&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;%your_env_var%&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-10">&quot;configField2&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;some-value&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-10">&quot;configField3&quot;</span><span class="hl-1">: [</span><span class="hl-2">&quot;foo&quot;</span><span class="hl-1">, </span><span class="hl-3">true</span><span class="hl-1">, </span><span class="hl-9">10</span><span class="hl-1">]</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">}</span>
+</code><button>Copy</button></pre>
+<p>and with the following environment variables set:</p>
+<blockquote>
+<p>export your_env_var=&quot;an important value&quot;</p>
+</blockquote>
+<p>and a config class of:</p>
+<pre><code class="language-typescript"><span class="hl-7">export</span><span class="hl-1"> </span><span class="hl-3">class</span><span class="hl-1"> </span><span class="hl-6">SomeCustomClassConfig</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-8">configField1</span><span class="hl-1">: </span><span class="hl-6">string</span><span class="hl-1"> = </span><span class="hl-2">&#39;default_value_here&#39;</span><span class="hl-1">;</span><br/><span class="hl-1">    </span><span class="hl-8">configField2</span><span class="hl-1">: </span><span class="hl-6">string</span><span class="hl-1"> = </span><span class="hl-2">&#39;another_default_value&#39;</span><span class="hl-1">;</span><br/><span class="hl-1">    </span><span class="hl-8">configField3</span><span class="hl-1">: </span><span class="hl-6">Array</span><span class="hl-1">&lt;</span><span class="hl-6">string</span><span class="hl-1"> | </span><span class="hl-6">boolean</span><span class="hl-1"> | </span><span class="hl-6">number</span><span class="hl-1">&gt; = [</span><span class="hl-2">&#39;default_val&#39;</span><span class="hl-1">];</span><br/><span class="hl-1">    </span><span class="hl-8">configField4</span><span class="hl-1">: </span><span class="hl-6">string</span><span class="hl-1"> = </span><span class="hl-2">&#39;last_default_value&#39;</span><span class="hl-1">;</span><br/><span class="hl-1">}</span>
+</code><button>Copy</button></pre>
+<p>can be accessed using an <code>AftConfig</code> instance as follows:</p>
+<pre><code class="language-typescript"><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-5">config</span><span class="hl-1"> = </span><span class="hl-8">aftConfig</span><span class="hl-1">.</span><span class="hl-0">getSection</span><span class="hl-1">(</span><span class="hl-8">SomeCustomClassConfig</span><span class="hl-1">); </span><span class="hl-4">// or new AftConfig().getSection(SomeCustomClassConfig);</span><br/><span class="hl-8">config</span><span class="hl-1">.</span><span class="hl-8">configField1</span><span class="hl-1">; </span><span class="hl-4">// returns &quot;an important value&quot;</span><br/><span class="hl-8">config</span><span class="hl-1">.</span><span class="hl-8">configField2</span><span class="hl-1">; </span><span class="hl-4">// returns &quot;some-value&quot;</span><br/><span class="hl-8">config</span><span class="hl-1">.</span><span class="hl-8">configField3</span><span class="hl-1">; </span><span class="hl-4">// returns [&quot;foo&quot;, true, 10] as an array</span><br/><span class="hl-8">config</span><span class="hl-1">.</span><span class="hl-8">configField4</span><span class="hl-1">; </span><span class="hl-4">// returns &quot;last_default_value&quot;</span>
+</code><button>Copy</button></pre>
+<p>and if you wish to entirely disregard the configuration specified in your
+<code>aftconfig.json</code> file you can use the following (still based on the above example):</p>
+<pre><code class="language-typescript"><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-5">config</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">AftConfig</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-8">SomeCustomClassConfig:</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-8">configField1:</span><span class="hl-1"> </span><span class="hl-2">&#39;custom_value_here&#39;</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">});</span><br/><span class="hl-8">config</span><span class="hl-1">.</span><span class="hl-8">configField1</span><span class="hl-1">; </span><span class="hl-4">// returns &quot;custom_value_here&quot;</span><br/><span class="hl-8">config</span><span class="hl-1">.</span><span class="hl-8">configField2</span><span class="hl-1">; </span><span class="hl-4">// returns &quot;another_default_value&quot;</span><br/><span class="hl-8">config</span><span class="hl-1">.</span><span class="hl-8">configField3</span><span class="hl-1">; </span><span class="hl-4">// returns [&quot;default_val&quot;] as an array</span><br/><span class="hl-8">config</span><span class="hl-1">.</span><span class="hl-8">configField4</span><span class="hl-1">; </span><span class="hl-4">// returns &quot;last_default_value&quot;</span>
+</code><button>Copy</button></pre>
+</div>
+<div class="tsd-comment tsd-typography"></div></section>
 <section class="tsd-panel tsd-hierarchy">
 <h4>Hierarchy</h4>
 <ul class="tsd-hierarchy">
 <li><span class="target">AftConfig</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L10">aft-core/src/configuration/aft-config.ts:10</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L73">aft-core/src/configuration/aft-config.ts:73</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -75,14 +113,14 @@
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">config</span>: <a href="../types/aft_core_src.JsonObject.html" class="tsd-signature-type tsd-kind-type-alias">JsonObject</a></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="aft_core_src.AftConfig.html" class="tsd-signature-type tsd-kind-class">AftConfig</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L21">aft-core/src/configuration/aft-config.ts:21</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L84">aft-core/src/configuration/aft-config.ts:84</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="_cfg" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>_cfg</span><a href="#_cfg" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_cfg</span><span class="tsd-signature-symbol">:</span> <a href="../types/aft_core_src.JsonObject.html" class="tsd-signature-type tsd-kind-type-alias">JsonObject</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L11">aft-core/src/configuration/aft-config.ts:11</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L74">aft-core/src/configuration/aft-config.ts:74</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="_sectionCache" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>_section<wbr/>Cache</span><a href="#_sectionCache" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_section<wbr/>Cache</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">&gt;</span></div>
@@ -90,17 +128,17 @@
 <h4>Type declaration</h4>
 <ul class="tsd-parameters"></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L13">aft-core/src/configuration/aft-config.ts:13</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L76">aft-core/src/configuration/aft-config.ts:76</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="_valueCache" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>_value<wbr/>Cache</span><a href="#_valueCache" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_value<wbr/>Cache</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="../types/aft_core_src.JsonValue.html" class="tsd-signature-type tsd-kind-type-alias">JsonValue</a><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L12">aft-core/src/configuration/aft-config.ts:12</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L75">aft-core/src/configuration/aft-config.ts:75</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="_fileCandidates" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <code class="tsd-tag ts-flagPrivate">Private</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>_file<wbr/>Candidates</span><a href="#_fileCandidates" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_file<wbr/>Candidates</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">readonly </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L14">aft-core/src/configuration/aft-config.ts:14</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L77">aft-core/src/configuration/aft-config.ts:77</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Accessors</h2>
 <section class="tsd-panel tsd-member"><a id="fileLockMaxHold" class="tsd-anchor"></a>
@@ -116,7 +154,7 @@
 </code><button>Copy</button></pre>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L81">aft-core/src/configuration/aft-config.ts:81</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L144">aft-core/src/configuration/aft-config.ts:144</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="fileLockMaxWait" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>file<wbr/>Lock<wbr/>Max<wbr/>Wait</span><a href="#fileLockMaxWait" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -130,7 +168,7 @@
 </code><button>Copy</button></pre>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L74">aft-core/src/configuration/aft-config.ts:74</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L137">aft-core/src/configuration/aft-config.ts:137</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="fsMapDirectory" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>fs<wbr/>Map<wbr/>Directory</span><a href="#fsMapDirectory" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -144,7 +182,7 @@
 </code><button>Copy</button></pre>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L88">aft-core/src/configuration/aft-config.ts:88</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L151">aft-core/src/configuration/aft-config.ts:151</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="logLevel" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>log<wbr/>Level</span><a href="#logLevel" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -158,7 +196,7 @@
 </code><button>Copy</button></pre>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L67">aft-core/src/configuration/aft-config.ts:67</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L130">aft-core/src/configuration/aft-config.ts:130</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="plugins" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>plugins</span><a href="#plugins" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -182,7 +220,7 @@ any <code>-</code>, <code>_</code> and <code>.</code> characters) to load via th
 </code><button>Copy</button></pre>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L60">aft-core/src/configuration/aft-config.ts:60</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L123">aft-core/src/configuration/aft-config.ts:123</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="retryBackOffType" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>retry<wbr/>Back<wbr/>Off<wbr/>Type</span><a href="#retryBackOffType" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -196,7 +234,7 @@ any <code>-</code>, <code>_</code> and <code>.</code> characters) to load via th
 </code><button>Copy</button></pre>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L102">aft-core/src/configuration/aft-config.ts:102</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L165">aft-core/src/configuration/aft-config.ts:165</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="retryDelayMs" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>retry<wbr/>Delay<wbr/>Ms</span><a href="#retryDelayMs" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -210,7 +248,7 @@ any <code>-</code>, <code>_</code> and <code>.</code> characters) to load via th
 </code><button>Copy</button></pre>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L109">aft-core/src/configuration/aft-config.ts:109</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L172">aft-core/src/configuration/aft-config.ts:172</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="retryMaxAttempts" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>retry<wbr/>Max<wbr/>Attempts</span><a href="#retryMaxAttempts" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -224,7 +262,7 @@ any <code>-</code>, <code>_</code> and <code>.</code> characters) to load via th
 </code><button>Copy</button></pre>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L95">aft-core/src/configuration/aft-config.ts:95</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L158">aft-core/src/configuration/aft-config.ts:158</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="retryMaxDurationMs" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>retry<wbr/>Max<wbr/>Duration<wbr/>Ms</span><a href="#retryMaxDurationMs" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -238,7 +276,7 @@ any <code>-</code>, <code>_</code> and <code>.</code> characters) to load via th
 </code><button>Copy</button></pre>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L116">aft-core/src/configuration/aft-config.ts:116</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L179">aft-core/src/configuration/aft-config.ts:179</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="retryRejectOnFail" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>retry<wbr/>Reject<wbr/>On<wbr/>Fail</span><a href="#retryRejectOnFail" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -253,7 +291,7 @@ on completion or simply returning <code>null</code></p>
 </code><button>Copy</button></pre>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L124">aft-core/src/configuration/aft-config.ts:124</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L187">aft-core/src/configuration/aft-config.ts:187</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="_loadConfigFile" class="tsd-anchor"></a>
@@ -263,7 +301,7 @@ on completion or simply returning <code>null</code></p>
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <a href="../types/aft_core_src.JsonObject.html" class="tsd-signature-type tsd-kind-type-alias">JsonObject</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L265">aft-core/src/configuration/aft-config.ts:265</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L328">aft-core/src/configuration/aft-config.ts:328</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="get" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get</span><a href="#get" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -295,7 +333,7 @@ before returning the value or the specified <code>defaultVal</code> if nothing w
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L136">aft-core/src/configuration/aft-config.ts:136</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L199">aft-core/src/configuration/aft-config.ts:199</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getSection" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Section</span><a href="#getSection" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -322,7 +360,7 @@ new instance of the <code>className</code> type</p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L170">aft-core/src/configuration/aft-config.ts:170</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L233">aft-core/src/configuration/aft-config.ts:233</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="processEnvVars" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>process<wbr/>Env<wbr/>Vars</span><a href="#processEnvVars" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -344,7 +382,7 @@ characters like <code>%some_env_var%</code></p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L249">aft-core/src/configuration/aft-config.ts:249</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L312">aft-core/src/configuration/aft-config.ts:312</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="processProperties" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>process<wbr/>Properties</span><a href="#processProperties" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -371,7 +409,7 @@ based on the result of calling <code>processEnvVars</code></p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L225">aft-core/src/configuration/aft-config.ts:225</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L288">aft-core/src/configuration/aft-config.ts:288</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="set" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>set</span><a href="#set" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -391,7 +429,7 @@ based on the result of calling <code>processEnvVars</code></p>
 <h5><span class="tsd-kind-parameter">val</span>: <span class="tsd-signature-type tsd-kind-type-parameter">T</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L155">aft-core/src/configuration/aft-config.ts:155</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L218">aft-core/src/configuration/aft-config.ts:218</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="setSection" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>set<wbr/>Section</span><a href="#setSection" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -422,7 +460,7 @@ instead of reading from <code>aftconfig.json</code></p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/configuration/aft-config.ts#L210">aft-core/src/configuration/aft-config.ts:210</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/configuration/aft-config.ts#L273">aft-core/src/configuration/aft-config.ts:273</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -474,8 +512,6 @@ instead of reading from <code>aftconfig.json</code></p>
 <li><a href="../modules/aft_core_src.SafeStringOption.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Safe<wbr/>String<wbr/>Option</span></a></li>
 <li><a href="aft_core_src.AftConfig.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-128"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-class)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)"></path></g></svg><span>Aft<wbr/>Config</span></a></li>
 <li><a href="aft_core_src.AftLogger.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Aft<wbr/>Logger</span></a></li>
-<li><a href="aft_core_src.AftReportingPlugin.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Aft<wbr/>Reporting<wbr/>Plugin</span></a></li>
-<li><a href="aft_core_src.AftReportingPluginConfig.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Aft<wbr/>Reporting<wbr/>Plugin<wbr/>Config</span></a></li>
 <li><a href="aft_core_src.AftTest.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Aft<wbr/>Test</span></a></li>
 <li><a href="aft_core_src.BuildInfoManager.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Build<wbr/>Info<wbr/>Manager</span></a></li>
 <li><a href="aft_core_src.BuildInfoPlugin.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Build<wbr/>Info<wbr/>Plugin</span></a></li>
@@ -489,6 +525,8 @@ instead of reading from <code>aftconfig.json</code></p>
 <li><a href="aft_core_src.PolicyManager.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Policy<wbr/>Manager</span></a></li>
 <li><a href="aft_core_src.PolicyPlugin.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Policy<wbr/>Plugin</span></a></li>
 <li><a href="aft_core_src.Reporter.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Reporter</span></a></li>
+<li><a href="aft_core_src.ReportingPlugin.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Reporting<wbr/>Plugin</span></a></li>
+<li><a href="aft_core_src.ReportingPluginConfig.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Reporting<wbr/>Plugin<wbr/>Config</span></a></li>
 <li><a href="aft_core_src.Retry.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Retry</span></a></li>
 <li><a href="aft_core_src.TitleParser.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Title<wbr/>Parser</span></a></li>
 <li><a href="aft_core_src.Verifier.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Verifier</span></a></li>

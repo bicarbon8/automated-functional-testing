@@ -6,6 +6,14 @@ import { MachineInfoData, machineInfo } from "../../helpers/machine-info";
 import { pluginLoader } from "../plugin-loader";
 import { BuildInfoPlugin } from "./build-info-plugin";
 
+/**
+ * a class that manages the `BuildInfoPlugin` instances that
+ * generate a build specific string for use in identifying individual
+ * test execution runs across multiple projects in a CICD environment
+ * returning either a string containing `BUILDNAME_BUILDNUMBER` or
+ * if there are no enabled `BuildInfoPlugin` instances, a string
+ * containing `USERNAME_MACHINENAME_YYYYMMDD`
+ */
 export class BuildInfoManager {
     public readonly aftCfg: AftConfig;
 

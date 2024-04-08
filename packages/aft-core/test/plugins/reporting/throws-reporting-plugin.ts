@@ -1,6 +1,6 @@
-import { AftReportingPlugin, LogLevel, AftConfig, TestResult } from "../../../src";
+import { ReportingPlugin, LogLevel, AftConfig, TestResult } from "../../../src";
 
-export class ThrowsReportingPlugin extends AftReportingPlugin {
+export class ThrowsReportingPlugin extends ReportingPlugin {
     constructor(aftCfg?: AftConfig) {
         super(aftCfg);
     }

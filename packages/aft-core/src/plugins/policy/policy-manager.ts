@@ -6,6 +6,10 @@ import { pluginLoader } from "../plugin-loader";
 import { PolicyPlugin } from "./policy-plugin";
 import { LogMessageData } from "../../logging/log-message-data";
 
+/**
+ * a class that manages `PolicyPlugin` instances used to
+ * determine if tests should be run or skipped
+ */
 export class PolicyManager {
     public readonly aftCfg: AftConfig;
     public readonly plugins: Array<PolicyPlugin>;

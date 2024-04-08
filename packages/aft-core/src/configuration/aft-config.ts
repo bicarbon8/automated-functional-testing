@@ -7,6 +7,69 @@ import { fileio } from "../helpers/file-io";
 import { LogLevel } from "../logging/log-level";
 import { PluginLocator } from '../plugins/plugin-locator';
 
+/**
+ * class providing configuration used by AFT and it's plugins
+ * for reading in configuration an `aftconfig.json`, `aftconfig.js`, `aftconfig.cjs`
+ * or `aftconfig.mjs` file at the project root. this configuration can be read as a
+ * top-level field using `aftConfig.get('field_name')` or `aftConfig.get('field_name',
+ * defaultVal)` and can also be set without actually modifying the values in your
+ * `aftconfig.json` using `aftConfig.set('field_name', val)`. additionally,
+ * configuration classes can be read using `AftConfig` with the
+ * `aftConfig.getSection(ConfigClass)` which will read from your `aftconfig.json`
+ * file for a field named `ConfigClass`
+ * > NOTE: 
+ * > - when a new instance of `AftConfig` is created the `dotenv` package is run and any
+ * `.env` file found at your project root (`process.cwd()`) will be processed into your
+ * environment variables making it easier to load values when developing and testing locally.
+ * > - if using a javascript `aftconfig` file, you must export the config object using
+ * `module.exports = { ... }`
+ * 
+ * Ex: with an `aftconfig.json` containing:
+ * ```json
+ * {
+ *     "SomeCustomClassConfig": {
+ *         "configField1": "%your_env_var%",
+ *         "configField2": "some-value",
+ *         "configField3": ["foo", true, 10]
+ *     }
+ * }
+ * ```
+ * and with the following environment variables set:
+ * > export your_env_var="an important value"
+ * 
+ * and a config class of:
+ * ```typescript
+ * export class SomeCustomClassConfig {
+ *     configField1: string = 'default_value_here';
+ *     configField2: string = 'another_default_value';
+ *     configField3: Array<string | boolean | number> = ['default_val'];
+ *     configField4: string = 'last_default_value';
+ * }
+ * ```
+ * 
+ * can be accessed using an `AftConfig` instance as follows:
+ * ```typescript
+ * const config = aftConfig.getSection(SomeCustomClassConfig); // or new AftConfig().getSection(SomeCustomClassConfig);
+ * config.configField1; // returns "an important value"
+ * config.configField2; // returns "some-value"
+ * config.configField3; // returns ["foo", true, 10] as an array
+ * config.configField4; // returns "last_default_value"
+ * ```
+ * 
+ * and if you wish to entirely disregard the configuration specified in your
+ * `aftconfig.json` file you can use the following (still based on the above example):
+ * ```typescript
+ * const config = new AftConfig({
+ *     SomeCustomClassConfig: {
+ *         configField1: 'custom_value_here'
+ *     }
+ * });
+ * config.configField1; // returns "custom_value_here"
+ * config.configField2; // returns "another_default_value"
+ * config.configField3; // returns ["default_val"] as an array
+ * config.configField4; // returns "last_default_value"
+ * ```
+ */
 export class AftConfig {
     private readonly _cfg: JsonObject;
     private readonly _valueCache: Map<string, JsonValue>;
@@ -281,4 +344,21 @@ export class AftConfig {
     }
 }
 
+/**
+ * GLOBAL class providing configuration used by AFT and it's plugins
+ * for reading in configuration an `aftconfig.json`, `aftconfig.js`, `aftconfig.cjs`
+ * or `aftconfig.mjs` file at the project root. this configuration can be read as a
+ * top-level field using `aftConfig.get('field_name')` or `aftConfig.get('field_name',
+ * defaultVal)` and can also be set without actually modifying the values in your
+ * `aftconfig.json` using `aftConfig.set('field_name', val)`. additionally,
+ * configuration classes can be read using `AftConfig` with the
+ * `aftConfig.getSection(ConfigClass)` which will read from your `aftconfig.json`
+ * file for a field named `ConfigClass`
+ * > NOTE: 
+ * > - when a new instance of `AftConfig` is created the `dotenv` package is run and any
+ * `.env` file found at your project root (`process.cwd()`) will be processed into your
+ * environment variables making it easier to load values when developing and testing locally.
+ * > - if using a javascript `aftconfig` file, you must export the config object using
+ * `module.exports = { ... }`
+ */
 export const aftConfig: AftConfig = new AftConfig();

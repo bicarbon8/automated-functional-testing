@@ -17,9 +17,10 @@
 <li><a href="aft_core_src.Reporter.html">Reporter</a></li></ul>
 <h1>Class Reporter</h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>a class that manages reporting plugins.
-Configuration for this class can be passed in directly or 
-specified in <code>aftconfig.json</code> like:</p>
+<div class="tsd-comment tsd-typography"><p>a class that manages reporting plugins and handles test
+logging and results.
+Configuration for this class can be passed in directly
+via <code>AftConfig</code> or specified in <code>aftconfig.json</code> like:</p>
 <pre><code><span class="hl-4">// aftconfig.json</span><br/><span class="hl-1">{</span><br/><span class="hl-1">  ...</span><br/><span class="hl-1">  </span><span class="hl-2">&quot;logLevel&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;info&quot;</span><br/><span class="hl-1">  ...</span><br/><span class="hl-1">}</span>
 </code><button>Copy</button></pre>
 <p>NOTE: multiple instances of this class are expected to be created as each instance should have a unique
@@ -35,7 +36,7 @@ specified in <code>aftconfig.json</code> like:</p>
 <ul class="tsd-hierarchy">
 <li><span class="target">Reporter</span></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/reporting/reporter.ts#L29">aft-core/src/plugins/reporting/reporter.ts:29</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/reporting/reporter.ts#L30">aft-core/src/plugins/reporting/reporter.ts:30</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -90,20 +91,20 @@ specified in <code>aftconfig.json</code> like:</p>
 <h4 class="tsd-returns-title">Returns <a href="aft_core_src.Reporter.html" class="tsd-signature-type tsd-kind-class">Reporter</a></h4><aside class="tsd-sources">
 <p>Overrides <a href="aft_core_src.AftLogger.html">AftLogger</a>.<a href="aft_core_src.AftLogger.html#constructor">constructor</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/reporting/reporter.ts#L33">aft-core/src/plugins/reporting/reporter.ts:33</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/reporting/reporter.ts#L34">aft-core/src/plugins/reporting/reporter.ts:34</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="_stepCount" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>_step<wbr/>Count</span><a href="#_stepCount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_step<wbr/>Count</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/reporting/reporter.ts#L31">aft-core/src/plugins/reporting/reporter.ts:31</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/reporting/reporter.ts#L32">aft-core/src/plugins/reporting/reporter.ts:32</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="aftCfg" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>aft<wbr/>Cfg</span><a href="#aftCfg" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">aft<wbr/>Cfg</span><span class="tsd-signature-symbol">:</span> <a href="aft_core_src.AftConfig.html" class="tsd-signature-type tsd-kind-class">AftConfig</a></div><aside class="tsd-sources">
 <p>Inherited from <a href="aft_core_src.AftLogger.html">AftLogger</a>.<a href="aft_core_src.AftLogger.html#aftCfg">aftCfg</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/logging/aft-logger.ts#L27">aft-core/src/logging/aft-logger.ts:27</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/logging/aft-logger.ts#L27">aft-core/src/logging/aft-logger.ts:27</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="loggerName" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>logger<wbr/>Name</span><a href="#loggerName" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">logger<wbr/>Name</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
@@ -113,12 +114,12 @@ the associated class doing the logging</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="aft_core_src.AftLogger.html">AftLogger</a>.<a href="aft_core_src.AftLogger.html#loggerName">loggerName</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/logging/aft-logger.ts#L32">aft-core/src/logging/aft-logger.ts:32</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/logging/aft-logger.ts#L32">aft-core/src/logging/aft-logger.ts:32</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="plugins" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>plugins</span><a href="#plugins" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">plugins</span><span class="tsd-signature-symbol">:</span> <a href="aft_core_src.AftReportingPlugin.html" class="tsd-signature-type tsd-kind-class">AftReportingPlugin</a><span class="tsd-signature-symbol">[]</span></div><aside class="tsd-sources">
+<div class="tsd-signature"><span class="tsd-kind-property">plugins</span><span class="tsd-signature-symbol">:</span> <a href="aft_core_src.ReportingPlugin.html" class="tsd-signature-type tsd-kind-class">ReportingPlugin</a><span class="tsd-signature-symbol">[]</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/reporting/reporter.ts#L30">aft-core/src/plugins/reporting/reporter.ts:30</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/reporting/reporter.ts#L31">aft-core/src/plugins/reporting/reporter.ts:31</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Accessors</h2>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="logLevel" class="tsd-anchor"></a>
@@ -145,7 +146,7 @@ as follows:</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from AftLogger.logLevel</p>
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/logging/aft-logger.ts#L53">aft-core/src/logging/aft-logger.ts:53</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/logging/aft-logger.ts#L53">aft-core/src/logging/aft-logger.ts:53</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member"><a id="debug" class="tsd-anchor"></a>
@@ -168,7 +169,7 @@ as follows:</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/reporting/reporter.ts#L53">aft-core/src/plugins/reporting/reporter.ts:53</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/reporting/reporter.ts#L54">aft-core/src/plugins/reporting/reporter.ts:54</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="error" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>error</span><a href="#error" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -189,7 +190,7 @@ as follows:</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/reporting/reporter.ts#L102">aft-core/src/plugins/reporting/reporter.ts:102</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/reporting/reporter.ts#L103">aft-core/src/plugins/reporting/reporter.ts:103</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="fail" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>fail</span><a href="#fail" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -210,7 +211,7 @@ as follows:</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/reporting/reporter.ts#L94">aft-core/src/plugins/reporting/reporter.ts:94</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/reporting/reporter.ts#L95">aft-core/src/plugins/reporting/reporter.ts:95</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="finalise" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>finalise</span><a href="#finalise" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -223,7 +224,7 @@ of any logging actions before destroying the <code>AftLogger</code> instance</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/reporting/reporter.ts#L146">aft-core/src/plugins/reporting/reporter.ts:146</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/reporting/reporter.ts#L147">aft-core/src/plugins/reporting/reporter.ts:147</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="format" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>format</span><a href="#format" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -245,7 +246,7 @@ be formatted into a console-friendly log string</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="aft_core_src.AftLogger.html">AftLogger</a>.<a href="aft_core_src.AftLogger.html#format">format</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/logging/aft-logger.ts#L80">aft-core/src/logging/aft-logger.ts:80</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/logging/aft-logger.ts#L80">aft-core/src/logging/aft-logger.ts:80</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="info" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>info</span><a href="#info" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -266,7 +267,7 @@ be formatted into a console-friendly log string</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/reporting/reporter.ts#L61">aft-core/src/plugins/reporting/reporter.ts:61</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/reporting/reporter.ts#L62">aft-core/src/plugins/reporting/reporter.ts:62</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="log" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>log</span><a href="#log" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -290,7 +291,7 @@ and any additional arguments to be logged</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="aft_core_src.AftLogger.html">AftLogger</a>.<a href="aft_core_src.AftLogger.html#log">log</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/logging/aft-logger.ts#L65">aft-core/src/logging/aft-logger.ts:65</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/logging/aft-logger.ts#L65">aft-core/src/logging/aft-logger.ts:65</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="out" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>out</span><a href="#out" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -320,7 +321,7 @@ and any additional arguments to be logged</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/reporting/reporter.ts#L113">aft-core/src/plugins/reporting/reporter.ts:113</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/reporting/reporter.ts#L114">aft-core/src/plugins/reporting/reporter.ts:114</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="pass" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>pass</span><a href="#pass" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -341,7 +342,7 @@ and any additional arguments to be logged</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/reporting/reporter.ts#L86">aft-core/src/plugins/reporting/reporter.ts:86</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/reporting/reporter.ts#L87">aft-core/src/plugins/reporting/reporter.ts:87</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="step" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>step</span><a href="#step" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -362,7 +363,7 @@ and any additional arguments to be logged</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/reporting/reporter.ts#L69">aft-core/src/plugins/reporting/reporter.ts:69</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/reporting/reporter.ts#L70">aft-core/src/plugins/reporting/reporter.ts:70</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="submitResult" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>submit<wbr/>Result</span><a href="#submitResult" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -382,7 +383,7 @@ allowing them to process the result</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/reporting/reporter.ts#L132">aft-core/src/plugins/reporting/reporter.ts:132</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/reporting/reporter.ts#L133">aft-core/src/plugins/reporting/reporter.ts:133</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="toConsole" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>to<wbr/>Console</span><a href="#toConsole" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -413,7 +414,7 @@ the console</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="aft_core_src.AftLogger.html">AftLogger</a>.<a href="aft_core_src.AftLogger.html#toConsole">toConsole</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/logging/aft-logger.ts#L106">aft-core/src/logging/aft-logger.ts:106</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/logging/aft-logger.ts#L106">aft-core/src/logging/aft-logger.ts:106</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="trace" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>trace</span><a href="#trace" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -434,7 +435,7 @@ the console</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/reporting/reporter.ts#L45">aft-core/src/plugins/reporting/reporter.ts:45</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/reporting/reporter.ts#L46">aft-core/src/plugins/reporting/reporter.ts:46</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="warn" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>warn</span><a href="#warn" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -455,7 +456,7 @@ the console</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/reporting/reporter.ts#L78">aft-core/src/plugins/reporting/reporter.ts:78</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/reporting/reporter.ts#L79">aft-core/src/plugins/reporting/reporter.ts:79</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -505,8 +506,6 @@ the console</p>
 <li><a href="../modules/aft_core_src.SafeStringOption.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Safe<wbr/>String<wbr/>Option</span></a></li>
 <li><a href="aft_core_src.AftConfig.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-128"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-class)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)"></path></g></svg><span>Aft<wbr/>Config</span></a></li>
 <li><a href="aft_core_src.AftLogger.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Aft<wbr/>Logger</span></a></li>
-<li><a href="aft_core_src.AftReportingPlugin.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Aft<wbr/>Reporting<wbr/>Plugin</span></a></li>
-<li><a href="aft_core_src.AftReportingPluginConfig.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Aft<wbr/>Reporting<wbr/>Plugin<wbr/>Config</span></a></li>
 <li><a href="aft_core_src.AftTest.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Aft<wbr/>Test</span></a></li>
 <li><a href="aft_core_src.BuildInfoManager.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Build<wbr/>Info<wbr/>Manager</span></a></li>
 <li><a href="aft_core_src.BuildInfoPlugin.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Build<wbr/>Info<wbr/>Plugin</span></a></li>
@@ -520,6 +519,8 @@ the console</p>
 <li><a href="aft_core_src.PolicyManager.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Policy<wbr/>Manager</span></a></li>
 <li><a href="aft_core_src.PolicyPlugin.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Policy<wbr/>Plugin</span></a></li>
 <li><a href="aft_core_src.Reporter.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Reporter</span></a></li>
+<li><a href="aft_core_src.ReportingPlugin.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Reporting<wbr/>Plugin</span></a></li>
+<li><a href="aft_core_src.ReportingPluginConfig.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Reporting<wbr/>Plugin<wbr/>Config</span></a></li>
 <li><a href="aft_core_src.Retry.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Retry</span></a></li>
 <li><a href="aft_core_src.TitleParser.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Title<wbr/>Parser</span></a></li>
 <li><a href="aft_core_src.Verifier.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Verifier</span></a></li>

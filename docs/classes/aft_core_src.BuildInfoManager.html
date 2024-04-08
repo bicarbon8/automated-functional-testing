@@ -16,12 +16,21 @@
 <li><a href="../modules/aft_core_src.html">aft-core/src</a></li>
 <li><a href="aft_core_src.BuildInfoManager.html">BuildInfoManager</a></li></ul>
 <h1>Class BuildInfoManager</h1></div>
+<section class="tsd-panel tsd-comment">
+<div class="tsd-comment tsd-typography"><p>a class that manages the <code>BuildInfoPlugin</code> instances that
+generate a build specific string for use in identifying individual
+test execution runs across multiple projects in a CICD environment
+returning either a string containing <code>BUILDNAME_BUILDNUMBER</code> or
+if there are no enabled <code>BuildInfoPlugin</code> instances, a string
+containing <code>USERNAME_MACHINENAME_YYYYMMDD</code></p>
+</div>
+<div class="tsd-comment tsd-typography"></div></section>
 <section class="tsd-panel tsd-hierarchy">
 <h4>Hierarchy</h4>
 <ul class="tsd-hierarchy">
 <li><span class="target">BuildInfoManager</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/build-info/build-info-manager.ts#L9">aft-core/src/plugins/build-info/build-info-manager.ts:9</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/build-info/build-info-manager.ts#L17">aft-core/src/plugins/build-info/build-info-manager.ts:17</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -62,29 +71,29 @@
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">aftCfg</span>: <a href="aft_core_src.AftConfig.html" class="tsd-signature-type tsd-kind-class">AftConfig</a></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="aft_core_src.BuildInfoManager.html" class="tsd-signature-type tsd-kind-class">BuildInfoManager</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/build-info/build-info-manager.ts#L16">aft-core/src/plugins/build-info/build-info-manager.ts:16</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/build-info/build-info-manager.ts#L24">aft-core/src/plugins/build-info/build-info-manager.ts:24</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="_aftLogger" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>_aft<wbr/>Logger</span><a href="#_aftLogger" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_aft<wbr/>Logger</span><span class="tsd-signature-symbol">:</span> <a href="aft_core_src.AftLogger.html" class="tsd-signature-type tsd-kind-class">AftLogger</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/build-info/build-info-manager.ts#L14">aft-core/src/plugins/build-info/build-info-manager.ts:14</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/build-info/build-info-manager.ts#L22">aft-core/src/plugins/build-info/build-info-manager.ts:22</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="_plugins" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>_plugins</span><a href="#_plugins" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_plugins</span><span class="tsd-signature-symbol">:</span> <a href="aft_core_src.BuildInfoPlugin.html" class="tsd-signature-type tsd-kind-class">BuildInfoPlugin</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/build-info/build-info-manager.ts#L12">aft-core/src/plugins/build-info/build-info-manager.ts:12</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/build-info/build-info-manager.ts#L20">aft-core/src/plugins/build-info/build-info-manager.ts:20</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="_safeStrOpt" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>_safe<wbr/>Str<wbr/>Opt</span><a href="#_safeStrOpt" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_safe<wbr/>Str<wbr/>Opt</span><span class="tsd-signature-symbol">:</span> <a href="../types/aft_core_src.SafeStringOption-1.html" class="tsd-signature-type tsd-kind-type-alias">SafeStringOption</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/build-info/build-info-manager.ts#L13">aft-core/src/plugins/build-info/build-info-manager.ts:13</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/build-info/build-info-manager.ts#L21">aft-core/src/plugins/build-info/build-info-manager.ts:21</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="aftCfg" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>aft<wbr/>Cfg</span><a href="#aftCfg" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">aft<wbr/>Cfg</span><span class="tsd-signature-symbol">:</span> <a href="aft_core_src.AftConfig.html" class="tsd-signature-type tsd-kind-class">AftConfig</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/build-info/build-info-manager.ts#L10">aft-core/src/plugins/build-info/build-info-manager.ts:10</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/build-info/build-info-manager.ts#L18">aft-core/src/plugins/build-info/build-info-manager.ts:18</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Accessors</h2>
 <section class="tsd-panel tsd-member"><a id="plugins" class="tsd-anchor"></a>
@@ -94,7 +103,7 @@
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <a href="aft_core_src.BuildInfoPlugin.html" class="tsd-signature-type tsd-kind-class">BuildInfoPlugin</a><span class="tsd-signature-symbol">[]</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/build-info/build-info-manager.ts#L21">aft-core/src/plugins/build-info/build-info-manager.ts:21</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/build-info/build-info-manager.ts#L29">aft-core/src/plugins/build-info/build-info-manager.ts:29</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member"><a id="buildName" class="tsd-anchor"></a>
@@ -110,7 +119,7 @@ a name consisting of <code>USERNAME_MACHINENAME</code> if no enabled plugins fou
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/build-info/build-info-manager.ts#L47">aft-core/src/plugins/build-info/build-info-manager.ts:47</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/build-info/build-info-manager.ts#L55">aft-core/src/plugins/build-info/build-info-manager.ts:55</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="buildNumber" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>build<wbr/>Number</span><a href="#buildNumber" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -124,7 +133,7 @@ a name consisting of the current date like: <code>YYYYMMDD</code> if no enabled 
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/build-info/build-info-manager.ts#L71">aft-core/src/plugins/build-info/build-info-manager.ts:71</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/build-info/build-info-manager.ts#L79">aft-core/src/plugins/build-info/build-info-manager.ts:79</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="get" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get</span><a href="#get" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -139,7 +148,7 @@ containing <code>USERNAME_MACHINENAME_YYYYMMDD</code></p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-core/src/plugins/build-info/build-info-manager.ts#L35">aft-core/src/plugins/build-info/build-info-manager.ts:35</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-core/src/plugins/build-info/build-info-manager.ts#L43">aft-core/src/plugins/build-info/build-info-manager.ts:43</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -178,8 +187,6 @@ containing <code>USERNAME_MACHINENAME_YYYYMMDD</code></p>
 <li><a href="../modules/aft_core_src.SafeStringOption.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Safe<wbr/>String<wbr/>Option</span></a></li>
 <li><a href="aft_core_src.AftConfig.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-128"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-class)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)"></path></g></svg><span>Aft<wbr/>Config</span></a></li>
 <li><a href="aft_core_src.AftLogger.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Aft<wbr/>Logger</span></a></li>
-<li><a href="aft_core_src.AftReportingPlugin.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Aft<wbr/>Reporting<wbr/>Plugin</span></a></li>
-<li><a href="aft_core_src.AftReportingPluginConfig.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Aft<wbr/>Reporting<wbr/>Plugin<wbr/>Config</span></a></li>
 <li><a href="aft_core_src.AftTest.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Aft<wbr/>Test</span></a></li>
 <li><a href="aft_core_src.BuildInfoManager.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Build<wbr/>Info<wbr/>Manager</span></a></li>
 <li><a href="aft_core_src.BuildInfoPlugin.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Build<wbr/>Info<wbr/>Plugin</span></a></li>
@@ -193,6 +200,8 @@ containing <code>USERNAME_MACHINENAME_YYYYMMDD</code></p>
 <li><a href="aft_core_src.PolicyManager.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Policy<wbr/>Manager</span></a></li>
 <li><a href="aft_core_src.PolicyPlugin.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Policy<wbr/>Plugin</span></a></li>
 <li><a href="aft_core_src.Reporter.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Reporter</span></a></li>
+<li><a href="aft_core_src.ReportingPlugin.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Reporting<wbr/>Plugin</span></a></li>
+<li><a href="aft_core_src.ReportingPluginConfig.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Reporting<wbr/>Plugin<wbr/>Config</span></a></li>
 <li><a href="aft_core_src.Retry.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Retry</span></a></li>
 <li><a href="aft_core_src.TitleParser.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Title<wbr/>Parser</span></a></li>
 <li><a href="aft_core_src.Verifier.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Verifier</span></a></li>

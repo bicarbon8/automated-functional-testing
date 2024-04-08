@@ -2,6 +2,14 @@ import { rand } from "../helpers/rand";
 import { Verifier } from "../verification/verifier";
 import { TitleParser } from "./title-parser";
 
+/**
+ * base class used to integrate AFT with external test
+ * frameworks such as Jasmine, Mocha and Jest. Integrations
+ * typically would consist of a new class extending from this
+ * one which takes in a test context for the given
+ * framework and passes the currently executing test name
+ * to AFT via this base class's constructor
+ */
 export class AftTest extends Verifier {
     private readonly _testName: string;
 
@@ -15,6 +23,17 @@ export class AftTest extends Verifier {
         }
     }
 
+    /**
+     * the full name of the currently executing test.
+     * 
+     * ex: `"AftTest [C1234] can provide a valid fullName"`
+     * 
+     * **NOTE**
+     * > this may also include the contents of any
+     * encapsulating `describe` functions wrapping the
+     * current `it` or `test` function, but implementation
+     * may be different for each supported framwork
+     */
     get fullName(): string {
         return this._testName;
     }

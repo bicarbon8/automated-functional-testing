@@ -28,7 +28,7 @@ from the Mocha test context</p>
 <ul class="tsd-hierarchy">
 <li><span class="target">AftMochaTest</span></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-mocha-reporter/src/aft-mocha-test.ts#L8">aft-mocha-reporter/src/aft-mocha-test.ts:8</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-mocha-reporter/src/aft-mocha-test.ts#L8">aft-mocha-reporter/src/aft-mocha-test.ts:8</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -118,7 +118,7 @@ are written using</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Overrides AftTest.constructor</p>
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-mocha-reporter/src/aft-mocha-test.ts#L34">aft-mocha-reporter/src/aft-mocha-test.ts:34</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-mocha-reporter/src/aft-mocha-test.ts#L34">aft-mocha-reporter/src/aft-mocha-test.ts:34</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_actionMap" class="tsd-anchor"></a>
@@ -212,7 +212,7 @@ this will not be set</p>
 </div>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-mocha-reporter/src/aft-mocha-test.ts#L16">aft-mocha-reporter/src/aft-mocha-test.ts:16</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-mocha-reporter/src/aft-mocha-test.ts#L16">aft-mocha-reporter/src/aft-mocha-test.ts:16</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Accessors</h2>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="aftCfg" class="tsd-anchor"></a>
@@ -268,10 +268,21 @@ this will not be set</p>
 <ul class="tsd-signatures tsd-is-inherited">
 <li class="tsd-signature" id="fullName.fullName-1"><span class="tsd-signature-symbol">get</span> fullName<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 <li class="tsd-description">
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
+<div class="tsd-comment tsd-typography"><p>the full name of the currently executing test.</p>
+<p>ex: <code>&quot;AftTest [C1234] can provide a valid fullName&quot;</code></p>
+<p><strong>NOTE</strong></p>
+<blockquote>
+<p>this may also include the contents of any
+encapsulating <code>describe</code> functions wrapping the
+current <code>it</code> or <code>test</code> function, but implementation
+may be different for each supported framwork</p>
+</blockquote>
+</div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from AftTest.fullName</p>
 <ul>
-<li>Defined in aft-core/dist/src/integration/aft-test.d.ts:5</li></ul></aside></li></ul></section>
+<li>Defined in aft-core/dist/src/integration/aft-test.d.ts:24</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="internals" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>internals</span><a href="#internals" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -455,7 +466,7 @@ will be used if other values are also present)</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Overrides AftTest.pending</p>
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d180b70/packages/aft-mocha-reporter/src/aft-mocha-test.ts#L40">aft-mocha-reporter/src/aft-mocha-test.ts:40</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-mocha-reporter/src/aft-mocha-test.ts#L40">aft-mocha-reporter/src/aft-mocha-test.ts:40</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="returns" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>returns</span><a href="#returns" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
