@@ -262,7 +262,7 @@ describe('Verifier', () => {
         expect(actual).toContain('test IDs [C2345] do not exist in this Verifier');
     });
 
-    fit('calls event handlers in expected order', async () => {
+    it('calls event handlers in expected order', async () => {
         const eventArray = new Array<string>();
         await verify((v: Verifier) => {
             return true;
