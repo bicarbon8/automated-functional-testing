@@ -39,6 +39,6 @@ export class AftMochaTest extends AftTest {
 
     override async pending(message?: string): Promise<void> {
         await super.pending(message);
-        this.test?.skip();
+        this.test?.skip?.();
     }
 }

@@ -36,7 +36,7 @@ export default class AftJestReporter implements Reporter {
     // start: optional Reporter functions
     onTestCaseResult(test: Test, testCaseResult: TestCaseResult): Promise<void> | void {
         const t = new AftJestTest(testCaseResult);
-        if (t.internals.getCachedResults(t.fullName).length === 0) {
+        if (t.internals.getCachedResults().length === 0) {
             // AFT Verifier was NOT used in test
             switch (testCaseResult.status) {
                 case "skipped":

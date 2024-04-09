@@ -1,5 +1,6 @@
 import jasmine = require("jasmine");
 import { AftTest, FileSystemMap } from "aft-core";
+import { CurrentlyExecutingTestMap } from "./aft-jasmine-constants";
 
 /**
  * provides a more streamlined means of getting a `Verifier`
@@ -23,7 +24,7 @@ export class AftJasmineTest extends AftTest {
     constructor(scope?: any) {
         let fullName: string;
         if (!scope) {
-            const testNames = new FileSystemMap<string, any>("AftJasmineReporter");
+            const testNames = new FileSystemMap<string, any>(CurrentlyExecutingTestMap);
             const names: Array<string> = Array.from(testNames.keys());
             fullName = (names?.length > 0) ? names[0] : undefined;
         } else {

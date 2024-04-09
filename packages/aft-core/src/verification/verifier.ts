@@ -368,6 +368,14 @@ export class Verifier implements PromiseLike<void> {
                 return this;
             },
             getCachedResults: (): Array<TestResult> => {
+                if (!this._resultsCache) {
+                    // lazy init to allow time for `this._cacheResultsToFile` to be set
+                    this._resultsCache = new CacheMap<string, Array<TestResult>>(
+                        Infinity,
+                        Boolean(this._cacheResultsToFile),
+                        this.constructor.name
+                    );
+                }
                 return this._resultsCache.get(this.description) ?? [];
             },
         }
@@ -406,14 +414,6 @@ export class Verifier implements PromiseLike<void> {
      */
     protected async _submitResult(status: TestStatus, message?: string, ...testIds: Array<string>): Promise<void> {
         try {
-            if (!this._resultsCache) {
-                // lazy init to allow time for `this._cacheResultsToFile` to be set
-                this._resultsCache = new CacheMap<string, Array<TestResult>>(
-                    Infinity,
-                    Boolean(this._cacheResultsToFile),
-                    this.constructor.name
-                );
-            }
             status ??= 'untested';
             testIds = (testIds?.length > 0) ? testIds : Array.from(this._testIds.values());
             if (testIds?.length > 0) {
