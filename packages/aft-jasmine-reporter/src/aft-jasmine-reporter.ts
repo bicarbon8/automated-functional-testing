@@ -33,7 +33,7 @@ export class AftJasmineReporter implements jasmine.CustomReporter {
          * execution from here and instead must use `AftJasmineTest.shouldRun`
          * in the beginning of the test
          */
-        this._testNames.set(t.fullName, true);
+        this._testNames.set(t.description, true);
     }
     specDone(result: jasmine.SpecResult): void {
         this._async2Sync.push(this._asyncSpecDone(result));
@@ -41,7 +41,7 @@ export class AftJasmineReporter implements jasmine.CustomReporter {
 
     private async _asyncSpecDone(result: jasmine.SpecResult): Promise<void> {
         const t = new AftJasmineTest({test: result});
-        if (t.getResults().length === 0) {
+        if (t.results.length === 0) {
             switch (t.test.status) {
                 case 'passed':
                     await t.pass();
@@ -57,7 +57,7 @@ export class AftJasmineReporter implements jasmine.CustomReporter {
                     break;
             }
         }
-        this._testNames.delete(t.fullName);
+        this._testNames.delete(t.description);
     }
 }
 

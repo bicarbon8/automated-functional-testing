@@ -1,12 +1,12 @@
 import jasmine = require("jasmine");
-import { AftTestIntegration, FileSystemMap } from "aft-core";
+import { AftTest, AftTestOptions, FileSystemMap, Func } from "aft-core";
 import { CurrentlyExecutingTestMap } from "./aft-jasmine-constants";
 
 /**
  * provides a more streamlined means of getting a `Verifier`
  * from the Jasmine test context
  */
-export class AftJasmineTest extends AftTestIntegration {
+export class AftJasmineTest extends AftTest {
     /**
      * reference to the jasmine.SpecResult
      * > NOTE: this is only set from inside the Jasmine
@@ -21,7 +21,7 @@ export class AftJasmineTest extends AftTestIntegration {
      * not available and should be left unset
      * @param scope the `this` scope from within a Mocha `it`
      */
-    constructor(scope?: any) {
+    constructor(scope?: any, testFunction?: Func<AftTest, void | PromiseLike<void>>, options?: AftTestOptions) {
         let fullName: string;
         if (!scope) {
             const testNames = new FileSystemMap<string, any>(CurrentlyExecutingTestMap);
@@ -34,8 +34,10 @@ export class AftJasmineTest extends AftTestIntegration {
                 fullName = scope?.test?.fullName;
             }
         }
-        super(fullName);
-        this.internals.withFileSystemCache(); // eslint-disable-line
+        testFunction ??= () => null;
+        options ??= {};
+        options.cacheResultsToFile = true;
+        super(fullName, testFunction, options);
         this.test = scope?.test;
     }
 
@@ -52,3 +54,7 @@ export class AftJasmineTest extends AftTestIntegration {
         pending(); // eslint-disable-line no-undef
     }
 }
+
+export const aftJasmineTest = async (assertion: Func<AftJasmineTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {
+    return new AftJasmineTest(null, assertion, options).run();
+};

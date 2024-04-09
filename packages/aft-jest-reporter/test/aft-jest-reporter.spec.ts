@@ -1,20 +1,23 @@
 import { test, jest, expect } from "@jest/globals";
-import { ProcessingResult, AftTest, equivalent } from "aft-core";
-import { AftJestTest } from "../src";
+import { ProcessingResult, containing } from "aft-core";
+import { AftJestTest, aftJestTest } from "../src";
 
 describe('AftJestReporter', () => {
     test('can create an AftJestTest instance', async () => {
         const aft = new AftJestTest(expect);
         await aft.reporter.info('starting AftJestReporter test...');
         expect(aft.test).not.toBeDefined(); // only defined inside the Jest Reporter
-        expect(aft.fullName).toEqual('AftJestReporter can create an AftJestTest instance');
+        expect(aft.description).toEqual('AftJestReporter can create an AftJestTest instance');
         await aft.reporter.info('completed AftJestReporter test.');
     });
 
     test('can check if test should be run [C1234]', async () => {
         const t = new AftJestTest(expect);
-        await t.verify((v: AftTest) => t.fullName)
-            .returns('AftJestReporter can check if test should be run [C1234]');
+        const shouldRunSpy = jest.spyOn(t, 'shouldRun').mockImplementation(() => Promise.resolve({result: true, message: 'fake'}));
+        const shouldRun: ProcessingResult<boolean> = await t.shouldRun();
+
+        expect(shouldRun.result).toBeTruthy();
+        expect(shouldRunSpy).toBeCalledTimes(1);
     });
 
     test('can skip test [C4567] if should not be run', async () => {
@@ -29,11 +32,10 @@ describe('AftJestReporter', () => {
         expect(true).toBe(false);
     });
 
-    test('provides a Verifier instance for use in test control', async () => {
-        const t = new AftJestTest(expect);
-        await t.verify(async (v: AftTest) => {
-            await v.reporter.warn('returning logName');
-            return v.reporter.loggerName;
-        }).returns(equivalent(t.reporter.loggerName));
+    test('[C1234] provides a AftJestTest instance for use in test control', async () => {
+        await aftJestTest(expect, async (v: AftJestTest) => {
+            await v.verify(v.description, 'AftJestReporter [C1234] provides a AftJestTest instance for use in test control');
+            await v.verify(v.testIds, containing('C1234'), 'expected to parse test ID from description');
+        });
     });
 });

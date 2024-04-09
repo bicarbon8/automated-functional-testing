@@ -1,4 +1,19 @@
-import { Reporter, rand, PolicyManager, AftTest, aftTest, TestResult, LogLevel, ProcessingResult, AftConfig, pluginLoader, containing, equaling, AftTestEvent, Func } from "../../src";
+import {
+    Reporter,
+    rand,
+    PolicyManager,
+    AftTest,
+    aftTest,
+    TestResult,
+    LogLevel,
+    ProcessingResult,
+    AftConfig,
+    pluginLoader,
+    containing,
+    equaling,
+    AftTestEvent,
+    Func
+} from "../../src";
 
 const consoleLog = console.log;
 describe('AftTest', () => {

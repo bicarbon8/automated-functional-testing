@@ -105,6 +105,48 @@ export class AftTest {
         return this._options.buildInfoManager;
     }
 
+    /**
+     * returns an array of `TestResult` objects for each result already submitted
+     * _(NOTE: one result is submitted for each associated Test ID)_.
+     * if `withFileSystemCache` is enabled this includes searching the filesystem
+     * cache for any logged test results for the `Verifier.description` and returning the
+     * results as an array of `TestResult` objects with each object corresponding
+     * to a Test ID referenced in the test name
+     * @returns an array of `TestResult` objects where each entry corresponds to
+     * a referenced Test ID parsed from the `Verifier.description`
+     */
+    get results(): Array<TestResult> {
+        return this._resultsCache.get(this.description) ?? [];
+    }
+
+    /**
+     * returns the overall status of this `AftTest`. this value is only updated when
+     * a `AftTest.fail(...)` call is made or a `AftTest.verify(actual, expected)` check
+     * fails or when the test completes without error. otherwise the value will be
+     * 'untested'
+     */
+    get status(): TestStatus {
+        return this._overallStatus ?? 'untested';
+    }
+
+    /**
+     * returns the amount of time, in milliseconds, elapsed since the `AftTest` was
+     * started either by calling the `run` function or using `aftTest(description,
+     * testFunction, options)` helper function 
+     * 
+     * **NOTE**
+     * > this includes the time taken to query any `PolicyPlugin` instances
+     */
+    get elapsed(): number {
+        const start: number = this._startTime ?? new Date().getTime();
+        const end: number = this._endTime ?? new Date().getTime();
+        return end - start;
+    }
+
+    get testIds(): Array<string> {
+        return Array.from(this._options.testIds.values());
+    }
+
     async verify(actual: any, expected: any | VerifierMatcher, failureMessage?: string): Promise<void> {
         let syncActual: any;
         if (typeof actual === 'function') {
@@ -212,7 +254,7 @@ export class AftTest {
             if (shouldRun.result === true) {
                 await Promise.resolve(this._testFunction(this));
                 if (this.status === 'failed') {
-                    const results = this.getResults()?.filter(r => r.status === 'failed') ?? [];
+                    const results = this.results?.filter(r => r.status === 'failed') ?? [];
                     throw new Error(`'${results.length}' failures: [${results.map(r => r.resultMessage).join(',')}]`);
                 }
                 await this.pass();
@@ -236,44 +278,6 @@ export class AftTest {
                 }
             }
         }
-    }
-
-    /**
-     * returns an array of `TestResult` objects for each result already submitted
-     * _(NOTE: one result is submitted for each associated Test ID)_.
-     * if `withFileSystemCache` is enabled this includes searching the filesystem
-     * cache for any logged test results for the `Verifier.description` and returning the
-     * results as an array of `TestResult` objects with each object corresponding
-     * to a Test ID referenced in the test name
-     * @returns an array of `TestResult` objects where each entry corresponds to
-     * a referenced Test ID parsed from the `Verifier.description`
-     */
-    getResults(): Array<TestResult> {
-        return this._resultsCache.get(this.description) ?? [];
-    }
-
-    /**
-     * returns the overall status of this `AftTest`. this value is only updated when
-     * a `AftTest.fail(...)` call is made or a `AftTest.verify(actual, expected)` check
-     * fails or when the test completes without error. otherwise the value will be
-     * 'untested'
-     */
-    get status(): TestStatus {
-        return this._overallStatus ?? 'untested';
-    }
-
-    /**
-     * returns the amount of time, in milliseconds, elapsed since the `AftTest` was
-     * started either by calling the `run` function or using `aftTest(description,
-     * testFunction, options)` helper function 
-     * 
-     * **NOTE**
-     * > this includes the time taken to query any `PolicyPlugin` instances
-     */
-    get elapsed(): number {
-        const start: number = this._startTime ?? new Date().getTime();
-        const end: number = this._endTime ?? new Date().getTime();
-        return end - start;
     }
 
     /**
@@ -328,7 +332,7 @@ export class AftTest {
             }
 
             const results: TestResult[] = await this._generateTestResults(status, message, ...testIds);
-            const cacheArray: Array<TestResult> = this.getResults();
+            const cacheArray: Array<TestResult> = this.results;
             cacheArray.push(...results);
             this._resultsCache.set(this.description, cacheArray);
             for (const result of results) {
@@ -398,7 +402,7 @@ export class AftTest {
     }
 
     protected _hasResult(testId: string = null): boolean {
-        const results = this.getResults();
+        const results = this.results;
         for (const result of results) {
             // match on `null` == `undefined` too
             if (testId == result.testId) {

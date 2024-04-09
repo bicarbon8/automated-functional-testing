@@ -1,11 +1,12 @@
-import { AftTestIntegration } from "aft-core";
+import { JestExpect } from "@jest/expect";
+import { AftTest, AftTestOptions, Func } from "aft-core";
 import { TestCaseResult } from "@jest/reporters";
 
 /**
  * provides a more streamlined means of getting a `Verifier`
  * from the Mocha test context
  */
-export class AftJestTest extends AftTestIntegration {
+export class AftJestTest extends AftTest {
     /**
      * reference to the Jest.TestCaseResult
      * > NOTE: this is only set from inside the Jest
@@ -19,7 +20,7 @@ export class AftJestTest extends AftTestIntegration {
      * test (i.e. the `this` argument)
      * @param scope the `this` scope from within a Jest `test`
      */
-    constructor(scope?: any) {
+    constructor(scope?: any, testFunction?: Func<AftTest, void | PromiseLike<void>>, options?: AftTestOptions) {
         let test: TestCaseResult;
         let fullName: string;
         if (typeof scope === 'string') {
@@ -33,8 +34,10 @@ export class AftJestTest extends AftTestIntegration {
             const state = scope.getState();
             fullName = state.currentTestName;
         }
-        super(fullName);
-        this.internals.withFileSystemCache(); // eslint-disable-line
+        testFunction ??= () => null;
+        options ??= {};
+        options.cacheResultsToFile = true;
+        super(fullName, testFunction, options);
         this.test = test;
     }
 
@@ -55,3 +58,7 @@ export class AftJestTest extends AftTestIntegration {
         return this.pending(reason);
     }
 }
+
+export const aftJestTest = async (description: JestExpect | string, assertion: Func<AftJestTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {
+    return new AftJestTest(description, assertion, options).run();
+};
