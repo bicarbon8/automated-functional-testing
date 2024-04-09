@@ -12,6 +12,7 @@ import { AftConfig, aftConfig } from "../configuration/aft-config";
 import { VerifierInternals } from "./verifier-internals";
 import { FileSystemMap } from "../helpers/file-system-map";
 import { CacheMap } from "../helpers/cache-map";
+import { TitleParser } from "../integration/title-parser";
 
 export type VerifierEvent = 'skipped' | 'pass' | 'fail' | 'started' | 'done';
 
@@ -34,19 +35,20 @@ export type VerifierEvent = 'skipped' | 'pass' | 'fail' | 'started' | 'done';
  * @returns a new `Verifier` instance
  */
 export class Verifier implements PromiseLike<void> {
-    protected _aftCfg?: AftConfig;
-    protected _assertion: Func<Verifier, any>;
-    protected _matcher: VerifierMatcher;
-    protected _description: string;
-    protected _startTime: number;
-    protected _innerPromise: Promise<void>;
-    protected _testIds: Set<string>;
-    protected _reporter: Reporter;
-    protected _policyEngMgr: PolicyManager;
-    protected _buildInfoMgr: BuildInfoManager;
-    protected _actionMap: Map<VerifierEvent, Array<Action<void>>>;
-    protected _cacheResultsToFile: boolean;
-    protected _resultsCache: CacheMap<string, Array<TestResult>>; // { key: fullName, val: [{TestId: 1}, {TestId: 2}] }
+    private _aftCfg?: AftConfig;
+    private _assertion: Func<Verifier, any>;
+    private _matcher: VerifierMatcher;
+    private _description: string;
+    private _startTime: number;
+    private _innerPromise: Promise<void>;
+    private _testIds: Set<string>;
+    private _reporter: Reporter;
+    private _policyEngMgr: PolicyManager;
+    private _buildInfoMgr: BuildInfoManager;
+    private _actionMap: Map<VerifierEvent, Array<Action<void>>>;
+    private _cacheResultsToFile: boolean;
+    private _resultsCache: CacheMap<string, Array<TestResult>>; // { key: fullName, val: [{TestId: 1}, {TestId: 2}] }
+    private _internals: VerifierInternals;
     
     constructor() {
         this._startTime = new Date().getTime();
@@ -67,9 +69,10 @@ export class Verifier implements PromiseLike<void> {
     
     /**
      * a `Reporter` that uses either the Description
-     * or a list of Test Ids or a `uuid` as the `logName` depending
-     * on which is available (NOTE: description is preferred most and
-     * will be used if other values are also present)
+     * or a list of Test Ids or `Verifier_<rand8>` as the
+     * `logName` depending on which is available (NOTE:
+     * description is preferred most and will be used if
+     * other values are also present)
      */
     get reporter(): Reporter {
         if (!this._reporter) {
@@ -79,7 +82,7 @@ export class Verifier implements PromiseLike<void> {
             } else if (this._testIds.size > 0) {
                 logName = Array.from(this._testIds).join('_');
             } else {
-                logName = this.constructor.name;
+                logName = `${this.constructor.name}_${rand.getString(8, true, true)}`;
             }
             this._reporter = new Reporter(logName, this.aftCfg);
         }
@@ -226,9 +229,9 @@ export class Verifier implements PromiseLike<void> {
                     await this.fail(Err.full(e));
                     reject(e);
                 }
+                await this._done();
             });
         }
-        await this._done();
         return this._innerPromise;
     }
 
@@ -291,26 +294,10 @@ export class Verifier implements PromiseLike<void> {
      */
     withDescription(description: string): this {
         this._description = description;
-        return this;
-    }
-
-    /**
-     * allows for setting one or more `testId` to be checked before executing the `assertion`
-     * and to be reported to from any connected logging plugins that connect to
-     * your test case management system. if all the referenced `testId` values should not be
-     * run (as returned by your `PolicyPlugin.shouldRun(testId)`) then
-     * the `assertion` will not be run.
-     * 
-     * **NOTE:**
-     * > multiple `testId` values can be specified
-     * @param testIds a test identifier for your connected `PolicyPlugin`
-     * @returns this `Verifier` instance
-     */
-    withTestIds(...testIds: Array<string>): this {
-        this._testIds.clear();
-        if (testIds?.length) {
-            for (const id of testIds) {
-                this._testIds.add(id);
+        if (this._description) {
+            const testIds: Array<string> = TitleParser.parseTestIds(this._description);
+            if (testIds?.length > 0) {
+                this.internals.withTestIds(...testIds); // eslint-disable-line
             }
         }
         return this;
@@ -334,6 +321,28 @@ export class Verifier implements PromiseLike<void> {
     }
 
     /**
+     * returns an array of `TestResult` objects for each result already submitted
+     * _(NOTE: one result is submitted for each associated Test ID)_.
+     * if `withFileSystemCache` is enabled this includes searching the filesystem
+     * cache for any logged test results for the `Verifier.description` and returning the
+     * results as an array of `TestResult` objects with each object corresponding
+     * to a Test ID referenced in the test name
+     * @returns an array of `TestResult` objects where each entry corresponds to
+     * a referenced Test ID parsed from the `Verifier.description`
+     */
+    getResults(): Array<TestResult> {
+        if (!this._resultsCache) {
+            // lazy init to allow time for `this._cacheResultsToFile` to be set
+            this._resultsCache = new CacheMap<string, Array<TestResult>>(
+                Infinity,
+                Boolean(this._cacheResultsToFile),
+                this.constructor.name
+            );
+        }
+        return this._resultsCache.get(this.description) ?? [];
+    }
+
+    /**
      * creates an object exposing internal functions allowing setting custom instances
      * to internal objects
      * @returns a `VerifierInternals` object containing functions allowing users to
@@ -341,44 +350,45 @@ export class Verifier implements PromiseLike<void> {
      * `ResultsManager`
      */
     get internals(): VerifierInternals {
-        return {
-            usingAftConfig: (cfg: AftConfig): this => {
-                this._aftCfg = cfg ?? aftConfig;
-                return this;
-            },
-            usingReporter: (reporter: Reporter): this => {
-                this._reporter = reporter;
-                return this;
-            },
-            usingPolicyManager: (policyMgr: PolicyManager): this => {
-                this._policyEngMgr = policyMgr;
-                return this;
-            },
-            usingBuildInfoManager: (buildMgr: BuildInfoManager): this => {
-                this._buildInfoMgr = buildMgr;
-                return this;
-            },
-            withFileSystemCache: (): this => {
-                this._cacheResultsToFile = true;
-                return this;
-            },
-            withoutFileSystemCache: (): this => {
-                this._cacheResultsToFile = false;
-                FileSystemMap.removeCacheFile(this.constructor.name);
-                return this;
-            },
-            getCachedResults: (): Array<TestResult> => {
-                if (!this._resultsCache) {
-                    // lazy init to allow time for `this._cacheResultsToFile` to be set
-                    this._resultsCache = new CacheMap<string, Array<TestResult>>(
-                        Infinity,
-                        Boolean(this._cacheResultsToFile),
-                        this.constructor.name
-                    );
+        if (!this._internals) {
+            this._internals = {
+                usingAftConfig: (cfg: AftConfig): this => {
+                    this._aftCfg = cfg ?? aftConfig;
+                    return this;
+                },
+                usingReporter: (reporter: Reporter): this => {
+                    this._reporter = reporter;
+                    return this;
+                },
+                usingPolicyManager: (policyMgr: PolicyManager): this => {
+                    this._policyEngMgr = policyMgr;
+                    return this;
+                },
+                usingBuildInfoManager: (buildMgr: BuildInfoManager): this => {
+                    this._buildInfoMgr = buildMgr;
+                    return this;
+                },
+                withFileSystemCache: (): this => {
+                    this._cacheResultsToFile = true;
+                    return this;
+                },
+                withoutFileSystemCache: (): this => {
+                    this._cacheResultsToFile = false;
+                    FileSystemMap.removeCacheFile(this.constructor.name);
+                    return this;
+                },
+                withTestIds: (...testIds: Array<string>): this => {
+                    this._testIds.clear();
+                    if (testIds?.length) {
+                        for (const id of testIds) {
+                            this._testIds.add(id);
+                        }
+                    }
+                    return this;
                 }
-                return this._resultsCache.get(this.description) ?? [];
-            },
+            }
         }
+        return this._internals;
     }
 
     /**
@@ -433,7 +443,7 @@ export class Verifier implements PromiseLike<void> {
             }
 
             const results: TestResult[] = await this._generateTestResults(status, message, ...testIds);
-            const cacheArray: Array<TestResult> = this.internals.getCachedResults();
+            const cacheArray: Array<TestResult> = this.getResults();
             cacheArray.push(...results);
             this._resultsCache.set(this.description, cacheArray);
             for (const result of results) {
@@ -503,7 +513,7 @@ export class Verifier implements PromiseLike<void> {
     }
 
     protected _hasResult(testId: string = null): boolean {
-        const results = this.internals.getCachedResults();
+        const results = this.getResults();
         for (const result of results) {
             // match on `null` == `undefined` too
             if (testId == result.testId) {

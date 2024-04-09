@@ -19,14 +19,14 @@ describe('AFT', () => {
         await verify(async (v) => {
             let count: number = 10;
             let result: boolean = true;
+            v.pass('C1234');
             for (var i=0; i<count; i++) {
                 await v.reporter.info(`running count: ${i}`);
                 await v.reporter.warn(`random string: ${rand.getString()}`);
                 result = result && !isNaN(i);
             }
             return count;
-        }).withTestIds('C1234').and.withTestIds('C2345')
-        .and.withDescription('some tests require lots of actions')
+        }).withDescription('[C1234][C2345] some tests require lots of actions')
         .returns(10);
     }, 15000);
 });

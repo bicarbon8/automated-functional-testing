@@ -41,7 +41,7 @@ export class AftJasmineReporter implements jasmine.CustomReporter {
 
     private async _asyncSpecDone(result: jasmine.SpecResult): Promise<void> {
         const t = new AftJasmineTest({test: result});
-        if (t.internals.getCachedResults().length === 0) {
+        if (t.getResults().length === 0) {
             switch (t.test.status) {
                 case 'passed':
                     await t.pass();

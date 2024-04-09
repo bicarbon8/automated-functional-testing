@@ -1,7 +1,6 @@
 import { AftConfig } from "../configuration/aft-config";
 import { BuildInfoManager } from "../plugins/build-info/build-info-manager"
 import { Reporter } from "../plugins/reporting/reporter";
-import { TestResult } from "../plugins/reporting/test-result";
 import { PolicyManager } from "../plugins/policy/policy-manager";
 import { Verifier } from "./verifier"
 
@@ -47,13 +46,22 @@ export type VerifierInternals = {
      */
     withoutFileSystemCache: () => Verifier;
     /**
-     * returns an array of `TestResult` objects for each result already submitted.
-     * if `withFilesystemCache` is enabled this includes searching the filesystem
-     * cache for any logged test results for a named test and returning the
-     * results as an array of `TestResult` objects with each object corresponding
-     * to a Test ID referenced in the test name
-     * @returns an array of `TestResult` objects for the named test where each
-     * entry corresponds to a referenced Test ID parsed from the `fullName`
+     * allows for setting one or more `testId` to be checked before executing the `assertion`
+     * and to be reported to from any connected logging plugins that connect to
+     * your test case management system. if all the referenced `testId` values should not be
+     * run (as returned by your `PolicyPlugin.shouldRun(testId)`) then
+     * the `assertion` will not be run. this is typically not needed since setting a
+     * `Verifier.description` will automatically parse any test IDs from the description.
+     * 
+     * ex:
+     * a `Verifier.description` of:
+     * `some test [C1234] description to be [C2345] run`
+     * would result in test IDs of: `"C1234"` and `"C2345"` being automatically set
+     * 
+     * **NOTE:**
+     * > multiple `testId` values can be specified and will clear any previously set test IDs
+     * @param testIds a test identifier for your connected `PolicyPlugin`
+     * @returns this `Verifier` instance
      */
-    getCachedResults: () => Array<TestResult>; // eslint-disable-line no-unused-vars
+    withTestIds: (...testIds: Array<string>) => Verifier; // eslint-disable-line no-unused-vars
 }

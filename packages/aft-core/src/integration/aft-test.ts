@@ -1,6 +1,5 @@
 import { rand } from "../helpers/rand";
 import { Verifier } from "../verification/verifier";
-import { TitleParser } from "./title-parser";
 
 /**
  * base class used to integrate AFT with external test
@@ -17,10 +16,6 @@ export class AftTest extends Verifier {
         super();
         this._testName = testFullName ?? `${this.constructor.name}_${rand.getString(8, true, true)}`;
         super.withDescription(this.fullName); // eslint-disable-line
-        const tests = TitleParser.parseTestIds(this.fullName);
-        if (tests?.length > 0) {
-            this.withTestIds(...tests); // eslint-disable-line
-        }
     }
 
     /**

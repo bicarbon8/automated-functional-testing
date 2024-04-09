@@ -32,7 +32,7 @@ describe('Verifier', () => {
         await verify(async (v: Verifier) => {
             expect(v.reporter.loggerName).toEqual('C1234_C2345');
         })
-        .withTestIds('C1234','C2345')
+        .internals.withTestIds('C1234','C2345')
         .internals.usingPolicyManager(peMgr);
     });
     
@@ -50,8 +50,7 @@ describe('Verifier', () => {
         .returns('foo')
         .internals.usingReporter(reporter)
         .internals.usingPolicyManager(peMgr)
-        .and.withDescription('true should be true')
-        .and.withTestIds('C1234','C2345');
+        .and.withDescription('true [C1234] should be true [C2345]');
 
         expect(peMgr.shouldRun).toHaveBeenCalledTimes(2);
         expect(reporter.submitResult).toHaveBeenCalledTimes(2);
@@ -72,8 +71,7 @@ describe('Verifier', () => {
         .returns(containing('bar'))
         .internals.usingReporter(reporter)
         .internals.usingPolicyManager(peMgr)
-        .and.withDescription('array contains "bar"')
-        .and.withTestIds('C1234','C2345');
+        .and.withDescription('[C1234][C2345] array contains "bar"');
 
         expect(peMgr.shouldRun).toHaveBeenCalledTimes(2);
         expect(reporter.submitResult).toHaveBeenCalledTimes(2);
@@ -96,8 +94,7 @@ describe('Verifier', () => {
             })
             .internals.usingReporter(reporter)
             .internals.usingPolicyManager(peMgr)
-                .withDescription('true should be true')
-            .and.withTestIds('C1234','C2345');
+            .withDescription('true should [C1234][C2345] be true');
 
             expect(true).toBe(false); // force failure
         } catch (e) {
@@ -124,8 +121,7 @@ describe('Verifier', () => {
                 .returns(false)
                 .internals.usingReporter(reporter)
                 .internals.usingPolicyManager(peMgr)
-                    .and.withDescription('failure expected due to true not being false')
-                .and.withTestIds('C1234','C2345');
+                .and.withDescription('[C1234][C2345] failure expected due to true not being false');
 
             expect('foo').toBe('bar'); // force failure
         } catch (e) {
@@ -152,7 +148,7 @@ describe('Verifier', () => {
         })
         .internals.usingReporter(reporter)
         .internals.usingPolicyManager(peMgr)
-        .and.withTestIds('C1234','C2345');
+        .internals.withTestIds('C1234','C2345');
 
         expect(peMgr.shouldRun).toHaveBeenCalledTimes(2);
         expect(testStore.has('executed')).toBeFalse();
@@ -179,7 +175,7 @@ describe('Verifier', () => {
         })
         .internals.usingReporter(reporter)
         .internals.usingPolicyManager(peMgr)
-        .and.withTestIds('C1234','C2345');
+        .internals.withTestIds('C1234','C2345');
 
         expect(peMgr.shouldRun).toHaveBeenCalledWith('C1234');
         expect(peMgr.shouldRun).toHaveBeenCalledWith('C2345');
@@ -232,8 +228,7 @@ describe('Verifier', () => {
             await v.pass('C1234');
         }).internals.usingReporter(reporter)
         .internals.usingPolicyManager(peMgr)
-        .and.withDescription('true should be true')
-        .and.withTestIds('C1234');
+        .and.withDescription('[C1234] true should be true');
 
         expect(peMgr.shouldRun).toHaveBeenCalledTimes(1);
         expect(reporter.submitResult).toHaveBeenCalledTimes(1);
@@ -255,8 +250,7 @@ describe('Verifier', () => {
                 await v.pass('C2345');
             }).internals.usingReporter(reporter)
                 .internals.usingPolicyManager(peMgr)
-                .and.withDescription('true should be true')
-                .and.withTestIds('C1234');
+                .and.withDescription('[C1234] true should be true');
 
             expect(true).toBeFalse(); // force failure if we get here
         } catch(e) {
@@ -267,6 +261,20 @@ describe('Verifier', () => {
         expect(reporter.submitResult).toHaveBeenCalledTimes(1);
         expect(actual).toContain('test IDs [C2345] do not exist in this Verifier');
     });
+
+    fit('calls event handlers in expected order', async () => {
+        const eventArray = new Array<string>();
+        await verify((v: Verifier) => {
+            return true;
+        }).returns(true)
+        .on('started', () => eventArray.push('started'))
+        .on('pass', () => eventArray.push('pass'))
+        .on('done', () => eventArray.push('done'));
+
+        expect(eventArray[0]).toEqual('started');
+        expect(eventArray[1]).toEqual('pass');
+        expect(eventArray[2]).toEqual('done');
+    })
 });
 
 const testStore: Map<string, any> = new Map<string, any>();
