@@ -1,11 +1,11 @@
 import Mocha = require("mocha");
-import { AftTest } from "aft-core";
+import { AftTestIntegration } from "aft-core";
 
 /**
  * provides a more streamlined means of getting a `Verifier`
  * from the Mocha test context
  */
-export class AftMochaTest extends AftTest {
+export class AftMochaTest extends AftTestIntegration {
     /**
      * an instance of a `Mocha.Test` from the `this` scope
      * from within a Mocha `it` function taken from

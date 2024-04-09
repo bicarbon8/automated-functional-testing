@@ -91,7 +91,7 @@ describe('Retry', () => {
         await Promise.resolve(r).catch((err) => errStr = err);
 
         expect(errStr).toBeDefined();
-        expect(errStr).toContain('over 100 attempts');
+        expect(errStr).toMatch('over 100 attempts');
         expect(r.result).toEqual(100);
         expect(r.isSuccessful).toBe(false);
     });

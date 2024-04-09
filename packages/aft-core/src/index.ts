@@ -14,9 +14,6 @@ export * from './helpers/rand';
 export * from './helpers/retry';
 export * from './helpers/using';
 export * from './helpers/wait';
-/** integration */
-export * from './integration/aft-test';
-export * from './integration/title-parser';
 /** logging */
 export * from './logging/aft-logger';
 export * from './logging/log-level';
@@ -37,6 +34,6 @@ export * from './plugins/reporting/test-status';
 export * from './plugins/policy/policy-plugin';
 export * from './plugins/policy/policy-manager';
 /** verification */
-export * from './verification/verifier';
-export * from './verification/verifier-internals';
+export * from './verification/aft-test';
+export * from './verification/title-parser';
 export * from './verification/verifier-matcher';

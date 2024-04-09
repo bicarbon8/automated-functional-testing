@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as FormData from "form-data";
-import { Reporter, Verifier, aftConfig, containing, using } from "aft-core";
+import { Reporter, AftTest, aftConfig, containing, using } from "aft-core";
 import { WikipediaView } from "../lib/page-objects/mobile-app/wikipedia-view";
 import { AftMochaTest } from "aft-mocha-reporter";
 import { httpService, httpData, HttpHeaders } from "aft-web-services";
@@ -53,7 +53,7 @@ describe('Functional Mobile App Tests using WebdriverIO and Mocha', () => {
     });
 
     it('can search in Wikipedia App [C5432]', async function() {
-        await new AftMochaTest(this).verify(async (v: Verifier) => {
+        await new AftMochaTest(this).verify(async (v: AftTest) => {
             let res = new Array<string>();
             await using(new WebdriverIoSession({
                 aftConfig: v.aftCfg,
@@ -67,7 +67,7 @@ describe('Functional Mobile App Tests using WebdriverIO and Mocha', () => {
                         "appium:app": customId,
                         "bstack:options": {
                             "sessionName": v.reporter.loggerName,
-                            buildName: await v.buildInfoMgr.get(),
+                            buildName: await v.buildInfoManager.get(),
                             "osVersion": null
                         }
                     }

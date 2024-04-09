@@ -1,11 +1,11 @@
-import { Verifier, containing, retry, using } from "aft-core";
+import { AftTest, containing, retry, using } from "aft-core";
 import { AftJestTest } from "aft-jest-reporter";
 import { HerokuLoginPage } from "../lib/page-objects/heroku-login-page";
 import { SeleniumSession } from "aft-ui-selenium";
 
 describe('Functional Browser Tests using Selenium and Jest', () => {
     test('[C1234] can access websites using AFT Verifier and SeleniumSession', async () => {
-        await new AftJestTest(expect).verify(async (v: Verifier) => {
+        await new AftJestTest(expect).verify(async (v: AftTest) => {
             let loginMessage: string;
             await using(new SeleniumSession({
                 reporter: v.reporter,
@@ -14,7 +14,7 @@ describe('Functional Browser Tests using Selenium and Jest', () => {
                         browserName: 'chrome',
                         "bstack:options": {
                             sessionName: v.reporter.loggerName,
-                            buildName: await v.buildInfoMgr.get()
+                            buildName: await v.buildInfoManager.get()
                         }
                     }
                 }
@@ -56,7 +56,7 @@ describe('Functional Browser Tests using Selenium and Jest', () => {
                     browserName: 'chrome',
                     "bstack:options": {
                         sessionName: aft.reporter.loggerName,
-                        buildName: await aft.buildInfoMgr.get()
+                        buildName: await aft.buildInfoManager.get()
                     }
                 }
             }

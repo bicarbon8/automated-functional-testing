@@ -1,6 +1,7 @@
 import { AftConfig, aftConfig } from "../configuration/aft-config";
 import { convert } from "./convert";
-import { Func, RetryBackOffType } from "./custom-types";
+import { Func, ProcessingResult, RetryBackOffType } from "./custom-types";
+import { Err } from "./err";
 import { wait } from "./wait";
 
 /**
@@ -137,9 +138,11 @@ export class Retry<T> implements PromiseLike<T> {
      * otherwise `false`
      */
     private async _isConditionMet(result: T): Promise<boolean> {
-        return Promise.resolve(result)
-            .then(this._condition)
-            .catch(() => false);
+        try {
+            return await this._condition(result);
+        } catch (e) {
+            return false;
+        }
     }
     
     async then<TResult1, TResult2 = never>(
@@ -164,21 +167,18 @@ export class Retry<T> implements PromiseLike<T> {
             && this._totalAttempts < this._maxAttempts
             && this._totalDuration < this._maxDuration
         ) {
-            this._result = await Promise.resolve()
-                .then(this._retryable)
-                .catch((e) => {
-                    this._err = e;
-                    return undefined;
-                });
+            try {
+                this._result = await Promise.resolve(this._retryable());
+            } catch(e) {
+                this._err = e;
+                this._result = undefined;
+            }
 
-            this._success = await this._isConditionMet(this._result);
+            const res: ProcessingResult<boolean> = await Err.handleAsync(() => this._isConditionMet(this._result), {errLevel: 'none'});
+            this._success = res.result ?? false;
             if (!this._success) {
                 if (this._failAction) {
-                    await Promise.resolve()
-                        .then(this._failAction)
-                        .catch(() => {
-                            /* ignore */
-                        });
+                    await Err.handleAsync(() => this._failAction(), {errLevel: 'none'});
                 }
                 await wait.forDuration(this._currentDelay);
             }
@@ -187,7 +187,7 @@ export class Retry<T> implements PromiseLike<T> {
             this._totalDuration = convert.toElapsedMs(startTime);
         }
         if (!this._success && this._reject) {
-            return Promise.reject(`[${this.constructor.name}] unable to get a successful result after`
+            throw new Error(`[${this.constructor.name}] unable to get a successful result after`
                 + ` ${convert.toHoursMinutesSeconds(this._totalDuration)} over ${this._totalAttempts} attempts`);
         }
         return this._result;
@@ -248,7 +248,7 @@ export class Retry<T> implements PromiseLike<T> {
  *     retryBackOffType: 'exponential',
  *     retryMaxAttempts: 10,
  *     retryMaxDurationMs: 30000
- * })).unti((res: number) => res === 5);
+ * })).until((res: number) => res === 5);
  * ```
  * @param retryable the function to be retried until it passes a default
  * condition of return value != null or a custom `condition`

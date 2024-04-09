@@ -1,7 +1,7 @@
-import { Reporter, rand, PolicyManager, Verifier, verify, TestResult, LogLevel, ProcessingResult, AftConfig, pluginLoader, containing, equaling } from "../../src";
+import { Reporter, rand, PolicyManager, AftTest, aftTest, TestResult, LogLevel, ProcessingResult, AftConfig, pluginLoader, containing, equaling, AftTestEvent, Func } from "../../src";
 
 const consoleLog = console.log;
-describe('Verifier', () => {
+describe('AftTest', () => {
     /* comment `beforeAll` and `afterAll` out to see actual test output */
     beforeAll(() => {
         console.log = function(){};
@@ -17,23 +17,9 @@ describe('Verifier', () => {
 
     it('uses "description" as reporter name if provided', async () => {
         const description: string = rand.getString(22);
-        await verify(async (v: Verifier) => {
-            expect(v.reporter.loggerName).toEqual(description);
-        })
-        .withDescription(description);
-    });
-
-    it('uses "test case IDs" as reporter name if no description provided', async () => {
-        const peMgr = new PolicyManager();
-        spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
-            return Promise.resolve({result: true});
+        await aftTest(description, async (v: AftTest) => {
+            await v.verify(v.reporter.loggerName, description);
         });
-
-        await verify(async (v: Verifier) => {
-            expect(v.reporter.loggerName).toEqual('C1234_C2345');
-        })
-        .internals.withTestIds('C1234','C2345')
-        .internals.usingPolicyManager(peMgr);
     });
     
     it('can execute a passing expectation', async () => {
@@ -41,18 +27,16 @@ describe('Verifier', () => {
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'pass').and.callThrough();
-        const peMgr = new PolicyManager();
-        spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
+        const policyManager = new PolicyManager();
+        spyOn(policyManager, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
             return Promise.resolve({result: true});
         });
 
-        await verify(async (v: Verifier) => 'foo')
-        .returns('foo')
-        .internals.usingReporter(reporter)
-        .internals.usingPolicyManager(peMgr)
-        .and.withDescription('true [C1234] should be true [C2345]');
+        await aftTest('true [C1234] should be true [C2345]', async (v: AftTest) => {
+            await v.verify(() => 'foo', 'foo');
+        }, { reporter, policyManager });
 
-        expect(peMgr.shouldRun).toHaveBeenCalledTimes(2);
+        expect(policyManager.shouldRun).toHaveBeenCalledTimes(2);
         expect(reporter.submitResult).toHaveBeenCalledTimes(2);
         expect(reporter.pass).toHaveBeenCalledTimes(2);
     });
@@ -62,18 +46,16 @@ describe('Verifier', () => {
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'pass').and.callThrough();
-        const peMgr = new PolicyManager();
-        spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
+        const policyManager = new PolicyManager();
+        spyOn(policyManager, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
             return Promise.resolve({result: true});
         });
 
-        await verify(async (v: Verifier) => ['foo', 'bar', 'baz'])
-        .returns(containing('bar'))
-        .internals.usingReporter(reporter)
-        .internals.usingPolicyManager(peMgr)
-        .and.withDescription('[C1234][C2345] array contains "bar"');
+        await aftTest('[C1234][C2345] array contains "bar"', async (v: AftTest) => {
+            await v.verify(['foo', 'bar', 'baz'], containing('bar'));
+        }, { reporter, policyManager });
 
-        expect(peMgr.shouldRun).toHaveBeenCalledTimes(2);
+        expect(policyManager.shouldRun).toHaveBeenCalledTimes(2);
         expect(reporter.submitResult).toHaveBeenCalledTimes(2);
         expect(reporter.pass).toHaveBeenCalledTimes(2);
     });
@@ -83,25 +65,22 @@ describe('Verifier', () => {
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'fail').and.callThrough();
-        const peMgr = new PolicyManager();
-        spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
+        const policyManager = new PolicyManager();
+        spyOn(policyManager, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
             return Promise.resolve({result: true});
         });
 
         try {
-            await verify(() => {
+            await aftTest('true should [C1234][C2345] be true', () => {
                 throw new Error('fake error');
-            })
-            .internals.usingReporter(reporter)
-            .internals.usingPolicyManager(peMgr)
-            .withDescription('true should [C1234][C2345] be true');
+            }, { reporter, policyManager });
 
             expect(true).toBe(false); // force failure
         } catch (e) {
             expect(e.toString()).toEqual('Error: fake error');
         }
 
-        expect(peMgr.shouldRun).toHaveBeenCalledTimes(2);
+        expect(policyManager.shouldRun).toHaveBeenCalledTimes(2);
         expect(reporter.submitResult).toHaveBeenCalledTimes(2);
         expect(reporter.fail).toHaveBeenCalledTimes(2);
     });
@@ -111,24 +90,22 @@ describe('Verifier', () => {
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'fail').and.callThrough();
-        const peMgr = new PolicyManager();
-        spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
+        const policyManager = new PolicyManager();
+        spyOn(policyManager, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
             return Promise.resolve({result: true});
         });
 
         try {
-            await verify(() => true)
-                .returns(false)
-                .internals.usingReporter(reporter)
-                .internals.usingPolicyManager(peMgr)
-                .and.withDescription('[C1234][C2345] failure expected due to true not being false');
+            await aftTest('[C1234][C2345] failure expected due to true not being false', async (v: AftTest) => {
+                await v.verify(true, false); // expected failure
+            }, { reporter, policyManager });
 
-            expect('foo').toBe('bar'); // force failure
+            expect('foo').toBe('bar'); // force failure if we get here
         } catch (e) {
-            expect(e.toString()).toEqual(equaling(false).setActual(true).failureString());
+            expect(e.toString()).toContain(equaling(false).setActual(true).failureString());
         }
 
-        expect(peMgr.shouldRun).toHaveBeenCalledTimes(2);
+        expect(policyManager.shouldRun).toHaveBeenCalledTimes(2);
         expect(reporter.submitResult).toHaveBeenCalledTimes(2);
         expect(reporter.fail).toHaveBeenCalledTimes(2);
     });
@@ -138,19 +115,16 @@ describe('Verifier', () => {
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'warn').and.callThrough();
-        const peMgr = new PolicyManager();
-        spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
+        const policyManager = new PolicyManager();
+        spyOn(policyManager, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
             return Promise.resolve({result: false});
         });
 
-        await verify(() => {
+        await aftTest('[C1234][C2345]', () => {
             testStore.set('executed', true);
-        })
-        .internals.usingReporter(reporter)
-        .internals.usingPolicyManager(peMgr)
-        .internals.withTestIds('C1234','C2345');
+        }, { reporter, policyManager });
 
-        expect(peMgr.shouldRun).toHaveBeenCalledTimes(2);
+        expect(policyManager.shouldRun).toHaveBeenCalledTimes(2);
         expect(testStore.has('executed')).toBeFalse();
         expect(reporter.submitResult).toHaveBeenCalledTimes(2);
         expect(reporter.warn).toHaveBeenCalledTimes(2);
@@ -161,8 +135,8 @@ describe('Verifier', () => {
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'pass').and.callThrough();
-        const peMgr = new PolicyManager();
-        spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
+        const policyManager = new PolicyManager();
+        spyOn(policyManager, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
             if (testId === 'C1234') {
                 return Promise.resolve({result: false, message: 'do not run C1234'});
             } else {
@@ -170,15 +144,12 @@ describe('Verifier', () => {
             }
         });
 
-        await verify(() => {
+        await aftTest('[C1234][C2345]', () => {
             testStore.set('executed', true);
-        })
-        .internals.usingReporter(reporter)
-        .internals.usingPolicyManager(peMgr)
-        .internals.withTestIds('C1234','C2345');
+        }, { reporter, policyManager });
 
-        expect(peMgr.shouldRun).toHaveBeenCalledWith('C1234');
-        expect(peMgr.shouldRun).toHaveBeenCalledWith('C2345');
+        expect(policyManager.shouldRun).toHaveBeenCalledWith('C1234');
+        expect(policyManager.shouldRun).toHaveBeenCalledWith('C2345');
         expect(testStore.has('executed')).toBeTrue();
         expect(reporter.submitResult).toHaveBeenCalledTimes(2);
         expect(reporter.pass).toHaveBeenCalledTimes(2);
@@ -190,47 +161,37 @@ describe('Verifier', () => {
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'warn').and.callThrough();
         pluginLoader.reset();
-        const peMgr = new PolicyManager(new AftConfig({
+        const policyManager = new PolicyManager(new AftConfig({
             plugins: ['mock-policy-plugin'],
             MockPolicyPluginConfig: {
                 enabled: true
             }
         }));
 
-        await verify(() => {
+        await aftTest(rand.getString(15), () => {
             testStore.set('executed', true);
-        })
-        .internals.usingReporter(reporter)
-        .internals.usingPolicyManager(peMgr);
+        }, { reporter, policyManager });
 
-        expect(peMgr.plugins.length).toEqual(1);
+        expect(policyManager.plugins.length).toEqual(1);
         expect(testStore.has('executed')).toBeFalse();
         expect(reporter.submitResult).toHaveBeenCalledTimes(1);
         expect(reporter.warn).toHaveBeenCalledTimes(1);
-    });
-
-    it('assertion return value not checked if "returns" not used', async () => {
-        await verify(() => {
-            return false;
-        });
     });
 
     it('will only log a result for a given test ID one time', async () => {
         const reporter = new Reporter('will only log a result for a given test ID one time');
         spyOn(reporter, 'pass').and.callFake((message: string) => Promise.resolve());
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
-        const peMgr = new PolicyManager();
-        spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
+        const policyManager = new PolicyManager();
+        spyOn(policyManager, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
             return Promise.resolve({result: true});
         });
 
-        await verify(async (v: Verifier) => {
+        await aftTest('[C1234] true should be true', async (v: AftTest) => {
             await v.pass('C1234');
-        }).internals.usingReporter(reporter)
-        .internals.usingPolicyManager(peMgr)
-        .and.withDescription('[C1234] true should be true');
+        }, { reporter, policyManager });
 
-        expect(peMgr.shouldRun).toHaveBeenCalledTimes(1);
+        expect(policyManager.shouldRun).toHaveBeenCalledTimes(1);
         expect(reporter.submitResult).toHaveBeenCalledTimes(1);
         expect(reporter.pass).toHaveBeenCalledTimes(1);
     });
@@ -239,42 +200,44 @@ describe('Verifier', () => {
         const reporter = new Reporter('will only log a result for a test ID that is not associated with this instance');
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
-        const peMgr = new PolicyManager();
-        spyOn(peMgr, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
+        const policyManager = new PolicyManager();
+        spyOn(policyManager, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
             return Promise.resolve({result: true});
         });
 
         let actual: any;
         try {
-            await verify(async (v: Verifier) => {
+            await aftTest('[C1234] true should be true', async (v: AftTest) => {
                 await v.pass('C2345');
-            }).internals.usingReporter(reporter)
-                .internals.usingPolicyManager(peMgr)
-                .and.withDescription('[C1234] true should be true');
+            }, { reporter, policyManager });
 
             expect(true).toBeFalse(); // force failure if we get here
         } catch(e) {
             actual = e;
         }
 
-        expect(peMgr.shouldRun).toHaveBeenCalledTimes(1);
+        expect(policyManager.shouldRun).toHaveBeenCalledTimes(1);
         expect(reporter.submitResult).toHaveBeenCalledTimes(1);
-        expect(actual).toContain('test IDs [C2345] do not exist in this Verifier');
+        expect(actual).toMatch('C2345');
     });
 
     it('calls event handlers in expected order', async () => {
         const eventArray = new Array<string>();
-        await verify((v: Verifier) => {
-            return true;
-        }).returns(true)
-        .on('started', () => eventArray.push('started'))
-        .on('pass', () => eventArray.push('pass'))
-        .on('done', () => eventArray.push('done'));
+        await new AftTest(rand.getString(15), async (v: AftTest) => {
+            await v.verify(true, true);
+        }, {
+            onEventsMap: new Map<AftTestEvent, Array<Func<AftTest, void | PromiseLike<void>>>>([
+                ['started', [() => {eventArray.push('started');}]],
+                ['pass', [() => {eventArray.push('pass');}]],
+                ['done', [() => {eventArray.push('done');}]]
+            ])
+        }).run();
 
+        expect(eventArray.length).toBe(3);
         expect(eventArray[0]).toEqual('started');
         expect(eventArray[1]).toEqual('pass');
         expect(eventArray[2]).toEqual('done');
-    })
+    });
 });
 
 const testStore: Map<string, any> = new Map<string, any>();

@@ -1,5 +1,5 @@
 import { test, jest, expect } from "@jest/globals";
-import { ProcessingResult, Verifier, equaling } from "aft-core";
+import { ProcessingResult, AftTest, equivalent } from "aft-core";
 import { AftJestTest } from "../src";
 
 describe('AftJestReporter', () => {
@@ -13,7 +13,7 @@ describe('AftJestReporter', () => {
 
     test('can check if test should be run [C1234]', async () => {
         const t = new AftJestTest(expect);
-        await t.verify((v: Verifier) => t.fullName)
+        await t.verify((v: AftTest) => t.fullName)
             .returns('AftJestReporter can check if test should be run [C1234]');
     });
 
@@ -31,9 +31,9 @@ describe('AftJestReporter', () => {
 
     test('provides a Verifier instance for use in test control', async () => {
         const t = new AftJestTest(expect);
-        await t.verify(async (v: Verifier) => {
+        await t.verify(async (v: AftTest) => {
             await v.reporter.warn('returning logName');
             return v.reporter.loggerName;
-        }).returns(equaling(t.reporter.loggerName));
+        }).returns(equivalent(t.reporter.loggerName));
     });
 });

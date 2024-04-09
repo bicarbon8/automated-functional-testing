@@ -1,4 +1,4 @@
-import { Verifier, containing, retry, using } from "aft-core";
+import { AftTest, containing, retry, using } from "aft-core";
 import { AftMochaTest } from "aft-mocha-reporter";
 import { SeleniumSession } from "aft-ui-selenium";
 import { HerokuLoginPage } from "../lib/page-objects/heroku-login-page";
@@ -6,7 +6,7 @@ import { expect } from "chai";
 
 describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
     it('[C1234] can access websites using AFT and BrowserComponents', async function() {
-        await new AftMochaTest(this).verify(async (v: Verifier) => {
+        await new AftMochaTest(this).verify(async (v: AftTest) => {
             await using(new SeleniumSession({
                 reporter: v.reporter,
                 additionalSessionOptions: {
@@ -14,7 +14,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                         browserName: 'chrome',
                         "bstack:options": {
                             sessionName: v.reporter.loggerName,
-                            buildName: await v.buildInfoMgr.get()
+                            buildName: await v.buildInfoManager.get()
                         }
                     }
                 }
@@ -55,7 +55,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                     browserName: 'chrome',
                     "bstack:options": {
                         sessionName: aft.reporter.loggerName,
-                        buildName: await aft.buildInfoMgr.get()
+                        buildName: await aft.buildInfoManager.get()
                     }
                 }
             }
@@ -90,7 +90,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
     ];
     for (const uiplatform of uiplatforms) {
         it(`${uiplatform.testId} can run with multiple uiplatforms: ${uiplatform.os} ${uiplatform.osV} ${uiplatform.browser}`, async function() {
-            await new AftMochaTest(this).verify(async (v: Verifier) => {
+            await new AftMochaTest(this).verify(async (v: AftTest) => {
                 let loginMessage = '';
                 await using(new SeleniumSession({
                     reporter: v.reporter,
@@ -101,7 +101,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                                 sessionName: v.reporter.loggerName,
                                 os: uiplatform.os,            // override os in `aftconfig.json` file
                                 osVersion: uiplatform.osV,    // override osVersion in `aftconfig.json` file
-                                buildName: await v.buildInfoMgr.get()
+                                buildName: await v.buildInfoManager.get()
                             }
                         }
                     }

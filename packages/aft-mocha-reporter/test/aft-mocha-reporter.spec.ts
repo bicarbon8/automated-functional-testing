@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { AftMochaTest } from "../src";
 import * as sinon from "sinon";
-import { Verifier, equaling } from "aft-core";
+import { AftTest, equivalent } from "aft-core";
 
 describe('AftMochaReporter', () => {
     it('passes a Mocha Test to the test that can be used by AftMochaTest', async function () {
@@ -46,9 +46,9 @@ describe('AftMochaReporter', () => {
     it('provides a Verifier instance for use in test control', async function() {
         this.timeout(10000);
         const t = new AftMochaTest(this);
-        await t.verify(async (v: Verifier) => {
+        await t.verify(async (v: AftTest) => {
             await v.reporter.info('returning logName');
             return v.reporter.loggerName;
-        }).returns(equaling(t.reporter.loggerName));
+        }).returns(equivalent(t.reporter.loggerName));
     });
 });

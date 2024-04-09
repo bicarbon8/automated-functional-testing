@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as FormData from "form-data";
-import { Verifier, greaterThan, havingValue, lessThan, retry, verify } from "aft-core";
+import { AftTest, greaterThan, havingValue, lessThan, retry, aftTest } from "aft-core";
 import { AftJasmineTest } from "aft-jasmine-reporter";
 import { httpData, HttpResponse, httpService } from 'aft-web-services';
 import { ListUsersResponse } from "../lib/response-objects/list-users-response";
@@ -10,7 +10,7 @@ describe('Functional API tests using HttpService', () => {
     it('can make GET request from JSON REST API', async () => {
         const aft = new AftJasmineTest(); // DO NOT pass a scope
         let response: HttpResponse;
-        await verify(async (v: Verifier) => {            
+        await aftTest(async (v: AftTest) => {            
             await v.reporter.step('making request...');
             const r = retry(() => httpService.performRequest({
                 url: 'https://reqres.in/api/users?page=2',
@@ -30,7 +30,7 @@ describe('Functional API tests using HttpService', () => {
         .and.internals.usingReporter(aft.reporter)
         .returns(lessThan(10000));
 
-        await verify(async (v: Verifier) => {
+        await aftTest(async (v: AftTest) => {
             await v.reporter.step('confirm response is not null...');
             expect(response).toBeDefined();
             await v.reporter.info('confirmed response is not null.');
@@ -42,7 +42,7 @@ describe('Functional API tests using HttpService', () => {
         .and.internals.usingReporter(aft.reporter)
         .returns(havingValue());
 
-        await verify(async (v: Verifier) => {
+        await aftTest(async (v: AftTest) => {
             await v.reporter.step('confirm can deserialise response.data into typed object...');
             const obj: ListUsersResponse = httpData.as<ListUsersResponse>(response);
             expect(obj).toBeDefined();

@@ -1,11 +1,11 @@
-import { AftTest } from "aft-core";
+import { AftTestIntegration } from "aft-core";
 import { TestCaseResult } from "@jest/reporters";
 
 /**
  * provides a more streamlined means of getting a `Verifier`
  * from the Mocha test context
  */
-export class AftJestTest extends AftTest {
+export class AftJestTest extends AftTestIntegration {
     /**
      * reference to the Jest.TestCaseResult
      * > NOTE: this is only set from inside the Jest

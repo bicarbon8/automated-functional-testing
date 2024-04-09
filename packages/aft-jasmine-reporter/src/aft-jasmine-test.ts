@@ -1,12 +1,12 @@
 import jasmine = require("jasmine");
-import { AftTest, FileSystemMap } from "aft-core";
+import { AftTestIntegration, FileSystemMap } from "aft-core";
 import { CurrentlyExecutingTestMap } from "./aft-jasmine-constants";
 
 /**
  * provides a more streamlined means of getting a `Verifier`
  * from the Jasmine test context
  */
-export class AftJasmineTest extends AftTest {
+export class AftJasmineTest extends AftTestIntegration {
     /**
      * reference to the jasmine.SpecResult
      * > NOTE: this is only set from inside the Jasmine

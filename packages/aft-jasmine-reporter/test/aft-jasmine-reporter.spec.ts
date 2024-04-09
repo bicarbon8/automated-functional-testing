@@ -1,4 +1,4 @@
-import { ProcessingResult, Verifier, equaling } from "aft-core";
+import { ProcessingResult, AftTest, equivalent } from "aft-core";
 import { AftJasmineTest } from "../src";
 
 describe('AftJasmineReporter', () => {
@@ -33,9 +33,9 @@ describe('AftJasmineReporter', () => {
 
     it('provides a Verifier instance for use in test control', async () => {
         const t = new AftJasmineTest(this);
-        await t.verify(async (v: Verifier) => {
+        await t.verify(async (v: AftTest) => {
             await v.reporter.info('returning logName');
             return v.reporter.loggerName;
-        }).returns(equaling(t.reporter.loggerName));
+        }).returns(equivalent(t.reporter.loggerName));
     });
 });
