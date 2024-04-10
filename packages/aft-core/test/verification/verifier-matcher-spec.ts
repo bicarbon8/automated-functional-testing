@@ -1,6 +1,6 @@
 import { between, containing, equaling, equivalent, exactly, greaterThan, havingProps, havingValue, lessThan, not } from "../../src";
 
-describe('VerifierMatcher', () => {
+describe('VerifyMatcher', () => {
     describe('Equaling', () => {
         let testData = [
             {expected: 100, actual: 100, result: true},

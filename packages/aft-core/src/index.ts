@@ -36,4 +36,4 @@ export * from './plugins/policy/policy-manager';
 /** verification */
 export * from './verification/aft-test';
 export * from './verification/title-parser';
-export * from './verification/verifier-matcher';
+export * from './verification/verify-matcher';

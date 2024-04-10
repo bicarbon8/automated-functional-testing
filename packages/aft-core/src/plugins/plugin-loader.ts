@@ -5,7 +5,7 @@ import { convert } from '../helpers/convert';
 import { Plugin } from './plugin'; // eslint-disable-line no-redeclare
 import { AftConfig, aftConfig } from '../configuration/aft-config';
 import { Class } from '../helpers/custom-types';
-import { havingProps } from '../verification/verifier-matcher';
+import { havingProps } from '../verification/verify-matcher';
 import { PluginLocator } from './plugin-locator';
 
 class PluginLoader {

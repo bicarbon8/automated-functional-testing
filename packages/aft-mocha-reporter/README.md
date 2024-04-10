@@ -23,15 +23,14 @@ the `AftMochaTest` class extends from the `AftTest` class providing the ability 
 > **!!WARNING!!** using arrow functions in your Spec definition **IS NOT SUPPORTED** if using `AftMochaTest` because it removes the `this` scope
 ```javascript
 describe('YourTestSuite', () => {
-    // use `AftMochaTest.verify` to report results
+    // use `aftMochaTest` to report results
     it('can check if test [C1234] should be run', async function() {
-        const aft = new AftMochaTest(this);
-        await aft.verify(async (v: Verifier) => {
-            // `verify` calls `v.test.skip()` if should not be run
+        await aftMochaTest(this, async (v: AftMochaTest) => {
+            // calls `v.test.skip()` if should not be run
             await v.reporter.error('we should never get here if C1234 should not be run');
             const result = await doStuff();
-            return result;
-        }).returns(equaling('expected')); // AFT Verifier handles submitting the result to any AFT Reporter Plugins
+            await t.verify(result, equaling('expected'));
+        }); // handles submitting the result to any AFT Reporter Plugins
     });
 
     // use `AftMochaReporter` to report results
@@ -55,10 +54,3 @@ which would output the following to your console and any AFT `ReportingPlugin` i
 ## NOTES
 - the `AftMochaTest` constructors expects to be passed a valid `scope` containing reference to the currently executing `Mocha.Test`. typically this will be the `this` object within your Spec
 - this Mocha `Reporter` works in both parallel and sequential execution modes, but you **MUST ALWAYS** use a non-arrow function for your Spec definition if you are using `AftMochaTest` class within your Spec
-- you can use the AFT `Verifier` in combination with the `AftMochaTest` classes like follows:
-```javascript
-const aft = new AftMochaTest(this);
-await aft.verify((v: Verifier) => {
-    /* perform testing here */
-}).returns(expected);
-```

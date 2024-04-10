@@ -45,7 +45,7 @@ export class AftMochaReporter extends Mocha.reporters.Base {
         })
         .on(EVENT_TEST_PENDING, async (test: Mocha.Test) => {
             /**
-             * conditionally handle `pending` test when not using AFT Verifier
+             * conditionally handle `pending` test when not using aftMochaTest
              * NOTE: always handles when test is manually skipped using `xit` or `xdescribe`
              */
             const t = new AftMochaTest({test});
@@ -54,14 +54,14 @@ export class AftMochaReporter extends Mocha.reporters.Base {
             }
         })
         .on(EVENT_TEST_PASS, async (test: Mocha.Test) => {
-            // conditionally handle `passing` test when not using AFT Verifier
+            // conditionally handle `passing` test when not using aftMochaTest
             const t = new AftMochaTest({test});
             if (t.results.length === 0) {
                 await t.pass();
             }
         })
         .on(EVENT_TEST_FAIL, async (test: Mocha.Test, err: any) => {
-            // conditionally handle `failing` test when not using AFT Verifier
+            // conditionally handle `failing` test when not using aftMochaTest
             const t = new AftMochaTest({test});
             if (t.results.length === 0) {
                 if (typeof err !== 'string') {

@@ -68,7 +68,7 @@ the `aft-core` package contains several helper and utility classes, interfaces a
 - **fileio** - a constant class providing file system `write` and `readAs<T>` functions to simplify file operations
 - **wait** - constant class providing `wait.forResult<T>(...): Promise<T>`, `wait.forDuration(number)`, and `wait.until(number | Date): Promise<void>` functions to allow for non-thread-locking waits
 - **retry** - constant class providing `retry(retryable): Promise<T>` async function that will retry a given `retryable` function until it succeeds or some condition such as number of attempts or elapsed time is exceeded
-- **verifier** - see: [Testing with the Verifier](#testing-with-the-verifier) section below
+- **AftTest** - see: [Testing with AftTest](#testing-with-afttest) section below
 
 ## Custom Types
 `aft-core` also comes with some helpful types that can make building automated tests a bit easier such as:
@@ -176,30 +176,30 @@ the `aft-core` package comes with an `AftTest` class which can be extended from 
 - `aft-mocha-reporter`: [aft-test](../aft-mocha-reporter/README.md#aftmochatest)
 - `aft-jest-reporter`: [aft-test](../aft-jest-reporter/README.md#aftjesttest)
 
-## Testing with the Verifier
-the `Verifier` class and `verify` functions of `aft-core` enable testing with pre-execution filtering based on integration with external test execution policy managers via plugin packages extending the `PolicyPlugin` class (see examples above).
+## Testing with AftTest
+the `AftTest` class and `AftTest.verify` functions of `aft-core` enable testing with pre-execution filtering based on integration with external test execution policy managers via plugin packages extending the `PolicyPlugin` class (see examples above).
 
 ```typescript
 // jasmine spec using `aft-jasmine-reporter` package
 describe('Sample Test', () => {
-    it("[C1234] expect that performAction will return 'result of action'", async () => {
+    it("[C1234] expect that performActionAsync will return 'result of action'", async () => {
+        const feature: FeatureObj = new FeatureObj();
         /**
          * - for Jest use: `const aft = new AftJestTest(expect);`
          * - for Mocha use: `const aft = new AftMochaTest(this);`
          * - for Jasmine use: `const aft = new AftJasmineTest();`
          */
-        const aft = new AftJasmineTest();
-        const feature: FeatureObj = new FeatureObj();
-        /**
-         * the `verify(assertion).returns(expectation)` function
-         * checks any specified `PolicyPlugin` implementations
-         * to ensure the test should be run. It will then
-         * report to any `ReportingPlugin` implementations
-         * with an `TestResult` indicating the success,
-         * failure or skipped status
-         */
-        await aft.verify(async () => await feature.performAction())
-            .returns('result of action');
+        await aftJasmineTest(async (t: AftJasmineTest) => {
+            /**
+             * the `t.verify(actual, expected)` function will compare
+             * the `actual` with an `expected` using a `VerifyMatcher`
+             * and if the comparison fails and the `haltOnVerifyFailure`
+             * is `true` (default) it will throw an exception containing
+             * details of the failure; otherwise it will continue having
+             * set the overall `AftTest.status` to `'failed'`
+             */
+            await t.verify(() => feature.performActionAsync(), containing('result of action'));
+        });
     });
 });
 ```
@@ -209,16 +209,16 @@ in the above example, the `await feature.performAction()` call will only be run 
 09:14:01 - [expect that performAction will return 'result of action'] - TRACE - no PolicyPlugin in use so run all tests
 ```
 
-### VerifierMatcher
-the `.returns(...)` function on a `Verifier` can accept a `VerifierMatcher` instance to enhance the comparison capabilities performed by the `Verifier.returns` check. the following `VerifierMatcher` types are supported within AFT Core:
-> NOTE: if no `VerifierMatcher` is supplied then `equaling` is used by default
-- `equaling`: performs a `'=='` test between the `actual` and `expected`. ex: `await verify(() => 0).returns(equaling(false)); // success`
-- `exactly`: performs a `'==='` test between the `actual` and `expected`. ex: `await verify(() => 0).returns(exactly(false)); // fail`
-- `equivalent`: iterates over all keys of `expected` and compares their type and values to those found on `actual`. ex: `await verify(() => {foo: 'bar'}).returns({foo: 'foo'}); // fail`
-- `between`: verifies that the `actual` numerical value is either equal to or between the `minimum` and `maximum` expected values. ex: `await verify(() => 42).returns(between(42, 45)); // success`
-- `containing`: verifies that the `actual` collection contains the `expected` value. ex: `await verify(() => [0, 1, 2, 3]).returns(containing(2)); // success`
-- `havingProps`: iterates over all keys of `expected` and compares their type to those found on `actual`. this differs from `equivalent` in that the actual values are not part of the comparison. ex: `await verify(() => {foo: 'bar'}).returns(havingProps({foo: 'foo'})); // success`
-- `havingValue`: verifies that the `actual` is not equal to `null` or `undefined`. ex: `await verify(() => false).returns(havingValue()); // success`
-- `greaterThan`: verifies that the `actual` numerical value is greater than the `expected`. ex: `await verify(() => 2).returns(greaterThan(0)); // success`
-- `lessThan`: verifies that the `actual` numerical value is less than the `expected`. ex: `await verify(() => 0).returns(lessThan(1)); // success`
-- `not`: a special use `VerifierMatcher` that negates any `VerifierMatcher` passed into it. ex: `await verify(() => [0, 1, 2]).returns(not(containing(1))); // fails`
+### VerifyMatcher
+the `t.verify(actual, expected)` function on `AftTest` can accept a `VerifyMatcher` instance for the `expected` value to enhance the comparison capabilities performed by the check. the following `VerifyMatcher` types are supported within AFT Core:
+> NOTE: if no `VerifyMatcher` is supplied then `equaling` is used by default
+- `equaling`: performs a `'=='` test between the `actual` and `expected`. ex: `await t.verify(0, equaling(false)); // success`
+- `exactly`: performs a `'==='` test between the `actual` and `expected`. ex: `await t.verify(0, exactly(false)); // fail`
+- `equivalent`: iterates over all keys of `expected` and compares their type and values to those found on `actual`. ex: `await t.verify({foo: 'bar', baz: true}, equivalent({foo: 'bar', baz: false})); // fail`
+- `between`: verifies that the `actual` numerical value is either equal to or between the `minimum` and `maximum` expected values. ex: `await t.verify(42, between(42, 45)); // success`
+- `containing`: verifies that the `actual` collection contains the `expected` value. ex: `await t.verify([0, 1, 2, 3], containing(2)); // success`
+- `havingProps`: iterates over all keys of `expected` and compares their type to those found on `actual`. this differs from `equivalent` in that the actual values are not part of the comparison. ex: `await t.verify({foo: 'bar'}, havingProps({foo: 'foo'})); // success`
+- `havingValue`: verifies that the `actual` is not equal to `null` or `undefined`. ex: `await t.verify(false, havingValue()); // success`
+- `greaterThan`: verifies that the `actual` numerical value is greater than the `expected`. ex: `await t.verify(2, greaterThan(0)); // success`
+- `lessThan`: verifies that the `actual` numerical value is less than the `expected`. ex: `await t.verify(0, lessThan(1)); // success`
+- `not`: a special use `VerifyMatcher` that negates any `VerifyMatcher` passed into it. ex: `await t.verify([0, 1, 2], not(containing(1))); // fails`

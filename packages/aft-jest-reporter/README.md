@@ -27,12 +27,11 @@ the `AftJestTest` class extends from the `AftTest` class providing the ability t
 ```javascript
 describe('YourTestSuite', () => {
     test('can check if test [C1234] should be run', async () => {
-        const aft = new AftJestTest(expect); // passing 'expect' allows AftJestTest to get the current test full name
-        await aft.verify(async (v: Verifier) => {
+        await aftJestTest(expect, async (v: AftJestTest) => { // passing 'expect' allows AftJestTest to get the current test full name
             await aft.reporter.step('we should never get here if C1234 should not be run');
             const result = await doStuff();
-            return result;
-        }).returns(equaling('stuff'));
+            await v.verify(result, equaling('stuff'));
+        })
     });
 });
 ```
@@ -43,12 +42,5 @@ which would output the following to your console and any AFT `ReportingPlugin` i
 ```
 
 ## NOTES
-- because Jest refuses to allow programmatic skipping of tests (see: [7245](https://github.com/jestjs/jest/issues/7245)) you will either need to perform all test verification inside an AFT `Verifier` or if using `AftJestTest` you may call `if (await new AftJestTest(expect).shouldRun().result !== true) { return; }` at the top of your test function to ensure AFT can skip tests that should not be run based on any `PolicyPlugin` responses. this means Jest will report the test as `'passing'`, but AFT will correctly report `'skipped'`
+- because Jest refuses to allow programmatic skipping of tests (see: [7245](https://github.com/jestjs/jest/issues/7245)) you will either need to perform all test verification inside an AFTs `AftTest` or if using `AftJestTest` you may call `if (await new AftJestTest(expect).shouldRun().result !== true) { return; }` at the top of your test function to ensure AFT can skip tests that should not be run based on any `PolicyPlugin` responses. this means Jest will report the test as `'passing'`, but AFT will correctly report `'skipped'`
 - this Jest `Reporter` expects that there is only one instance of Jest running from a single location as it writes to a file to track the actual status of the test on completion
-- you can use the AFT `Verifier` in combination with the `AftTest` classes like follows:
-```typescript
-const aft = new AftTest(expect);
-await aft.verify(() => {
-    /* perform testing here */
-}).returns(expected);
-```

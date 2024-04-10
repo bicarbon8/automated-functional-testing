@@ -47,8 +47,8 @@ export class WikipediaView extends WebdriverIoComponent {
 ```typescript
 // wikipedia-app.spec.ts mocha test using AftMochaReporter
 describe('WebdriverIoSession', () => {
-    it('[C1234] can access mobile apps using AFT and UiComponents with Verifier', async function() {
-        await new AftMochaTest(this).verify(async (v: Verifier) => {
+    it('[C1234] can access mobile apps using AFT and UiComponents with AftMochaTest', async function() {
+        await aftMochaTest(this, async (v: AftMochaTest) => {
             const lowercaseResults = new Array<string>();
             await using(new WebdriverIoSession({reporter: v.reporter}), async (session) => {
                 await session.reporter.step('get the WikipediaView Facet from the Session...');
@@ -60,8 +60,8 @@ describe('WebdriverIoSession', () => {
 
                 lowercaseResults.push(...results);
             });
-            return lowercaseResults;
-        }).returns(containing('pizza')); // if no results contained the word 'pizza' test fails
+            await v.verify(lowercaseResults, containing('pizza')); // if no results contained the word 'pizza' test fails
+        }); 
     })
 
     it('[C2345] can access mobile apps using AFT and UiComponents with AftMochaReporter', async function() {

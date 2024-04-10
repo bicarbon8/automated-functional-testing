@@ -1,11 +1,11 @@
-import { AftTest, containing, retry, using } from "aft-core";
-import { AftJestTest } from "aft-jest-reporter";
+import { containing, retry, using } from "aft-core";
+import { AftJestTest, aftJestTest } from "aft-jest-reporter";
 import { HerokuLoginPage } from "../lib/page-objects/heroku-login-page";
 import { SeleniumSession } from "aft-ui-selenium";
 
 describe('Functional Browser Tests using Selenium and Jest', () => {
-    test('[C1234] can access websites using AFT Verifier and SeleniumSession', async () => {
-        await new AftJestTest(expect).verify(async (v: AftTest) => {
+    test('[C1234] can access websites using AFTs AftTest and SeleniumSession', async () => {
+        await aftJestTest(expect, async (v: AftJestTest) => {
             let loginMessage: string;
             await using(new SeleniumSession({
                 reporter: v.reporter,
@@ -37,11 +37,11 @@ describe('Functional Browser Tests using Selenium and Jest', () => {
 
                 loginMessage = await loginPage.getMessage();
             });
-            return loginMessage;
-        }).returns(containing("You logged into a secure area!"));
+            await v.verify(loginMessage, containing("You logged into a secure area!"));
+        });
     });
 
-    test('[C2345] can access websites using AFT SeleniumSession without verifier', async () => {
+    test('[C2345] can access websites using AFTs SeleniumSession without AftTest', async () => {
         const aft = new AftJestTest(expect);
         const shouldRun = await aft.shouldRun();
         if (shouldRun.result !== true) {

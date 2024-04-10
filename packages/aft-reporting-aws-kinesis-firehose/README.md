@@ -40,7 +40,7 @@ the log record that is sent to your AWS Kinesis Firehose endpoint will have the 
 ### message logs
 ```JSON
 {
-    "logName": "if used with a Verifier this will be the 'description' or 'Test IDs' or a GUID",
+    "logName": "if used with an AftTest this will be the 'description' or 'Test IDs' or a GUID",
     "message": "this is the actual message being logged", 
     "level": "warn", 
     "version": "3.0.0", 
@@ -67,7 +67,7 @@ the log record that is sent to your AWS Kinesis Firehose endpoint will have the 
 ### `TestResult` logs
 ```JSON
 {
-    "logName": "if used with Verifier this will be the 'description' or 'Test IDs' or a GUID",
+    "logName": "if used with an AftTest this will be the 'description' or 'Test IDs' or a GUID",
     "result": {
       "testId": "1234",
       "resultMessage": "the final result was a SUCCESS!",

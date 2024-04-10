@@ -56,8 +56,8 @@ describe('AftTest', () => {
         expect(reporter.pass).toHaveBeenCalledTimes(2);
     });
 
-    it('accepts a VerifierMatcher in the returns function', async () => {
-        const reporter = new Reporter('accepts a VerifierMatcher in the returns function');
+    it('accepts a VerifyMatcher in the returns function', async () => {
+        const reporter = new Reporter('accepts a VerifyMatcher in the returns function');
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'pass').and.callThrough();

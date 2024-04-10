@@ -122,8 +122,8 @@ export class HerokuMessagesComponent extends SeleniumComponent {
 ```typescript
 // jasmine test using `aft-jasmine-reporter` package
 describe('SeleniumSession', () => {
-    it('[C1234] can access websites using AFT and UiComponents with Verifier', async () => {
-        await new AftJasmineTest().verify(async (v: Verifier) => {
+    it('[C1234] can access websites using AFT and UiComponents with AftJasmineTest', async () => {
+        await aftJasmineTest(async (v: AftJasmineTest) => {
             const loginMessage: string;
             await using(new SeleniumSession({reporter: v.reporter}), async (session) => {
                 const loginPage: HerokuLoginPage = v.getComponent(HerokuLoginPage);
@@ -138,8 +138,8 @@ describe('SeleniumSession', () => {
                 await v.reporter.step('get message...');
                 loginMessage = await loginPage.getMessage();
             });
-            return loginMessage;
-        }).returns("You logged into a secure area!");
+            await v.verify(loginMessage, containing("You logged into a secure area!"));
+        });
     })
 
     it('[C2345] can access websites using AFT and UiComponents with AftJasmineReporter', async () => {

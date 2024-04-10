@@ -3,8 +3,16 @@ import { AftTest, AftTestOptions, Func } from "aft-core";
 import { TestCaseResult } from "@jest/reporters";
 
 /**
- * provides a more streamlined means of getting a `Verifier`
- * from the Mocha test context
+ * expects to be passed a context scope from an executing Jest
+ * test. for Jest, the `JestExpect` type contains this so you
+ * can use an `expect` like follows:
+ * 
+ * ```typescript
+ * test('perform some testing', () => {
+ *     const t = new AftJestTest(expect, () => doStuff());
+ * })
+ * ```
+ * @param scope the `expect` object from within a Jest `test`
  */
 export class AftJestTest extends AftTest {
     /**
@@ -16,9 +24,16 @@ export class AftJestTest extends AftTest {
     public readonly test: TestCaseResult;
 
     /**
-     * expects to be passed the scope from an executing Jest
-     * test (i.e. the `this` argument)
-     * @param scope the `this` scope from within a Jest `test`
+     * expects to be passed a context scope from an executing Jest
+     * test. for Jest, the `JestExpect` type contains this so you
+     * can use an `expect` like follows:
+     * 
+     * ```typescript
+     * test('perform some testing', () => {
+     *     const t = new AftJestTest(expect, () => doStuff());
+     * })
+     * ```
+     * @param scope the `expect` object from within a Jest `test`
      */
     constructor(scope?: any, testFunction?: Func<AftTest, void | PromiseLike<void>>, options?: AftTestOptions) {
         let test: TestCaseResult;
@@ -59,6 +74,25 @@ export class AftJestTest extends AftTest {
     }
 }
 
-export const aftJestTest = async (description: JestExpect | string, assertion: Func<AftJestTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {
+/**
+ * creates a new `AftJestTest` instace to be used for executing some Functional
+ * Test Assertion and calls the `run` function to execute the `testFunction`.
+ * 
+ * ex:
+ * ```typescript
+ * await aftJestTest('[C1234] example usage for AftTest', async (v: AftJestTest) => {
+ *   await v.reporter.info('doing some testing...');
+ *   const feature = new FeatureObj();
+ *   await v.verify(() => feature.returnExpectedValueAsync(), equaling('expected value'));
+ * }); // if PolicyManager.shouldRun('C1234') returns `false` the assertion is not run
+ * ```
+ * @param description a string describing the test
+ * @param testFunction the `Func<AftJestTest, void | PromiseLike<void>>` function to be
+ * executed by this `AftJestTest`
+ * @param options an optional `AftTestOptions` object containing overrides to internal
+ * configuration and settings
+ * @returns an async `Promise<void>` that runs the passed in `testFunction`
+ */
+export const aftJestTest = async (description: JestExpect | jest.Expect | string, assertion: Func<AftJestTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {
     return new AftJestTest(description, assertion, options).run();
 };

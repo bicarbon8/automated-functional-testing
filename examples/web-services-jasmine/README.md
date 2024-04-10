@@ -57,7 +57,7 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
   - **suiteIds** - `Array<number>` containing a list of the TestRail suites you are referencing in your tests. _NOTE: this is not used if specifying a value for `planid`_
   - **planId** - `number` containing the TestRail plan you are referencing in your tests. _NOTE: if not specified and the `testrail-reporting-plugin` is using a `logLevel` of anything other than `'none'` a new TestRail plan will be created based on your `projectId` and `suiteIds`_
   - **logLevel** - `string` containing the minimum `LogLevel` where logs will be captured and sent to TestRail on completion of a test. _NOTE: setting this to a value of `'none'` disabled sending results to TestRail, but you can still use TestRail to control test execution via the `policyEngineEnabled` configuration setting_
-  - **policyEngineEnabled** - `boolean` indicating if TestRail should be used to control the execution of tests run within a `Verifier`
+  - **policyEngineEnabled** - `boolean` indicating if TestRail should be used to control the execution of tests run within an `AftTest`
 - **JiraConfig** - configuration values to use for Jira integration
   - **url** - `string` containing the URL used for accessing your Jira instance. _NOTE: this is **NOT** the API url, but the URL to access the base instance of Jira_
   - **user** - `string` containing a valid username for logging in to Jira
@@ -65,7 +65,7 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
   - **projectId** - `string` containing a valid project ID where new defects will be created if `openDefectOnFail` is set to `true`. _NOTE: new defects will not be created and this can be left unset if `openDefectOnFail` is `false`_
   - **openDefectOnFail** - `boolean` indicating if a new defect should be created when a test failure occurs _(defaults to `false`)_
   - **closeDefectOnPass** - `boolean` indicating if any open defects referencing the currently passing test ID should be closed on successful completion of the test _(defaults to `false`)_
-  - **policyEngineEnabled** - `boolean` indicating if each a search of open Jira issues should be performed for each test ID to determine if the test should be run when using an AFT `verifier`. _(defaults to `true`)_
+  - **policyEngineEnabled** - `boolean` indicating if each a search of open Jira issues should be performed for each test ID to determine if the test should be run when using an `AftTest`. _(defaults to `true`)_
 
 ## Test Execution
 running `npm run test:e2e` will execute the tests using Jasmine which should result in output like the following being sent to the console (assuming the `Reporter.level` is set to something like `info` in your `aftconfig.json`):
@@ -80,30 +80,30 @@ running `npm run test:e2e` will execute the tests using Jasmine which should res
 ```
 
 ## TestRail and Jira integration
-if using `testrail-reporting-plugin`, `testrail-policy-plugin`, `jira-reporting-plugin` or `jira-policy-plugin` then you must ensure your `verify(assertion)`, or `Verifier` instances have valid Test Case ID's referenced. The values specified for the `withTestIds` function must be the TestRail Case ID's referenced by your existing TestRail Plan (not to be confused with the TestRail Test ID's that start with the letter _T_). Modifications will need to be made in two places per test:
+if using `testrail-reporting-plugin`, `testrail-policy-plugin`, `jira-reporting-plugin` or `jira-policy-plugin` then you must ensure your `verify(assertion)`, or `AftTest` instances have valid Test Case ID's referenced. The values specified for the `withTestIds` function must be the TestRail Case ID's referenced by your existing TestRail Plan (not to be confused with the TestRail Test ID's that start with the letter _T_). Modifications will need to be made in two places per test:
 
 ### Specifying Test IDs
-on the `Verifier` instance, set the following:
+on the `AftTest` instance, include the following in your options:
 ```typescript
-await verify(() => someTestAction())
-    .withTestIds('C1234', 'C2345', 'C3456');
+await aftTest('performing tests against three test IDs', () => someTestAction(), {
+    testIds: ['C1234', 'C2345', 'C3456']
+});
 ```
-or, if using the `aft-jasmine-reporter`, `aft-jest-reporter` or `aft-mocha-reporter` packages, modify your test function titles to include the test case IDs like the following:
+or, by including the Test IDs in the test description like the following:
 ```typescript
 it('[C1234] can include tests [C2345] in the title [C3456]', async function() {
     /**
-     * - for Jest use: `const aft = new AftJestTest(expect);`
-     * - for Mocha use: `const aft = new AftMochaTest(this);`
-     * - for Jasmine use: `const aft = new AftJasmineTest();`
+     * - for Jest use: `await aftJestTest(expect, () => testStuff());`
+     * - for Mocha use: `await aftMochaTest(this, () => testStuff());`
+     * - for Jasmine use: `await aftJasmineTest(() => testStuff());`
      */
-    const aft = new AftJasmineTest(); // MUST NOT pass a scope so we will use the scope set in cache by the aft-jasmine-reporter
-    await aft.verify(() => someTestAction());
+    await aftJasmineTest(() => someTestAction());
 })
 ```
 
 > WARNING: Jasmine's _expect_ calls do not return a boolean as their type definitions would make you think and failed `expect` calls will only throw exceptions if the stop on failure option is enabled: 
 ```typescript
-verify(() => expect('foo').toBe('bar')); // AFT will report as 'passed'
+aftTest('some test description', () => expect('foo').toBe('bar')); // AFT will report as 'passed'
 
-verify(() => 'foo').returns('bar'); // AFT will report as 'failed'
+aftTest('some test description', (t: AftTest) => t.verify('foo','bar')); // AFT will report as 'failed'
 ```

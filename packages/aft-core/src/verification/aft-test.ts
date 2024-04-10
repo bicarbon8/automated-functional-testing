@@ -5,7 +5,7 @@ import { TestStatus } from "../plugins/reporting/test-status";
 import { convert } from "../helpers/convert";
 import { Func, ProcessingResult } from "../helpers/custom-types";
 import { rand } from "../helpers/rand";
-import { equaling, VerifierMatcher } from "./verifier-matcher";
+import { equaling, VerifyMatcher } from "./verify-matcher";
 import { Err } from "../helpers/err";
 import { BuildInfoManager } from "../plugins/build-info/build-info-manager";
 import { AftConfig, aftConfig } from "../configuration/aft-config";
@@ -22,7 +22,7 @@ export type AftTestOptions = {
     testIds?: Set<string>;
     cacheResultsToFile?: boolean;
     onEventsMap?: Map<AftTestEvent, Array<Func<AftTest, void | PromiseLike<void>>>>;
-    haltOnVerifierFailure?: boolean;
+    haltOnVerifyFailure?: boolean;
 };
 
 /**
@@ -30,14 +30,13 @@ export type AftTestOptions = {
  * `PolicyPlugin` instances that have been loaded to confirm that the
  * assertion should be executed based on referenced Test ID(s)
  * 
- * Ex:
+ * ex:
  * ```
- * await afttest('[C1234] example usage for AftTest', async (v: AftTest) => {
+ * await aftTest('[C1234] example usage for AftTest', async (v: AftTest) => {
  *   await v.reporter.info('doing some testing...');
- *   let feature = new FeatureObj();
- *   return await feature.returnExpectedValue();
- * }) // if PolicyPlugin.shouldRun('C1234') returns `false` the assertion is not run
- * .returns('expected value').run();
+ *   const feature = new FeatureObj();
+ *   await v.verify(() => feature.returnExpectedValueAsync(), containing('expected value'));
+ * }); // if PolicyPlugin.shouldRun('C1234') returns `false` the assertion is not run
  * ```
  */
 export class AftTest {
@@ -63,45 +62,33 @@ export class AftTest {
     }
 
     get aftCfg(): AftConfig {
-        if (!this._options.aftConfig) {
-            this._options.aftConfig = aftConfig;
-        }
         return this._options.aftConfig;
     }
     
     /**
-     * a `Reporter` that uses either the Description
-     * or a list of Test Ids or `Verifier_<rand8>` as the
-     * `logName` depending on which is available (NOTE:
-     * description is preferred most and will be used if
-     * other values are also present)
+     * a `Reporter` that uses the `description` property
+     * of this `AftTest` as the `loggerName` or the
+     * `Reporter` passed in via `AftTestOptions`
      */
     get reporter(): Reporter {
-        if (!this._options.reporter) {
-            let logName: string;
-            if (this.description) {
-                logName = this.description;
-            } else if (this._options.testIds.size > 0) {
-                logName = Array.from(this._options.testIds).join('_');
-            } else {
-                logName = `${this.constructor.name}_${rand.getString(8, true, true)}`;
-            }
-            this._options.reporter = new Reporter(logName, this.aftCfg);
-        }
         return this._options.reporter;
     }
 
+    /**
+     * a `PolicyManager` instance used to determine if
+     * this `AftTest` should run by querying all loaded
+     * `PolicyPlugin` instances
+     */
     get policyManager(): PolicyManager {
-        if (!this._options.policyManager) {
-            this._options.policyManager = new PolicyManager(this.aftCfg);
-        }
         return this._options.policyManager;
     }
 
+    /**
+     * a `BuildInfoManager` instance used to generate
+     * a Build Number and Build Name from the first loaded
+     * `BuildInfoPlugin`
+     */
     get buildInfoManager(): BuildInfoManager {
-        if (!this._options.buildInfoManager) {
-            this._options.buildInfoManager = new BuildInfoManager(this.aftCfg);
-        }
         return this._options.buildInfoManager;
     }
 
@@ -109,11 +96,11 @@ export class AftTest {
      * returns an array of `TestResult` objects for each result already submitted
      * _(NOTE: one result is submitted for each associated Test ID)_.
      * if `withFileSystemCache` is enabled this includes searching the filesystem
-     * cache for any logged test results for the `Verifier.description` and returning the
+     * cache for any logged test results for the `AftTest.description` and returning the
      * results as an array of `TestResult` objects with each object corresponding
      * to a Test ID referenced in the test name
      * @returns an array of `TestResult` objects where each entry corresponds to
-     * a referenced Test ID parsed from the `Verifier.description`
+     * a referenced Test ID parsed from the `AftTest.description`
      */
     get results(): Array<TestResult> {
         return this._resultsCache.get(this.description) ?? [];
@@ -143,11 +130,37 @@ export class AftTest {
         return end - start;
     }
 
+    /**
+     * an array of `string` values representing the associated test IDs for
+     * this `AftTest`. for each test ID a unique result can and will be reported
+     * during or on the completion of running the `testFunction`
+     * 
+     * ex: `["C1234", "C2345"]`
+     */
     get testIds(): Array<string> {
         return Array.from(this._options.testIds.values());
     }
 
-    async verify(actual: any, expected: any | VerifierMatcher, failureMessage?: string): Promise<void> {
+    /**
+     * performs a comparison of an `actual` and `expected` result. by default any error
+     * will result in halting the execution of the `AftTest` and reporting a failure, 
+     * but by setting the `haltOnVerifyFailure` option to `false` you can allow the
+     * test execution to continue and only report the failure at the completion of running
+     * the `testFunction`
+     * 
+     * ex:
+     * ```typescript
+     * await aftTest('continue on failure', async (v: AftTest) => {
+     *     await v.verify(true, false);
+     *     await v.reporter.info('this runs because "haltOnVerifyFailure" is "false"');
+     * }, {haltOnVerifyFailure: false});
+     * ```
+     * @param actual the actual result from some action
+     * @param expected the expected result from the action
+     * @param failureMessage an optional message to include before any error string
+     * when a failure occurs
+     */
+    async verify(actual: any, expected: any | VerifyMatcher, failureMessage?: string): Promise<void> {
         let syncActual: any;
         if (typeof actual === 'function') {
             const result = await Err.handleAsync(() => actual(), {
@@ -158,7 +171,7 @@ export class AftTest {
         } else {
             syncActual = actual;
         }
-        let matcher: VerifierMatcher;
+        let matcher: VerifyMatcher;
         if (expected['setActual'] && expected['compare'] && expected['failureString']) {
             matcher = expected;
         } else {
@@ -173,21 +186,22 @@ export class AftTest {
         }
         if (!matcher.setActual(syncActual).compare()) {
             // Failure condition
+            this._overallStatus = 'failed';
+
             const errMessage = (failureMessage)
                 ? `${failureMessage}\n${matcher.failureString()}`
                 : matcher.failureString();
-            if (this._options.haltOnVerifierFailure) {
+
+            if (this._options.haltOnVerifyFailure) {
                 throw new Error(errMessage);
-            } else {
-                this._overallStatus = 'failed';
             }
         }
         // otherwise success
     }
 
     /**
-     * executes any `.on('pass')` actions and then submits
-     * a 'passed' result for each passed in test ID or for
+     * executes any `'pass'` event actions and then submits
+     * a `'passed'` result for each passed in test ID or for
      * the overall result if no `testIds` specified
      * @param testIds an optional array of test IDs
      */
@@ -199,8 +213,8 @@ export class AftTest {
     }
 
     /**
-     * executes any `.on('fail')` actions and then submits
-     * a 'failed' result for each passed in test ID or for
+     * executes any `'fail'` event actions and then submits
+     * a `'failed'` result for each passed in test ID or for
      * the overall result if no `testIds` specified
      * @param testIds an optional array of test IDs
      */
@@ -213,8 +227,8 @@ export class AftTest {
     }
 
     /**
-     * executes any `.on('skipped')` actions and then submits
-     * a 'skipped' result for each passed in test ID or for
+     * executes any `'skipped'` event actions and then submits
+     * a `'skipped'` result for each passed in test ID or for
      * the overall result if no `testIds` specified
      * @param testIds an optional array of test IDs
      */
@@ -226,31 +240,19 @@ export class AftTest {
         return this._submitResult('skipped', message, ...testIds);
     }
 
-    private async _throwIfTestIdMismatch(...testIds: Array<string>): Promise<void> {
-        if (testIds.length > 0 && testIds.filter(id => this._options.testIds.has(id)).length === 0) {
-            throw new Error(`test IDs [${testIds.join(',')}] do not exist in this Verifier`);
-        }
-    }
-
-    protected async _started(): Promise<void> {
-        await this.reporter.debug('test starting...');
-        this._startTime = new Date().getTime();
-        const startedActions: Array<Func<AftTest, void | PromiseLike<void>>> = this._options.onEventsMap.get('started');
-        await this._runEventActions(startedActions);
-    }
-
-    protected async _done(): Promise<void> {
-        await this.reporter.debug('test complete');
-        this._endTime = new Date().getTime();
-        const doneActions: Array<Func<AftTest, void | PromiseLike<void>>> = this._options.onEventsMap.get('done');
-        await this._runEventActions(doneActions);
-    }
-
+    /**
+     * this function handles event actions and checking the `PolicyManager` to
+     * determine if the supplied `testFunction` should be run and calling the
+     * `pending` function if not. following execution of the `testFunction`
+     * this function will call either `pass` or `fail` followed by any `done`
+     * actions. if using the `aftTest`helper function then `run` is automatically
+     * called
+     */
     async run(): Promise<void> {
         try {
             await this._started();
             const shouldRun = await this.shouldRun();
-            await this.reporter.debug('verifier.shouldRun response:', shouldRun);
+            await this.reporter.debug(`${this.constructor.name}.shouldRun response:`, shouldRun);
             if (shouldRun.result === true) {
                 await Promise.resolve(this._testFunction(this));
                 if (this.status === 'failed') {
@@ -266,17 +268,6 @@ export class AftTest {
             throw e;
         } finally {
             await this._done();
-        }
-    }
-
-    private async _runEventActions(actions: Array<Func<AftTest, void | PromiseLike<void>>>): Promise<void> {
-        if (actions?.length > 0) {
-            for (const a of actions) {
-                const handled = await Err.handleAsync(async () => a(this), {errLevel: 'none'});
-                if (handled.message) {
-                    await this.reporter.warn(handled.message);
-                }
-            }
         }
     }
 
@@ -305,6 +296,37 @@ export class AftTest {
             return {result: false, message: `no associated testIds found for test, but enabled 'IPolicyPlugins' exist so test should not be run`}
         }
         return {result: true};
+    }
+
+    private async _throwIfTestIdMismatch(...testIds: Array<string>): Promise<void> {
+        if (testIds.length > 0 && testIds.filter(id => this._options.testIds.has(id)).length === 0) {
+            throw new Error(`test IDs [${testIds.join(',')}] do not exist in this ${this.constructor.name}`);
+        }
+    }
+
+    protected async _started(): Promise<void> {
+        await this.reporter.debug('test starting...');
+        this._startTime = new Date().getTime();
+        const startedActions: Array<Func<AftTest, void | PromiseLike<void>>> = this._options.onEventsMap.get('started');
+        await this._runEventActions(startedActions);
+    }
+
+    protected async _done(): Promise<void> {
+        await this.reporter.debug('test complete');
+        this._endTime = new Date().getTime();
+        const doneActions: Array<Func<AftTest, void | PromiseLike<void>>> = this._options.onEventsMap.get('done');
+        await this._runEventActions(doneActions);
+    }
+
+    private async _runEventActions(actions: Array<Func<AftTest, void | PromiseLike<void>>>): Promise<void> {
+        if (actions?.length > 0) {
+            for (const a of actions) {
+                const handled = await Err.handleAsync(async () => a(this), {errLevel: 'none'});
+                if (handled.message) {
+                    await this.reporter.warn(handled.message);
+                }
+            }
+        }
     }
 
     /**
@@ -412,7 +434,7 @@ export class AftTest {
         return false;
     }
 
-    private _parseOptions(options?: AftTestOptions): AftTestOptions {
+    protected _parseOptions(options?: AftTestOptions): AftTestOptions {
         options ??= {};
         options.aftConfig ??= aftConfig;
         options.buildInfoManager ??= new BuildInfoManager(options.aftConfig);
@@ -421,29 +443,29 @@ export class AftTest {
         options.testIds ??= new Set(TitleParser.parseTestIds(this.description));
         options.cacheResultsToFile ??= false;
         options.onEventsMap ??= new Map<AftTestEvent, Array<Func<AftTest, void | PromiseLike<void>>>>();
-        options.haltOnVerifierFailure ??= true;
+        options.haltOnVerifyFailure ??= true;
         return options;
     }
 }
 
 /**
  * creates a new `AftTest` instace to be used for executing some Functional
- * Test Assertion.
+ * Test Assertion and calls the `run` function to execute the `testFunction`.
  * 
- * Ex:
+ * ex:
  * ```typescript
- * await afttest('[C1234] example usage for AftTest', async (v: AftTest) => {
+ * await aftTest('[C1234] example usage for AftTest', async (v: AftTest) => {
  *   await v.reporter.info('doing some testing...');
- *   let feature = new FeatureObj();
+ *   const feature = new FeatureObj();
  *   await v.verify(() => feature.returnExpectedValueAsync(), equaling('expected value'));
  * }); // if PolicyManager.shouldRun('C1234') returns `false` the assertion is not run
  * ```
  * @param description a string describing the test
- * @param assertion the `Func<AftTest, void | PromiseLike<void>>` function to be executed by this `AftTest`
+ * @param testFunction the `Func<AftTest, void | PromiseLike<void>>` function to be executed by this `AftTest`
  * @param options an optional `AftTestOptions` object containing overrides to internal
  * configuration and settings
- * @returns a new `AftTest` instance
+ * @returns an async `Promise<void>` that runs the passed in `testFunction`
  */
-export const aftTest = async (description: string, assertion: Func<AftTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {
-    return new AftTest(description, assertion, options).run();
+export const aftTest = async (description: string, testFunction: Func<AftTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {
+    return new AftTest(description, testFunction, options).run();
 };

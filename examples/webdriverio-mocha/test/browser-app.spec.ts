@@ -1,11 +1,11 @@
 import { AftTest, containing, retry, using } from "aft-core";
-import { AftMochaTest } from "aft-mocha-reporter";
+import { aftMochaTest } from "aft-mocha-reporter";
 import { HerokuLoginPage } from "../lib/page-objects/browser-app/heroku-login-page";
 import { WebdriverIoSession } from "aft-ui-webdriverio";
 
 describe('Functional Browser Tests using WebdriverIO and Mocha', () => {
-    it('[C1234] can access websites using AFT Verifier and WebdriverIoSession', async function() {
-        await new AftMochaTest(this).verify(async (v: AftTest) => {
+    it('[C1234] can access websites using AFTs AftTest and WebdriverIoSession', async function() {
+        await aftMochaTest(this, async (v: AftTest) => {
             let loginMessage = '';
             await using(new WebdriverIoSession({
                 reporter: v.reporter,
@@ -37,7 +37,7 @@ describe('Functional Browser Tests using WebdriverIO and Mocha', () => {
 
                 loginMessage = await loginPage.getMessage();
             });
-            return loginMessage;
-        }).returns(containing("You logged into a secure area!"));
+            await v.verify(loginMessage, containing("You logged into a secure area!"));
+        });
     });
 });

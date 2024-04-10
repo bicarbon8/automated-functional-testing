@@ -43,10 +43,10 @@ describe('AftMochaReporter', () => {
         await t.reporter.trace('sample log message from aft-mocha-reporter.spec with arrow function');
     });
 
-    it('[C1234] provides a Verifier instance for use in test control', async function() {
+    it('[C1234] provides a AftMochaTest instance for use in test control', async function() {
         this.timeout(10000);
-        await aftMochaTest(this, async (v: AftTest) => {
-            await v.verify(v.description, 'AftMochaReporter [C1234] provides a Verifier instance for use in test control');
+        await aftMochaTest(this, async (v: AftMochaTest) => {
+            await v.verify(v.description, 'AftMochaReporter [C1234] provides a AftMochaTest instance for use in test control');
             await v.verify(v.testIds, containing('C1234'), 'expected to parse test ID from description');
         });
     });

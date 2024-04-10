@@ -3,8 +3,12 @@ import { AftTest, AftTestOptions, FileSystemMap, Func } from "aft-core";
 import { CurrentlyExecutingTestMap } from "./aft-jasmine-constants";
 
 /**
- * provides a more streamlined means of getting a `Verifier`
- * from the Jasmine test context
+ * when running inside the Jasmine Reporter Plugin a valid scope will
+ * be available, but when running inside a Jasmine test the scope is 
+ * not available and should be left unset (`null` or `undefined`)
+ * @param scope a value of `null` or `undefined` when run inside a
+ * Jasmine `it` function or a value like `{test: Jasmine.SpecResult}`
+ * when called inside a Jasmine Reporter
  */
 export class AftJasmineTest extends AftTest {
     /**
@@ -15,12 +19,6 @@ export class AftJasmineTest extends AftTest {
      */
     public readonly test: jasmine.SpecResult;
     
-    /**
-     * when running inside the Jasmine Reporter Plugin a valid scope will
-     * be available, but when running inside a Jasmine test the scope is 
-     * not available and should be left unset
-     * @param scope the `this` scope from within a Mocha `it`
-     */
     constructor(scope?: any, testFunction?: Func<AftTest, void | PromiseLike<void>>, options?: AftTestOptions) {
         let fullName: string;
         if (!scope) {
@@ -55,6 +53,25 @@ export class AftJasmineTest extends AftTest {
     }
 }
 
+/**
+ * creates a new `AftJasmineTest` instace to be used for executing some Functional
+ * Test Assertion and calls the `run` function to execute the `testFunction`.
+ * 
+ * ex:
+ * ```typescript
+ * await aftJasmineTest('[C1234] example usage for AftTest', async (v: AftJasmineTest) => {
+ *   await v.reporter.info('doing some testing...');
+ *   const feature = new FeatureObj();
+ *   await v.verify(() => feature.returnExpectedValueAsync(), equaling('expected value'));
+ * }); // if PolicyManager.shouldRun('C1234') returns `false` the assertion is not run
+ * ```
+ * @param description a string describing the test
+ * @param testFunction the `Func<AftJasmineTest, void | PromiseLike<void>>` function to be
+ * executed by this `AftJasmineTest`
+ * @param options an optional `AftTestOptions` object containing overrides to internal
+ * configuration and settings
+ * @returns an async `Promise<void>` that runs the passed in `testFunction`
+ */
 export const aftJasmineTest = async (assertion: Func<AftJasmineTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {
     return new AftJasmineTest(null, assertion, options).run();
 };
