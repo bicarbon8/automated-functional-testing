@@ -218,7 +218,7 @@ export class Err extends Object {
      */
     static async handleAsync<T>(func: Func<void, PromiseLike<T>>, opts?: Partial<ErrOptions>): Promise<ProcessingResult<T>> {
         try {
-            const res = await Promise.resolve(func());
+            const res = await func();
             return { result: res };
         } catch(e) {
             return { result: null as T, message: Err._processException(e, opts)};

@@ -56,9 +56,9 @@ export class AftLogger {
 
     /**
      * function will check that the `level` is greater or equal to the current configured `logLevel`
-     * and if it is, will send the `name`, `level` and `message` to the console. if any `data`
-     * is included it will be converted to a string using `JSON.stringify(...)` and appended
-     * to the `message`
+     * and if it is, will send the `name`, `level` and `message` to the console. if the `args` array
+     * is included and has a length greater than 0 each item will be converted to a string using
+     * `JSON.stringify(...)` and appended to the `message`
      * @param data a `LogMessageData` object containing details of the log message, level, name
      * and any additional arguments to be logged
      */

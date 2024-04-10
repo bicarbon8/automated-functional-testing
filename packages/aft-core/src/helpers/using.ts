@@ -36,11 +36,11 @@ export interface Disposable {
 export async function using<T extends Disposable>(disposable: T, func: Func<T, void | Promise<void>>): Promise<void> {
     let err: any;
     try {
-        await Promise.resolve(func(disposable)); // pass `disposable` to the func like func(disposable)
-    } catch(e) {                                 // catch any Error, store it and re-throw
+        await func(disposable);         // pass `disposable` to the func like func(disposable)
+    } catch(e) {                        // catch any Error, store it and re-throw
         err = e;
         throw e;
     } finally {
-        await disposable?.dispose(err);          // and then dispose with any Error
+        await disposable?.dispose(err); // and then dispose with any Error
     }
 }

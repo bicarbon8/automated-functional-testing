@@ -28,11 +28,23 @@ import { cloneDeep } from "lodash";
  * ```
  */
 export class ReportingManager {
+    /**
+     * the `AftConfig` instance used by this instance
+     */
     readonly aftCfg: AftConfig;
+    /**
+     * an array of enabled `ReportingPlugin` instances
+     */
     readonly plugins: Array<ReportingPlugin>;
+    /**
+     * the name sent to all `ReportingPlugin` function calls
+     * and used to create this instance's `AftLogger`
+     */
     readonly name: string;
-
-    private readonly _logger: AftLogger;
+    /**
+     * the console logger used by this `ReportingManager`
+     */
+    readonly logger: AftLogger;
 
     private _stepCount = 0;
     private _initialised: boolean;
@@ -40,7 +52,7 @@ export class ReportingManager {
     constructor(name: string, aftCfg?: AftConfig) {
         this.name = name;
         this.aftCfg = aftCfg ?? aftConfig;
-        this._logger = new AftLogger(this.name, this.aftCfg);
+        this.logger = new AftLogger(this.name, this.aftCfg);
         this.plugins = pluginLoader.getEnabledPluginsByType(ReportingPlugin, this.aftCfg);
     }
 
@@ -131,22 +143,22 @@ export class ReportingManager {
             for (const p of this.plugins) {
                 await Err.handleAsync(() => p?.initialise(this.name), {
                     errLevel: 'warn',
-                    logger: this._logger
+                    logger: this.logger
                 });
             }
             this._initialised = true;
         }
-        this._logger.log({
+        this.logger.log({
             level, 
             message, 
             args: data
         });
-        this.plugins.forEach(async (plugin) => {
+        for (const plugin of this.plugins) {
             await Err.handleAsync(() => plugin?.log(this.name, level, message, ...data), {
                 errLevel: 'warn',
-                logger: this._logger
+                logger: this.logger
             });
-        });
+        }
     }
 
     /**
@@ -155,12 +167,12 @@ export class ReportingManager {
      * @param result a `TestResult` object to be sent
      */
     async submitResult(result: TestResult): Promise<void> {
-        this.plugins.forEach(async (plugin) => {
+        for (const plugin of this.plugins) {
             await Err.handleAsync(() => plugin?.submitResult(this.name, cloneDeep(result)), {
                 errLevel: 'warn',
-                logger: this._logger
+                logger: this.logger
             });
-        });
+        }
     }
 
     /**
@@ -169,11 +181,11 @@ export class ReportingManager {
      * of any logging actions before destroying the `AftLogger` instance
      */
     async finalise(): Promise<void> {
-        this.plugins.forEach(async (plugin) => {
+        for (const plugin of this.plugins) {
             await Err.handleAsync(() => plugin?.finalise(this.name), {
                 errLevel: 'warn',
-                logger: this._logger
+                logger: this.logger
             });
-        });
+        }
     }
 }

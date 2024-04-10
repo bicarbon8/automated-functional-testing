@@ -257,7 +257,7 @@ export class AftTest {
             const shouldRun = await this.shouldRun();
             await this.reporter.debug(`${this.constructor.name}.shouldRun response:`, shouldRun);
             if (shouldRun.result === true) {
-                await Promise.resolve(this._testFunction(this));
+                await this._testFunction(this);
                 if (this.status === 'failed') {
                     const results = this.results?.filter(r => r.status === 'failed') ?? [];
                     throw new Error(`'${results.length}' failures: [${results.map(r => r.resultMessage).join(',')}]`);

@@ -168,7 +168,7 @@ export class Retry<T> implements PromiseLike<T> {
             && this._totalDuration < this._maxDuration
         ) {
             try {
-                this._result = await Promise.resolve(this._retryable());
+                this._result = await this._retryable();
             } catch(e) {
                 this._err = e;
                 this._result = undefined;

@@ -49,7 +49,7 @@ describe('AftTest', () => {
 
         await aftTest('true [C1234] should be true [C2345]', async (v: AftTest) => {
             await v.verify(() => 'foo', 'foo');
-        }, { reporter: reporter, policyManager });
+        }, { reporter, policyManager });
 
         expect(policyManager.shouldRun).toHaveBeenCalledTimes(2);
         expect(reporter.submitResult).toHaveBeenCalledTimes(2);
@@ -68,7 +68,7 @@ describe('AftTest', () => {
 
         await aftTest('[C1234][C2345] array contains "bar"', async (v: AftTest) => {
             await v.verify(['foo', 'bar', 'baz'], containing('bar'));
-        }, { reporter: reporter, policyManager });
+        }, { reporter, policyManager });
 
         expect(policyManager.shouldRun).toHaveBeenCalledTimes(2);
         expect(reporter.submitResult).toHaveBeenCalledTimes(2);
@@ -88,7 +88,7 @@ describe('AftTest', () => {
         try {
             await aftTest('true should [C1234][C2345] be true', () => {
                 throw new Error('fake error');
-            }, { reporter: reporter, policyManager });
+            }, { reporter, policyManager });
 
             expect(true).toBe(false); // force failure
         } catch (e) {
@@ -113,7 +113,7 @@ describe('AftTest', () => {
         try {
             await aftTest('[C1234][C2345] failure expected due to true not being false', async (v: AftTest) => {
                 await v.verify(true, false); // expected failure
-            }, { reporter: reporter, policyManager });
+            }, { reporter, policyManager });
 
             expect('foo').toBe('bar'); // force failure if we get here
         } catch (e) {
@@ -137,7 +137,7 @@ describe('AftTest', () => {
 
         await aftTest('[C1234][C2345]', () => {
             testStore.set('executed', true);
-        }, { reporter: reporter, policyManager });
+        }, { reporter, policyManager });
 
         expect(policyManager.shouldRun).toHaveBeenCalledTimes(2);
         expect(testStore.has('executed')).toBeFalse();
@@ -161,7 +161,7 @@ describe('AftTest', () => {
 
         await aftTest('[C1234][C2345]', () => {
             testStore.set('executed', true);
-        }, { reporter: reporter, policyManager });
+        }, { reporter, policyManager });
 
         expect(policyManager.shouldRun).toHaveBeenCalledWith('C1234');
         expect(policyManager.shouldRun).toHaveBeenCalledWith('C2345');
@@ -185,7 +185,7 @@ describe('AftTest', () => {
 
         await aftTest(rand.getString(15), () => {
             testStore.set('executed', true);
-        }, { reporter: reporter, policyManager });
+        }, { reporter, policyManager });
 
         expect(policyManager.plugins.length).toEqual(1);
         expect(testStore.has('executed')).toBeFalse();
@@ -204,7 +204,7 @@ describe('AftTest', () => {
 
         await aftTest('[C1234] true should be true', async (v: AftTest) => {
             await v.pass('C1234');
-        }, { reporter: reporter, policyManager });
+        }, { reporter, policyManager });
 
         expect(policyManager.shouldRun).toHaveBeenCalledTimes(1);
         expect(reporter.submitResult).toHaveBeenCalledTimes(1);
@@ -224,7 +224,7 @@ describe('AftTest', () => {
         try {
             await aftTest('[C1234] true should be true', async (v: AftTest) => {
                 await v.pass('C2345');
-            }, { reporter: reporter, policyManager });
+            }, { reporter, policyManager });
 
             expect(true).toBeFalse(); // force failure if we get here
         } catch(e) {
@@ -241,6 +241,7 @@ describe('AftTest', () => {
         await new AftTest(rand.getString(15), async (v: AftTest) => {
             await v.verify(true, true);
         }, {
+            aftCfg: new AftConfig({plugins: []}),
             onEventsMap: new Map<AftTestEvent, Array<Func<AftTest, void | PromiseLike<void>>>>([
                 ['started', [() => {eventArray.push('started');}]],
                 ['pass', [() => {eventArray.push('pass');}]],
