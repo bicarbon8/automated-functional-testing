@@ -134,7 +134,8 @@ export class AftTest {
 
     /**
      * returns an array of `TestResult` objects for each result already submitted
-     * _(NOTE: one result is submitted for each associated Test ID)_.
+     * _(NOTE: one result is submitted for each associated Test ID or just one
+     * overall result if no Test IDs are associated with this instance)_.
      * if `withFileSystemCache` is enabled this includes searching the filesystem
      * cache for any logged test results for the `AftTest.description` and returning the
      * results as an array of `TestResult` objects with each object corresponding
@@ -252,7 +253,7 @@ export class AftTest {
         await this._throwIfTestIdMismatch(...testIds);
         const passActions = this._options.onEventsMap.get('pass');
         await this._runEventActions(passActions);
-        return this._submitResult('passed', null, ...testIds);
+        await this._submitResult('passed', null, ...testIds);
     }
 
     /**
@@ -266,7 +267,7 @@ export class AftTest {
         const err: string = message ?? 'unknown error occurred';
         const failActions = this._options.onEventsMap.get('fail');
         await this._runEventActions(failActions);
-        return this._submitResult('failed', err, ...testIds);
+        await this._submitResult('failed', err, ...testIds);
     }
 
     /**
@@ -280,7 +281,7 @@ export class AftTest {
         message ??= 'test skipped';
         const skippedActions = this._options.onEventsMap.get('skipped');
         await this._runEventActions(skippedActions);
-        return this._submitResult('skipped', message, ...testIds);
+        await this._submitResult('skipped', message, ...testIds);
     }
 
     /**
@@ -459,8 +460,8 @@ export class AftTest {
             status,
             metadata: {
                 durationMs: convert.toElapsedMs(this._startTime),
-                buildName: await this.buildInfoManager.buildName() || 'unknown',
-                buildNumber: await this.buildInfoManager.buildNumber() || 'unknown'
+                buildName: await this.buildInfoManager.buildName() ?? 'unknown',
+                buildNumber: await this.buildInfoManager.buildNumber() ?? 'unknown'
             }
         };
         return result;

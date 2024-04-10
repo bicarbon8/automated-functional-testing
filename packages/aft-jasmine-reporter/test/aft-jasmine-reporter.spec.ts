@@ -31,10 +31,10 @@ describe('AftJasmineReporter', () => {
         expect(true).toBeFalse(); // force failure if skip does not happen
     });
 
-    it('[C1234] provides a AftJasmineTest instance for use in test control', async () => {
+    it('[C6543] provides a AftJasmineTest instance for use in test control', async () => {
         await aftJasmineTest(async (v: AftJasmineTest) => {
-            await v.verify(v.description, 'AftJasmineReporter [C1234] provides a AftJasmineTest instance for use in test control');
-            await v.verify(v.testIds, containing('C1234'), 'expected to parse test ID from description');
+            await v.verify(v.description, 'AftJasmineReporter [C6543] provides a AftJasmineTest instance for use in test control');
+            await v.verify(v.testIds, containing('C6543'), 'expected to parse test ID from description');
         });
     });
 });
