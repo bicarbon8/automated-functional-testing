@@ -64,10 +64,9 @@ export class AftLogger {
      */
     log(data: LogMessageData): void {
         if (data?.level !== 'none'
-            && LogLevel.toValue(data?.level) >= LogLevel.toValue(this.logLevel)
-            && data?.message) {
-                const out: string = this.format(data);
-                this.toConsole(data.level, out);
+            && LogLevel.toValue(data?.level) >= LogLevel.toValue(this.logLevel)) {
+            const out: string = this.format(data);
+            this.toConsole(data.level, out);
         }
     }
 
