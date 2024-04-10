@@ -1,4 +1,4 @@
-import { ProcessingResult, AftTest, containing } from "aft-core";
+import { ProcessingResult, containing, AftConfig } from "aft-core";
 import { AftJasmineTest, aftJasmineTest } from "../src";
 
 describe('AftJasmineReporter', () => {
@@ -11,9 +11,9 @@ describe('AftJasmineReporter', () => {
     });
 
     it('can check if test should be run [C1234]', async () => {
-        const t = new AftJasmineTest();
+        const t = new AftJasmineTest(null, null, {aftCfg: new AftConfig({plugins: []})});
         const shouldRun = await t.shouldRun();
-        if (!shouldRun.result) {
+        if (shouldRun.result !== true) {
             await t.pending(shouldRun.message);
         }
 
@@ -24,7 +24,7 @@ describe('AftJasmineReporter', () => {
         const t = new AftJasmineTest();
         spyOn(t, 'shouldRun').and.returnValue(Promise.resolve<ProcessingResult<boolean>>({result: false, message: 'fake'}));
         const shouldRun = await t.shouldRun();
-        if (!shouldRun.result) {
+        if (shouldRun.result !== true) {
             await t.pending(shouldRun.message);
         }
 

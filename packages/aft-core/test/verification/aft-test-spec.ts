@@ -12,10 +12,12 @@ import {
     containing,
     equaling,
     AftTestEvent,
-    Func
+    AftTestFunction
 } from "../../src";
 
+const testStore: Map<string, any> = new Map<string, any>();
 const consoleLog = console.log;
+
 describe('AftTest', () => {
     /* comment `beforeAll` and `afterAll` out to see actual test output */
     beforeAll(() => {
@@ -238,16 +240,17 @@ describe('AftTest', () => {
 
     it('calls event handlers in expected order', async () => {
         const eventArray = new Array<string>();
-        await new AftTest(rand.getString(15), async (v: AftTest) => {
+        const t = new AftTest(rand.getString(15), async (v: AftTest) => {
             await v.verify(true, true);
         }, {
             aftCfg: new AftConfig({plugins: []}),
-            onEventsMap: new Map<AftTestEvent, Array<Func<AftTest, void | PromiseLike<void>>>>([
+            onEventsMap: new Map<AftTestEvent, Array<AftTestFunction>>([
                 ['started', [() => {eventArray.push('started');}]],
                 ['pass', [() => {eventArray.push('pass');}]],
                 ['done', [() => {eventArray.push('done');}]]
             ])
-        }).run();
+        });
+        await t.run();
 
         expect(eventArray.length).toBe(3);
         expect(eventArray[0]).toEqual('started');
@@ -255,5 +258,3 @@ describe('AftTest', () => {
         expect(eventArray[2]).toEqual('done');
     });
 });
-
-const testStore: Map<string, any> = new Map<string, any>();

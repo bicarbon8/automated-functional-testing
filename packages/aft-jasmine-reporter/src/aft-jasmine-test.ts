@@ -1,5 +1,5 @@
 import jasmine = require("jasmine");
-import { AftTest, AftTestOptions, FileSystemMap, Func } from "aft-core";
+import { AftTest, AftTestFunction, AftTestOptions, FileSystemMap, Func, rand } from "aft-core";
 import { CurrentlyExecutingTestMap } from "./aft-jasmine-constants";
 
 /**
@@ -19,24 +19,28 @@ export class AftJasmineTest extends AftTest {
      */
     public readonly test: jasmine.SpecResult;
     
-    constructor(scope?: any, testFunction?: Func<AftTest, void | PromiseLike<void>>, options?: AftTestOptions) {
-        let fullName: string;
+    constructor(scope?: any, testFunction?: AftTestFunction, options?: AftTestOptions) {
+        let description: string;
         if (!scope) {
-            const testNames = new FileSystemMap<string, any>(CurrentlyExecutingTestMap);
+            const testNames = new FileSystemMap<string, boolean>(CurrentlyExecutingTestMap);
             const names: Array<string> = Array.from(testNames.keys());
-            fullName = (names?.length > 0) ? names[0] : undefined;
+            description = (names?.length > 0) ? names[0] : undefined;
         } else {
             if (typeof scope === 'string') {
-                fullName = scope;
+                description = scope;
+            } else if (scope?.fullName) {
+                // `scope` is a `SpecResult`
+                description = scope?.fullName;
             } else {
-                fullName = scope?.test?.fullName;
+                // something went wrong
+                description = `${AftJasmineTest.name}_${rand.getString(8, true, true)}`;
             }
         }
         testFunction ??= () => null;
         options ??= {};
         options.cacheResultsToFile = true;
-        super(fullName, testFunction, options);
-        this.test = scope?.test;
+        super(description, testFunction, options);
+        this.test = scope;
     }
 
     override async fail(message?: string, ...testIds: Array<string>): Promise<void> {

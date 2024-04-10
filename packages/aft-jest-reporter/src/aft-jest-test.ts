@@ -1,5 +1,5 @@
 import { JestExpect } from "@jest/expect";
-import { AftTest, AftTestOptions, Func } from "aft-core";
+import { AftTest, AftTestFunction, AftTestOptions, Func, rand } from "aft-core";
 import { TestCaseResult } from "@jest/reporters";
 
 /**
@@ -35,24 +35,26 @@ export class AftJestTest extends AftTest {
      * ```
      * @param scope the `expect` object from within a Jest `test`
      */
-    constructor(scope?: any, testFunction?: Func<AftTest, void | PromiseLike<void>>, options?: AftTestOptions) {
+    constructor(scope?: any, testFunction?: AftTestFunction, options?: AftTestOptions) {
         let test: TestCaseResult;
-        let fullName: string;
+        let description: string;
         if (typeof scope === 'string') {
-            fullName = scope;
-        }else if (scope?.['fullName']) {
+            description = scope;
+        }else if (scope?.fullName) {
             // 'scope' is a 'TestCaseResult'
             test = scope;
-            fullName = test.fullName;
+            description = test.fullName;
         } else if (scope?.getState) {
             // 'scope' is an 'expect' object
             const state = scope.getState();
-            fullName = state.currentTestName;
+            description = state.currentTestName;
+        } else {
+            description = `${AftJestTest.name}_${rand.getString(8, true, true)}`;
         }
         testFunction ??= () => null;
         options ??= {};
         options.cacheResultsToFile = true;
-        super(fullName, testFunction, options);
+        super(description, testFunction, options);
         this.test = test;
     }
 

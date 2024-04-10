@@ -8,25 +8,29 @@ export class AftJasmineReporter implements jasmine.CustomReporter {
     private readonly _testNames: FileSystemMap<string, any>;
 
     constructor() {
-        this._async2Sync = new Array<Promise<void>>; // eslint-disable-line
-        this._testNames = new FileSystemMap<string, any>(CurrentlyExecutingTestMap);
+        this._async2Sync = new Array<Promise<void>>(); // eslint-disable-line
+        this._testNames = new FileSystemMap<string, boolean>(CurrentlyExecutingTestMap);
     }
     
     jasmineStarted(): void {
         FileSystemMap.removeCacheFile(CurrentlyExecutingTestMap);
         FileSystemMap.removeCacheFile(AftJasmineTest.name);
-        beforeEach(async () => { // eslint-disable-line no-undef
+        afterEach(async () => { // eslint-disable-line no-undef
+            console.log('afterEach'); // eslint-disable-line no-undef
             while (this._async2Sync.length > 0) {
-                const asyncFunc = this._async2Sync.shift();
-                await asyncFunc.catch((err) => {
-                    console.error(err); // eslint-disable-line no-undef
-                });
+                try {
+                    const promise = this._async2Sync.shift();
+                    await promise;
+                } catch (e) {
+                    console.log(e); // eslint-disable-line no-undef
+                }
             }
         });
     }
     
-    specStarted(result: jasmine.SpecResult): void {
-        const t = new AftJasmineTest({test: result});
+    async specStarted(result: jasmine.SpecResult): Promise<void> {
+        console.log('specStarted');  // eslint-disable-line no-undef
+        const t = new AftJasmineTest(result);
         /**
          * NOTE: Jasmine does not allow a Reporter to force bail-out of test
          * at this point so we cannot mark test as pending and prevent
@@ -36,24 +40,21 @@ export class AftJasmineReporter implements jasmine.CustomReporter {
         this._testNames.set(t.description, true);
     }
     specDone(result: jasmine.SpecResult): void {
-        this._async2Sync.push(this._asyncSpecDone(result));
-    }
-
-    private async _asyncSpecDone(result: jasmine.SpecResult): Promise<void> {
-        const t = new AftJasmineTest({test: result});
+        console.log('specDone');  // eslint-disable-line no-undef
+        const t = new AftJasmineTest(result);
         if (t.results.length === 0) {
-            switch (t.test.status) {
+            switch (result?.status) {
                 case 'passed':
-                    await t.pass();
+                    this._async2Sync.push(t.pass());
                     break;
                 case 'failed':
-                    await t.fail();
+                    this._async2Sync.push(t.fail());
                     break;
                 case 'pending':
-                    await t.pending();
+                    this._async2Sync.push(t.pending());
                     break;
                 default:
-                    await t.reporter.warn(`unknown test.status of '${t.test.status}' returned`);
+                    this._async2Sync.push(t.reporter.warn(`unknown test.status of '${result.status}' returned`));
                     break;
             }
         }

@@ -11,6 +11,9 @@ import { BuildInfoManager } from "../plugins/build-info/build-info-manager";
 import { AftConfig, aftConfig } from "../configuration/aft-config";
 import { CacheMap } from "../helpers/cache-map";
 import { TitleParser } from "./title-parser";
+import { assert } from "console";
+
+export type AftTestFunction = Func<AftTest, void | PromiseLike<void>>;
 
 export type AftTestEvent = 'skipped' | 'pass' | 'fail' | 'started' | 'done';
 
@@ -19,9 +22,44 @@ export type AftTestOptions = {
     reporter?: ReportingManager;
     policyManager?: PolicyManager;
     buildInfoManager?: BuildInfoManager;
+    /**
+     * an array of test IDs to use if none exist in the `description`
+     * passed to this `AftTest` constructor
+     * 
+     * **NOTE**
+     * > passing a `testIds` array will overwrite any pre-existing
+     * test IDs parsed from the `description`
+     * 
+     * @default new Array<string>()
+     */
     testIds?: Array<string>;
+    /**
+     * set to `true` to store each `TestResult` sent by this `AftTest`
+     * instance to the filesystem
+     * @default false
+     */
     cacheResultsToFile?: boolean;
-    onEventsMap?: Map<AftTestEvent, Array<Func<AftTest, void | PromiseLike<void>>>>;
+    /**
+     * for each type of `AftTestEvent` you can specify an array of actions
+     * to be performed like:
+     * ```typescript
+     * onEventsMap: new Map<AftTestEvent, Array<AftTestFunction>>([
+     *     ['started', [() => {console.log('started');}]],
+     *     ['pass', [() => {console.log('pass');}]],
+     *     ['fail', [() => {console.log('fail');}]],
+     *     ['skipped', [() => {console.log('skipped');}]]
+     *     ['done', [() => {console.log('done');}]]
+     * ])
+     * ```
+     * @default new Map<AftTestEvent, Array<AftTestFunction>>()
+     */
+    onEventsMap?: Map<AftTestEvent, Array<AftTestFunction>>;
+    /**
+     * set to `false` to allow a `testFunction` to continue execution
+     * after a failed comparison within a `AftTest.verify(actual, expected)`
+     * function
+     * @default true
+     */
     haltOnVerifyFailure?: boolean;
 };
 
@@ -41,7 +79,7 @@ export type AftTestOptions = {
  */
 export class AftTest {
     private readonly _options: AftTestOptions;
-    private readonly _testFunction: Func<AftTest, void | PromiseLike<void>>;
+    private readonly _testFunction: AftTestFunction;
     private readonly _resultsCache: CacheMap<string, Array<TestResult>>; // { key: description, val: [{TestId: 1, ...}, {TestId: 2, ...}] }
 
     private _overallStatus: TestStatus;
@@ -50,9 +88,11 @@ export class AftTest {
 
     public readonly description: string;
 
-    constructor(description: string, testFunction: Func<AftTest, void | PromiseLike<void>>, options?: AftTestOptions) {
+    constructor(description: string, testFunction?: AftTestFunction, options?: AftTestOptions) {
         this.description = description;
-        this._testFunction = testFunction;
+        assert(this.description != null, 'description must be a non-null, defined string value');
+        const noTest = () => null;
+        this._testFunction = testFunction ?? noTest;
         this._options = this._parseOptions(options);
         this._resultsCache = new CacheMap<string, Array<TestResult>>(
             Infinity,
@@ -310,18 +350,18 @@ export class AftTest {
     protected async _started(): Promise<void> {
         await this.reporter.debug('test starting...');
         this._startTime = new Date().getTime();
-        const startedActions: Array<Func<AftTest, void | PromiseLike<void>>> = this._options.onEventsMap.get('started');
+        const startedActions: Array<AftTestFunction> = this._options.onEventsMap.get('started');
         await this._runEventActions(startedActions);
     }
 
     protected async _done(): Promise<void> {
         await this.reporter.debug('test complete');
         this._endTime = new Date().getTime();
-        const doneActions: Array<Func<AftTest, void | PromiseLike<void>>> = this._options.onEventsMap.get('done');
+        const doneActions: Array<AftTestFunction> = this._options.onEventsMap.get('done');
         await this._runEventActions(doneActions);
     }
 
-    private async _runEventActions(actions: Array<Func<AftTest, void | PromiseLike<void>>>): Promise<void> {
+    private async _runEventActions(actions: Array<AftTestFunction>): Promise<void> {
         if (actions?.length > 0) {
             for (const a of actions) {
                 const handled = await Err.handleAsync(async () => a(this), {errLevel: 'none'});
@@ -373,7 +413,7 @@ export class AftTest {
     }
 
     protected async _logResultStatus(status: TestStatus, message?: string): Promise<void> {
-        message = message || this.reporter.name;
+        message ??= '';
         switch (status) {
             case 'blocked':
             case 'retest':
@@ -445,7 +485,7 @@ export class AftTest {
         options.reporter ??= new ReportingManager(this.description, options.aftCfg);
         options.testIds ??= TitleParser.parseTestIds(this.description) ?? [];
         options.cacheResultsToFile ??= false;
-        options.onEventsMap ??= new Map<AftTestEvent, Array<Func<AftTest, void | PromiseLike<void>>>>();
+        options.onEventsMap ??= new Map<AftTestEvent, Array<AftTestFunction>>();
         options.haltOnVerifyFailure ??= true;
         return options;
     }
@@ -464,11 +504,11 @@ export class AftTest {
  * }); // if PolicyManager.shouldRun('C1234') returns `false` the assertion is not run
  * ```
  * @param description a string describing the test
- * @param testFunction the `Func<AftTest, void | PromiseLike<void>>` function to be executed by this `AftTest`
+ * @param testFunction a function of type `AftTestFunction` to be executed by this `AftTest`
  * @param options an optional `AftTestOptions` object containing overrides to internal
  * configuration and settings
  * @returns an async `Promise<void>` that runs the passed in `testFunction`
  */
-export const aftTest = async (description: string, testFunction: Func<AftTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {
+export const aftTest = async (description: string, testFunction: AftTestFunction, options?: AftTestOptions): Promise<void> => {
     return new AftTest(description, testFunction, options).run();
 };

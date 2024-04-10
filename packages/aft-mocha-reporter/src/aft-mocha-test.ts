@@ -1,5 +1,5 @@
 import Mocha = require("mocha");
-import { AftTest, AftTestOptions, Func } from "aft-core";
+import { AftTest, AftTestFunction, AftTestOptions, Func, rand } from "aft-core";
 
 /**
  * expects to be passed the scope from an executing Mocha
@@ -43,11 +43,12 @@ export class AftMochaTest extends AftTest {
      * >
      * @param scope the `this` scope from within a Mocha `it`
      */
-    constructor(scope?: any, testFunction?: Func<AftTest, void | PromiseLike<void>>, options?: AftTestOptions) {
+    constructor(scope?: any, testFunction?: AftTestFunction, options?: AftTestOptions) {
         testFunction ??= () => null;
         options ??= {};
         options.cacheResultsToFile = true;
-        super(scope?.test?.fullTitle(), testFunction, options);
+        const description = scope?.test?.fullTitle() ?? `${AftMochaTest.name}_${rand.getString(8, true, true)}`;
+        super(description, testFunction, options);
         this.test = scope?.test;
     }
 

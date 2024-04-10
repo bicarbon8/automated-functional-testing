@@ -35,10 +35,9 @@ describe('AftMochaReporter', () => {
         
         expect(t).to.exist;
         expect(t.reporter).to.exist;
-        expect(t.reporter.name).to.contain(AftMochaTest.name);
-        
-        // NOTE: arrow functions have no `this` so `this.test.fullTitle` doesn't exist
-        // expect(t.reporter.logName).to.equal(t.fullTitle);
+        expect(t.description).to.contain(AftMochaTest.name);
+        // NOTE: arrow functions have no `this` so `this.test.fullTitle()` doesn't exist
+        expect(t.reporter.name).to.equal(t.description);
 
         await t.reporter.trace('sample log message from aft-mocha-reporter.spec with arrow function');
     });
