@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { AftConfig, Reporter, rand, TestResult } from "aft-core";
+import { AftConfig, ReportingManager, rand, TestResult } from "aft-core";
 import { HtmlReportingPlugin } from "../src";
 import { HtmlResult } from "../src/html-result";
 
@@ -82,11 +82,11 @@ describe('HtmlReportingPlugin', () => {
         expect(actual).not.toContain('level info');
     });
 
-    it('can be loaded successfully from the Reporter', async () => {
+    it('can be loaded successfully from the ReportingManager', async () => {
         const aftCfg = new AftConfig({
             plugins: ['html-reporting-plugin']
         });
-        let reporter: Reporter = new Reporter('can be loaded successfully from the Reporter', aftCfg);
+        let reporter: ReportingManager = new ReportingManager('can be loaded successfully from the ReportingManager', aftCfg);
         let plugin = reporter.plugins[0];
 
         expect(plugin).toBeDefined();

@@ -56,12 +56,12 @@ export class AftJestTest extends AftTest {
         this.test = test;
     }
 
-    override async fail(reason?: string): Promise<void> {
+    override async fail(reason?: string, ...testIds: Array<string>): Promise<void> {
         let err: string = reason ?? 'unknown error occurred';
         if (this.test) {
             err = this.test.failureMessages?.join('\n') ?? err;
         }
-        await super.fail(err);
+        await super.fail(err, ...testIds);
         fail(err); // eslint-disable-line no-undef
     }
 
@@ -69,8 +69,8 @@ export class AftJestTest extends AftTest {
      * see: `pending`
      * @param reason the reason for skipping this test
      */
-    async skipped(reason?: string): Promise<void> {
-        return this.pending(reason);
+    async skipped(reason?: string, ...testIds: Array<string>): Promise<void> {
+        return this.pending(reason, ...testIds);
     }
 }
 
@@ -93,6 +93,6 @@ export class AftJestTest extends AftTest {
  * configuration and settings
  * @returns an async `Promise<void>` that runs the passed in `testFunction`
  */
-export const aftJestTest = async (description: JestExpect | jest.Expect | string, assertion: Func<AftJestTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {
+export const aftJestTest = async (description: JestExpect | jest.Expect | string, assertion: Func<AftJestTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {  // eslint-disable-line no-undef
     return new AftJestTest(description, assertion, options).run();
 };

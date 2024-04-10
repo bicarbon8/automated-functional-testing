@@ -1,5 +1,5 @@
 # AFT-reporting-AWSKinesis
-an Automated Functional Testing (AFT) library providing logging to an AWS Kinesis Firehose endpoint for any `TestResult` objects logged via the `aft-core.Reporter`
+an Automated Functional Testing (AFT) library providing logging to an AWS Kinesis Firehose endpoint for any `TestResult` objects logged via the `aft-core.ReportingManager`
 
 ## Installation
 `> npm i aft-reporting-awskinesis`
@@ -53,7 +53,7 @@ the log record that is sent to your AWS Kinesis Firehose endpoint will have the 
     }
 }
 ```
-- **logName** - the `logName` passed to this plugin when loaded from the `Reporter`
+- **logName** - the `logName` passed to this plugin when loaded from the `ReportingManager`
 - **message** - the `string` being logged by some component
 - **level** - a `string` value from one of the `aft-core.LoggingLevel` values based on the level of the message being logged
 - **version** - the current version of the `KinesisReportingPlugin`
@@ -89,7 +89,7 @@ the log record that is sent to your AWS Kinesis Firehose endpoint will have the 
     }
 }
 ```
-- **logName** - the `logName` passed to this plugin when loaded from the `Reporter`
+- **logName** - the `logName` passed to this plugin when loaded from the `ReportingManager`
 - **result** - an `TestResult` object containing the following:
   - **testId** - a `string` containing any unique ID for the test result being recorded
   - **resultMessage** - a `string` message of the final result

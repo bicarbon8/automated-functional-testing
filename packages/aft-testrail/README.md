@@ -69,13 +69,13 @@ to submit results to or filter test execution based on existence and status of t
 - **cacheDurationMs** - the maximum number of milliseconds to cache responses from TestRail's API _(defaults to 300000)_
 
 ## Usage
-you can submit results directly by calling the `aft-core.Reporter.submitResult(result: TestResult)` function or results will automatically be submitted if using the `aft-core.verify(assertion)` with valid `testCases` specified in the `options` object. 
+you can submit results directly by calling the `aft-core.ReportingManager.submitResult(result: TestResult)` function or results will automatically be submitted if using the `aft-core.verify(assertion)` with valid `testCases` specified in the `options` object. 
 
 > NOTE: sending a `TestResult` with a `TestStatus` of `Failed` will be converted to a status of `Retest` before submitting to TestRail
 
-### via `aft-core.Reporter`:
+### via `aft-core.ReportingManager`:
 ```typescript
-let reporter = new Reporter({logName: 'example'});
+let reporter = new ReportingManager({logName: 'example'});
 await reporter.submitResult({
     testId: 'C3190', // must exist in TestRail plan or project and suites
     status: TestStatus.Failed,

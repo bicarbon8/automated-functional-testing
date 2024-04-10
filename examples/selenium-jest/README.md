@@ -90,7 +90,7 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
   - **options** - `object` containing any properties that will be passed to the loaded `UiSessionGeneratorPlugin.getSession` function and that can be used by the plugin to control the type of session to create
 
 ## Test Execution
-running `npm run test:e2e` will execute the tests using Mocha which should result in output like the following being sent to the console (assuming the `Reporter.level` is set to something like `info` in your `aftconfig.json`):
+running `npm run test:e2e` will execute the tests using Mocha which should result in output like the following being sent to the console (assuming the `ReportingManager.logLevel` is set to something like `info` in your `aftconfig.json`):
 ```
 14:51:33 - [can access websites using AFT and Browser Components] - STEP  - 1: navigate to LoginPage...
 14:51:35 - [can access websites using AFT and Browser Components] - STEP  - 2: login

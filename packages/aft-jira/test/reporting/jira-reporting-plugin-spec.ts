@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { Reporter, AftConfig, pluginLoader } from "aft-core";
+import { ReportingManager, AftConfig, pluginLoader } from "aft-core";
 import { httpService } from "aft-web-services";
 import {  } from "../../src/api/jira-custom-types";
 import { JiraReportingPlugin } from "../../src";
@@ -23,7 +23,7 @@ describe('JiraReportingPlugin', () => {
         pluginLoader.reset();
     });
 
-    it('can be loaded by the Reporter', async () => {
+    it('can be loaded by the ReportingManager', async () => {
         const aftCfg = new AftConfig({
             plugins: ['jira-reporting-plugin'],
             JiraConfig: {
@@ -31,7 +31,7 @@ describe('JiraReportingPlugin', () => {
                 closeDefectOnPass: true
             }
         });
-        const mgr: Reporter = new Reporter('can be loaded by the Reporter', aftCfg);
+        const mgr: ReportingManager = new ReportingManager('can be loaded by the ReportingManager', aftCfg);
         const plugin = mgr.plugins[0];
 
         expect(plugin).toBeDefined();

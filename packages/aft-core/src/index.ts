@@ -27,7 +27,7 @@ export * from './plugins/build-info/build-info-manager';
 export * from './plugins/build-info/build-info-plugin';
 /** plugins/reporting */
 export * from './plugins/reporting/reporting-plugin';
-export * from './plugins/reporting/reporter';
+export * from './plugins/reporting/reporting-manager';
 export * from './plugins/reporting/test-result';
 export * from './plugins/reporting/test-status';
 /** plugins/policy */

@@ -85,8 +85,8 @@ describe('Err', () => {
             expect(val.result).toBeNull();
         });
 
-        it('will log a warning if a Reporter is supplied and the Func throws', async () => {
-            const logger = new AftLogger('will log a warning if a Reporter is supplied and the Func throws', new AftConfig({ pluginNames: [] }));
+        it('will log a warning if a ReportingManager is supplied and the Func throws', async () => {
+            const logger = new AftLogger('will log a warning if a ReportingManager is supplied and the Func throws', new AftConfig({ pluginNames: [] }));
             let logMessage: string;
             spyOn(logger, 'log').and.callFake((data: LogMessageData) => {
                 logMessage = data.message;

@@ -39,11 +39,11 @@ export type ErrOptions = {
  * 
  * > NOTE: an optional `Partial<ErrorOptions>` object can be passed to the `handle` and `handleAsync` functions allowing
  * you to control the `LogLevel` used _(defaults to `'warn'`)_, the verbosity _(defaults to `'short'`)_, and the 
- * `Reporter` instance used _(defaults to `aftLog` global instance)_
+ * `ReportingManager` instance used _(defaults to `aftLog` global instance)_
  * 
  * and:
  * ```typescript
- * const logger = new Reporter('AFT');
+ * const logger = new ReportingManager('AFT');
  * try {
  *     functionThatThrowsTypeError();
  * } catch (e) {

@@ -51,8 +51,8 @@ export class AftMochaTest extends AftTest {
         this.test = scope?.test;
     }
 
-    override async pending(message?: string): Promise<void> {
-        await super.pending(message);
+    override async pending(message?: string, ...testIds: Array<string>): Promise<void> {
+        await super.pending(message, ...testIds);
         this.test?.skip?.();
     }
 }

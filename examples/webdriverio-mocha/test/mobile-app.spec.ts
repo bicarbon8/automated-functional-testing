@@ -1,9 +1,9 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as FormData from "form-data";
-import { Reporter, AftTest, aftConfig, containing, using } from "aft-core";
+import { ReportingManager, aftConfig, containing, using } from "aft-core";
 import { WikipediaView } from "../lib/page-objects/mobile-app/wikipedia-view";
-import { AftMochaTest } from "aft-mocha-reporter";
+import { aftMochaTest, AftMochaTest } from "aft-mocha-reporter";
 import { httpService, httpData, HttpHeaders } from "aft-web-services";
 import { UiSessionConfig } from "aft-ui";
 import { WebdriverIoSession } from "aft-ui-webdriverio";
@@ -12,7 +12,7 @@ let customId: string;
 
 describe('Functional Mobile App Tests using WebdriverIO and Mocha', () => {
     before(async () => {
-        const logger = new Reporter('MobileAppsSpec Before');
+        const logger = new ReportingManager('MobileAppsSpec Before');
         const uisc = aftConfig.getSection(UiSessionConfig);
         const username = uisc.options?.user;
         const password = uisc.options?.key;
@@ -53,7 +53,7 @@ describe('Functional Mobile App Tests using WebdriverIO and Mocha', () => {
     });
 
     it('can search in Wikipedia App [C5432]', async function() {
-        await new AftMochaTest(this).verify(async (v: AftTest) => {
+        await aftMochaTest(this, async (v: AftMochaTest) => {
             let res = new Array<string>();
             await using(new WebdriverIoSession({
                 aftConfig: v.aftCfg,
@@ -66,7 +66,7 @@ describe('Functional Mobile App Tests using WebdriverIO and Mocha', () => {
                         "appium:deviceName": 'Samsung Galaxy S23',
                         "appium:app": customId,
                         "bstack:options": {
-                            "sessionName": v.reporter.loggerName,
+                            "sessionName": v.reporter.name,
                             buildName: await v.buildInfoManager.get(),
                             "osVersion": null
                         }
@@ -81,7 +81,7 @@ describe('Functional Mobile App Tests using WebdriverIO and Mocha', () => {
                 const results: string[] = await view.getResults();
                 res = results.map(r => r?.toLocaleLowerCase());
             });
-            return res;
-        }).returns(containing('pizza'));
+            await v.verify(res, containing('pizza'));
+        });
     });
 });

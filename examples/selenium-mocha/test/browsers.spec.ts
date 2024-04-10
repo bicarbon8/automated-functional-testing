@@ -1,19 +1,19 @@
-import { AftTest, containing, retry, using } from "aft-core";
-import { AftMochaTest } from "aft-mocha-reporter";
+import { containing, retry, using } from "aft-core";
+import { aftMochaTest, AftMochaTest } from "aft-mocha-reporter";
 import { SeleniumSession } from "aft-ui-selenium";
 import { HerokuLoginPage } from "../lib/page-objects/heroku-login-page";
 import { expect } from "chai";
 
 describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
     it('[C1234] can access websites using AFT and BrowserComponents', async function() {
-        await new AftMochaTest(this).verify(async (v: AftTest) => {
+        await aftMochaTest(this, async (v: AftMochaTest) => {
             await using(new SeleniumSession({
                 reporter: v.reporter,
                 additionalSessionOptions: {
                     capabilities: {
                         browserName: 'chrome',
                         "bstack:options": {
-                            sessionName: v.reporter.loggerName,
+                            sessionName: v.reporter.name,
                             buildName: await v.buildInfoManager.get()
                         }
                     }
@@ -37,7 +37,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                 
                 const expected = "You logged into a secure area!";
                 const actual: string = await loginPage.getMessage();
-                expect(actual).to.contain(expected);
+                await v.verify(actual, containing(expected));
             });
         });
     });
@@ -54,7 +54,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                 capabilities: {
                     browserName: 'chrome',
                     "bstack:options": {
-                        sessionName: aft.reporter.loggerName,
+                        sessionName: aft.reporter.name,
                         buildName: await aft.buildInfoManager.get()
                     }
                 }
@@ -90,7 +90,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
     ];
     for (const uiplatform of uiplatforms) {
         it(`${uiplatform.testId} can run with multiple uiplatforms: ${uiplatform.os} ${uiplatform.osV} ${uiplatform.browser}`, async function() {
-            await new AftMochaTest(this).verify(async (v: AftTest) => {
+            await aftMochaTest(this, async (v: AftMochaTest) => {
                 let loginMessage = '';
                 await using(new SeleniumSession({
                     reporter: v.reporter,
@@ -98,7 +98,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                         capabilities: {
                             browserName: uiplatform.browser,
                             "bstack:options": {
-                                sessionName: v.reporter.loggerName,
+                                sessionName: v.reporter.name,
                                 os: uiplatform.os,            // override os in `aftconfig.json` file
                                 osVersion: uiplatform.osV,    // override osVersion in `aftconfig.json` file
                                 buildName: await v.buildInfoManager.get()
@@ -117,8 +117,8 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                     
                     loginMessage = await loginPage.getMessage();
                 });
-                return loginMessage;
-            }).returns(containing("You logged into a secure area!"));
+                await v.verify(loginMessage, containing("You logged into a secure area!"));
+            });
         });
     }
 });

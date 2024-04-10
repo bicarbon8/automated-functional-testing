@@ -1,5 +1,5 @@
 import { KinesisReportingPlugin, KinesisReportingPluginConfig } from "../src/kinesis-reporting-plugin";
-import { AftConfig, Reporter, machineInfo, pluginLoader, rand, TestResult } from "aft-core";
+import { AftConfig, ReportingManager, machineInfo, pluginLoader, rand, TestResult } from "aft-core";
 import * as pkg from "../package.json";
 import * as Firehose from "aws-sdk/clients/firehose";
 import { KinesisLogRecord } from "../src/kinesis-log-record";
@@ -298,7 +298,7 @@ describe('KinesisReportingPlugin', () => {
         await plugin.finalise(logName);
     });
 
-    it('can be loaded by the Reporter', async () => {
+    it('can be loaded by the ReportingManager', async () => {
         const config = {
             plugins: [
                 'kinesis-reporting-plugin'
@@ -310,7 +310,7 @@ describe('KinesisReportingPlugin', () => {
         };
         const aftCfg = new AftConfig(config);
         pluginLoader.reset();
-        const mgr: Reporter = new Reporter(rand.getString(20), aftCfg);
+        const mgr: ReportingManager = new ReportingManager(rand.getString(20), aftCfg);
         const plugins = mgr.plugins;
         const plugin = plugins[0];
 

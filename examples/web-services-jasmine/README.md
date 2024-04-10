@@ -68,7 +68,7 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
   - **policyEngineEnabled** - `boolean` indicating if each a search of open Jira issues should be performed for each test ID to determine if the test should be run when using an `AftTest`. _(defaults to `true`)_
 
 ## Test Execution
-running `npm run test:e2e` will execute the tests using Jasmine which should result in output like the following being sent to the console (assuming the `Reporter.level` is set to something like `info` in your `aftconfig.json`):
+running `npm run test:e2e` will execute the tests using Jasmine which should result in output like the following being sent to the console (assuming the `ReportingManager.logLevel` is set to something like `info` in your `aftconfig.json`):
 ```
 14:51:33 - [can access APIs using AFT HttpService] - STEP  - 1: make request to url: https://some.url.fake...
 14:51:36 - [can access APIs using AFT HttpService] - DEBUG - data included in request is: '{field: val, ...}'

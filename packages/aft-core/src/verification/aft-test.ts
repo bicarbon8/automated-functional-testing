@@ -1,4 +1,4 @@
-import { Reporter } from "../plugins/reporting/reporter";
+import { ReportingManager } from "../plugins/reporting/reporting-manager";
 import { TestResult } from "../plugins/reporting/test-result";
 import { PolicyManager } from "../plugins/policy/policy-manager";
 import { TestStatus } from "../plugins/reporting/test-status";
@@ -15,11 +15,11 @@ import { TitleParser } from "./title-parser";
 export type AftTestEvent = 'skipped' | 'pass' | 'fail' | 'started' | 'done';
 
 export type AftTestOptions = {
-    aftConfig?: AftConfig;
-    reporter?: Reporter;
+    aftCfg?: AftConfig;
+    reporter?: ReportingManager;
     policyManager?: PolicyManager;
     buildInfoManager?: BuildInfoManager;
-    testIds?: Set<string>;
+    testIds?: Array<string>;
     cacheResultsToFile?: boolean;
     onEventsMap?: Map<AftTestEvent, Array<Func<AftTest, void | PromiseLike<void>>>>;
     haltOnVerifyFailure?: boolean;
@@ -62,15 +62,15 @@ export class AftTest {
     }
 
     get aftCfg(): AftConfig {
-        return this._options.aftConfig;
+        return this._options.aftCfg;
     }
     
     /**
-     * a `Reporter` that uses the `description` property
-     * of this `AftTest` as the `loggerName` or the
-     * `Reporter` passed in via `AftTestOptions`
+     * a `ReportingManager` that uses the `description` property
+     * of this `AftTest` as the `name` or the
+     * `ReportingManager` passed in via `AftTestOptions`
      */
-    get reporter(): Reporter {
+    get reporter(): ReportingManager {
         return this._options.reporter;
     }
 
@@ -138,7 +138,8 @@ export class AftTest {
      * ex: `["C1234", "C2345"]`
      */
     get testIds(): Array<string> {
-        return Array.from(this._options.testIds.values());
+        // filter out any duplicates
+        return Array.from(new Set(this._options.testIds).values());
     }
 
     /**
@@ -160,7 +161,7 @@ export class AftTest {
      * @param failureMessage an optional message to include before any error string
      * when a failure occurs
      */
-    async verify(actual: any, expected: any | VerifyMatcher, failureMessage?: string): Promise<void> {
+    async verify(actual: any, expected: any | VerifyMatcher, failureMessage?: string): Promise<ProcessingResult<boolean>> {
         let syncActual: any;
         if (typeof actual === 'function') {
             const result = await Err.handleAsync(() => actual(), {
@@ -195,8 +196,10 @@ export class AftTest {
             if (this._options.haltOnVerifyFailure) {
                 throw new Error(errMessage);
             }
+            return {result: false, message: errMessage};
         }
         // otherwise success
+        return {result: true};
     }
 
     /**
@@ -280,7 +283,7 @@ export class AftTest {
      */
     async shouldRun(): Promise<ProcessingResult<boolean>> {
         const shouldRunTests = new Array<string>();
-        const testIds = Array.from(this._options.testIds.keys());
+        const testIds = this.testIds;
         if (testIds?.length) {
             for (const testId of testIds) {
                 const result: ProcessingResult<boolean> = await this.policyManager.shouldRun(testId);
@@ -299,7 +302,7 @@ export class AftTest {
     }
 
     private async _throwIfTestIdMismatch(...testIds: Array<string>): Promise<void> {
-        if (testIds.length > 0 && testIds.filter(id => this._options.testIds.has(id)).length === 0) {
+        if (testIds.length > 0 && testIds.filter(id => this.testIds.includes(id)).length === 0) {
             throw new Error(`test IDs [${testIds.join(',')}] do not exist in this ${this.constructor.name}`);
         }
     }
@@ -331,12 +334,12 @@ export class AftTest {
 
     /**
      * creates `TestResult` objects for each `testId` and sends these
-     * to the `Reporter.submitResult` function
+     * to the `ReportingManager.submitResult` function
      */
     protected async _submitResult(status: TestStatus, message?: string, ...testIds: Array<string>): Promise<void> {
         try {
             status ??= 'untested';
-            testIds = (testIds?.length > 0) ? testIds : Array.from(this._options.testIds.values());
+            testIds = (testIds?.length > 0) ? testIds : this.testIds;
             if (testIds?.length > 0) {
                 testIds.forEach(async (testId: string) => {
                     if (!this._hasResult(testId)) {
@@ -370,7 +373,7 @@ export class AftTest {
     }
 
     protected async _logResultStatus(status: TestStatus, message?: string): Promise<void> {
-        message = message || this.reporter.loggerName;
+        message = message || this.reporter.name;
         switch (status) {
             case 'blocked':
             case 'retest':
@@ -408,7 +411,7 @@ export class AftTest {
 
     protected async _generateTestResult(status: TestStatus, logMessage: string, testId?: string): Promise<TestResult> {
         const result: TestResult = {
-            testName: this.reporter.loggerName,
+            testName: this.reporter.name,
             testId,
             created: Date.now(),
             resultId: rand.guid,
@@ -436,11 +439,11 @@ export class AftTest {
 
     protected _parseOptions(options?: AftTestOptions): AftTestOptions {
         options ??= {};
-        options.aftConfig ??= aftConfig;
-        options.buildInfoManager ??= new BuildInfoManager(options.aftConfig);
-        options.policyManager ??= new PolicyManager(options.aftConfig);
-        options.reporter ??= new Reporter(this.description, options.aftConfig);
-        options.testIds ??= new Set(TitleParser.parseTestIds(this.description));
+        options.aftCfg ??= aftConfig;
+        options.buildInfoManager ??= new BuildInfoManager(options.aftCfg);
+        options.policyManager ??= new PolicyManager(options.aftCfg);
+        options.reporter ??= new ReportingManager(this.description, options.aftCfg);
+        options.testIds ??= TitleParser.parseTestIds(this.description) ?? [];
         options.cacheResultsToFile ??= false;
         options.onEventsMap ??= new Map<AftTestEvent, Array<Func<AftTest, void | PromiseLike<void>>>>();
         options.haltOnVerifyFailure ??= true;

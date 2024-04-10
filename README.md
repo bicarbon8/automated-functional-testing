@@ -90,7 +90,7 @@ verify(() => {throw new Error('failure');}) // AFT will report as 'failed'
 - [`aft-web-services`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-web-services/README.md) - adds support for testing REST-based services
 
 ## Plugins
-the primary benefit of using AFT comes from the plugins and the `Verifier`. Because logging using AFT's `Reporter` will also send to any registered logging plugins, it is easy to create logging plugins that send to any external system such as TestRail or to log results to Elasticsearch. Additionally, before running any _assertion_ passed to a `verify(assertion)` function, AFT will confirm if the _assertion_ should actually be run based on the results of queries to any supplied `PolicyPlugin` implementations.
+the primary benefit of using AFT comes from the plugins and the `AftTest`. Because logging using AFT's `ReportingManager` will also send to any registered logging plugins, it is easy to create logging plugins that send to any external system such as TestRail or to log results to Elasticsearch. Additionally, before running any _assertion_ passed to a `aftTest(description, testFunction)` function, AFT will confirm if the _testFunction_ should actually be run based on the results of queries to any supplied `PolicyPlugin` implementations.
 
 ### ReportingPlugin
 `aft-core` provides a `ReportingPlugin` class which can be extended from to create custom loggers which are then loaded by adding their filenames to the `plugins` array under in your `aftconfig.json`

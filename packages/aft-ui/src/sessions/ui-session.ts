@@ -1,17 +1,17 @@
-import { AftConfig, Class, Reporter, aftConfig, Disposable } from "aft-core";
+import { AftConfig, Class, ReportingManager, aftConfig, Disposable } from "aft-core";
 import { UiComponent, UiComponentOptions } from "../components/ui-component";
 import { UiSessionGeneratorManager } from "./ui-session-generator-manager";
 
 export type UiSessionOptions = {
     aftConfig?: AftConfig;
     driver?: unknown;
-    reporter?: Reporter;
+    reporter?: ReportingManager;
     additionalSessionOptions?: Record<string, any>;
 }
 
 export abstract class UiSession implements Disposable {
     public readonly aftCfg: AftConfig;
-    public readonly reporter: Reporter;
+    public readonly reporter: ReportingManager;
 
     private readonly _addtlOpts: Record<string, any>;
 
@@ -19,7 +19,7 @@ export abstract class UiSession implements Disposable {
         
     constructor(options?: UiSessionOptions) {
         this.aftCfg = options?.aftConfig ?? aftConfig;
-        this.reporter = options?.reporter ?? new Reporter(this.constructor.name, this.aftCfg);
+        this.reporter = options?.reporter ?? new ReportingManager(this.constructor.name, this.aftCfg);
         this._driver = options?.driver;
         this._addtlOpts = options?.additionalSessionOptions ?? {};
     }

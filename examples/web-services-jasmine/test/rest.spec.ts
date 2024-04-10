@@ -1,16 +1,15 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as FormData from "form-data";
-import { AftTest, greaterThan, havingValue, lessThan, retry, aftTest } from "aft-core";
-import { AftJasmineTest } from "aft-jasmine-reporter";
+import { greaterThan, havingValue, lessThan, retry } from "aft-core";
+import { AftJasmineTest, aftJasmineTest } from "aft-jasmine-reporter";
 import { httpData, HttpResponse, httpService } from 'aft-web-services';
 import { ListUsersResponse } from "../lib/response-objects/list-users-response";
 
 describe('Functional API tests using HttpService', () => {
-    it('can make GET request from JSON REST API', async () => {
-        const aft = new AftJasmineTest(); // DO NOT pass a scope
+    it('can test making a GET request from JSON REST API using `AftJasmineTest`', async () => {
         let response: HttpResponse;
-        await aftTest(async (v: AftTest) => {            
+        await aftJasmineTest(async (v: AftJasmineTest) => {            
             await v.reporter.step('making request...');
             const r = retry(() => httpService.performRequest({
                 url: 'https://reqres.in/api/users?page=2',
@@ -24,38 +23,37 @@ describe('Functional API tests using HttpService', () => {
             if (!r.isSuccessful) {
                 await v.reporter.error(r.lastError);
             }
-            return r.totalDuration;
-        }).withDescription('takes less than 10sec')
-        .and.withTestIds('C2217763')
-        .and.internals.usingReporter(aft.reporter)
-        .returns(lessThan(10000));
+            let result = await v.verify(r.totalDuration, lessThan(10000), 'expected to take less than 10sec');
+            if (result.message) {
+                v.fail(result.message, 'C2217763');
+            }
 
-        await aftTest(async (v: AftTest) => {
             await v.reporter.step('confirm response is not null...');
             expect(response).toBeDefined();
             await v.reporter.info('confirmed response is not null.');
             await v.reporter.info('response status code: ' + response.statusCode);
             await v.reporter.step('confirm response.data is not null...');
-            return response.data;
-        }).withDescription('returns a valid response object')
-        .and.withTestIds('C3131')
-        .and.internals.usingReporter(aft.reporter)
-        .returns(havingValue());
+            result = await v.verify(response.data, havingValue(), 'expected to return a valid response object');
+            if (result.message) {
+                v.fail(result.message, 'C3131');
+            }
 
-        await aftTest(async (v: AftTest) => {
             await v.reporter.step('confirm can deserialise response.data into typed object...');
             const obj: ListUsersResponse = httpData.as<ListUsersResponse>(response);
             expect(obj).toBeDefined();
             await v.reporter.info('confirmed can deserialise response.data into typed object.');
             await v.reporter.step('confirm object data property contains more than one result...');
-            return obj.data.length;
-        }).withDescription('receives more than 0 results in the data array')
-        .and.withTestIds('C2217764')
-        .and.internals.usingReporter(aft.reporter)
-        .returns(greaterThan(0));
+            result = await v.verify(obj.data.length, greaterThan(0), 'expected more than 0 results in the data array');
+            if (result.message) {
+                v.fail(result.message, 'C2217764');
+            }
+        }, {
+            haltOnVerifyFailure: false,
+            testIds: ['C2217763', 'C3131', 'C2217764']
+        });
     });
 
-    it('can make a multipart post [C9876]', async () => {
+    it('can test making a multipart post [C9876] without using `AftJasmineTest`', async () => {
         const aft = new AftJasmineTest(); // DO NOT pass a scope
         const shouldRun = await aft.shouldRun();
         if (shouldRun.result !== true) {

@@ -1,4 +1,4 @@
-import { AftConfig, LogLevel, Reporter, rand } from "../../src"
+import { AftConfig, LogLevel, ReportingManager, rand } from "../../src"
 
 describe('AftConfig', () => {
     class FakeSectionConfig {

@@ -9,7 +9,7 @@ import { PlanId } from "../helpers/plan-id";
 /**
  * this plugin uses the following configuration to control its operation via
  * `aftconfig.json` and if the `logLevel` is unset it will be set from the value 
- * in `ReporterConfig` before falling back to a value of `warn`
+ * in `AftConfig.logLevel` before falling back to a value of `warn`
  * ```json
  * {
  *     "TestRailConfig": {

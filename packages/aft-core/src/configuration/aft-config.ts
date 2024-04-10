@@ -124,7 +124,7 @@ export class AftConfig {
         return this.get('plugins', new Array<string | PluginLocator>());
     }
     /** 
-     * used by `Reporter` 
+     * used by `AftLogger` to limit console output by importance
      * @default 'warn'
      */
     get logLevel(): LogLevel {

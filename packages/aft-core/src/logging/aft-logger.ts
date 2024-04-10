@@ -19,9 +19,9 @@ import { LogMessageData } from "./log-message-data";
  * }
  * ```
  * 
- * **NOTE**: this should only be used in cases where using `Reporter` would
+ * **NOTE**: this should only be used in cases where using `ReportingManager` would
  * not be reasonable such as inside core components of AFT; otherwise you
- * should use a `Reporter` instance instead
+ * should use a `ReportingManager` instance instead
  */
 export class AftLogger {
     public readonly aftCfg: AftConfig;

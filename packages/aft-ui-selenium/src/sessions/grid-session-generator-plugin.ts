@@ -1,6 +1,6 @@
 import { Builder, Capabilities, WebDriver } from "selenium-webdriver";
 import { UiSessionGeneratorPlugin } from "aft-ui";
-import { Err, Reporter } from "aft-core";
+import { Err, ReportingManager } from "aft-core";
 
 type GridSessionOptions = {
     url: string;
@@ -9,10 +9,10 @@ type GridSessionOptions = {
 }
 
 export class GridSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
-    private _reporter: Reporter;
-    get reporter(): Reporter {
+    private _reporter: ReportingManager;
+    get reporter(): ReportingManager {
         if (!this._reporter) {
-            this._reporter = new Reporter(this.constructor.name, this.aftCfg);
+            this._reporter = new ReportingManager(this.constructor.name, this.aftCfg);
         }
         return this._reporter;
     }

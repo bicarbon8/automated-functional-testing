@@ -1,5 +1,5 @@
 # AFT-reporting-HTML
-an Automated Functional Testing (AFT) library providing logging to an HTML file for any `TestResult` objects logged via the `aft-core.Reporter`
+an Automated Functional Testing (AFT) library providing logging to an HTML file for any `TestResult` objects logged via the `aft-core.ReportingManager`
 
 ## Installation
 `> npm i aft-reporting-html`

@@ -39,16 +39,16 @@ export class AftJasmineTest extends AftTest {
         this.test = scope?.test;
     }
 
-    override async fail(message?: string): Promise<void> {
+    override async fail(message?: string, ...testIds: Array<string>): Promise<void> {
         let err: string = message ?? 'unknown error occurred';
         if (this.test?.failedExpectations?.length) {
             err = this.test.failedExpectations.map(e => `${e.message}\n${e.stack}`).join('\n');
         }
-        await super.fail(err);
+        await super.fail(err, ...testIds);
     }
 
-    override async pending(message?: string): Promise<void> {
-        await super.pending(message);
+    override async pending(message?: string, ...testIds: Array<string>): Promise<void> {
+        await super.pending(message, ...testIds);
         pending(); // eslint-disable-line no-undef
     }
 }
