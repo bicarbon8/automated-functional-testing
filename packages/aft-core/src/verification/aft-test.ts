@@ -365,7 +365,7 @@ export class AftTest {
     private async _runEventActions(actions: Array<AftTestFunction>): Promise<void> {
         if (actions?.length > 0) {
             for (const a of actions) {
-                const handled = await Err.handleAsync(async () => a(this), {errLevel: 'none'});
+                const handled = await Err.handleAsync(() => a(this), {errLevel: 'none'});
                 if (handled.message) {
                     await this.reporter.warn(handled.message);
                 }

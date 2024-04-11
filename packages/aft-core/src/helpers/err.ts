@@ -216,9 +216,9 @@ export class Err extends Object {
      * @returns a `ProcessingResult` where `result` is the output of the passed in `func`
      * and `message` will **ONLY** be set if an error was caught
      */
-    static async handleAsync<T>(func: Func<void, PromiseLike<T>>, opts?: Partial<ErrOptions>): Promise<ProcessingResult<T>> {
+    static async handleAsync<T>(func: Func<void, T | PromiseLike<T>>, opts?: Partial<ErrOptions>): Promise<ProcessingResult<T>> {
         try {
-            const res = await func();
+            const res = await Promise.resolve(func());
             return { result: res };
         } catch(e) {
             return { result: null as T, message: Err._processException(e, opts)};

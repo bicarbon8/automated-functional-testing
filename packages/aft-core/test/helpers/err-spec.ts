@@ -79,10 +79,12 @@ describe('Err', () => {
         });
 
         it('can handle try-catch for a Func<void, any> that rejects a Promise', async () => {
-            const func = () => Promise.reject('foo');
-            const val = await Err.handleAsync(func);
+            const err = rand.getString(15, true, true);
+            const func = (message: string) => Promise.reject(message);
+            const val = await Err.handleAsync(() => func(err));
 
             expect(val.result).toBeNull();
+            expect(val.message).toContain(err);
         });
 
         it('will log a warning if a ReportingManager is supplied and the Func throws', async () => {
