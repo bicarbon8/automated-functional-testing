@@ -64,21 +64,49 @@ describe('Err', () => {
     });
 
     describe('handle', () => {
-        it('can handle try-catch for a Func<void, any> that does not throw', async () => {
+        it('can handle a Func<void, any> that does not throw', async () => {
             const func = function () { return 'foo'; };
             const val = Err.handle(func);
 
             expect(val.result).toEqual('foo');
         });
 
-        it('can handle try-catch for a Func<void, any> that throws', async () => {
+        it('can handle a Func<void, any> that throws', async () => {
             const func = function () { throw 'foo'; };
             const val = Err.handle(func);
 
             expect(val.result).toBeNull();
         });
+    });
 
-        it('can handle try-catch for a Func<void, any> that rejects a Promise', async () => {
+    describe('handleAsync', () => {
+        it('can handle a non-async Func<void, any> that does not throw', async () => {
+            const str = rand.getString(15, true, true);
+            const func = function (input: string) { return input; };
+            const val = await Err.handleAsync(() => func(str));
+
+            expect(val.result).toEqual(str);
+        });
+
+        it('can handle a non-async Func<void, any> that throws', async () => {
+            const str = rand.getString(15, true, true);
+            const func = function (input: string) { throw new Error(input); };
+            const val = await Err.handleAsync(() => func(str));
+
+            expect(val.result).toBeNull();
+            expect(val.message).toContain(str);
+        });
+
+        it('can handle an Func<void, any> that returns a Promise', async () => {
+            const str = rand.getString(15, true, true);
+            const func = (message: string) => Promise.resolve(message);
+            const val = await Err.handleAsync(() => func(str));
+
+            expect(val.result).toEqual(str);
+            expect(val.message).not.toBeDefined();
+        });
+
+        it('can handle an async Func<void, any> that rejects a Promise', async () => {
             const err = rand.getString(15, true, true);
             const func = (message: string) => Promise.reject(message);
             const val = await Err.handleAsync(() => func(err));
@@ -87,8 +115,8 @@ describe('Err', () => {
             expect(val.message).toContain(err);
         });
 
-        it('will log a warning if a ReportingManager is supplied and the Func throws', async () => {
-            const logger = new AftLogger('will log a warning if a ReportingManager is supplied and the Func throws', new AftConfig({ pluginNames: [] }));
+        it('will log a warning if a AftLoggerr is supplied and the Func throws', async () => {
+            const logger = new AftLogger('will log a warning if a AftLoggerr is supplied and the Func throws', new AftConfig({ pluginNames: [] }));
             let logMessage: string;
             spyOn(logger, 'log').and.callFake((data: LogMessageData) => {
                 logMessage = data.message;

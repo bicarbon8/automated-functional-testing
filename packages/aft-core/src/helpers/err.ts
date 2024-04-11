@@ -210,7 +210,7 @@ export class Err extends Object {
     }
 
     /**
-     * calls the passed in `Func<void, PromiseLike<T>>` and handles any errors
+     * calls the passed in `Func<void, T | PromiseLike<T>>` and handles any errors
      * @param func an async function to be awaited inside a try-catch
      * @param opts an `ErrOptions` object containing options for this call
      * @returns a `ProcessingResult` where `result` is the output of the passed in `func`
@@ -218,7 +218,7 @@ export class Err extends Object {
      */
     static async handleAsync<T>(func: Func<void, T | PromiseLike<T>>, opts?: Partial<ErrOptions>): Promise<ProcessingResult<T>> {
         try {
-            const res = await Promise.resolve(func());
+            const res = await func();
             return { result: res };
         } catch(e) {
             return { result: null as T, message: Err._processException(e, opts)};

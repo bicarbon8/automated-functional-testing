@@ -201,6 +201,9 @@ export class AftTest {
      * @param expected the expected result from the action
      * @param failureMessage an optional message to include before any error string
      * when a failure occurs
+     * @returns a `ProcessingResult<boolean>` where `ProcessingResult.result === true`
+     * equates to success and `ProcessingResult.result == false` or
+     * `ProcessingResult.message` equates to failure
      */
     async verify(actual: any, expected: any | VerifyMatcher, failureMessage?: string): Promise<ProcessingResult<boolean>> {
         let syncActual: any;
