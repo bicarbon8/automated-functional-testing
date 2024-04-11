@@ -29,6 +29,7 @@ describe('AftTest', () => {
     });
     
     beforeEach(() => {
+        pluginLoader.reset();
         testStore.clear();
     });
 
@@ -247,11 +248,14 @@ describe('AftTest', () => {
             onEventsMap: new Map<AftTestEvent, Array<AftTestFunction>>([
                 ['started', [() => {eventArray.push('started');}]],
                 ['pass', [() => {eventArray.push('pass');}]],
+                ['fail', [() => {eventArray.push('fail');}]],
+                ['skipped', [() => {eventArray.push('skipped');}]],
                 ['done', [() => {eventArray.push('done');}]]
             ])
         });
         await t.run();
 
+        expect(t.status).toEqual('passed');
         expect(eventArray.length).toBe(3);
         expect(eventArray[0]).toEqual('started');
         expect(eventArray[1]).toEqual('pass');

@@ -64,9 +64,9 @@ export type AftTestOptions = {
 };
 
 /**
- * class to be used for executing some Functional Test Assertion after checking with any
- * `PolicyPlugin` instances that have been loaded to confirm that the
- * assertion should be executed based on referenced Test ID(s)
+ * class to be used for executing some Test Function after checking with the
+ * `PolicyManager` to confirm that the `testFunction` should be executed based
+ * on referenced Test ID(s) or lack thereof
  * 
  * ex:
  * ```
@@ -74,7 +74,7 @@ export type AftTestOptions = {
  *   await v.reporter.info('doing some testing...');
  *   const feature = new FeatureObj();
  *   await v.verify(() => feature.returnExpectedValueAsync(), containing('expected value'));
- * }); // if PolicyPlugin.shouldRun('C1234') returns `false` the assertion is not run
+ * }); // if PolicyManager.shouldRun('C1234') returns `false` the `testFunction` is not run
  * ```
  */
 export class AftTest {
@@ -82,7 +82,6 @@ export class AftTest {
     private readonly _testFunction: AftTestFunction;
     private readonly _resultsCache: CacheMap<string, Array<TestResult>>; // { key: description, val: [{TestId: 1, ...}, {TestId: 2, ...}] }
 
-    private _overallStatus: TestStatus;
     private _startTime: number;
     private _endTime: number;
 
@@ -154,7 +153,22 @@ export class AftTest {
      * 'untested'
      */
     get status(): TestStatus {
-        return this._overallStatus ?? 'untested';
+        const results = this.results;
+        let status: TestStatus = 'untested';
+        if (results.length > 0) {
+            for (const result of results) {
+                if (result.status === 'failed') {
+                    status = result.status;
+                }
+                if (status === 'untested' && result.status === 'passed') {
+                    status = result.status;
+                }
+                if ((status === 'untested' || status === 'passed') && result.status === 'skipped') {
+                    status = result.status;
+                }
+            }
+        }
+        return status;
     }
 
     /**
@@ -231,8 +245,6 @@ export class AftTest {
         }
         if (!matcher.setActual(syncActual).compare()) {
             // Failure condition
-            this._overallStatus = 'failed';
-
             const errMessage = (failureMessage)
                 ? `${failureMessage}\n${matcher.failureString()}`
                 : matcher.failureString();
@@ -328,7 +340,7 @@ export class AftTest {
     async shouldRun(): Promise<ProcessingResult<boolean>> {
         const shouldRunTests = new Array<string>();
         const testIds = this.testIds;
-        if (testIds?.length) {
+        if (testIds?.length > 0) {
             for (const testId of testIds) {
                 const result: ProcessingResult<boolean> = await this.policyManager.shouldRun(testId);
                 if (result.result === true) {
@@ -339,8 +351,8 @@ export class AftTest {
                 return {result: false, message: `none of the supplied tests should be run: [${testIds.join(', ')}]`};
             }
             return {result: true, message: `the following supplied tests should be run: [${shouldRunTests.join(', ')}]`};
-        } else if (this.policyManager.plugins?.filter(p => Err.handle(() => p?.enabled).result).length > 0) {
-            return {result: false, message: `no associated testIds found for test, but enabled 'IPolicyPlugins' exist so test should not be run`}
+        } else if (this.policyManager.plugins?.length > 0) {
+            return {result: false, message: `no associated testIds found for test, but enabled 'PolicyPlugins' exist so test should not be run`}
         }
         return {result: true};
     }
