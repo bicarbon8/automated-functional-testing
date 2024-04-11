@@ -82,19 +82,22 @@ export class AftJestTest extends AftTest {
  * 
  * ex:
  * ```typescript
- * await aftJestTest('[C1234] example usage for AftTest', async (v: AftJestTest) => {
- *   await v.reporter.info('doing some testing...');
- *   const feature = new FeatureObj();
- *   await v.verify(() => feature.returnExpectedValueAsync(), equaling('expected value'));
- * }); // if PolicyManager.shouldRun('C1234') returns `false` the assertion is not run
+ * test('[C1234] example usage for AftTest', () => {
+ *     await aftJestTest(expect, async (v: AftJestTest) => {
+ *        await v.reporter.info('doing some testing...');
+ *        const feature = new FeatureObj();
+ *        await v.verify(() => feature.returnExpectedValueAsync(), equaling('expected value'));
+ *     }); // if PolicyManager.shouldRun('C1234') returns `false` the assertion is not run
+ * })
  * ```
- * @param description a string describing the test
+ * @param expect a `JestExpect` or `jest.Expect` containing a `fullName` property used
+ * as the test description or a `string` description
  * @param testFunction the `Func<AftJestTest, void | PromiseLike<void>>` function to be
  * executed by this `AftJestTest`
  * @param options an optional `AftTestOptions` object containing overrides to internal
  * configuration and settings
  * @returns an async `Promise<void>` that runs the passed in `testFunction`
  */
-export const aftJestTest = async (description: JestExpect | jest.Expect | string, assertion: Func<AftJestTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {  // eslint-disable-line no-undef
-    return new AftJestTest(description, assertion, options).run();
+export const aftJestTest = async (expect: JestExpect | jest.Expect | string, testFunction: Func<AftJestTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {  // eslint-disable-line no-undef
+    return new AftJestTest(expect, testFunction, options).run();
 };

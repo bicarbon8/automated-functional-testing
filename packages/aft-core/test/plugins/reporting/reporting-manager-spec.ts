@@ -21,15 +21,15 @@ describe('ReportingManager', () => {
     });
 
     it('will send logs to any registered ReportingPlugin implementations', async () => {
-        const reporterName = 'will send logs to any registered ReportingPlugin implementations';
-        const reporter: ReportingManager = new ReportingManager(reporterName, new AftConfig({
+        const name = 'will send logs to any registered ReportingPlugin implementations';
+        const reporter: ReportingManager = new ReportingManager(name, new AftConfig({
             logLevel: 'trace',
             plugins: [mockReportingPluginName]
         }));
         const plugin = reporter.plugins.find(p => p?.enabled);
         const logs = new Array<LogMessageData>();
         const logSpy = spyOn(plugin, 'log').and.callFake((name: string, level: LogLevel, message: string, ...data: any[]) => {
-            logs.push({name, level, message});
+            logs.push({name, level, message, args: data});
             return Promise.resolve();
         });
         const messages: string[] = [];
@@ -53,8 +53,8 @@ describe('ReportingManager', () => {
     });
 
     it('will not output if level set to LogLevel of none', async () => {
-        const reporterName = 'will not output if level set to LogLevel of none';
-        const reporter: ReportingManager = new ReportingManager(reporterName, new AftConfig({
+        const name = 'will not output if level set to LogLevel of none';
+        const reporter: ReportingManager = new ReportingManager(name, new AftConfig({
             logLevel: 'none',
             plugins: []
         }));
@@ -67,8 +67,8 @@ describe('ReportingManager', () => {
     });
 
     it('will send cloned LogMessageData to any registered ReportingPlugin implementations', async () => {
-        const reporterName = 'will send cloned LogMessageData to any registered ReportingPlugin implementations';
-        const reporter = new ReportingManager(reporterName, new AftConfig({
+        const name = 'will send cloned LogMessageData to any registered ReportingPlugin implementations';
+        const reporter = new ReportingManager(name, new AftConfig({
             plugins: [mockReportingPluginName],
             logLevel: 'trace'
         }));
@@ -86,8 +86,8 @@ describe('ReportingManager', () => {
     });
 
     it('calls ReportingPlugin.finalise on reporter.finalise', async () => {
-        const reporterName = 'calls ReportingPlugin.finalise on reporter.finalise';
-        const reporter = new ReportingManager(reporterName, new AftConfig({
+        const name = 'calls ReportingPlugin.finalise on reporter.finalise';
+        const reporter = new ReportingManager(name, new AftConfig({
             plugins: [mockReportingPluginName],
             logLevel: 'trace'
         }));
@@ -104,12 +104,12 @@ describe('ReportingManager', () => {
         await reporter.finalise();
 
         expect(disposeSpy).toHaveBeenCalledTimes(1);
-        expect(names[0]).toEqual(reporterName);
+        expect(names[0]).toEqual(name);
     });
 
     it('handles exceptions thrown by loaded plugins', async () => {
-        const reporterName = 'handles exceptions thrown by loaded plugins';
-        const reporter = new ReportingManager(reporterName, new AftConfig({
+        const name = 'handles exceptions thrown by loaded plugins';
+        const reporter = new ReportingManager(name, new AftConfig({
             plugins: ['mock-reporting-plugin', 'throws-reporting-plugin']
         }));
 
@@ -118,8 +118,8 @@ describe('ReportingManager', () => {
     });
 
     it('passes manager LogLevel to plugins if not set in PluginConfig', () => {
-        const reporterName = 'passes manager LogLevel to plugins if not set in PluginConfig';
-        const reporter: ReportingManager = new ReportingManager(reporterName, new AftConfig({
+        const name = 'passes manager LogLevel to plugins if not set in PluginConfig';
+        const reporter: ReportingManager = new ReportingManager(name, new AftConfig({
             logLevel: 'error',
             plugins: [mockReportingPluginName]
         }));
@@ -132,8 +132,8 @@ describe('ReportingManager', () => {
     });
 
     it('allows setting config for plugins in their PluginConfig', async () => {
-        const reporterName = 'passes manager LogLevel to plugins if not set in PluginConfig';
-        const reporter: ReportingManager = new ReportingManager(reporterName, new AftConfig({
+        const name = 'passes manager LogLevel to plugins if not set in PluginConfig';
+        const reporter: ReportingManager = new ReportingManager(name, new AftConfig({
             logLevel: 'error',
             plugins: [mockReportingPluginName], 
             MockReportingPluginConfig: {

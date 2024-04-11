@@ -14,12 +14,12 @@ describe('Functional API tests using HttpService', () => {
             const r = retry(() => httpService.performRequest({
                 url: 'https://reqres.in/api/users?page=2',
                 reporter: v.reporter
-            })).until((res: HttpResponse) => res.statusCode >= 200 && res.statusCode < 400)
+            }))
             .withDelay(100)
-            .withBackOff('exponential')
-            .withMaxDuration(20000);
+            .withBackOffType('exponential')
+            .withMaxDuration(20000)
 
-            response = await Promise.resolve(r);
+            response = await r.until((res: HttpResponse) => res.statusCode >= 200 && res.statusCode < 400);
             if (!r.isSuccessful) {
                 await v.reporter.error(r.lastError);
             }

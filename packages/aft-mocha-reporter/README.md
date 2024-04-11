@@ -19,7 +19,7 @@ using this `Reporter` requires either calling the `mocha` command with the follo
 this package comes with two helper classes that can be utilised from within your Mocha specs to make use of AFT features.
 
 ### `AftMochaTest`
-the `AftMochaTest` class extends from the `AftTest` class providing the ability to parse the Spec name for any referenced Test. each Test ID must be surrounded with square brackets `[ABC123]`. you can then either directly call the `AftMochaTest.shouldRun()` async function which will determine if your test should be run based on any AFT `PolicyPlugin` instances referenced in your `aftconfig.json` file or you can call `AftMochaTest.verify(assertion)` which will perform the `AftMochaTest.shouldRun()` call and mark the test as skipped if it should not be run. using the `AftMochaTest` class would look like the following:
+the `AftMochaTest` class extends from the `AftTest` class providing the ability to parse the Spec name for any referenced Test. each Test ID must be surrounded with square brackets `[ABC123]`. you can then either directly call the `AftMochaTest.shouldRun()` async function which will determine if your test should be run based on any AFT `PolicyPlugin` instances referenced in your `aftconfig.json` file or you can call `aftMochaTest(this, testFunction)` which will perform the `AftMochaTest.shouldRun()` call and mark the test as skipped if it should not be run. using the `AftMochaTest` class would look like the following:
 > **!!WARNING!!** using arrow functions in your Spec definition **IS NOT SUPPORTED** if using `AftMochaTest` because it removes the `this` scope
 ```javascript
 describe('YourTestSuite', () => {

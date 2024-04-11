@@ -6,23 +6,21 @@ library providing a framework for creating Functional Test Automation supporting
 ```typescript
 describe('Sample Test', () => {
     it('[C1234] can perform a demonstration of AFT', async function() {
-        /**
-         * - for Jest use: `const aft = new AftJestTest(expect);`
-         * - for Mocha use: `const aft = new AftMochaTest(this);`
-         * - for Jasmine use: `const aft = new AftJasmineTest();`
-         */
-        const aft = new AftJasmineTest();
         const feature: FeatureObj = new FeatureObj();
         /**
-         * the `verify(assertion).returns(expectation)` function
-         * checks any specified `PolicyPlugin` implementations
-         * to ensure the test should be run. It will then
-         * report to any `ReportingPlugin` implementations
-         * with an `TestResult` indicating the success,
-         * failure or skipped status
+         * - for Jest use: `await aftJestTest(expect, () => doStuff());`
+         * - for Mocha use: `await aftMochaTest(this, () => doStuff());`
+         * - for Jasmine use: `await aftJasmineTest(() => doStuff());`
          */
-        await aft.verify(async () => await feature.performAction())
-            .returns('result of action');
+        const aftJasmineTest(async (t: AftJasmineTest) => {
+            const result: string = await feature.performActionAsync();
+            /**
+             * the `verify(actual, expected)` async function
+             * compares the values using a `VerifyMatcher`
+             * which defaults to `equaling` if none specified
+             */
+            await t.verify(result, 'result of action');
+        });
     });
 });
 ```
@@ -35,24 +33,29 @@ in more complex scenarios you can perform multiple actions inside the _expectati
 describe('Sample Test', () => {
     it('[C2345][C3344] can perform a more complex demonstration of AFT', async function() {
         /**
-         * - for Jest use: `const aft = new AftJestTest(expect);`
-         * - for Mocha use: `const aft = new AftMochaTest(this);`
-         * - for Jasmine use: `const aft = new AftJasmineTest();`
+         * - for Jest use: `await aftJestTest(expect, () => doStuff());`
+         * - for Mocha use: `await aftMochaTest(this, () => doStuff());`
+         * - for Jasmine use: `await aftJasmineTest(() => doStuff());`
          */
-        const aft = new AftJasmineTest();
-        /**
-         * the passed in expectation can accept a `Verifier` which can be used
-         * during more complex actions
-         */
-        await aft.verify(async (v: Verifier) => {
+        await aftJasmineTest(async (v: AftJasmineTest) => {
             await v.reporter.step('creating instance of FeatureObj');
-            let feature: FeatureObj = new FeatureObj();
+            const feature: FeatureObj = new FeatureObj();
+            const result = await v.verify(feature.isGood, true);
+            if (result.message) {
+                v.fail(result.message, 'C2345'); // reports failure result immediately
+            }
             await v.reporter.step('about to call performAction');
-            let result: string = await feature.performAction();
+            const result: string = await feature.performAction();
             await v.reporter.info(`result of performAction was '${result}'`);
             await v.reporter.trace('successfully executed expectation');
-            return result;
-        }).returns(containing('result of action'));
+            await v.verify(result, containing('result of action'));
+        }, {
+            aftCfg: new AftConfig({logLevel: 'trace'}),
+            haltOnVerifyFailure: false, // continue if `verify` check fails
+            onEventsMap: new Map<AftTestEvent, Array<AftTestFunction>>([
+                ['done', [() => performCleanup()]] // function run on completion
+            ])
+        });
     });
 });
 ```
@@ -67,11 +70,20 @@ which would output the following logs:
 ```
 > WARNING: Jasmine's _expect_ calls do not return a boolean as their type definitions would make you think and failed `expect` calls will only throw exceptions if the stop on failure option is enabled: 
 ```typescript
-verify(() => expect('foo').toBe('bar')); // AFT will report as 'passed'
+await aftTest(description, (t: AftTest) => {
+    expect('foo').toBe('bar'); // fails but doesn't throw
+}); // AFT will report as 'passed'
 
-verify(() => 'foo').returns('bar'); // AFT will report as 'failed'
+await aftTest(description, (t: AftTest) => {
+    await t.verify('foo', 'bar'); // fails and throws
+}); // AFT will report as 'failed'
 
-verify(() => {throw new Error('failure');}) // AFT will report as 'failed'
+await aftTest(description, (t: AftTest) => {
+    const result = await t.verify('foo', 'bar'); // fails but doesn't throw
+    if (result.message) {
+        await t.reporter.warn(result.message);
+    }
+}, { haltOnVerifyFailure = false }); // AFT will report as 'failed'
 ```
 
 ## Packages (click on name for more info)

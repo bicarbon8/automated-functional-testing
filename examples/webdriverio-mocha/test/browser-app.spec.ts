@@ -28,14 +28,11 @@ describe('Functional Browser Tests using WebdriverIO and Mocha', () => {
                 await loginPage.login("tomsmith", "SuperSecretPassword!");
 
                 await session.reporter.step('wait for message to appear...')
-                await retry(() => loginPage.hasMessage())
+                loginMessage = await retry(() => loginPage.getMessage())
                     .withDelay(100)
-                    .withBackOff('exponential')
-                    .withMaxDuration(20000);
-                
-                await session.reporter.step('get message...');
-
-                loginMessage = await loginPage.getMessage();
+                    .withBackOffType('exponential')
+                    .withMaxDuration(20000)
+                    .start();
             });
             await v.verify(loginMessage, containing("You logged into a secure area!"));
         });

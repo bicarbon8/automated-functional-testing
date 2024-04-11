@@ -133,8 +133,8 @@ describe('SeleniumSession', () => {
                 await loginPage.login("tomsmith", "SuperSecretPassword!");
                 await v.reporter.step('wait for message to appear...')
                 await retry(() => loginPage.hasMessage())
-                    .until((res) => res === true)
-                    .withMaxDuration(20000); // 20 seconds
+                    .withMaxDuration(20000) // 20 seconds
+                    .until((res) => res === true);
                 await v.reporter.step('get message...');
                 loginMessage = await loginPage.getMessage();
             });
@@ -156,8 +156,8 @@ describe('SeleniumSession', () => {
                 await loginPage.login("tomsmith", "SuperSecretPassword!");
                 await v.reporter.step('wait for message to appear...')
                 await retry(() => loginPage.hasMessage())
-                    .until((res) => res === true)
-                    .withMaxDuration(20000); // 20 seconds
+                    .withMaxDuration(20000) // 20 seconds
+                    .until((res) => res === true);
                 await v.reporter.step('get message...');
                 expect(await loginPage.getMessage()).toContain("You logged into a secure area!");
             });

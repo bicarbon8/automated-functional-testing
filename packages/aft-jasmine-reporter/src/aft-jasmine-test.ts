@@ -63,19 +63,20 @@ export class AftJasmineTest extends AftTest {
  * 
  * ex:
  * ```typescript
- * await aftJasmineTest('[C1234] example usage for AftTest', async (v: AftJasmineTest) => {
- *   await v.reporter.info('doing some testing...');
- *   const feature = new FeatureObj();
- *   await v.verify(() => feature.returnExpectedValueAsync(), equaling('expected value'));
- * }); // if PolicyManager.shouldRun('C1234') returns `false` the assertion is not run
+ * it('[C1234] example usage for AftTest', () => {
+ *     await aftJasmineTest(async (v: AftJasmineTest) => {
+ *         await v.reporter.info('doing some testing...');
+ *         const feature = new FeatureObj();
+ *         await v.verify(() => feature.returnExpectedValueAsync(), equaling('expected value'));
+ *     }); // if PolicyManager.shouldRun('C1234') returns `false` the assertion is not run
+ * })
  * ```
- * @param description a string describing the test
  * @param testFunction the `Func<AftJasmineTest, void | PromiseLike<void>>` function to be
  * executed by this `AftJasmineTest`
  * @param options an optional `AftTestOptions` object containing overrides to internal
  * configuration and settings
  * @returns an async `Promise<void>` that runs the passed in `testFunction`
  */
-export const aftJasmineTest = async (assertion: Func<AftJasmineTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {
-    return new AftJasmineTest(null, assertion, options).run();
+export const aftJasmineTest = async (testFunction: Func<AftJasmineTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {
+    return new AftJasmineTest(null, testFunction, options).run();
 };

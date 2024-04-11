@@ -47,7 +47,14 @@ export class AftMochaTest extends AftTest {
         testFunction ??= () => null;
         options ??= {};
         options.cacheResultsToFile = true;
-        const description = scope?.test?.fullTitle() ?? `${AftMochaTest.name}_${rand.getString(8, true, true)}`;
+        let description: string;
+        if (scope?.test?.fullTitle) {
+            description = scope?.test?.fullTitle();
+        } else if (typeof scope === 'string') {
+            description = scope;
+        } else {
+            description = `${AftMochaTest.name}_${rand.getString(8, true, true)}`;
+        }
         super(description, testFunction, options);
         this.test = scope?.test;
     }
@@ -64,19 +71,22 @@ export class AftMochaTest extends AftTest {
  * 
  * ex:
  * ```typescript
- * await aftMochaTest('[C1234] example usage for AftTest', async (v: AftMochaTest) => {
- *   await v.reporter.info('doing some testing...');
- *   const feature = new FeatureObj();
- *   await v.verify(() => feature.returnExpectedValueAsync(), equaling('expected value'));
- * }); // if PolicyManager.shouldRun('C1234') returns `false` the assertion is not run
+ * it('[C1234] example usage for AftTest', async function() {
+ *     await aftMochaTest(this, async (v: AftMochaTest) => {
+ *        await v.reporter.info('doing some testing...');
+ *        const feature = new FeatureObj();
+ *        await v.verify(() => feature.returnExpectedValueAsync(), equaling('expected value'));
+ *     }); // if PolicyManager.shouldRun('C1234') returns `false` the assertion is not run
+ * })
  * ```
- * @param description a string describing the test
+ * @param context a `this` representing the current `Mocha.Context` containing the
+ * `Mocha.Test` used to get the test description or a `string` description
  * @param testFunction the `Func<AftMochaTest, void | PromiseLike<void>>` function to be
  * executed by this `AftMochaTest`
  * @param options an optional `AftTestOptions` object containing overrides to internal
  * configuration and settings
  * @returns an async `Promise<void>` that runs the passed in `testFunction`
  */
-export const aftMochaTest = async (description: Mocha.Context | string, assertion: Func<AftMochaTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {
-    return new AftMochaTest(description, assertion, options).run();
+export const aftMochaTest = async (context: Mocha.Context | string, testFunction: Func<AftMochaTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {
+    return new AftMochaTest(context, testFunction, options).run();
 };

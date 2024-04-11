@@ -2,7 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as process from 'node:process';
 import * as dotenv from "dotenv";
-import { Class, JsonObject, JsonValue, RetryBackOffType } from "../helpers/custom-types";
+import { Class, JsonObject, JsonValue } from "../helpers/custom-types";
 import { fileio } from "../helpers/file-io";
 import { LogLevel } from "../logging/log-level";
 import { PluginLocator } from '../plugins/plugin-locator';
@@ -150,42 +150,6 @@ export class AftConfig {
      */
     get fsMapDirectory(): string {
         return this.get('fsMapDirectory', 'FileSystemMap');
-    }
-    /** 
-     * used by `retry` to set the maximum number of attempts 
-     * @default Infinity
-     */
-    get retryMaxAttempts(): number {
-        return this.get('retryMaxAttempts', Infinity);
-    }
-    /** 
-     * used by `retry` to set the retry delay back off type 
-     * @default 'constant'
-     */
-    get retryBackOffType(): RetryBackOffType {
-        return this.get<RetryBackOffType>('retryBackOffType', 'constant');
-    }
-    /** 
-     * used by `retry` to set the starting millisecond delay between each retry attempt 
-     * @default 1
-     */
-    get retryDelayMs(): number {
-        return this.get('retryDelayMs', 1);
-    }
-    /** 
-     * used by `retry` to set the maximum duration in milliseconds to attempt retries
-     * @default Infinity
-     */
-    get retryMaxDurationMs(): number {
-        return this.get('retryMaxDurationMs', Infinity);
-    }
-    /** 
-     * used by `retry` to indicate if a failure to get success should result in a `Promise.reject`
-     * on completion or simply returning `null`
-     * @default true
-     */
-    get retryRejectOnFail(): boolean {
-        return this.get('retryRejectOnFail', true);
     }
 
     /**

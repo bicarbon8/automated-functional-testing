@@ -28,15 +28,14 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                 await loginPage.login("tomsmith", "SuperSecretPassword!");
 
                 await session.reporter.step('wait for message to appear...')
-                await retry(() => loginPage.hasMessage())
+                const actual = await retry(() => loginPage.getMessage())
                     .withDelay(100)
-                    .withBackOff('exponential')
-                    .withMaxDuration(20000);
+                    .withBackOffType('exponential')
+                    .withMaxDuration(20000)
+                    .start();
                 
-                await session.reporter.step('get message...');
-                
+                await session.reporter.step('compare message...');
                 const expected = "You logged into a secure area!";
-                const actual: string = await loginPage.getMessage();
                 await v.verify(actual, containing(expected));
             });
         });
@@ -111,7 +110,7 @@ describe('Functional Browser Tests using AFT-UI-SELENIUM', () => {
                     await loginPage.login("tomsmith", "SuperSecretPassword!");
                     await retry(() => loginPage.hasMessage())
                         .withDelay(100)
-                        .withBackOff('exponential')
+                        .withBackOffType('exponential')
                         .withMaxDuration(20000)
                         .until((res: boolean) => res);
                     

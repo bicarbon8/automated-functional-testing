@@ -2,28 +2,36 @@ import { AftConfig, RetryBackOffType, retry, Retry } from "../../src";
 import { convert } from "../../src/helpers/convert";
 
 describe('Retry', () => {
+    it('works without passing in any options', async () => {
+        let i = 0;
+        const actual = await retry(() => i++).until(i => i > 10);
+
+        expect(actual).toEqual(11);
+    });
+
     it('can delay by specified number of milliseconds and delay type constant', async () => {
         const now: number = Date.now();
         let result: number = 0;
 
-        await retry(() => ++result, new AftConfig({
-            retryDelayMs: 100,
-            retryBackOffType: 'constant'
-        })).until((res: number) => res > 2);
+        const actual = await new Retry(() => ++result)
+            .withDelay(100)
+            .withBackOffType('constant')
+            .until((res: number) => res > 2);
 
-        let elapsed: number = convert.toElapsedMs(now);
+        const elapsed: number = convert.toElapsedMs(now);
         expect(elapsed).toBeGreaterThan(3);
         expect(elapsed).toBeLessThan(500);
         expect(result).toEqual(3);
+        expect(actual).toEqual(result);
     });
     
     it('can use a linearly increasing back-off delay', async () => {
         const now: number = Date.now();
         let result: number = 0;
-        await retry(() => ++result, new AftConfig({
-            retryDelayMs: 10,
-            retryBackOffType: 'linear'
-        })).until((res: number) => res > 9);
+        await retry(() => ++result, {
+            delay: 10,
+            backOffType: 'linear'
+        }).until(res => res === 10);
 
         const elapsed: number = convert.toElapsedMs(now);
         expect(elapsed).toBeGreaterThan(450);
@@ -34,12 +42,14 @@ describe('Retry', () => {
     it('can use an exponentially increasing back-off delay', async () => {
         const now = Date.now();
         let actual: number = 0;
-        await retry(() => {
+        await new Retry(() => {
             actual += 1;
             return actual > 5;
         }, new AftConfig({
-            retryDelayMs: 10,
-            retryBackOffType: 'exponential'
+            RetryConfig: {
+                delay: 10,
+                backOffType: 'exponential'
+            }
         })).until((res: boolean) => res);
 
         const elapsed = convert.toElapsedMs(now);
@@ -51,28 +61,30 @@ describe('Retry', () => {
     it('can set a maximum number of attempts', async () => {
         const now = Date.now();
         let attempts: number = 0;
-        await retry(() => ++attempts, new AftConfig({
-            retryMaxAttempts: 10,
-            retryRejectOnFail: false
-        })).until((res: number) => res > 100);
+        const actual = await retry(() => ++attempts, {
+                maxAttempts: 10,
+                errorOnFail: false
+        }).until((res: number) => res > 100);
 
         expect(attempts).toEqual(10);
         const elapsed = convert.toElapsedMs(now);
         expect(elapsed).toBeLessThan(1000);
+        expect(actual).toEqual(10);
     });
 
     it('can set a maximum duration to run', async () => {
         const now = Date.now();
         let attempts: number = 0;
         const aftCfg = new AftConfig({
-            retryDelayMs: 100,
-            retryBackOffType: 'constant',
-            retryMaxDurationMs: 500,
-            retryRejectOnFail: false,
+            RetryConfig: {
+                delay: 100,
+                backOffType: 'constant',
+                maxDuration: 500,
+                errorOnFail: false,
+            }
         });
-        const r = retry(() => ++attempts, aftCfg)
-            .until((res: number) => res > Infinity);
-        await Promise.resolve(r);
+        const r = new Retry(() => ++attempts, aftCfg);
+        await r.until((res: number) => res > Infinity);
 
         const elapsed = convert.toElapsedMs(now);
         expect(attempts).toBeGreaterThan(3);
@@ -85,10 +97,16 @@ describe('Retry', () => {
     it('returns a rejected promise if max duration or attempts is exceeded before success', async () => {
         let attempts = 0;
         let errStr: string;
-        const r = retry(() => ++attempts, new AftConfig({
-            retryMaxAttempts: 100
-        })).until((res: number) => res > Infinity);
-        await Promise.resolve(r).catch((err) => errStr = err);
+        const r = new Retry(() => ++attempts, new AftConfig({
+            RetryConfig: {
+                maxAttempts: 100
+            }
+        }));
+        try {
+            await r.until((res: number) => res > Infinity);
+        } catch(e) {
+            errStr = e;
+        }
 
         expect(errStr).toBeDefined();
         expect(errStr).toMatch('over 100 attempts');
@@ -98,35 +116,37 @@ describe('Retry', () => {
 
     it('can handle rejected promises', async () => {
         let result = 0;
-        const trueResult = await retry(() => {
-            result += 1;
+        const actual = await retry(() => {
+            result++;
             if (result === 1) {
                 return Promise.reject('fake error');
             }
             return result > 1;
-        }, new AftConfig({
-            retryDelayMs: 1
-        })).until((res: boolean) => res)
-        .withFailAction(() => Promise.reject('fake fail action error'));
+        }, {
+            delay: 1,
+            failAction: () => Promise.reject('fake fail action error')
+        }).start();
+        
 
         expect(result).toEqual(2);
-        expect(trueResult).toBe(true);
+        expect(actual).toBeTrue();
     });
 
     it('can handle exceptions', async () => {
         let result: number = 0;
-        await retry(() => {
+        const actual = await retry(() => {
             result += 1;
             if (result === 1) {
                 throw new Error('fake error');
             }
             return result > 1;
-        }, new AftConfig({
-            retryDelayMs: 200
-        })).until((res: boolean) => res)
-        .withFailAction(() => {throw new Error('fake fail action error');});
+        }, {
+            delay: 200,
+            failAction: () => {throw new Error('fake fail action error');}
+        }).start();
 
         expect(result).toEqual(2);
+        expect(actual).toBeTrue();
     });
 
     const data: Array<{start: number, current: number, type: RetryBackOffType, exp: number}> = [

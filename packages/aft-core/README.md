@@ -67,7 +67,7 @@ the `aft-core` package contains several helper and utility classes, interfaces a
 - **FileSystemMap** - a `Map` implementation that stores its values in a file on the filesystem allowing multiple node processes to share the map data or to persist the data over multiple iterations
 - **fileio** - a constant class providing file system `write` and `readAs<T>` functions to simplify file operations
 - **wait** - constant class providing `wait.forResult<T>(...): Promise<T>`, `wait.forDuration(number)`, and `wait.until(number | Date): Promise<void>` functions to allow for non-thread-locking waits
-- **retry** - constant class providing `retry(retryable): Promise<T>` async function that will retry a given `retryable` function until it succeeds or some condition such as number of attempts or elapsed time is exceeded
+- **retry** - constant class providing `retry<T>(retryable).until(condition): Promise<T>` async function that will retry a given `retryable` function until it passes a condition or a specified number of attempts or elapsed time is exceeded
 - **AftTest** - see: [Testing with AftTest](#testing-with-afttest) section below
 
 ## Custom Types

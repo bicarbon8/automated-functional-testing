@@ -1,4 +1,4 @@
-<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>AftJestTest | Packages Example</title><meta name="description" content="Documentation for Packages Example"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/search.js" id="tsd-search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>AftJestTest | Automated Functional Testing</title><meta name="description" content="Documentation for Automated Functional Testing"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/search.js" id="tsd-search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
 <div class="tsd-toolbar-contents container">
 <div class="table-cell" id="tsd-search" data-base="..">
 <div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
@@ -6,21 +6,26 @@
 <div id="tsd-toolbar-links"></div></div>
 <ul class="results">
 <li class="state loading">Preparing search index...</li>
-<li class="state failure">The search index is not available</li></ul><a href="../index.html" class="title">Packages Example</a></div>
+<li class="state failure">The search index is not available</li></ul><a href="../index.html" class="title">Automated Functional Testing</a></div>
 <div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="7" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="11" width="14" height="2" fill="var(--color-text)"></rect></svg></a></div></div></header>
 <div class="container container-main">
 <div class="col-content">
 <div class="tsd-page-title">
 <ul class="tsd-breadcrumb">
-<li><a href="../index.html">Packages Example</a></li>
+<li><a href="../index.html">Automated Functional Testing</a></li>
 <li><a href="../modules/aft_jest_reporter_src.html">aft-jest-reporter/src</a></li>
 <li><a href="aft_jest_reporter_src.AftJestTest.html">AftJestTest</a></li></ul>
 <h1>Class AftJestTest</h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>provides a more streamlined means of getting a <code>Verifier</code>
-from the Mocha test context</p>
+<div class="tsd-comment tsd-typography"><p>expects to be passed a context scope from an executing Jest
+test. for Jest, the <code>JestExpect</code> type contains this so you
+can use an <code>expect</code> like follows:</p>
+<pre><code class="language-typescript"><span class="hl-0">test</span><span class="hl-1">(</span><span class="hl-2">&#39;perform some testing&#39;</span><span class="hl-1">, () </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-4">t</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">AftJestTest</span><span class="hl-1">(</span><span class="hl-7">expect</span><span class="hl-1">, () </span><span class="hl-3">=&gt;</span><span class="hl-1"> </span><span class="hl-0">doStuff</span><span class="hl-1">());</span><br/><span class="hl-1">})</span>
+</code><button>Copy</button></pre>
 </div>
-<div class="tsd-comment tsd-typography"></div></section>
+<div class="tsd-comment tsd-typography">
+<h4>Param</h4><p>the <code>expect</code> object from within a Jest <code>test</code></p>
+</div></section>
 <section class="tsd-panel tsd-hierarchy">
 <h4>Hierarchy</h4>
 <ul class="tsd-hierarchy">
@@ -28,7 +33,7 @@ from the Mocha test context</p>
 <ul class="tsd-hierarchy">
 <li><span class="target">AftJestTest</span></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-jest-reporter/src/aft-jest-test.ts#L8">aft-jest-reporter/src/aft-jest-test.ts:8</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-jest-reporter/src/aft-jest-test.ts#L17">packages/aft-jest-reporter/src/aft-jest-test.ts:17</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -40,158 +45,76 @@ from the Mocha test context</p>
 </div></section>
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading">Properties</h3>
-<div class="tsd-index-list"><a href="aft_jest_reporter_src.AftJestTest.html#_actionMap" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-1024"><rect fill="var(--color-icon-background)" stroke="#FF984D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M9.354 16V7.24H12.174C12.99 7.24 13.638 7.476 14.118 7.948C14.606 8.412 14.85 9.036 14.85 9.82C14.85 10.604 14.606 11.232 14.118 11.704C13.638 12.168 12.99 12.4 12.174 12.4H10.434V16H9.354ZM10.434 11.428H12.174C12.646 11.428 13.022 11.284 13.302 10.996C13.59 10.7 13.734 10.308 13.734 9.82C13.734 9.324 13.59 8.932 13.302 8.644C13.022 8.356 12.646 8.212 12.174 8.212H10.434V11.428Z" fill="var(--color-text)"></path></g></svg><span>_action<wbr/>Map</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#_aftCfg" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_aft<wbr/>Cfg?</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#_assertion" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_assertion</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#_buildInfoMgr" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_build<wbr/>Info<wbr/>Mgr</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#_cacheResults" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_cache<wbr/>Results</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#_description" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_description</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#_innerPromise" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_inner<wbr/>Promise</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#_matcher" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_matcher</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#_policyEngMgr" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_policy<wbr/>Eng<wbr/>Mgr</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#_reporter" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_reporter</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#_resultsCache" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_results<wbr/>Cache</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#_startTime" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_start<wbr/>Time</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#_testIds" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_test<wbr/>Ids</span></a>
+<div class="tsd-index-list"><a href="aft_jest_reporter_src.AftJestTest.html#description" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-1024"><rect fill="var(--color-icon-background)" stroke="#FF984D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M9.354 16V7.24H12.174C12.99 7.24 13.638 7.476 14.118 7.948C14.606 8.412 14.85 9.036 14.85 9.82C14.85 10.604 14.606 11.232 14.118 11.704C13.638 12.168 12.99 12.4 12.174 12.4H10.434V16H9.354ZM10.434 11.428H12.174C12.646 11.428 13.022 11.284 13.302 10.996C13.59 10.7 13.734 10.308 13.734 9.82C13.734 9.324 13.59 8.932 13.302 8.644C13.022 8.356 12.646 8.212 12.174 8.212H10.434V11.428Z" fill="var(--color-text)"></path></g></svg><span>description</span></a>
 <a href="aft_jest_reporter_src.AftJestTest.html#test" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>test</span></a>
 </div></section>
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading">Accessors</h3>
 <div class="tsd-index-list"><a href="aft_jest_reporter_src.AftJestTest.html#aftCfg" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-262144"><rect fill="var(--color-icon-background)" stroke="#FF4D4D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M8.85 16L11.13 7.24H12.582L14.85 16H13.758L13.182 13.672H10.53L9.954 16H8.85ZM10.746 12.76H12.954L12.282 10.06C12.154 9.548 12.054 9.12 11.982 8.776C11.91 8.432 11.866 8.208 11.85 8.104C11.834 8.208 11.79 8.432 11.718 8.776C11.646 9.12 11.546 9.544 11.418 10.048L10.746 12.76Z" fill="var(--color-text)"></path></g></svg><span>aft<wbr/>Cfg</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#and" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>and</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#buildInfoMgr" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>build<wbr/>Info<wbr/>Mgr</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#cacheResults" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>cache<wbr/>Results</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#description" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>description</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#fullName" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>full<wbr/>Name</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#internals" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>internals</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#policyEngMgr" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>policy<wbr/>Eng<wbr/>Mgr</span></a>
+<a href="aft_jest_reporter_src.AftJestTest.html#buildInfoManager" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>build<wbr/>Info<wbr/>Manager</span></a>
+<a href="aft_jest_reporter_src.AftJestTest.html#elapsed" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>elapsed</span></a>
+<a href="aft_jest_reporter_src.AftJestTest.html#policyManager" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>policy<wbr/>Manager</span></a>
 <a href="aft_jest_reporter_src.AftJestTest.html#reporter" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>reporter</span></a>
+<a href="aft_jest_reporter_src.AftJestTest.html#results" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>results</span></a>
+<a href="aft_jest_reporter_src.AftJestTest.html#status" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>status</span></a>
+<a href="aft_jest_reporter_src.AftJestTest.html#testIds" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>test<wbr/>Ids</span></a>
 </div></section>
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading">Methods</h3>
-<div class="tsd-index-list"><a href="aft_jest_reporter_src.AftJestTest.html#_generateTestResult" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-2048"><rect fill="var(--color-icon-background)" stroke="#FF4DB8" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M9.162 16V7.24H10.578L11.514 10.072C11.602 10.328 11.674 10.584 11.73 10.84C11.794 11.088 11.842 11.28 11.874 11.416C11.906 11.28 11.954 11.088 12.018 10.84C12.082 10.584 12.154 10.324 12.234 10.06L13.122 7.24H14.538V16H13.482V12.82C13.482 12.468 13.49 12.068 13.506 11.62C13.53 11.172 13.558 10.716 13.59 10.252C13.622 9.78 13.654 9.332 13.686 8.908C13.726 8.476 13.762 8.1 13.794 7.78L12.366 12.16H11.334L9.894 7.78C9.934 8.092 9.97 8.456 10.002 8.872C10.042 9.28 10.078 9.716 10.11 10.18C10.142 10.636 10.166 11.092 10.182 11.548C10.206 12.004 10.218 12.428 10.218 12.82V16H9.162Z" fill="var(--color-text)"></path></g></svg><span>_generate<wbr/>Test<wbr/>Result</span></a>
+<div class="tsd-index-list"><a href="aft_jest_reporter_src.AftJestTest.html#_done" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-2048"><rect fill="var(--color-icon-background)" stroke="#FF4DB8" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M9.162 16V7.24H10.578L11.514 10.072C11.602 10.328 11.674 10.584 11.73 10.84C11.794 11.088 11.842 11.28 11.874 11.416C11.906 11.28 11.954 11.088 12.018 10.84C12.082 10.584 12.154 10.324 12.234 10.06L13.122 7.24H14.538V16H13.482V12.82C13.482 12.468 13.49 12.068 13.506 11.62C13.53 11.172 13.558 10.716 13.59 10.252C13.622 9.78 13.654 9.332 13.686 8.908C13.726 8.476 13.762 8.1 13.794 7.78L12.366 12.16H11.334L9.894 7.78C9.934 8.092 9.97 8.456 10.002 8.872C10.042 9.28 10.078 9.716 10.11 10.18C10.142 10.636 10.166 11.092 10.182 11.548C10.206 12.004 10.218 12.428 10.218 12.82V16H9.162Z" fill="var(--color-text)"></path></g></svg><span>_done</span></a>
+<a href="aft_jest_reporter_src.AftJestTest.html#_generateTestResult" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_generate<wbr/>Test<wbr/>Result</span></a>
 <a href="aft_jest_reporter_src.AftJestTest.html#_generateTestResults" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_generate<wbr/>Test<wbr/>Results</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#_getInnerPromise" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_get<wbr/>Inner<wbr/>Promise</span></a>
+<a href="aft_jest_reporter_src.AftJestTest.html#_hasResult" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_has<wbr/>Result</span></a>
 <a href="aft_jest_reporter_src.AftJestTest.html#_logResultStatus" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_log<wbr/>Result<wbr/>Status</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#_resolveAssertion" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_resolve<wbr/>Assertion</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#done" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>done</span></a>
+<a href="aft_jest_reporter_src.AftJestTest.html#_parseOptions" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_parse<wbr/>Options</span></a>
+<a href="aft_jest_reporter_src.AftJestTest.html#_started" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_started</span></a>
+<a href="aft_jest_reporter_src.AftJestTest.html#_submitResult" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_submit<wbr/>Result</span></a>
 <a href="aft_jest_reporter_src.AftJestTest.html#fail" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fail</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#on" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>on</span></a>
 <a href="aft_jest_reporter_src.AftJestTest.html#pass" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>pass</span></a>
 <a href="aft_jest_reporter_src.AftJestTest.html#pending" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>pending</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#returns" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>returns</span></a>
+<a href="aft_jest_reporter_src.AftJestTest.html#run" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>run</span></a>
 <a href="aft_jest_reporter_src.AftJestTest.html#shouldRun" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>should<wbr/>Run</span></a>
 <a href="aft_jest_reporter_src.AftJestTest.html#skipped" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>skipped</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#started" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>started</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#submitResult" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>submit<wbr/>Result</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#then" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>then</span></a>
 <a href="aft_jest_reporter_src.AftJestTest.html#verify" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>verify</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#withDescription" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>with<wbr/>Description</span></a>
-<a href="aft_jest_reporter_src.AftJestTest.html#withTestIds" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>with<wbr/>Test<wbr/>Ids</span></a>
 </div></section></div></details></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Constructors</h2>
 <section class="tsd-panel tsd-member"><a id="constructor" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>constructor</span><a href="#constructor" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><g stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" id="icon-anchor"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></g></svg></a></h3>
 <ul class="tsd-signatures">
-<li class="tsd-signature tsd-anchor-link" id="constructor.new_AftJestTest"><span class="tsd-kind-constructor-signature">new <wbr/>Aft<wbr/>Jest<wbr/>Test</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">scope</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_jest_reporter_src.AftJestTest.html" class="tsd-signature-type tsd-kind-class">AftJestTest</a><a href="#constructor.new_AftJestTest" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="constructor.new_AftJestTest"><span class="tsd-kind-constructor-signature">new <wbr/>Aft<wbr/>Jest<wbr/>Test</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">scope</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">testFunction</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_jest_reporter_src.AftJestTest.html" class="tsd-signature-type tsd-kind-class">AftJestTest</a><a href="#constructor.new_AftJestTest" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>expects to be passed the scope from an executing Jest
-test (i.e. the <code>this</code> argument)</p>
+<div class="tsd-comment tsd-typography"><p>expects to be passed a context scope from an executing Jest
+test. for Jest, the <code>JestExpect</code> type contains this so you
+can use an <code>expect</code> like follows:</p>
+<pre><code class="language-typescript"><span class="hl-0">test</span><span class="hl-1">(</span><span class="hl-2">&#39;perform some testing&#39;</span><span class="hl-1">, () </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-4">t</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">AftJestTest</span><span class="hl-1">(</span><span class="hl-7">expect</span><span class="hl-1">, () </span><span class="hl-3">=&gt;</span><span class="hl-1"> </span><span class="hl-0">doStuff</span><span class="hl-1">());</span><br/><span class="hl-1">})</span>
+</code><button>Copy</button></pre>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">scope</span>: <span class="tsd-signature-type">any</span></h5>
-<div class="tsd-comment tsd-typography"><p>the <code>this</code> scope from within a Jest <code>test</code></p>
+<div class="tsd-comment tsd-typography"><p>the <code>expect</code> object from within a Jest <code>test</code></p>
 </div>
-<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">testFunction</span>: <span class="tsd-signature-type ">AftTestFunction</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type ">AftTestOptions</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="aft_jest_reporter_src.AftJestTest.html" class="tsd-signature-type tsd-kind-class">AftJestTest</a></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Overrides AftTest.constructor</p>
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-jest-reporter/src/aft-jest-test.ts#L22">aft-jest-reporter/src/aft-jest-test.ts:22</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-jest-reporter/src/aft-jest-test.ts#L38">packages/aft-jest-reporter/src/aft-jest-test.ts:38</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
-<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_actionMap" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_action<wbr/>Map</span><a href="#_actionMap" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">_action<wbr/>Map</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">VerifierEvent</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type ">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
-<p>Inherited from AftTest._actionMap</p>
+<section class="tsd-panel tsd-member tsd-is-inherited"><a id="description" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>description</span><a href="#description" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">description</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
+<p>Inherited from AftTest.description</p>
 <ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:41</li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_aftCfg" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <code class="tsd-tag ts-flagOptional">Optional</code> <span>_aft<wbr/>Cfg</span><a href="#_aftCfg" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">_aft<wbr/>Cfg</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type ">AftConfig</span></div><aside class="tsd-sources">
-<p>Inherited from AftTest._aftCfg</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:31</li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_assertion" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_assertion</span><a href="#_assertion" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">_assertion</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">Func</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Verifier</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
-<p>Inherited from AftTest._assertion</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:32</li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_buildInfoMgr" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_build<wbr/>Info<wbr/>Mgr</span><a href="#_buildInfoMgr" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">_build<wbr/>Info<wbr/>Mgr</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">BuildInfoManager</span></div><aside class="tsd-sources">
-<p>Inherited from AftTest._buildInfoMgr</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:40</li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_cacheResults" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_cache<wbr/>Results</span><a href="#_cacheResults" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">_cache<wbr/>Results</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div><aside class="tsd-sources">
-<p>Inherited from AftTest._cacheResults</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:42</li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_description" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_description</span><a href="#_description" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">_description</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
-<p>Inherited from AftTest._description</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:34</li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_innerPromise" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_inner<wbr/>Promise</span><a href="#_innerPromise" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">_inner<wbr/>Promise</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
-<p>Inherited from AftTest._innerPromise</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:36</li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_matcher" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_matcher</span><a href="#_matcher" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">_matcher</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">VerifierMatcher</span></div><aside class="tsd-sources">
-<p>Inherited from AftTest._matcher</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:33</li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_policyEngMgr" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_policy<wbr/>Eng<wbr/>Mgr</span><a href="#_policyEngMgr" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">_policy<wbr/>Eng<wbr/>Mgr</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">PolicyManager</span></div><aside class="tsd-sources">
-<p>Inherited from AftTest._policyEngMgr</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:39</li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_reporter" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_reporter</span><a href="#_reporter" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">_reporter</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">Reporter</span></div><aside class="tsd-sources">
-<p>Inherited from AftTest._reporter</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:38</li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_resultsCache" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_results<wbr/>Cache</span><a href="#_resultsCache" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">_results<wbr/>Cache</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">FileSystemMap</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type ">TestResult</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
-<p>Inherited from AftTest._resultsCache</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:43</li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_startTime" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_start<wbr/>Time</span><a href="#_startTime" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">_start<wbr/>Time</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
-<p>Inherited from AftTest._startTime</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:35</li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_testIds" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_test<wbr/>Ids</span><a href="#_testIds" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">_test<wbr/>Ids</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
-<p>Inherited from AftTest._testIds</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:37</li></ul></aside></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:76</li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="test" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>test</span><a href="#test" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">test</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">AssertionResult</span></div>
@@ -204,7 +127,7 @@ Jest <code>test</code> function</p>
 </div>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-jest-reporter/src/aft-jest-test.ts#L15">aft-jest-reporter/src/aft-jest-test.ts:15</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-jest-reporter/src/aft-jest-test.ts#L24">packages/aft-jest-reporter/src/aft-jest-test.ts:24</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Accessors</h2>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="aftCfg" class="tsd-anchor"></a>
@@ -215,108 +138,127 @@ Jest <code>test</code> function</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">AftConfig</span></h4><aside class="tsd-sources">
 <p>Inherited from AftTest.aftCfg</p>
 <ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:46</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-is-inherited"><a id="and" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>and</span><a href="#and" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:78</li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-inherited"><a id="buildInfoManager" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>build<wbr/>Info<wbr/>Manager</span><a href="#buildInfoManager" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-signature" id="and.and-1"><span class="tsd-signature-symbol">get</span> and<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+<li class="tsd-signature" id="buildInfoManager.buildInfoManager-1"><span class="tsd-signature-symbol">get</span> buildInfoManager<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">BuildInfoManager</span></li>
 <li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>a syntactic way of connecting fluent functions for the Verifier</p>
+<div class="tsd-comment tsd-typography"><p>a <code>BuildInfoManager</code> instance used to generate
+a Build Number and Build Name from the first loaded
+<code>BuildInfoPlugin</code></p>
 </div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">BuildInfoManager</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
-<p>Inherited from AftTest.and</p>
+<p>Inherited from AftTest.buildInfoManager</p>
 <ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:69</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-is-inherited"><a id="buildInfoMgr" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>build<wbr/>Info<wbr/>Mgr</span><a href="#buildInfoMgr" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:96</li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-inherited"><a id="elapsed" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>elapsed</span><a href="#elapsed" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-signature" id="buildInfoMgr.buildInfoMgr-1"><span class="tsd-signature-symbol">get</span> buildInfoMgr<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">BuildInfoManager</span></li>
+<li class="tsd-signature" id="elapsed.elapsed-1"><span class="tsd-signature-symbol">get</span> elapsed<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
 <li class="tsd-description">
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">BuildInfoManager</span></h4><aside class="tsd-sources">
-<p>Inherited from AftTest.buildInfoMgr</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:55</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-is-inherited"><a id="cacheResults" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>cache<wbr/>Results</span><a href="#cacheResults" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-signature" id="cacheResults.cacheResults-1"><span class="tsd-signature-symbol">get</span> cacheResults<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-<li class="tsd-description">
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
-<p>Inherited from AftTest.cacheResults</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:56</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-is-inherited"><a id="description" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>description</span><a href="#description" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-signature" id="description.description-1"><span class="tsd-signature-symbol">get</span> description<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
-<li class="tsd-description">
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
-<p>Inherited from AftTest.description</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:45</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-is-inherited"><a id="fullName" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>full<wbr/>Name</span><a href="#fullName" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-signature" id="fullName.fullName-1"><span class="tsd-signature-symbol">get</span> fullName<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
-<li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>the full name of the currently executing test.</p>
-<p>ex: <code>&quot;AftTest [C1234] can provide a valid fullName&quot;</code></p>
+<div class="tsd-comment tsd-typography"><p>returns the amount of time, in milliseconds, elapsed since the <code>AftTest</code> was
+started either by calling the <code>run</code> function or using <code>aftTest(description, testFunction, options)</code> helper function</p>
 <p><strong>NOTE</strong></p>
 <blockquote>
-<p>this may also include the contents of any
-encapsulating <code>describe</code> functions wrapping the
-current <code>it</code> or <code>test</code> function, but implementation
-may be different for each supported framwork</p>
+<p>this includes the time taken to query any <code>PolicyPlugin</code> instances</p>
 </blockquote>
 </div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
-<p>Inherited from AftTest.fullName</p>
+<p>Inherited from AftTest.elapsed</p>
 <ul>
-<li>Defined in aft-core/dist/src/integration/aft-test.d.ts:24</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-is-inherited"><a id="internals" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>internals</span><a href="#internals" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:124</li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-inherited"><a id="policyManager" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>policy<wbr/>Manager</span><a href="#policyManager" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-signature" id="internals.internals-1"><span class="tsd-signature-symbol">get</span> internals<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">VerifierInternals</span></li>
+<li class="tsd-signature" id="policyManager.policyManager-1"><span class="tsd-signature-symbol">get</span> policyManager<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">PolicyManager</span></li>
 <li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>creates an object exposing internal functions allowing setting custom instances
-to internal objects</p>
+<div class="tsd-comment tsd-typography"><p>a <code>PolicyManager</code> instance used to determine if
+this <code>AftTest</code> should run by querying all loaded
+<code>PolicyPlugin</code> instances</p>
 </div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">VerifierInternals</span></h4><p>a <code>VerifierInternals</code> object containing functions allowing users to
-set values for the <code>Reporter</code>, <code>PolicyManager</code>, <code>BuildInfoManager</code> and
-<code>ResultsManager</code></p>
-
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">PolicyManager</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
-<p>Inherited from AftTest.internals</p>
+<p>Inherited from AftTest.policyManager</p>
 <ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:128</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-is-inherited"><a id="policyEngMgr" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>policy<wbr/>Eng<wbr/>Mgr</span><a href="#policyEngMgr" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-signature" id="policyEngMgr.policyEngMgr-1"><span class="tsd-signature-symbol">get</span> policyEngMgr<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">PolicyManager</span></li>
-<li class="tsd-description">
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">PolicyManager</span></h4><aside class="tsd-sources">
-<p>Inherited from AftTest.policyEngMgr</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:54</li></ul></aside></li></ul></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:90</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="reporter" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>reporter</span><a href="#reporter" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-signature" id="reporter.reporter-1"><span class="tsd-signature-symbol">get</span> reporter<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Reporter</span></li>
+<li class="tsd-signature" id="reporter.reporter-1"><span class="tsd-signature-symbol">get</span> reporter<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">ReportingManager</span></li>
 <li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>a <code>Reporter</code> that uses either the Description
-or a list of Test Ids or a <code>uuid</code> as the <code>logName</code> depending
-on which is available (NOTE: description is preferred most and
-will be used if other values are also present)</p>
+<div class="tsd-comment tsd-typography"><p>a <code>ReportingManager</code> that uses the <code>description</code> property
+of this <code>AftTest</code> as the <code>name</code> or the
+<code>ReportingManager</code> passed in via <code>AftTestOptions</code></p>
 </div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Reporter</span></h4>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">ReportingManager</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from AftTest.reporter</p>
 <ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:53</li></ul></aside></li></ul></section></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:84</li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-inherited"><a id="results" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>results</span><a href="#results" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-inherited">
+<li class="tsd-signature" id="results.results-1"><span class="tsd-signature-symbol">get</span> results<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">TestResult</span><span class="tsd-signature-symbol">[]</span></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>returns an array of <code>TestResult</code> objects for each result already submitted
+<em>(NOTE: one result is submitted for each associated Test ID or just one
+overall result if no Test IDs are associated with this instance)</em>.
+if <code>withFileSystemCache</code> is enabled this includes searching the filesystem
+cache for any logged test results for the <code>AftTest.description</code> and returning the
+results as an array of <code>TestResult</code> objects with each object corresponding
+to a Test ID referenced in the test name</p>
+</div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">TestResult</span><span class="tsd-signature-symbol">[]</span></h4><p>an array of <code>TestResult</code> objects where each entry corresponds to
+a referenced Test ID parsed from the <code>AftTest.description</code></p>
+
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<p>Inherited from AftTest.results</p>
+<ul>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:108</li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-inherited"><a id="status" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>status</span><a href="#status" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-inherited">
+<li class="tsd-signature" id="status.status-1"><span class="tsd-signature-symbol">get</span> status<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">TestStatus</span></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>returns the overall status of this <code>AftTest</code>. this value is only updated when
+a <code>AftTest.fail(...)</code> call is made or a <code>AftTest.verify(actual, expected)</code> check
+fails or when the test completes without error. otherwise the value will be
+&#39;untested&#39;</p>
+</div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">TestStatus</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<p>Inherited from AftTest.status</p>
+<ul>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:115</li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-inherited"><a id="testIds" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>test<wbr/>Ids</span><a href="#testIds" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-inherited">
+<li class="tsd-signature" id="testIds.testIds-1"><span class="tsd-signature-symbol">get</span> testIds<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>an array of <code>string</code> values representing the associated test IDs for
+this <code>AftTest</code>. for each test ID a unique result can and will be reported
+during or on the completion of running the <code>testFunction</code></p>
+<p>ex: <code>[&quot;C1234&quot;, &quot;C2345&quot;]</code></p>
+</div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<p>Inherited from AftTest.testIds</p>
+<ul>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:132</li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
+<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_done" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_done</span><a href="#_done" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-protected tsd-is-inherited">
+<li class="tsd-signature tsd-anchor-link" id="_done._done-1"><span class="tsd-kind-call-signature">_done</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#_done._done-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<p>Inherited from AftTest._done</p>
+<ul>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:196</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_generateTestResult" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_generate<wbr/>Test<wbr/>Result</span><a href="#_generateTestResult" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-protected tsd-is-inherited">
@@ -334,7 +276,7 @@ will be used if other values are also present)</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">TestResult</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from AftTest._generateTestResult</p>
 <ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:144</li></ul></aside></li></ul></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:205</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_generateTestResults" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_generate<wbr/>Test<wbr/>Results</span><a href="#_generateTestResults" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-protected tsd-is-inherited">
@@ -352,16 +294,21 @@ will be used if other values are also present)</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">TestResult</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from AftTest._generateTestResults</p>
 <ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:143</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_getInnerPromise" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_get<wbr/>Inner<wbr/>Promise</span><a href="#_getInnerPromise" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:204</li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_hasResult" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_has<wbr/>Result</span><a href="#_hasResult" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-protected tsd-is-inherited">
-<li class="tsd-signature tsd-anchor-link" id="_getInnerPromise._getInnerPromise-1"><span class="tsd-kind-call-signature">_get<wbr/>Inner<wbr/>Promise</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#_getInnerPromise._getInnerPromise-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="_hasResult._hasResult-1"><span class="tsd-kind-call-signature">_has<wbr/>Result</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">testId</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><a href="#_hasResult._hasResult-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
-<p>Inherited from AftTest._getInnerPromise</p>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">testId</span>: <span class="tsd-signature-type">string</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
+<p>Inherited from AftTest._hasResult</p>
 <ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:64</li></ul></aside></li></ul></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:206</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_logResultStatus" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_log<wbr/>Result<wbr/>Status</span><a href="#_logResultStatus" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-protected tsd-is-inherited">
@@ -377,112 +324,131 @@ will be used if other values are also present)</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from AftTest._logResultStatus</p>
 <ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:142</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_resolveAssertion" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_resolve<wbr/>Assertion</span><a href="#_resolveAssertion" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:203</li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_parseOptions" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_parse<wbr/>Options</span><a href="#_parseOptions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-protected tsd-is-inherited">
-<li class="tsd-signature tsd-anchor-link" id="_resolveAssertion._resolveAssertion-1"><span class="tsd-kind-call-signature">_resolve<wbr/>Assertion</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#_resolveAssertion._resolveAssertion-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="_parseOptions._parseOptions-1"><span class="tsd-kind-call-signature">_parse<wbr/>Options</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">AftTestOptions</span><a href="#_parseOptions._parseOptions-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type ">AftTestOptions</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">AftTestOptions</span></h4><aside class="tsd-sources">
+<p>Inherited from AftTest._parseOptions</p>
+<ul>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:207</li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_started" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_started</span><a href="#_started" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-protected tsd-is-inherited">
+<li class="tsd-signature tsd-anchor-link" id="_started._started-1"><span class="tsd-kind-call-signature">_started</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#_started._started-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
-<p>Inherited from AftTest._resolveAssertion</p>
+<p>Inherited from AftTest._started</p>
 <ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:65</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-is-inherited"><a id="done" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>done</span><a href="#done" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-signature tsd-anchor-link" id="done.done-1"><span class="tsd-kind-call-signature">done</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#done.done-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:195</li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_submitResult" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_submit<wbr/>Result</span><a href="#_submitResult" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-protected tsd-is-inherited">
+<li class="tsd-signature tsd-anchor-link" id="_submitResult._submitResult-1"><span class="tsd-kind-call-signature">_submit<wbr/>Result</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">status</span>, <span class="tsd-kind-parameter">message</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">testIds</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#_submitResult._submitResult-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
-<p>Inherited from AftTest.done</p>
+<div class="tsd-comment tsd-typography"><p>creates <code>TestResult</code> objects for each <code>testId</code> and sends these
+to the <code>ReportingManager.submitResult</code> function</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">status</span>: <span class="tsd-signature-type ">TestStatus</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">message</span>: <span class="tsd-signature-type">string</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">testIds</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<p>Inherited from AftTest._submitResult</p>
 <ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:63</li></ul></aside></li></ul></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:202</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="fail" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>fail</span><a href="#fail" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
-<li class="tsd-signature tsd-anchor-link" id="fail.fail-1"><span class="tsd-kind-call-signature">fail</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">reason</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#fail.fail-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="fail.fail-1"><span class="tsd-kind-call-signature">fail</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">reason</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">testIds</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#fail.fail-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">reason</span>: <span class="tsd-signature-type">string</span></h5></li></ul></div>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">reason</span>: <span class="tsd-signature-type">string</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">testIds</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Overrides AftTest.fail</p>
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-jest-reporter/src/aft-jest-test.ts#L41">aft-jest-reporter/src/aft-jest-test.ts:41</a></li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-is-inherited"><a id="on" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>on</span><a href="#on" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-signature tsd-anchor-link" id="on.on-1"><span class="tsd-kind-call-signature">on</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">event</span>, <span class="tsd-kind-parameter">action</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_jest_reporter_src.AftJestTest.html" class="tsd-signature-type tsd-kind-class">AftJestTest</a><a href="#on.on-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
-<li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>allows for specifying actions to be called on certain events</p>
-</div>
-<div class="tsd-parameters">
-<h4 class="tsd-parameters-title">Parameters</h4>
-<ul class="tsd-parameter-list">
-<li>
-<h5><span class="tsd-kind-parameter">event</span>: <span class="tsd-signature-type ">VerifierEvent</span></h5>
-<div class="tsd-comment tsd-typography"><p>an event trigger</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li>
-<li>
-<h5><span class="tsd-kind-parameter">action</span>: <span class="tsd-signature-type ">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h5>
-<div class="tsd-comment tsd-typography"><p>the action to be run on the event</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="aft_jest_reporter_src.AftJestTest.html" class="tsd-signature-type tsd-kind-class">AftJestTest</a></h4><p>a reference to this {Verifier} instance</p>
-
-<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
-<p>Inherited from AftTest.on</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:76</li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-jest-reporter/src/aft-jest-test.ts#L61">packages/aft-jest-reporter/src/aft-jest-test.ts:61</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="pass" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>pass</span><a href="#pass" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-signature tsd-anchor-link" id="pass.pass-1"><span class="tsd-kind-call-signature">pass</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#pass.pass-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="pass.pass-1"><span class="tsd-kind-call-signature">pass</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">testIds</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#pass.pass-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<div class="tsd-comment tsd-typography"><p>executes any <code>&#39;pass&#39;</code> event actions and then submits
+a <code>&#39;passed&#39;</code> result for each passed in test ID or for
+the overall result if no <code>testIds</code> specified</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">testIds</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+<div class="tsd-comment tsd-typography"><p>an optional array of test IDs</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from AftTest.pass</p>
 <ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:59</li></ul></aside></li></ul></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:162</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="pending" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>pending</span><a href="#pending" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-signature tsd-anchor-link" id="pending.pending-1"><span class="tsd-kind-call-signature">pending</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">message</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#pending.pending-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="pending.pending-1"><span class="tsd-kind-call-signature">pending</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">message</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">testIds</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#pending.pending-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
-<div class="tsd-parameters">
-<h4 class="tsd-parameters-title">Parameters</h4>
-<ul class="tsd-parameter-list">
-<li>
-<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">message</span>: <span class="tsd-signature-type">string</span></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
-<p>Inherited from AftTest.pending</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:61</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-is-inherited"><a id="returns" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>returns</span><a href="#returns" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-signature tsd-anchor-link" id="returns.returns-1"><span class="tsd-kind-call-signature">returns</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">result</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_jest_reporter_src.AftJestTest.html" class="tsd-signature-type tsd-kind-class">AftJestTest</a><a href="#returns.returns-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
-<li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>allows for specifying either the expected return value or a <code>VerifierMatcher</code>
-to be used to compare the return value using the <code>VerifierMatcher.compare()</code>
-function. if not set then only exceptions will cause a <code>failed</code> result on
-the executed <code>assertion</code></p>
+<div class="tsd-comment tsd-typography"><p>executes any <code>&#39;skipped&#39;</code> event actions and then submits
+a <code>&#39;skipped&#39;</code> result for each passed in test ID or for
+the overall result if no <code>testIds</code> specified</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">result</span>: <span class="tsd-signature-type">any</span></h5>
-<div class="tsd-comment tsd-typography"><p>the expected result or a <code>VerifierMatcher</code> implementation</p>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">message</span>: <span class="tsd-signature-type">string</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">testIds</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+<div class="tsd-comment tsd-typography"><p>an optional array of test IDs</p>
 </div>
 <div class="tsd-comment tsd-typography"></div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="aft_jest_reporter_src.AftJestTest.html" class="tsd-signature-type tsd-kind-class">AftJestTest</a></h4><p>this <code>Verifier</code> instance</p>
-
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
-<p>Inherited from AftTest.returns</p>
+<p>Inherited from AftTest.pending</p>
 <ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:120</li></ul></aside></li></ul></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:176</li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-inherited"><a id="run" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>run</span><a href="#run" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-inherited">
+<li class="tsd-signature tsd-anchor-link" id="run.run-1"><span class="tsd-kind-call-signature">run</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#run.run-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>this function handles event actions and checking the <code>PolicyManager</code> to
+determine if the supplied <code>testFunction</code> should be run and calling the
+<code>pending</code> function if not. following execution of the <code>testFunction</code>
+this function will call either <code>pass</code> or <code>fail</code> followed by any <code>done</code>
+actions. if using the <code>aftTest</code>helper function then <code>run</code> is automatically
+called</p>
+</div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<p>Inherited from AftTest.run</p>
+<ul>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:185</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="shouldRun" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>should<wbr/>Run</span><a href="#shouldRun" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -496,11 +462,11 @@ one of them should</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from AftTest.shouldRun</p>
 <ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:136</li></ul></aside></li></ul></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:193</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="skipped" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>skipped</span><a href="#skipped" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
-<li class="tsd-signature tsd-anchor-link" id="skipped.skipped-1"><span class="tsd-kind-call-signature">skipped</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">reason</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#skipped.skipped-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="skipped.skipped-1"><span class="tsd-kind-call-signature">skipped</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">reason</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">testIds</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#skipped.skipped-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>see: <code>pending</code></p>
 </div>
@@ -511,158 +477,54 @@ one of them should</p>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">reason</span>: <span class="tsd-signature-type">string</span></h5>
 <div class="tsd-comment tsd-typography"><p>the reason for skipping this test</p>
 </div>
-<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">testIds</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/5bc544c/packages/aft-jest-reporter/src/aft-jest-test.ts#L54">aft-jest-reporter/src/aft-jest-test.ts:54</a></li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-is-inherited"><a id="started" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>started</span><a href="#started" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-signature tsd-anchor-link" id="started.started-1"><span class="tsd-kind-call-signature">started</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#started.started-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
-<li class="tsd-description">
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
-<p>Inherited from AftTest.started</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:62</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-is-inherited"><a id="submitResult" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>submit<wbr/>Result</span><a href="#submitResult" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-signature tsd-anchor-link" id="submitResult.submitResult-1"><span class="tsd-kind-call-signature">submit<wbr/>Result</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">status</span>, <span class="tsd-kind-parameter">message</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#submitResult.submitResult-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
-<li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>creates <code>TestResult</code> objects for each <code>testId</code> and sends these
-to the <code>Reporter.logResult</code> function</p>
-</div>
-<div class="tsd-parameters">
-<h4 class="tsd-parameters-title">Parameters</h4>
-<ul class="tsd-parameter-list">
-<li>
-<h5><span class="tsd-kind-parameter">status</span>: <span class="tsd-signature-type ">TestStatus</span></h5></li>
-<li>
-<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">message</span>: <span class="tsd-signature-type">string</span></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
-<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
-<p>Inherited from AftTest.submitResult</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:141</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-is-inherited"><a id="then" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>then</span><a href="#then" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-signature tsd-anchor-link" id="then.then-1"><span class="tsd-kind-call-signature">then</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">TResult1</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type tsd-kind-type-parameter">TResult2</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">onfulfilled</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">onrejected</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">TResult1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type tsd-kind-type-parameter">TResult2</span><span class="tsd-signature-symbol">&gt;</span><a href="#then.then-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
-<li class="tsd-description">
-<section class="tsd-panel">
-<h4>Type Parameters</h4>
-<ul class="tsd-type-parameter-list">
-<li>
-<h4><span class="tsd-kind-type-parameter">TResult1</span> = <span class="tsd-signature-type ">Verifier</span></h4></li>
-<li>
-<h4><span class="tsd-kind-type-parameter">TResult2</span> = <span class="tsd-signature-type">never</span></h4></li></ul></section>
-<div class="tsd-parameters">
-<h4 class="tsd-parameters-title">Parameters</h4>
-<ul class="tsd-parameter-list">
-<li>
-<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">onfulfilled</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">value</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type tsd-kind-type-parameter">TResult1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">PromiseLike</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">TResult1</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></h5>
-<ul class="tsd-parameters">
-<li class="tsd-parameter-signature">
-<ul class="tsd-signatures">
-<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">value</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type tsd-kind-type-parameter">TResult1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">PromiseLike</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">TResult1</span><span class="tsd-signature-symbol">&gt;</span></li>
-<li class="tsd-description">
-<div class="tsd-parameters">
-<h4 class="tsd-parameters-title">Parameters</h4>
-<ul class="tsd-parameter-list">
-<li>
-<h5><span class="tsd-kind-parameter">value</span>: <span class="tsd-signature-type">void</span></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type tsd-kind-type-parameter">TResult1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">PromiseLike</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">TResult1</span><span class="tsd-signature-symbol">&gt;</span></h4></li></ul></li></ul></li>
-<li>
-<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">onrejected</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">reason</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type tsd-kind-type-parameter">TResult2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">PromiseLike</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">TResult2</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></h5>
-<ul class="tsd-parameters">
-<li class="tsd-parameter-signature">
-<ul class="tsd-signatures">
-<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">reason</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type tsd-kind-type-parameter">TResult2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">PromiseLike</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">TResult2</span><span class="tsd-signature-symbol">&gt;</span></li>
-<li class="tsd-description">
-<div class="tsd-parameters">
-<h4 class="tsd-parameters-title">Parameters</h4>
-<ul class="tsd-parameter-list">
-<li>
-<h5><span class="tsd-kind-parameter">reason</span>: <span class="tsd-signature-type">any</span></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type tsd-kind-type-parameter">TResult2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">PromiseLike</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">TResult2</span><span class="tsd-signature-symbol">&gt;</span></h4></li></ul></li></ul></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">TResult1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type tsd-kind-type-parameter">TResult2</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
-<p>Inherited from AftTest.then</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:57</li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-jest-reporter/src/aft-jest-test.ts#L74">packages/aft-jest-reporter/src/aft-jest-test.ts:74</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="verify" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>verify</span><a href="#verify" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-signature tsd-anchor-link" id="verify.verify-1"><span class="tsd-kind-call-signature">verify</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">assertion</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_jest_reporter_src.AftJestTest.html" class="tsd-signature-type tsd-kind-class">AftJestTest</a><a href="#verify.verify-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="verify.verify-1"><span class="tsd-kind-call-signature">verify</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">actual</span>, <span class="tsd-kind-parameter">expected</span>, <span class="tsd-kind-parameter">failureMessage</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">ProcessingResult</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><a href="#verify.verify-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>the starting point for setting up a <code>Verifier</code> execution. Generally it is preferred
-to use the <code>verify(...)</code> <code>const</code> instead of creating individual <code>Verifier</code> instances.
-ex:</p>
-<pre><code><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-0">verify</span><span class="hl-1">(</span><span class="hl-3">async</span><span class="hl-1"> (</span><span class="hl-8">v</span><span class="hl-1">: </span><span class="hl-6">Verifier</span><span class="hl-1">) </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-8">v</span><span class="hl-1">.</span><span class="hl-8">reporter</span><span class="hl-1">.</span><span class="hl-0">info</span><span class="hl-1">(</span><span class="hl-2">&#39;doing some testing...&#39;</span><span class="hl-1">);</span><br/><span class="hl-1">  </span><span class="hl-3">let</span><span class="hl-1"> </span><span class="hl-8">feature</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">FeatureObj</span><span class="hl-1">();</span><br/><span class="hl-1">  </span><span class="hl-7">return</span><span class="hl-1"> </span><span class="hl-7">await</span><span class="hl-1"> </span><span class="hl-8">feature</span><span class="hl-1">.</span><span class="hl-0">returnExpectedValue</span><span class="hl-1">();</span><br/><span class="hl-1">}).</span><span class="hl-0">withDescription</span><span class="hl-1">(</span><span class="hl-2">&#39;example usage for Verifier&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">.</span><span class="hl-8">and</span><span class="hl-1">.</span><span class="hl-0">withTestId</span><span class="hl-1">(</span><span class="hl-2">&#39;C1234&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">.</span><span class="hl-0">returns</span><span class="hl-1">(</span><span class="hl-2">&#39;expected value&#39;</span><span class="hl-1">);</span>
+<div class="tsd-comment tsd-typography"><p>performs a comparison of an <code>actual</code> and <code>expected</code> result. by default any error
+will result in halting the execution of the <code>AftTest</code> and reporting a failure,
+but by setting the <code>haltOnVerifyFailure</code> option to <code>false</code> you can allow the
+test execution to continue and only report the failure at the completion of running
+the <code>testFunction</code></p>
+<p>ex:</p>
+<pre><code class="language-typescript"><span class="hl-8">await</span><span class="hl-1"> </span><span class="hl-0">aftTest</span><span class="hl-1">(</span><span class="hl-2">&#39;continue on failure&#39;</span><span class="hl-1">, </span><span class="hl-3">async</span><span class="hl-1"> (</span><span class="hl-7">v</span><span class="hl-1">: </span><span class="hl-5">AftTest</span><span class="hl-1">) </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-8">await</span><span class="hl-1"> </span><span class="hl-7">v</span><span class="hl-1">.</span><span class="hl-0">verify</span><span class="hl-1">(</span><span class="hl-3">true</span><span class="hl-1">, </span><span class="hl-3">false</span><span class="hl-1">);</span><br/><span class="hl-1">    </span><span class="hl-8">await</span><span class="hl-1"> </span><span class="hl-7">v</span><span class="hl-1">.</span><span class="hl-7">reporter</span><span class="hl-1">.</span><span class="hl-0">info</span><span class="hl-1">(</span><span class="hl-2">&#39;this runs because &quot;haltOnVerifyFailure&quot; is &quot;false&quot;&#39;</span><span class="hl-1">);</span><br/><span class="hl-1">}, {</span><span class="hl-7">haltOnVerifyFailure:</span><span class="hl-1"> </span><span class="hl-3">false</span><span class="hl-1">});</span>
 </code><button>Copy</button></pre>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">assertion</span>: <span class="tsd-signature-type ">Func</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Verifier</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
-<div class="tsd-comment tsd-typography"><p>the <code>Func&lt;Verifier, any&gt;</code> function to be executed by this <code>Verifier</code></p>
+<h5><span class="tsd-kind-parameter">actual</span>: <span class="tsd-signature-type">any</span></h5>
+<div class="tsd-comment tsd-typography"><p>the actual result from some action</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><span class="tsd-kind-parameter">expected</span>: <span class="tsd-signature-type">any</span></h5>
+<div class="tsd-comment tsd-typography"><p>the expected result from the action</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">failureMessage</span>: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>an optional message to include before any error string
+when a failure occurs</p>
 </div>
 <div class="tsd-comment tsd-typography"></div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="aft_jest_reporter_src.AftJestTest.html" class="tsd-signature-type tsd-kind-class">AftJestTest</a></h4><p>this <code>Verifier</code> instance</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">ProcessingResult</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><p>a <code>ProcessingResult&lt;boolean&gt;</code> where <code>ProcessingResult.result === true</code>
+equates to success and <code>ProcessingResult.result == false</code> or
+<code>ProcessingResult.message</code> equates to failure</p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from AftTest.verify</p>
 <ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:93</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-is-inherited"><a id="withDescription" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>with<wbr/>Description</span><a href="#withDescription" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-signature tsd-anchor-link" id="withDescription.withDescription-1"><span class="tsd-kind-call-signature">with<wbr/>Description</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">description</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_jest_reporter_src.AftJestTest.html" class="tsd-signature-type tsd-kind-class">AftJestTest</a><a href="#withDescription.withDescription-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
-<li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>allows for setting the <code>description</code> to be used as the <code>logName</code> in any
-logging output from this <code>Verifier</code></p>
-</div>
-<div class="tsd-parameters">
-<h4 class="tsd-parameters-title">Parameters</h4>
-<ul class="tsd-parameter-list">
-<li>
-<h5><span class="tsd-kind-parameter">description</span>: <span class="tsd-signature-type">string</span></h5>
-<div class="tsd-comment tsd-typography"><p>the description of this <code>Verifier</code></p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="aft_jest_reporter_src.AftJestTest.html" class="tsd-signature-type tsd-kind-class">AftJestTest</a></h4><p>this <code>Verifier</code> instance</p>
-
-<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
-<p>Inherited from AftTest.withDescription</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:100</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-is-inherited"><a id="withTestIds" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>with<wbr/>Test<wbr/>Ids</span><a href="#withTestIds" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-signature tsd-anchor-link" id="withTestIds.withTestIds-1"><span class="tsd-kind-call-signature">with<wbr/>Test<wbr/>Ids</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">testIds</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_jest_reporter_src.AftJestTest.html" class="tsd-signature-type tsd-kind-class">AftJestTest</a><a href="#withTestIds.withTestIds-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
-<li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>allows for setting a <code>testId</code> to be checked before executing the <code>assertion</code>
-and to be reported to from any connected logging plugins that connect to
-your test case management system. if all the referenced <code>testId</code> values should not be
-run (as returned by your <code>PolicyPlugin.shouldRun(testId)</code>) then
-the <code>assertion</code> will not be run.
-NOTE: multiple <code>testId</code> values can be chained together</p>
-</div>
-<div class="tsd-parameters">
-<h4 class="tsd-parameters-title">Parameters</h4>
-<ul class="tsd-parameter-list">
-<li>
-<h5><code class="tsd-tag ts-flagRest">Rest</code> <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">testIds</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
-<div class="tsd-comment tsd-typography"><p>a test identifier for your connected <code>PolicyPlugin</code></p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="aft_jest_reporter_src.AftJestTest.html" class="tsd-signature-type tsd-kind-class">AftJestTest</a></h4><p>this <code>Verifier</code> instance</p>
-
-<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
-<p>Inherited from AftTest.withTestIds</p>
-<ul>
-<li>Defined in aft-core/dist/src/verification/verifier.d.ts:111</li></ul></aside></li></ul></section></section></div>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:155</li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -674,7 +536,8 @@ NOTE: multiple <code>testId</code> values can be chained together</p>
 <ul id="tsd-filter-options">
 <li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
 <li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-private" name="private"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Private</span></label></li>
-<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li></ul></form></div>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></form></div>
 <div class="tsd-theme-toggle">
 <h4 class="uppercase">Theme</h4><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
 <details open class="tsd-index-accordion tsd-page-navigation"><summary class="tsd-accordion-summary">
@@ -682,50 +545,33 @@ NOTE: multiple <code>testId</code> values can be chained together</p>
 <div class="tsd-accordion-details">
 <ul>
 <li><a href="#constructor" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-512"></use></svg><span>constructor</span></a></li>
-<li><a href="#_actionMap" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_action<wbr/>Map</span></a></li>
-<li><a href="#_aftCfg" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_aft<wbr/>Cfg</span></a></li>
-<li><a href="#_assertion" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_assertion</span></a></li>
-<li><a href="#_buildInfoMgr" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_build<wbr/>Info<wbr/>Mgr</span></a></li>
-<li><a href="#_cacheResults" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_cache<wbr/>Results</span></a></li>
-<li><a href="#_description" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_description</span></a></li>
-<li><a href="#_innerPromise" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_inner<wbr/>Promise</span></a></li>
-<li><a href="#_matcher" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_matcher</span></a></li>
-<li><a href="#_policyEngMgr" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_policy<wbr/>Eng<wbr/>Mgr</span></a></li>
-<li><a href="#_reporter" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_reporter</span></a></li>
-<li><a href="#_resultsCache" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_results<wbr/>Cache</span></a></li>
-<li><a href="#_startTime" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_start<wbr/>Time</span></a></li>
-<li><a href="#_testIds" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_test<wbr/>Ids</span></a></li>
+<li><a href="#description" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>description</span></a></li>
 <li><a href="#test" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>test</span></a></li>
 <li><a href="#aftCfg" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>aft<wbr/>Cfg</span></a></li>
-<li><a href="#and" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>and</span></a></li>
-<li><a href="#buildInfoMgr" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>build<wbr/>Info<wbr/>Mgr</span></a></li>
-<li><a href="#cacheResults" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>cache<wbr/>Results</span></a></li>
-<li><a href="#description" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>description</span></a></li>
-<li><a href="#fullName" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>full<wbr/>Name</span></a></li>
-<li><a href="#internals" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>internals</span></a></li>
-<li><a href="#policyEngMgr" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>policy<wbr/>Eng<wbr/>Mgr</span></a></li>
+<li><a href="#buildInfoManager" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>build<wbr/>Info<wbr/>Manager</span></a></li>
+<li><a href="#elapsed" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>elapsed</span></a></li>
+<li><a href="#policyManager" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>policy<wbr/>Manager</span></a></li>
 <li><a href="#reporter" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>reporter</span></a></li>
+<li><a href="#results" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>results</span></a></li>
+<li><a href="#status" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>status</span></a></li>
+<li><a href="#testIds" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>test<wbr/>Ids</span></a></li>
+<li><a href="#_done" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_done</span></a></li>
 <li><a href="#_generateTestResult" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_generate<wbr/>Test<wbr/>Result</span></a></li>
 <li><a href="#_generateTestResults" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_generate<wbr/>Test<wbr/>Results</span></a></li>
-<li><a href="#_getInnerPromise" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_get<wbr/>Inner<wbr/>Promise</span></a></li>
+<li><a href="#_hasResult" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_has<wbr/>Result</span></a></li>
 <li><a href="#_logResultStatus" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_log<wbr/>Result<wbr/>Status</span></a></li>
-<li><a href="#_resolveAssertion" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_resolve<wbr/>Assertion</span></a></li>
-<li><a href="#done" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>done</span></a></li>
+<li><a href="#_parseOptions" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_parse<wbr/>Options</span></a></li>
+<li><a href="#_started" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_started</span></a></li>
+<li><a href="#_submitResult" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_submit<wbr/>Result</span></a></li>
 <li><a href="#fail" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fail</span></a></li>
-<li><a href="#on" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>on</span></a></li>
 <li><a href="#pass" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>pass</span></a></li>
 <li><a href="#pending" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>pending</span></a></li>
-<li><a href="#returns" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>returns</span></a></li>
+<li><a href="#run" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>run</span></a></li>
 <li><a href="#shouldRun" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>should<wbr/>Run</span></a></li>
 <li><a href="#skipped" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>skipped</span></a></li>
-<li><a href="#started" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>started</span></a></li>
-<li><a href="#submitResult" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>submit<wbr/>Result</span></a></li>
-<li><a href="#then" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>then</span></a></li>
-<li><a href="#verify" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>verify</span></a></li>
-<li><a href="#withDescription" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>with<wbr/>Description</span></a></li>
-<li><a href="#withTestIds" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>with<wbr/>Test<wbr/>Ids</span></a></li></ul></div></details></div>
+<li><a href="#verify" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>verify</span></a></li></ul></div></details></div>
 <div class="site-menu">
-<nav class="tsd-navigation"><a href="../index.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-4"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-namespace)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.33 16V7.24H10.77L13.446 14.74C13.43 14.54 13.41 14.296 13.386 14.008C13.37 13.712 13.354 13.404 13.338 13.084C13.33 12.756 13.326 12.448 13.326 12.16V7.24H14.37V16H12.93L10.266 8.5C10.282 8.692 10.298 8.936 10.314 9.232C10.33 9.52 10.342 9.828 10.35 10.156C10.366 10.476 10.374 10.784 10.374 11.08V16H9.33Z" fill="var(--color-text)"></path></g></svg><span>Packages <wbr/>Example</span></a>
+<nav class="tsd-navigation"><a href="../index.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-4"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-namespace)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.33 16V7.24H10.77L13.446 14.74C13.43 14.54 13.41 14.296 13.386 14.008C13.37 13.712 13.354 13.404 13.338 13.084C13.33 12.756 13.326 12.448 13.326 12.16V7.24H14.37V16H12.93L10.266 8.5C10.282 8.692 10.298 8.936 10.314 9.232C10.33 9.52 10.342 9.828 10.35 10.156C10.366 10.476 10.374 10.784 10.374 11.08V16H9.33Z" fill="var(--color-text)"></path></g></svg><span>Automated <wbr/>Functional <wbr/>Testing</span></a>
 <ul class="tsd-small-nested-navigation">
 <li><a href="../modules/aft_core_src.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>aft-<wbr/>core/src</span></a></li>
 <li><a href="../modules/aft_jasmine_reporter_src.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>aft-<wbr/>jasmine-<wbr/>reporter/src</span></a></li>
@@ -733,7 +579,8 @@ NOTE: multiple <code>testId</code> values can be chained together</p>
 <details class="tsd-index-accordion" open data-key="aft-jest-reporter/src"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="#icon-chevronDown"></use></svg><a href="../modules/aft_jest_reporter_src.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>aft-<wbr/>jest-<wbr/>reporter/src</span></a></summary>
 <div class="tsd-accordion-details">
 <ul class="tsd-nested-navigation">
-<li><a href="aft_jest_reporter_src.AftJestTest.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-128"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-class)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)"></path></g></svg><span>Aft<wbr/>Jest<wbr/>Test</span></a></li></ul></div></details></li>
+<li><a href="aft_jest_reporter_src.AftJestTest.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-128"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-class)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)"></path></g></svg><span>Aft<wbr/>Jest<wbr/>Test</span></a></li>
+<li><a href="../functions/aft_jest_reporter_src.aftJestTest-1.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-64"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-function)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.39 16V7.24H14.55V8.224H10.446V11.128H14.238V12.112H10.47V16H9.39Z" fill="var(--color-text)"></path></g></svg><span>aft<wbr/>Jest<wbr/>Test</span></a></li></ul></div></details></li>
 <li><a href="../modules/aft_jira_src.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>aft-<wbr/>jira/src</span></a></li>
 <li><a href="../modules/aft_mocha_reporter_src.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>aft-<wbr/>mocha-<wbr/>reporter/src</span></a></li>
 <li><a href="../modules/aft_reporting_aws_kinesis_firehose_src.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>aft-<wbr/>reporting-<wbr/>aws-<wbr/>kinesis-<wbr/>firehose/src</span></a></li>

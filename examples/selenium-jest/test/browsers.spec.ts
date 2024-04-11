@@ -1,4 +1,4 @@
-import { containing, retry, using } from "aft-core";
+import { AftConfig, containing, retry, using } from "aft-core";
 import { AftJestTest, aftJestTest } from "aft-jest-reporter";
 import { HerokuLoginPage } from "../lib/page-objects/heroku-login-page";
 import { SeleniumSession } from "aft-ui-selenium";
@@ -28,14 +28,11 @@ describe('Functional Browser Tests using Selenium and Jest', () => {
                 await loginPage.login("tomsmith", "SuperSecretPassword!");
 
                 await v.reporter.step('wait for message to appear...')
-                await retry(() => loginPage.hasMessage())
-                    .withDelay(100)
-                    .withBackOff('exponential')
-                    .withMaxDuration(20000);
-                
-                await v.reporter.step('get message...');
-
-                loginMessage = await loginPage.getMessage();
+                loginMessage = await retry(() => loginPage.getMessage(), {
+                    delay: 100,
+                    backOffType: 'exponential',
+                    maxDuration: 20000
+                }).until((message) => message != null);
             });
             await v.verify(loginMessage, containing("You logged into a secure area!"));
         });
@@ -70,15 +67,13 @@ describe('Functional Browser Tests using Selenium and Jest', () => {
             await loginPage.login("tomsmith", "SuperSecretPassword!");
 
             await aft.reporter.step('wait for message to appear...')
-            await retry(() => loginPage.hasMessage())
-                .withDelay(100)
-                .withBackOff('exponential')
-                .withMaxDuration(20000);
-            
-            await aft.reporter.step('get message...');
+            const actual = await retry(() => loginPage.getMessage(), {
+                delay: 100,
+                backOffType: 'exponential',
+                maxDuration: 20000
+            }).until((message) => message != null);
 
             const expected = "You logged into a secure area!";
-            const actual = await loginPage.getMessage();
             expect(actual).toContain(expected);
         });
     });

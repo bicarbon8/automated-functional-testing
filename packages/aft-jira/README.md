@@ -58,7 +58,7 @@ to open or modify defects in Jira, you will need to have an account with both re
 - **policyEngineEnabled** - `bool` if set to `true` then any `AftTest` with a Test ID will first check that the test should be run via this plugin. any open defects referencing this Test ID will result in a `false` response _(defaults to `true`)_
 
 ## Usage
-you can submit results directly by calling the `aft-core.ReportingManager.submitResult(result: TestResult)` function or results will automatically be submitted if using the `aft-core.verify(assertion)` with valid `testCases` specified in the `options` object. 
+you can submit results directly by calling the `aft-core.ReportingManager.submitResult(result: TestResult)` function or results will automatically be submitted if using the `aft-core.AftTest(description, testFunction)` with valid `testCases` specified in the `options` object. 
 
 ### via `aft-core.ReportingManager`:
 ```typescript

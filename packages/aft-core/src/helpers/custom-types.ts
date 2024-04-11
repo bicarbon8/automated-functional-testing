@@ -117,10 +117,3 @@ export type CacheObject = {
  * ```
  */
 export type Merge<T1, T2, T3 = {}, T4 = {}, T5 = {}, T6 = {}> = T1 & T2 & T3 & T4 & T5 & T6;
-
-/**
- * a retry back-off delay type where `constant` uses the same
- * delay each time, `linear` adds the start delay to the previous
- * on each iteration and `exponential` doubles the previous delay
- */
-export type RetryBackOffType = 'constant' | 'linear' | 'exponential';

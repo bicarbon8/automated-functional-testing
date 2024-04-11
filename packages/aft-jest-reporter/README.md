@@ -23,7 +23,7 @@ while no configuration is required, the `aft-jest-reporter` supports all AFT con
 this package comes with two helper classes that can be utilised from within your Jest specs to make use of AFT features.
 
 ### `AftJestTest`
-the `AftJestTest` class extends from the `AftTest` class providing the ability to parse the Spec name for any referenced Test. each Test ID must be surrounded with square brackets `[ABC123]`. additionally you can then call the `AftJestTest.shouldRun()` async function or use `AftJestTest.verify(assertion)` which will determine if your test should be run based on any AFT `PolicyPlugin` instances referenced in your `aftconfig.json` file. using the `AftJestTest` class would look like the following:
+the `AftJestTest` class extends from the `AftTest` class providing the ability to parse the Spec name for any referenced Test. each Test ID must be surrounded with square brackets `[ABC123]`. additionally you can then call the `AftJestTest.shouldRun()` async function or use `aftJestTest(expect, testFunction)` which will determine if your test should be run based on any AFT `PolicyPlugin` instances referenced in your `aftconfig.json` file. using the `AftJestTest` class would look like the following:
 ```javascript
 describe('YourTestSuite', () => {
     test('can check if test [C1234] should be run', async () => {
