@@ -9,7 +9,7 @@ import { ListUsersResponse } from "../lib/response-objects/list-users-response";
 describe('Functional API tests using HttpService', () => {
     it('can test making a GET request from JSON REST API using `AftJasmineTest`', async () => {
         let response: HttpResponse;
-        await aftJasmineTest(async (v: AftJasmineTest) => {            
+        await aftJasmineTest(async (v: AftJasmineTest) => {
             await v.reporter.step('making request...');
             const r = retry(() => httpService.performRequest({
                 url: 'https://reqres.in/api/users?page=2',
@@ -51,7 +51,7 @@ describe('Functional API tests using HttpService', () => {
             haltOnVerifyFailure: false,
             testIds: ['C2217763', 'C3131', 'C2217764']
         });
-    });
+    }, 20000);
 
     it('can test making a multipart post [C9876] without using `AftJasmineTest`', async () => {
         const aft = new AftJasmineTest(); // DO NOT pass a scope
@@ -74,5 +74,5 @@ describe('Functional API tests using HttpService', () => {
             await aft.reporter.info(`received response.`);
         }
         expect(resp.data).toBeDefined();
-    });
+    }, 20000);
 });

@@ -1,4 +1,4 @@
-import { AftConfig, containing, retry, using } from "aft-core";
+import { containing, retry, using } from "aft-core";
 import { AftJestTest, aftJestTest } from "aft-jest-reporter";
 import { HerokuLoginPage } from "../lib/page-objects/heroku-login-page";
 import { SeleniumSession } from "aft-ui-selenium";
