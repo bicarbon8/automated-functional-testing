@@ -16,9 +16,10 @@ import { FileSystemMap } from "./file-system-map";
 export class CacheMap<K extends JsonKey, V extends JsonValue> implements Map<K, V> {
     private readonly _internalMap: Map<K, CacheObject> | FileSystemMap<K, CacheObject>;
     private readonly _cacheDuration: number;
+    private readonly INFINITY = -1;
 
     constructor(cacheDurationMs: number, useFileCache: boolean, filename?: string) {
-        this._cacheDuration = cacheDurationMs;
+        this._cacheDuration = (cacheDurationMs === Infinity) ? this.INFINITY : cacheDurationMs;
         if (useFileCache && !filename) {
             throw new Error(`[${this.constructor.name}] when 'useFileCache' is set to 'true', 'filename' must be defined`);
         }
@@ -60,11 +61,25 @@ export class CacheMap<K extends JsonKey, V extends JsonValue> implements Map<K, 
     }
     set(key: K, value: V): this {
         const cache: CacheObject = {
-            validUntil: Date.now() + this._cacheDuration,
+            validUntil: (this._cacheDuration === this.INFINITY) ? this.INFINITY : Date.now() + this._cacheDuration,
             data: value
         };
         this._internalMap.set(key, cache);
         return this;
+    }
+    /**
+     * gets the `CacheContainer` for a given key if it exists and returns the
+     * number of milliseconds since the epoch representing the when the value
+     * will no longer be valid (cache expired). If not found a value of `0` is
+     * returned
+     * @param key the map key
+     */
+    expires(key: K): number {
+        const cache: CacheObject = this._internalMap.get(key);
+        if (cache) {
+            return (cache.validUntil === this.INFINITY) ? Infinity : cache.validUntil;
+        }
+        return 0;
     }
     get size(): number {
         return this._internalMap.size;
@@ -111,9 +126,9 @@ export class CacheMap<K extends JsonKey, V extends JsonValue> implements Map<K, 
 
     private _isStillValid(cacheObject: CacheObject): boolean {
         if (cacheObject) {
-            const validUntil: number = cacheObject.validUntil || 0;
+            const validUntil: number = cacheObject.validUntil ?? 0;
             const now: number = Date.now();
-            if (now <= validUntil) {
+            if (validUntil === this.INFINITY || now <= validUntil) {
                 return true;
             }
         }

@@ -1,0 +1,1 @@
+export const CurrentlyExecutingTestMap = 'CurrentlyExecutingTestMap';

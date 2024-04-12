@@ -1,5 +1,5 @@
 # AFT-reporting-AWSKinesis
-an Automated Functional Testing (AFT) library providing logging to an AWS Kinesis Firehose endpoint for any `TestResult` objects logged via the `aft-core.Reporter`
+an Automated Functional Testing (AFT) library providing logging to an AWS Kinesis Firehose endpoint for any `TestResult` objects logged via the `aft-core.ReportingManager`
 
 ## Installation
 `> npm i aft-reporting-awskinesis`
@@ -8,9 +8,8 @@ an Automated Functional Testing (AFT) library providing logging to an AWS Kinesi
 to send values to AWS Kinesis Firehose endpoints you must specify the AWS Credentials, the AWS Region Endpoint and the AWS Kinesis Delivery Stream. These take the following form in your `aftconfig.json`:
 ```json
 {
-    "pluginsSearchDir": "../node_modules",
-    "pluginNames": [
-      "kinesis-reporting-plugin"
+    "plugins": [
+      {"name": "kinesis-reporting-plugin", "searchDir": "./node_modules/"}
     ],
     "KinesisReportingPluginConfig": {
         "logLevel": "info",
@@ -41,7 +40,7 @@ the log record that is sent to your AWS Kinesis Firehose endpoint will have the 
 ### message logs
 ```JSON
 {
-    "logName": "if used with a Verifier this will be the 'description' or 'Test IDs' or a GUID",
+    "logName": "if used with an AftTest this will be the 'description' or 'Test IDs' or a GUID",
     "message": "this is the actual message being logged", 
     "level": "warn", 
     "version": "3.0.0", 
@@ -54,7 +53,7 @@ the log record that is sent to your AWS Kinesis Firehose endpoint will have the 
     }
 }
 ```
-- **logName** - the `logName` passed to this plugin when loaded from the `Reporter`
+- **logName** - the `logName` passed to this plugin when loaded from the `ReportingManager`
 - **message** - the `string` being logged by some component
 - **level** - a `string` value from one of the `aft-core.LoggingLevel` values based on the level of the message being logged
 - **version** - the current version of the `KinesisReportingPlugin`
@@ -68,7 +67,7 @@ the log record that is sent to your AWS Kinesis Firehose endpoint will have the 
 ### `TestResult` logs
 ```JSON
 {
-    "logName": "if used with Verifier this will be the 'description' or 'Test IDs' or a GUID",
+    "logName": "if used with an AftTest this will be the 'description' or 'Test IDs' or a GUID",
     "result": {
       "testId": "1234",
       "resultMessage": "the final result was a SUCCESS!",
@@ -90,7 +89,7 @@ the log record that is sent to your AWS Kinesis Firehose endpoint will have the 
     }
 }
 ```
-- **logName** - the `logName` passed to this plugin when loaded from the `Reporter`
+- **logName** - the `logName` passed to this plugin when loaded from the `ReportingManager`
 - **result** - an `TestResult` object containing the following:
   - **testId** - a `string` containing any unique ID for the test result being recorded
   - **resultMessage** - a `string` message of the final result

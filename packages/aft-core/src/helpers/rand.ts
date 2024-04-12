@@ -64,7 +64,7 @@ class Rand {
         }
         let characters: string = '';
 
-        for (var i = 0; i < length; i++) {
+        for (let i = 0; i < length; i++) {
             let ch: string;
             if (selectionCharacters) {
                 ch = selectionCharacters[this.getInt(0, selectionCharacters.length)];
@@ -83,11 +83,11 @@ class Rand {
      * @returns a randomly choosen enum value
      */
     getEnum<T>(anEnum: T): T[keyof T] {
-        let enumValues: T[keyof T][] = Object.keys(anEnum)
+        const enumValues: T[keyof T][] = Object.keys(anEnum)
           .map(n => Number.parseInt(n))
           .filter(n => !Number.isNaN(n)) as any as T[keyof T][];
-        let randomIndex: number = Math.floor(Math.random() * enumValues.length);
-        let randomEnumValue: T[keyof T] = enumValues[randomIndex];
+        const randomIndex: number = Math.floor(Math.random() * enumValues.length);
+        const randomEnumValue: T[keyof T] = enumValues[randomIndex];
         return randomEnumValue;
     }
 
@@ -112,7 +112,7 @@ class Rand {
      * returns a randomly choosen `true` or `false` value
      */
     get boolean(): boolean {
-        let i: number = this.getInt(0, 100);
+        const i: number = this.getInt(0, 100);
         return i < 50;
     }
 }

@@ -50,7 +50,7 @@ function showOnlyNotRun() {
     updateUrlParameter(notRun);
 }
 
-function toggleAllCards(enable) {
+function toggleAllPanels(enable) {
     var panels = document.querySelectorAll('.card');
     for (var i=0; i<panels.length; i++) {
         var name = panels[i].getAttribute('name');
@@ -186,9 +186,9 @@ function initialise(results) {
 }
 
 function addResult(result) {
-    var passing = getTestsWithStatus(/(Passed)/gi, result).length;
-    var failing = getTestsWithStatus(/(Failed|Retest)/gi, result).length;
-    var notRun = getTestsWithStatus(/(Untested|Blocked|Skipped)/gi, result).length;
+    var passing = getTestsWithStatus(/(passed)/gi, result).length;
+    var failing = getTestsWithStatus(/(failed|retest)/gi, result).length;
+    var notRun = getTestsWithStatus(/(untested|blocked|skipped)/gi, result).length;
     var container = document.querySelector('#resultsContainer');
     var section = `
 <div class="card card-info" name="${result.description}-ps-results">
@@ -224,7 +224,7 @@ function addTests(container, tests) {
     var startSection = `
 <table class="table table-striped table-hover">
     <thead>
-        <tr><th>Test ID</th><th>Status</th><th>Logs</th></tr>
+        <tr><th>Timestamp</th><th>Test ID</th><th>Status</th><th>Logs</th></tr>
     </thead>
     <tbody>
 `;
@@ -233,12 +233,12 @@ function addTests(container, tests) {
         var result = tests[i];
         var statusClass, trClass;
         switch (result.status) {
-            case "Passed":
+            case "passed":
                 statusClass = "success";
                 trClass = "passing";
                 break;
-            case "Failed":
-            case "Retest":
+            case "failed":
+            case "retest":
                 statusClass = "danger";
                 trClass = "failing";
                 break;
@@ -249,6 +249,9 @@ function addTests(container, tests) {
         }
         testResultSection += `
         <tr class="${trClass}" name="${result.testId}-pstt-results">
+            <td class="created">
+                ${new Date(result.created)}
+            </td>
             <td class="id">
                 ${result.testId || 'n/a'}
             </td>
@@ -315,7 +318,7 @@ div.vertical-align {
 </head>
 <body class="w-100">
     <div id="summaryContainer" class="container-fluid">
-        <div class="row vertical-align w-100">
+        <div class="row vertical-align">
             <div id="chartContainer" class="col-xs-8">
                 <div id="piechart" style="width: 600px; height: 250px;"></div>
             </div>
@@ -339,7 +342,7 @@ div.vertical-align {
     </div>
     <div id="groupContainer" class="container-fluid">
         <div class="row">
-            <button type="button" class="btn btn-info mx-1" onclick="toggleAllCards(true);">Expand All <i class="bi-plus" aria-hidden="true"></i></button><button type="button" class="btn btn-info mx-1" onclick="toggleAllCards(false);">Collapse All <i class="bi-dash" aria-hidden="true"></i></button>
+            <button type="button" class="btn btn-info mx-1" onclick="toggleAllPanels(true);">Expand All <i class="bi-plus" aria-hidden="true"></i></button><button type="button" class="btn btn-info mx-1" onclick="toggleAllPanels(false);">Collapse All <i class="bi-dash" aria-hidden="true"></i></button>
         </div>
         <div class="row">
             <div class="m-1 w-100" id="resultsContainer"></div>
@@ -350,9 +353,9 @@ div.vertical-align {
 google.load("visualization", "1", {packages:["corechart"]});
 google.setOnLoadCallback(drawChart);
 initialise([
-    {description: 'foo_is_my_name', tests: [{testId: 'C1234', status: 'Passed', logs: ['this is log line 1', 'this is log line 2']}]},
-    {description: 'bar_is_my_name', tests: [{testId: 'C2345', status: 'Failed', logs: ['this is log line 1']}]},
-    {description: 'baz_is_my_name', tests: [{testId: 'C3456', status: 'Untested', logs: []}]}
+    {description: 'foo_is_my_name', tests: [{created: Date.now(), testId: 'C1234', status: 'passed', logs: ['this is log line 1', 'this is log line 2']}]},
+    {description: 'bar_is_my_name', tests: [{created: Date.now(), testId: 'C2345', status: 'failed', logs: ['this is log line 1']}]},
+    {description: 'baz_is_my_name', tests: [{created: Date.now(), status: 'untested', logs: []}, {created: Date.now(), testId: 'C3456', status: 'passed', logs: ['this is log line 1']}]}
 ]);
 </script>
 </html>

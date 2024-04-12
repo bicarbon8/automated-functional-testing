@@ -1,9 +1,9 @@
 {
   "name": "webdriverio-mocha",
-  "description": "Automated Functional Testing (AFT) package containing examples of how it can be used",
+  "description": "Demonstration using WebdriverIO and Mocha",
   "private": true,
   "scripts": {
-    "clean": "rimraf ./dist && rimraf ./logs && rimraf ./FileSystemMap && rimraf ./testresults.html",
+    "clean": "rimraf ./dist && rimraf ./logs",
     "build": "npm run clean && tsc --build",
     "test:e2e": "npm run build && mocha"
   },
@@ -29,13 +29,14 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-jira": "^10.2.2",
-    "aft-mocha-reporter": "^10.2.2",
-    "aft-reporting-aws-kinesis-firehose": "^10.2.2",
-    "aft-reporting-filesystem": "^10.2.2",
-    "aft-reporting-html": "^10.2.2",
-    "aft-testrail": "^10.2.2",
-    "aft-ui-webdriverio": "^10.2.2",
+    "aft-core": "^11.0.0",
+    "aft-jira": "^11.0.0",
+    "aft-mocha-reporter": "^11.0.0",
+    "aft-reporting-aws-kinesis-firehose": "^11.0.0",
+    "aft-reporting-filesystem": "^11.0.0",
+    "aft-reporting-html": "^11.0.0",
+    "aft-testrail": "^11.0.0",
+    "aft-ui-webdriverio": "^11.0.0",
     "webdriverio": "^8.35.1"
   },
   "devDependencies": {

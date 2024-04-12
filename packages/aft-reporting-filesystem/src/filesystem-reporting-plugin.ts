@@ -1,5 +1,5 @@
-import process = require("process");
-import * as path from "path";
+import * as process from 'node:process';
+import * as path from "node:path";
 import { AftConfig, convert, Err, ExpiringFileLock, fileio, ReportingPlugin, ReportingPluginConfig, LogLevel, LogMessageData, TestResult } from "aft-core";
 import * as date from "date-and-time";
 
@@ -43,7 +43,10 @@ export class FilesystemReportingPlugin extends ReportingPlugin {
     override log = async (name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => {
         if (this.enabled) {
             if (data?.length > 0) {
-                const dataStr = (data?.length) ? `, [${data?.map(d => Err.handle(() => JSON.stringify(d))).join(',')}]` : '';
+                const dataStr = (data?.length) ? `, [${data?.map(d => {
+                    const dHandled = Err.handle(() => JSON.stringify(d));
+                    return dHandled.result ?? dHandled.message;
+                }).join(',')}]` : '';
                 message = `${message}${dataStr}`;
             }
             this._appendToFile({name, level, message});

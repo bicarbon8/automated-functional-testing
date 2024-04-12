@@ -1,41 +1,40 @@
-import { Verifier, equaling } from "aft-core";
-import { AftTest } from "../src";
+import { ProcessingResult, containing, AftConfig } from "aft-core";
+import { AftJasmineTest, aftJasmineTest } from "../src";
 
 describe('AftJasmineReporter', () => {
-    it('can create an AftTest instance', async () => {
-        const t = new AftTest();
+    it('can create an AftJasmineTest instance', async () => {
+        const t = new AftJasmineTest();
         await t.reporter.info('starting AftJasmineReporter test...');
-        expect(t.test).toBeDefined();
-        expect(t.fullName).toEqual('AftJasmineReporter can create an AftTest instance');
+        expect(t.test).not.toBeDefined(); // only defined within the Jasmine Reporter
+        expect(t.description).toEqual('AftJasmineReporter can create an AftJasmineTest instance');
         await t.reporter.info('completed AftJasmineReporter test.');
     });
 
     it('can check if test should be run [C1234]', async () => {
-        const t = new AftTest();
-        const shouldRun: boolean = await t.shouldRun();
-        if (!shouldRun) {
-            pending();
+        const t = new AftJasmineTest(null, null, {aftCfg: new AftConfig({plugins: []})});
+        const shouldRun = await t.shouldRun();
+        if (shouldRun.result !== true) {
+            await t.pending(shouldRun.message);
         }
 
-        expect(t.fullName).toEqual('AftJasmineReporter can check if test should be run [C1234]');
+        expect(t.description).toEqual('AftJasmineReporter can check if test should be run [C1234]');
     });
 
     it('can skip test [C4567] if should not be run', async () => {
-        const t = new AftTest();
-        spyOn(t, 'shouldRun').and.returnValue(Promise.resolve(false));
-        const shouldRun: boolean = await t.shouldRun();
-        if (!shouldRun) {
-            pending();
+        const t = new AftJasmineTest();
+        spyOn(t, 'shouldRun').and.returnValue(Promise.resolve<ProcessingResult<boolean>>({result: false, message: 'fake'}));
+        const shouldRun = await t.shouldRun();
+        if (shouldRun.result !== true) {
+            await t.pending(shouldRun.message);
         }
 
-        expect(true).toBeFalse();
+        expect(true).toBeFalse(); // force failure if skip does not happen
     });
 
-    it('provides a Verifier instance for use in test control', async () => {
-        const t = new AftTest(this);
-        await t.verify(async (v: Verifier) => {
-            await v.reporter.warn('returning logName');
-            return v.reporter.reporterName;
-        }).returns(equaling(t.reporter.reporterName));
+    it('[C6543] provides a AftJasmineTest instance for use in test control', async () => {
+        await aftJasmineTest(async (v: AftJasmineTest) => {
+            await v.verify(v.description, 'AftJasmineReporter [C6543] provides a AftJasmineTest instance for use in test control');
+            await v.verify(v.testIds, containing('C6543'), 'expected to parse test ID from description');
+        });
     });
 });

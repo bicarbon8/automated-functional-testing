@@ -19,13 +19,23 @@ import { LogMessageData } from "./log-message-data";
  * }
  * ```
  * 
- * **NOTE**: this should only be used in cases where using `Reporter` would
+ * **NOTE**: this should only be used in cases where using `ReportingManager` would
  * not be reasonable such as inside core components of AFT; otherwise you
- * should use a `Reporter` instance instead
+ * should use a `ReportingManager` instance instead
  */
 export class AftLogger {
     public readonly aftCfg: AftConfig;
+    /**
+     * a name unique to a given `AftLogger` instance intended to uniquely identify output by
+     * the associated class doing the logging
+     */
+    public readonly loggerName: string;
     
+    constructor(loggerName?: string, aftCfg?: AftConfig) {
+        this.loggerName = loggerName ?? this.constructor.name;
+        this.aftCfg = aftCfg ?? aftConfig;
+    }
+
     /**
      * allows for filtering out of erroneous information from logs by assigning
      * values to different types of logging. the purpose of each log level is
@@ -44,24 +54,19 @@ export class AftLogger {
         return this.aftCfg.logLevel ?? 'warn';
     }
 
-    constructor(aftCfg?: AftConfig) {
-        this.aftCfg = aftCfg ?? aftConfig;
-    }
-
     /**
      * function will check that the `level` is greater or equal to the current configured `logLevel`
-     * and if it is, will send the `name`, `level` and `message` to the console. if any `data`
-     * is included it will be converted to a string using `JSON.stringify(...)` and appended
-     * to the `message`
+     * and if it is, will send the `name`, `level` and `message` to the console. if the `args` array
+     * is included and has a length greater than 0 each item will be converted to a string using
+     * `JSON.stringify(...)` and appended to the `message`
      * @param data a `LogMessageData` object containing details of the log message, level, name
      * and any additional arguments to be logged
      */
     log(data: LogMessageData): void {
         if (data?.level !== 'none'
-            && LogLevel.toValue(data?.level) >= LogLevel.toValue(this.logLevel)
-            && data?.message) {
-                const out: string = this.format(data);
-                this.toConsole(data.level, out);
+            && LogLevel.toValue(data?.level) >= LogLevel.toValue(this.logLevel)) {
+            const out: string = this.format(data);
+            this.toConsole(data.level, out);
         }
     }
 
@@ -73,7 +78,7 @@ export class AftLogger {
      */
     format(data: LogMessageData) {
         data ??= {} as LogMessageData;
-        data.name ??= 'AFT';
+        data.name ??= this.loggerName;
         data.message ??= '';
         data.level ??= 'none';
         const d: string = new Date().toLocaleTimeString();

@@ -1,6 +1,6 @@
 {
   "name": "aft-jasmine-reporter",
-  "version": "10.3.0",
+  "version": "11.0.0",
   "description": "Automated Functional Testing (AFT) Reporter for use with Jasmine Test Framework",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-core": "^10.3.0",
+    "aft-core": "^11.0.0",
     "jasmine": "^5.1.0"
   },
   "devDependencies": {
@@ -39,8 +39,8 @@
     "@types/node": "^20.11.30",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
-    "aft-reporting-filesystem": "^10.3.0",
-    "aft-reporting-html": "^10.3.0",
+    "aft-reporting-filesystem": "^11.0.0",
+    "aft-reporting-html": "^11.0.0",
     "eslint": "^8.57.0",
     "nyc": "^15.1.0",
     "rimraf": "^5.0.1",

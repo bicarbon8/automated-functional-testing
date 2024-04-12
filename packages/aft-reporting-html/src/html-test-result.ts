@@ -1,5 +1,5 @@
-export type HtmlTestResult = {
-    testId?: string;
-    status: string;
+import { TestResult } from "aft-core";
+
+export type HtmlTestResult = TestResult & {
     logs: string[];
 };

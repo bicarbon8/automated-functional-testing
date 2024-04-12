@@ -1,11 +1,12 @@
-import process = require('process');
-import * as fs from 'fs';
-import * as path from 'path';
+import * as process from 'node:process';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { convert } from '../helpers/convert';
 import { Plugin } from './plugin'; // eslint-disable-line no-redeclare
 import { AftConfig, aftConfig } from '../configuration/aft-config';
 import { Class } from '../helpers/custom-types';
-import { havingProps } from '../verification/verifier-matcher';
+import { havingProps } from '../verification/verify-matcher';
+import { PluginLocator } from './plugin-locator';
 
 class PluginLoader {
     private readonly _pluginsMap: Map<string, Plugin>;
@@ -19,11 +20,20 @@ class PluginLoader {
     private _load(aftCfg?: AftConfig): void {
         if (!this._loaded) {
             aftCfg ??= aftConfig;
-            for (var pname of aftCfg.pluginNames ?? []) {
-                let searchDir: string = (path.isAbsolute(aftCfg.pluginsSearchDir ?? ".")) 
-                    ? aftCfg.pluginsSearchDir : path.join(process.cwd(), aftCfg.pluginsSearchDir);
-                if (!this._pluginsMap.has(pname)) {
-                    this._findAndInstantiatePlugin(pname, searchDir, aftCfg);
+            for (const pname of aftCfg.plugins ?? []) {
+                let locator: PluginLocator = {name: '', searchDir: process.cwd()};
+                if (typeof pname === 'string') {
+                    locator.name = pname;
+                } else {
+                    locator = {
+                        ...locator,
+                        ...pname
+                    }
+                }
+                const searchDir: string = (path.isAbsolute(locator.searchDir ?? ".")) 
+                    ? locator.searchDir : path.join(process.cwd(), locator.searchDir);
+                if (!this._pluginsMap.has(locator.name)) {
+                    this._findAndInstantiatePlugin(locator.name, searchDir, aftCfg);
                 }
             }
             this._loaded = true;
@@ -31,7 +41,7 @@ class PluginLoader {
     }
 
     /**
-     * iterates over all plugins listed in `AftConfig.pluginNames` looking for any that 
+     * iterates over all plugins listed in `AftConfig.plugins` looking for any that 
      * extend the passed in `clazz` and returns those that do as an array of objects.
      * ex: 
      * ```typescript
@@ -51,9 +61,9 @@ class PluginLoader {
         this._load(aftCfg);
         const plugins = new Array<T>();
         const classInst = new clazz();
-        for (var pKey of this._pluginsMap.keys()) {
-            let plugin = this._pluginsMap.get(pKey);
-            let isMatch = havingProps(classInst, 1).setActual(plugin).compare();
+        for (const pKey of this._pluginsMap.keys()) {
+            const plugin = this._pluginsMap.get(pKey);
+            const isMatch = havingProps(classInst, 1).setActual(plugin).compare();
             if (isMatch) {
                 plugins.push(plugin as T);
             }
@@ -62,11 +72,34 @@ class PluginLoader {
     }
 
     /**
+     * iterates over all plugins listed in `AftConfig.plugins` looking for any that 
+     * extend the passed in `clazz` and are enabled and returns those that do as an
+     * array of objects.
+     * ex: 
+     * ```typescript
+     * const reportingPlugins = pluginloader.getEnabledPluginsByType(ReportingPlugin);
+     * // ReportingPlugins will all extend from ReportingPlugin base class and be enabled
+     * ```
+     * 
+     * NOTE: if this is the first time the `pluginloader` is being called then plugins will
+     * also be loaded
+     * @param clazz a `Class<T: Plugin>` base class like `ReportingPlugin` that must be extended
+     * by any of the objects returned by this call
+     * @param aftCfg an optional `AftConfig` instance to use when loading plugins if not
+     * already loaded
+     * @returns an array of plugin objects that all extend the passed in `clazz` class
+     */
+    getEnabledPluginsByType<T extends Plugin>(clazz: Class<T>, aftCfg?: AftConfig): Array<T> {
+        const plugins: Array<T> = this.getPluginsByType<T>(clazz, aftCfg);
+        return plugins.filter(e => e?.enabled);
+    }
+
+    /**
      * returns a plugin by it's name
      * ex: 
      * ```typescript
-     * let TestExecutionPolicyPlugin = pluginloader.getPluginByName<TestRailTestExecutionPolicyPlugin>('testrail-test-execution-policy-plugin');
-     * // TestExecutionPolicyPlugin will be `undefined` if not found
+     * let PolicyPlugin = pluginloader.getPluginByName<TestRailPolicyPlugin>('testrail-policy-plugin');
+     * // PolicyPlugin will be `undefined` if not found
      * ```
      * 
      * NOTE: if this is the first time the `pluginloader` is being called then plugins will
@@ -111,10 +144,9 @@ class PluginLoader {
         if (plugin) {
             try {
                 let constructorName: string;
-                let keys: string[] = Object.keys(plugin);
+                const keys: string[] = Object.keys(plugin);
                 const name = convert.toSafeString(pluginName, [{exclude: /[-_.\s\d]/gi, replaceWith: ''}]);
-                for (var i=0; i<keys.length; i++) {
-                    let key: string = keys[i];
+                for (const key of keys) {
                     if (name.toLowerCase() == key.toLowerCase()) {
                         constructorName = key;
                         break;
@@ -135,12 +167,11 @@ class PluginLoader {
         try {
             const filesOrDirectories: string[] = fs.readdirSync(dir);
             if (filesOrDirectories) {
-                for (var i=0; i<filesOrDirectories.length; i++) {
-                    let fileOrDirectory: string = filesOrDirectories[i];
-                    let fileAndPath: string = path.join(dir, fileOrDirectory);
-                    let isDir: boolean = this._isDir(fileAndPath);
+                for (const fileOrDirectory of filesOrDirectories) {
+                    const fileAndPath: string = path.join(dir, fileOrDirectory);
+                    const isDir: boolean = this._isDir(fileAndPath);
                     if (isDir) {
-                        let found: string = this._findPlugin(fileAndPath, name);
+                        const found: string = this._findPlugin(fileAndPath, name);
                         if (found) {
                             filePath = found;
                         }
@@ -152,7 +183,7 @@ class PluginLoader {
                     }
                 }
             } else {
-                throw `no files found at path: '${dir}'`;
+                throw new Error(`no files found at path: '${dir}'`);
             }
         } catch (e) {
             /* ignore */
@@ -178,21 +209,20 @@ class PluginLoader {
  * ```json
  * // aftconfig.json
  * {
- *   "pluginsSearchDir": "../",
- *   "pluginNames": [
+ *   "plugins": [
  *     "testrail-reporting-plugin",
- *     "testrail-test-execution-policy-plugin"
- *     "html-reporting-plugin"
+ *     {"name": "html-reporting-plugin", "searchDir": "../"}
  *   ]
  * }
  * ```
  * 
- * **NOTE:** the above will attempt to load a `testrail-reporting-plugin`,
- * `testrail-test-execution-policy-plugin` and `html-reporting-plugin` class. if loading
- * fails then it will search the filesystem, starting at the relative
- * `pluginsSearchDir` path (relative to current nodejs execution dir)
- * and searching all subdirectories, for a file named `custom-plugin.js` 
- * which, if found, will be imported and a new instance will be created 
- * and added to the internal cache and the array to be returned
+ * **NOTE:** the above will attempt to load a `TestRailReportingPlugin`,
+ * and `HtmlReportingPlugin` class. if loading fails then it will search
+ * the filesystem, starting at the current NodeJs execution directory
+ * and searching all subdirectories for a file named `testrail-reporting-plugin.js`
+ * and starting at the parent of the current NodeJs execution directory
+ * for a file named `html-reporting-plugin.js` which, if either is found,
+ * will be imported and a new instance will be created and added to the
+ * internal cache and the array to be returned
  */
 export const pluginLoader = new PluginLoader();

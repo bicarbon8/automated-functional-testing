@@ -19,7 +19,7 @@ describe('UiSessionGeneratorManager', () => {
 
     it('will get only specified plugin for use', async () => {
         const aftCfg = new AftConfig({
-            pluginNames: [
+            plugins: [
                 'fake-session-generator-plugin-throws',
                 'fake-session-generator-plugin'
             ],
@@ -30,16 +30,14 @@ describe('UiSessionGeneratorManager', () => {
         const manager = new UiSessionGeneratorManager(aftCfg);
 
         expect(manager).toBeDefined();
-        expect(manager.plugins.length).toBe(2);
-        const enabled: Array<UiSessionGeneratorPlugin> = manager.plugins.filter(p => p.enabled);
-        expect(enabled.length).toBe(1);
-        expect(enabled[0].constructor.name).toEqual(FakeSessionGeneratorPlugin.name);
+        expect(manager.plugins.length).toBe(1); // only enabled plugins
+        expect(manager.plugins[0].constructor.name).toEqual(FakeSessionGeneratorPlugin.name);
         expect(await manager.getSession()).not.toBeNull();
     });
 
     it('rejects with error if plugin unable to getSession', async () => {
         const aftCfg = new AftConfig({
-            pluginNames: ['fake-session-generator-plugin-throws'],
+            plugins: ['fake-session-generator-plugin-throws'],
             UiSessionConfig: {
                 generatorName: 'fake-session-generator-plugin-throws'
             }

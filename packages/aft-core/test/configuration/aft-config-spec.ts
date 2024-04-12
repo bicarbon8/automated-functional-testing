@@ -1,4 +1,4 @@
-import { AftConfig, Reporter, rand } from "../../src"
+import { AftConfig, LogLevel, ReportingManager, rand } from "../../src"
 
 describe('AftConfig', () => {
     class FakeSectionConfig {
@@ -9,9 +9,9 @@ describe('AftConfig', () => {
     };
 
     it('can use a Class type to get an existing section from aftconfig', () => {
-        let randomEnvVarKey = rand.getString(12);
+        const randomEnvVarKey = rand.getString(12);
         process.env[randomEnvVarKey] = rand.getString(15);
-        let aftcfg = new AftConfig({
+        const aftcfg = new AftConfig({
             FakeSectionConfig: {
                 option1: 1,
                 option2: true,
@@ -19,7 +19,7 @@ describe('AftConfig', () => {
             }
         });
 
-        let actual = aftcfg.getSection(FakeSectionConfig);
+        const actual = aftcfg.getSection(FakeSectionConfig);
         expect(actual).not.toBeNull();
         expect(actual.option1).toEqual(1);
         expect(actual.option2).toEqual(true);
@@ -27,10 +27,10 @@ describe('AftConfig', () => {
     })
 
     it('can use a Class type to create a non-existing section from aftconfig', () => {
-        let aftcfg = new AftConfig({});
+        const aftcfg = new AftConfig({});
 
-        let expected = new FakeSectionConfig();
-        let actual = aftcfg.getSection(FakeSectionConfig);
+        const expected = new FakeSectionConfig();
+        const actual = aftcfg.getSection(FakeSectionConfig);
         expect(actual).not.toBeNull();
         expect(actual.option1).toEqual(expected.option1);
         expect(actual.option2).toEqual(expected.option2);
@@ -41,7 +41,11 @@ describe('AftConfig', () => {
         const aftcfg = new AftConfig();
 
         expect(aftcfg.logLevel).toEqual('none');
-        expect(aftcfg.pluginNames.length).toBe(0);
-        expect(aftcfg.getSection(Reporter).logLevel).toEqual('none');
+        expect(aftcfg.plugins.length).toBe(0);
+        expect(aftcfg.getSection(ReporterConfig).logLevel).toEqual('none');
     })
 })
+
+class ReporterConfig {
+    logLevel: LogLevel = 'warn';
+}

@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { rand, TestResult, ellide, Reporter, AftConfig, pluginLoader } from "aft-core";
+import { rand, TestResult, ellide, ReportingManager, AftConfig, pluginLoader } from "aft-core";
 import { TestRailApi } from "../../src/api/testrail-api";
 import { httpService } from "aft-web-services";
 import { TestRailPlan, TestRailResult, TestRailResultRequest, TestRailTest } from "../../src/api/testrail-custom-types";
@@ -142,11 +142,11 @@ describe('TestRailReportingPlugin', () => {
         expect(fs.existsSync(sharedCacheFile)).toBeTrue();
     });
 
-    it('can be loaded by the Reporter', async () => {
+    it('can be loaded by the ReportingManager', async () => {
         const aftCfg = new AftConfig({
-            pluginNames: ['testrail-reporting-plugin']
+            plugins: ['testrail-reporting-plugin']
         });
-        const mgr: Reporter = new Reporter('can be loaded by the Reporter', aftCfg);
+        const mgr: ReportingManager = new ReportingManager('can be loaded by the ReportingManager', aftCfg);
         const plugin = mgr.plugins[0];
 
         expect(plugin).toBeDefined();

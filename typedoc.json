@@ -1,0 +1,6 @@
+{
+    "entryPoints": ["packages/**/src/index.ts"],
+    "name": "Automated Functional Testing",
+    "entryPointStrategy": "resolve",
+    "out": "./docs"
+}

@@ -5,8 +5,7 @@ import { CommonActions } from "../helpers/common-actions";
 
 /**
  * this plugin uses the following configuration to control its operation via
- * `aftconfig.json` and if the `logLevel` is unset it will be set from the value 
- * in `ReporterConfig` before falling back to a value of `warn`
+ * `aftconfig.json`
  * ```json
  * {
  *     "JiraConfig": {
@@ -58,7 +57,10 @@ export class JiraReportingPlugin extends ReportingPlugin {
             if (logs.length > 0) {
                 logs += '\n'; // separate new logs from previous
             }
-            const dataStr: string = (data?.length) ? `, [${data.map(d => Err.handle(() => JSON.stringify(d))).join('')}]` : '';
+            const dataStr: string = (data?.length) ? `, [${data.map(d => {
+                const dHandled = Err.handle(() => JSON.stringify(d));
+                return dHandled.result ?? dHandled.message;
+            }).join('')}]` : '';
             logs += `${message}${dataStr}`;
             this.logs(name, logs);
         }
