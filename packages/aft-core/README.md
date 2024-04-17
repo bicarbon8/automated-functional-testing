@@ -172,9 +172,9 @@ export class TestRailPolicyPlugin extends PolicyPlugin {
 
 ## Integration with javascript test frameworks
 the `aft-core` package comes with an `AftTest` class which can be extended from to allow near seamless integration of AFT's reporting and test execution flow control features. AFT already has packages for integration with a few of the major test frameworks such as Jasmine, Mocha and Jest and these can be used as examples for implementing your own as needed if you are using some other test framework _(NOTE: the Mocha integration also works with Cypress)_. 
-- `aft-jasmine-reporter`: [aft-test](../aft-jasmine-reporter/README.md#aftjasminetest)
-- `aft-mocha-reporter`: [aft-test](../aft-mocha-reporter/README.md#aftmochatest)
-- `aft-jest-reporter`: [aft-test](../aft-jest-reporter/README.md#aftjesttest)
+- `aft-jasmine-reporter`: [aft-jasmine-test](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-jasmine-reporter/README.md#aftjasminetest)
+- `aft-mocha-reporter`: [aft-mocha-test](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-mocha-reporter/README.md#aftmochatest)
+- `aft-jest-reporter`: [aft-jest-test](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-jest-reporter/README.md#aftjesttest)
 
 ## Testing with AftTest
 the `AftTest` class and `AftTest.verify` functions of `aft-core` enable testing with pre-execution filtering based on integration with external test execution policy managers via plugin packages extending the `PolicyPlugin` class (see examples above).

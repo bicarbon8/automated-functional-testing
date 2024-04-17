@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
-import { flockSync } from "fs-ext";
+import { safeFlock } from "./safe-flock";
 import { convert } from "./convert";
 import { ellide } from "./ellide";
 import { AftConfig, aftConfig } from "../configuration/aft-config";
@@ -51,7 +51,7 @@ export class ExpiringFileLock {
         this.waitDuration = Math.abs(this.aftCfg.fileLockMaxWait ?? 10000); // ensure positive value; defaults to 10 s
         this.lockName = path.join(os.tmpdir(), ellide(convert.toSafeString(lockFileName), 255, 'beginning', ''));
         this._lockFileDescriptor = this._waitForLock();
-        this._timeout = setTimeout(() => flockSync(this._lockFileDescriptor, 'un'), this.lockDuration); // eslint-disable-line no-undef
+        this._timeout = setTimeout(() => safeFlock.get(this._lockFileDescriptor, 'un'), this.lockDuration); // eslint-disable-line no-undef
     }
 
     /**
@@ -60,7 +60,7 @@ export class ExpiringFileLock {
      */
     unlock(): void {
         clearTimeout(this._timeout); // eslint-disable-line no-undef
-        flockSync(this._lockFileDescriptor, 'un');
+        safeFlock.get(this._lockFileDescriptor, 'un');
     }
 
     private _waitForLock(): number {
@@ -77,7 +77,7 @@ export class ExpiringFileLock {
             }
             if (lockFileDescriptor) {
                 try {
-                    flockSync(lockFileDescriptor, 'ex');
+                    safeFlock.get(lockFileDescriptor, 'ex');
                     haveLock = true;
                 } catch (e) {
                     /* ignore */
