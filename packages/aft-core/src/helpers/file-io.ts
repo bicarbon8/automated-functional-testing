@@ -77,7 +77,7 @@ export class FileIO {
             file = fs.realpathSync(path.join(process.cwd(), file));
         }
         if (fs.statSync(file).isDirectory()) {
-            throw `[fileio.readAs<T>] expected filename but received directory instead: ${file}`;
+            throw new Error(`[fileio.readAs<T>] expected filename but received directory instead: ${file}`);
         }
         const fd: number = fs.openSync(file, 'rs+');
         let fileContents: string;
