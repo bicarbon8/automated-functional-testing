@@ -32,12 +32,10 @@
   "dependencies": {
     "colors": "^1.4.0",
     "dotenv": "^16.4.5",
-    "fs-ext": "^2.0.0",
     "lodash": "^4.17.21",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@types/fs-ext": "^2.0.3",
     "@types/jasmine": "^4.6.4",
     "@types/node": "^20.11.30",
     "@types/uuid": "^9.0.8",

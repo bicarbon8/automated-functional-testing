@@ -68,6 +68,10 @@ export class ReportingManager {
 
     /**
      * calls the `log` function with a `LogLevel` of `trace`
+     * 
+     * **NOTE**
+     * > this is typically reserved for AFT internal systems and will
+     * result in much more verbose logs if enabled
      * @param message the message to be logged
      */
     async trace(message: string, ...data: Array<any>): Promise<void> {

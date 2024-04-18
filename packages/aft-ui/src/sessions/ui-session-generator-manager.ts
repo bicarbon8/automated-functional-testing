@@ -52,7 +52,7 @@ export class UiSessionGeneratorManager {
             const plugin = this.plugins.find(p => p); // get ONLY first result
             aftLogger.log({
                 name: this.constructor.name,
-                level: 'debug',
+                level: 'trace',
                 message: `using plugin: '${plugin.constructor.name}' to generate new UI session using options: ${JSON.stringify(sessionOptions)}`
             });
             return await plugin.getSession(sessionOptions);

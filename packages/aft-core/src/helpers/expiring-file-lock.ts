@@ -51,7 +51,7 @@ export class ExpiringFileLock {
         this.lockDuration = Math.abs(this.aftCfg.fileLockMaxHold ?? 10000); // ensure positive value; defaults to 10 s
         this.waitDuration = Math.abs(this.aftCfg.fileLockMaxWait ?? 10000); // ensure positive value; defaults to 10 s
         this.lockName = path.join(os.tmpdir(), ellide(convert.toSafeString(lockFileName), 255, 'beginning', ''));
-        this._safeFlock = new SafeFlock(this.lockName);
+        this._safeFlock = new SafeFlock(this.lockName, this.aftCfg);
         this._waitForLock();
     }
 
@@ -61,7 +61,8 @@ export class ExpiringFileLock {
      */
     unlock(): void {
         try {
-            this._safeFlock.unlock();
+            // runs async
+            this._safeFlock.unlock(); // eslint-disable-line
         } catch {
             /* ignore */
         }
@@ -80,9 +81,10 @@ export class ExpiringFileLock {
         let haveLock = false;
         while (haveLock !== true && convert.toElapsedMs(startTime) < this.waitDuration) {
             try {
-                this._safeFlock.lock();
-                haveLock = true;
-                this._timeout = setTimeout(() => this.unlock(), this.lockDuration); // eslint-disable-line no-undef
+                haveLock = this._safeFlock.lock().locked;
+                if (haveLock) {
+                    this._timeout = setTimeout(() => this.unlock(), this.lockDuration); // eslint-disable-line no-undef
+                }
             } catch (e) {
                 err = e;
             }
@@ -93,12 +95,12 @@ export class ExpiringFileLock {
     }
 
     /**
-     * creates a new {ExpiringFileLock} that can be used to ensure separate processes cannot cause
+     * creates a new `ExpiringFileLock` that can be used to ensure separate processes cannot cause
      * a race condition when accessing a shared resource
      * @param name the name of the lock file
      * @param wait the number of milliseconds to wait for a lock to be acquired
      * @param hold the number of milliseconds that a lock can be held before it automatically releases
-     * @returns an {ExpiringFileLock} instance
+     * @returns an `ExpiringFileLock` instance
      */
     static get(name: string, wait?: number, hold?: number): ExpiringFileLock {
         const aftCfg = new AftConfig();

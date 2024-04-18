@@ -28,11 +28,11 @@ export class GridSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
                     .build();
                 const handledTime = await Err.handleAsync(() => driver.manage().setTimeouts({implicit: gso.implicitTimeoutMs ?? 1000}));
                 if (handledTime.message) {
-                    await this.reporter.debug(handledTime.message);
+                    await this.reporter.trace(handledTime.message);
                 }
                 const handledMax = await Err.handleAsync(() => driver.manage().window().maximize());
                 if (handledMax.message) {
-                    await this.reporter.debug(handledMax.message);
+                    await this.reporter.trace(handledMax.message);
                 }
             } catch (e) {
                 await this.reporter.warn(`error in creating WebDriver due to: ${Err.full(e)}`);
