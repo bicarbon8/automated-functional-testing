@@ -6,5 +6,8 @@ export default defineConfig({
     testTimeout: 10000,
     reporters: ['default', './dist/src/aft-vitest-reporter.js'],
     environment: 'node',
+    coverage: {
+        provider: 'istanbul'
+    },
   }
 });

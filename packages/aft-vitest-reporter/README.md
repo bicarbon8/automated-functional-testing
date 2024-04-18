@@ -58,3 +58,4 @@ which would output the following to your console and any AFT `ReportingPlugin` i
 ## NOTES
 - the `AftVitestTest` constructors expects to be passed a valid `scope` containing reference to the currently executing `Vitest.Test`. typically this will be an object passed in to your `test` or `it` function within your Spec
 - this Vitest `Reporter` works in both parallel and sequential execution modes, but you **MUST ALWAYS** pass a context to your `it` or `test` function if you are using `AftVitestTest` class within your Spec
+- the `aft-vitest-reporter` Vitest Reporter can be used when testing with an environment of `node` or `jsdom` or any of the supported Vitest environment config values, but the `AftVitestTest` class and `aftVitestTest` function can only be used with your environment set to `node` via your `vitest.config.mjs` file
