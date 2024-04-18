@@ -6,7 +6,7 @@ export class WebdriverIoSession extends UiSession {
         await super.dispose(error);
         const handled = await Err.handleAsync(() => this.driver<WebdriverIO.Browser>().then(d => d.deleteSession())); // eslint-disable-line no-undef
         if (handled.message) {
-            await this.reporter.debug(handled.message);
+            await this.reporter.trace(handled.message);
         }
     }
 }

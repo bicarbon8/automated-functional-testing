@@ -311,7 +311,7 @@ export class AftTest {
         try {
             await this._started();
             const shouldRun = await this.shouldRun();
-            await this.reporter.debug(`${this.constructor.name}.shouldRun response:`, shouldRun);
+            await this.reporter.trace(`${this.constructor.name}.shouldRun response:`, shouldRun);
             if (shouldRun.result === true) {
                 await this._testFunction(this);
                 if (this.status === 'failed') {
@@ -364,14 +364,14 @@ export class AftTest {
     }
 
     protected async _started(): Promise<void> {
-        await this.reporter.debug('test starting...');
+        await this.reporter.trace('test starting...');
         this._startTime = new Date().getTime();
         const startedActions: Array<AftTestFunction> = this._options.onEventsMap.get('started');
         await this._runEventActions(startedActions);
     }
 
     protected async _done(): Promise<void> {
-        await this.reporter.debug('test complete');
+        await this.reporter.trace('test complete');
         this._endTime = new Date().getTime();
         const doneActions: Array<AftTestFunction> = this._options.onEventsMap.get('done');
         await this._runEventActions(doneActions);

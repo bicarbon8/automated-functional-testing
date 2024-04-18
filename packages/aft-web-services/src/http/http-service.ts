@@ -98,7 +98,7 @@ export class HttpService {
             } else {
                 aftLogger.log({
                     name: this.constructor.name,
-                    level: 'debug',
+                    level: 'trace',
                     message: logMessage
                 });
             }
@@ -112,7 +112,7 @@ export class HttpService {
             } else {
                 aftLogger.log({
                     name: this.constructor.name,
-                    level: 'debug',
+                    level: 'trace',
                     message: logMessage
                 });
             }

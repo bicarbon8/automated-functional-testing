@@ -36,7 +36,7 @@ export class JiraPolicyPlugin extends PolicyPlugin {
         if (this.enabled) {
             const openIssues: Array<JiraIssue> = await this._getIssuesReferencingTestIds(testId);
             this.aftLogger.log({
-                level: 'debug',
+                level: 'trace',
                 message: `found ${openIssues.length} open Jira issues for ${testId}: [${openIssues.map(i => i?.key).join(',')}]`,
                 name: this.constructor.name
             });

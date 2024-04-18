@@ -5,7 +5,7 @@ export type LogLevel = typeof levels[number];
  * allows for filtering out of erroneous information from logs by assigning
  * values to different types of logging. the purpose of each log level is
  * as follows:
- * - `trace` - used when logging low-level debug events that occur within a loop
+ * - `trace` - used by AFT internal systems or debug events that would be very chatty (for ex: occur within a loop)
  * - `debug` - used for debug logging that does not run within a loop or at a high frequency
  * - `info` - used for informational events providing current state of a system
  * - `step` - used within a test to denote where within the test steps we are

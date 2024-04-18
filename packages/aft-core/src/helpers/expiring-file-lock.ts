@@ -1,10 +1,10 @@
-import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
-import { flockSync } from "fs-ext";
+import { SafeFlock } from "./safe-flock";
 import { convert } from "./convert";
 import { ellide } from "./ellide";
 import { AftConfig, aftConfig } from "../configuration/aft-config";
+import { Err } from "./err";
 
 /**
  * class will create a new (or use existing) lockfile locking 
@@ -18,8 +18,8 @@ import { AftConfig, aftConfig } from "../configuration/aft-config";
  * ```json
  * // aftconfig.json
  * {
- *     fileLockMaxWait: 10000,
- *     fileLockMaxHold: 5000
+ *     "fileLockMaxWait": 10000,
+ *     "fileLockMaxHold": 5000
  * }
  * ```
  * ```typescript
@@ -39,9 +39,10 @@ export class ExpiringFileLock {
     public readonly lockDuration: number;
     public readonly waitDuration: number;
 
-    private readonly _lockFileDescriptor: number;
-    private readonly _timeout: NodeJS.Timeout; // eslint-disable-line no-undef
-    
+    private readonly _safeFlock: SafeFlock;
+
+    private _timeout: NodeJS.Timeout; // eslint-disable-line no-undef
+
     constructor(lockFileName: string, aftCfg?: AftConfig) {
         if (!lockFileName) {
             throw new Error(`[${this.constructor.name}] - lockFileName must be set`);
@@ -50,8 +51,8 @@ export class ExpiringFileLock {
         this.lockDuration = Math.abs(this.aftCfg.fileLockMaxHold ?? 10000); // ensure positive value; defaults to 10 s
         this.waitDuration = Math.abs(this.aftCfg.fileLockMaxWait ?? 10000); // ensure positive value; defaults to 10 s
         this.lockName = path.join(os.tmpdir(), ellide(convert.toSafeString(lockFileName), 255, 'beginning', ''));
-        this._lockFileDescriptor = this._waitForLock();
-        this._timeout = setTimeout(() => flockSync(this._lockFileDescriptor, 'un'), this.lockDuration); // eslint-disable-line no-undef
+        this._safeFlock = new SafeFlock(this.lockName, this.aftCfg);
+        this._waitForLock();
     }
 
     /**
@@ -59,44 +60,47 @@ export class ExpiringFileLock {
      * timer
      */
     unlock(): void {
-        clearTimeout(this._timeout); // eslint-disable-line no-undef
-        flockSync(this._lockFileDescriptor, 'un');
+        try {
+            // runs async
+            this._safeFlock.unlock(); // eslint-disable-line
+        } catch {
+            /* ignore */
+        }
+        if (this._timeout) {
+            try {
+                clearTimeout(this._timeout); // eslint-disable-line no-undef
+            } catch {
+                /* ignore */
+            }
+        }
     }
 
-    private _waitForLock(): number {
-        const startTime: number = new Date().getTime();
-        let haveLock: boolean = false;
-        let lockFileDescriptor: number;
-        while (!haveLock && convert.toElapsedMs(startTime) < this.waitDuration) {
-            if (!lockFileDescriptor) {
-                try {
-                    lockFileDescriptor = fs.openSync(this.lockName, 'w');
-                } catch (e) {
-                    /* ignore */
+    private _waitForLock(): void {
+        const startTime: number = Date.now();
+        let err: Error;
+        let haveLock = false;
+        while (haveLock !== true && convert.toElapsedMs(startTime) < this.waitDuration) {
+            try {
+                haveLock = this._safeFlock.lock().locked;
+                if (haveLock) {
+                    this._timeout = setTimeout(() => this.unlock(), this.lockDuration); // eslint-disable-line no-undef
                 }
-            }
-            if (lockFileDescriptor) {
-                try {
-                    flockSync(lockFileDescriptor, 'ex');
-                    haveLock = true;
-                } catch (e) {
-                    /* ignore */
-                }
+            } catch (e) {
+                err = e;
             }
         }
-        if (!lockFileDescriptor) {
-            throw new Error(`unable to acquire lock on '${this.lockName}' within '${this.waitDuration}ms'`);
+        if (haveLock !== true) {
+            throw new Error(`unable to acquire lock on '${this.lockName}' within '${this.waitDuration}ms' due to: ${Err.full(err)}`);
         }
-        return lockFileDescriptor;
     }
 
     /**
-     * creates a new {ExpiringFileLock} that can be used to ensure separate processes cannot cause
+     * creates a new `ExpiringFileLock` that can be used to ensure separate processes cannot cause
      * a race condition when accessing a shared resource
      * @param name the name of the lock file
      * @param wait the number of milliseconds to wait for a lock to be acquired
      * @param hold the number of milliseconds that a lock can be held before it automatically releases
-     * @returns an {ExpiringFileLock} instance
+     * @returns an `ExpiringFileLock` instance
      */
     static get(name: string, wait?: number, hold?: number): ExpiringFileLock {
         const aftCfg = new AftConfig();

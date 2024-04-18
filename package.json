@@ -25,6 +25,7 @@
     "test:mocha": "npm run test --workspace=aft-mocha-reporter",
     "test:jasmine": "npm run test --workspace=aft-jasmine-reporter",
     "test:jest": "npm run test --workspace=aft-jest-reporter",
+    "test:vitest": "npm run test --workspace=aft-vitest-reporter",
     "docs": "npm run build && typedoc",
     "circular": "npx dpdm -T --warning false **/index.ts"
   },

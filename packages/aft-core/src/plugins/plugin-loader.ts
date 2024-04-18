@@ -147,7 +147,7 @@ class PluginLoader {
                 const keys: string[] = Object.keys(plugin);
                 const name = convert.toSafeString(pluginName, [{exclude: /[-_.\s\d]/gi, replaceWith: ''}]);
                 for (const key of keys) {
-                    if (name.toLowerCase() == key.toLowerCase()) {
+                    if (name.toLowerCase() === key.toLowerCase()) {
                         constructorName = key;
                         break;
                     }

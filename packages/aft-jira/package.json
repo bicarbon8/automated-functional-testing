@@ -1,6 +1,6 @@
 {
   "name": "aft-jira",
-  "version": "11.0.0",
+  "version": "11.1.0",
   "description": "Automated Functional Testing (AFT) package supporting Jira integration for test execution control and logging",
   "repository": {
     "type": "git",
@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-web-services": "^11.0.0"
+    "aft-web-services": "^11.1.0"
   },
   "devDependencies": {
     "@types/jasmine": "^4.6.4",

@@ -86,7 +86,7 @@ export class JiraReportingPlugin extends ReportingPlugin {
         if (openIssues?.length) {
             this.aftLogger.log({
                 name: this.constructor.name,
-                level: 'debug',
+                level: 'trace',
                 message: `adding comment to Jira issues: [${openIssues.map(i => i?.key).join(',')}] because test '${result.testId}' is still failing...`
             });
             // update comments to indicate the issue still exists
@@ -96,7 +96,7 @@ export class JiraReportingPlugin extends ReportingPlugin {
         } else {
             this.aftLogger.log({
                 name: this.constructor.name,
-                level: 'debug',
+                level: 'trace',
                 message: `creating new Jira issue because test '${result.testId}' failed...`
             });
             // create a new defect
@@ -108,7 +108,7 @@ export class JiraReportingPlugin extends ReportingPlugin {
         const openIssues = await CommonActions.getOpenIssuesReferencingTestId(result.testId, this._api);
         this.aftLogger.log({
             name: this.constructor.name,
-            level: 'debug',
+            level: 'trace',
             message: `closing the following Jira issues due to passing test '${result.testId}': [${openIssues.map(i => i?.key).join(',')}]...`
         });
         for (const issue of openIssues) {

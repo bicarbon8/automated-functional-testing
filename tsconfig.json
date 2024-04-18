@@ -17,6 +17,7 @@
         { "path": "./packages/aft-ui" },
         { "path": "./packages/aft-ui-selenium" },
         { "path": "./packages/aft-ui-webdriverio" },
+        { "path": "./packages/aft-vitest-reporter" },
         { "path": "./packages/aft-web-services" }
     ],
     "files": []
