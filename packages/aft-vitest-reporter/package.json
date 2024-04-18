@@ -9,7 +9,7 @@
     "build": "npm run lint && npm run clean && tsc --build",
     "lint": "npx eslint --fix ./src --ext .ts",
     "test": "npm run build && npx vitest run",
-    "coverage": "npm run build && nyc npx vitest"
+    "coverage": "npm run build && nyc npx vitest run"
   },
   "repository": {
     "type": "git",

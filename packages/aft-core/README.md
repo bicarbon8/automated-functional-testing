@@ -175,6 +175,7 @@ the `aft-core` package comes with an `AftTest` class which can be extended from 
 - `aft-jasmine-reporter`: [aft-jasmine-test](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-jasmine-reporter/README.md#aftjasminetest)
 - `aft-mocha-reporter`: [aft-mocha-test](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-mocha-reporter/README.md#aftmochatest)
 - `aft-jest-reporter`: [aft-jest-test](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-jest-reporter/README.md#aftjesttest)
+- `aft-vitest-reporter`: [aft-vitest-test](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-vitest-reporter/README.md#aftvitesttest)
 
 ## Testing with AftTest
 the `AftTest` class and `AftTest.verify` functions of `aft-core` enable testing with pre-execution filtering based on integration with external test execution policy managers via plugin packages extending the `PolicyPlugin` class (see examples above).
@@ -188,6 +189,7 @@ describe('Sample Test', () => {
          * - for Jest use: `const aft = new AftJestTest(expect);`
          * - for Mocha use: `const aft = new AftMochaTest(this);`
          * - for Jasmine use: `const aft = new AftJasmineTest();`
+         * - for Vitest use: `const aft = new AftVitTestTest(ctx);`
          */
         await aftJasmineTest(async (t: AftJasmineTest) => {
             /**

@@ -99,6 +99,7 @@ await aftTest(description, (t: AftTest) => {
 - [`aft-ui`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-ui/README.md) - base library supporting development of UI testing packages
 - [`aft-ui-selenium`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-ui-selenium/README.md) - adds support for Selenium-based UI testing
 - [`aft-ui-webdriverio`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-ui-webdriverio/README.md) - adds support for WebdriverIO-based UI testing
+- [`aft-vittest-reporter`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-vitest-reporter/README.md) - provides Vitest Reporter plugin that integrates with AFT to simplify logging and test execution via AFT
 - [`aft-web-services`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-web-services/README.md) - adds support for testing REST-based services
 
 ## Plugins
