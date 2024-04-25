@@ -1,2 +1,2 @@
 export * from "./aft-jest-reporter";
-export * from "./aft-test";
+export * from "./aft-jest-test";

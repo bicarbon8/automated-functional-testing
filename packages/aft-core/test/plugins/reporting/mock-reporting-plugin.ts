@@ -2,7 +2,7 @@ import { ReportingPlugin, LogLevel, AftConfig, ReportingPluginConfig, TestResult
 
 export class MockReportingPluginConfig extends ReportingPluginConfig {
     mockConfigKey: string;
-};
+}
 
 export class MockReportingPlugin extends ReportingPlugin {
     public readonly results = new Array<TestResult>();
@@ -12,7 +12,7 @@ export class MockReportingPlugin extends ReportingPlugin {
     }
     constructor(aftCfg?: AftConfig) {
         super(aftCfg);
-        var cfg = this.aftCfg.getSection(MockReportingPluginConfig);
+        const cfg = this.aftCfg.getSection(MockReportingPluginConfig);
         this._level = cfg.logLevel ?? this.aftCfg.logLevel ?? 'warn';
     }
     override initialise = async (logName: string): Promise<void> => {

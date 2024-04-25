@@ -1,6 +1,6 @@
 {
     "reporter": "../../packages/aft-mocha-reporter/dist/src/aft-mocha-reporter.js",
-    "spec": "./**/*.spec.js",
+    "spec": "./dist/test/**/*.spec.js",
     "parallel": true,
     "jobs": 4,
     "timeout": 300000

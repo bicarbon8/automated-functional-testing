@@ -1,4 +1,4 @@
-import { Reporter } from "aft-core";
+import { ReportingManager } from "aft-core";
 import { IncomingHttpHeaders, OutgoingHttpHeaders } from "http";
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'UPDATE' | 'DELETE';
@@ -28,7 +28,7 @@ export type HttpRequest = {
     method?: HttpMethod;
     postData?: any;
     multipart?: boolean;
-    reporter?: Reporter;
+    reporter?: ReportingManager;
 };
 
 /**

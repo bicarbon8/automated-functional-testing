@@ -20,7 +20,7 @@ import { PluginConfig } from "aft-core";
  * - `openDefectOnFail` and `closeDefectOnPass` can be used to only create new
  * defects in certain environments or close defects following success in certain
  * environments
- * - if `policyEngineEnabled` is `true` then this `test-execution-policy` plugin
+ * - if `policyEngineEnabled` is `true` then this `policy` plugin
  * will be checked before tests are executed
  */
 export class JiraConfig extends PluginConfig {

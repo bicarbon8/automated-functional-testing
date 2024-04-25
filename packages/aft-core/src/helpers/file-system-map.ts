@@ -1,5 +1,5 @@
-import process = require("process");
-import * as path from "path";
+import * as process from 'node:process';
+import * as path from "node:path";
 import { convert } from "./convert";
 import { JsonKey, JsonValue } from "./custom-types";
 import { ExpiringFileLock } from "./expiring-file-lock";
@@ -18,8 +18,7 @@ import { AftConfig, aftConfig } from "../configuration/aft-config";
  * @param aftCfg an optional `AftConfig` instance that allows you to override any
  * `FileSystemMapConfig` loaded from `appsettings.json`
  */
-export class FileSystemMap<Tkey extends JsonKey, Tval extends JsonValue> implements Map<Tkey, Tval>
-{
+export class FileSystemMap<Tkey extends JsonKey, Tval extends JsonValue> implements Map<Tkey, Tval> {
     public readonly filename: string;
 
     private readonly _memoryMap: Map<Tkey, Tval>;
@@ -27,7 +26,7 @@ export class FileSystemMap<Tkey extends JsonKey, Tval extends JsonValue> impleme
 
     constructor(filename: string, entries?: readonly (readonly [Tkey, Tval])[] | null, aftCfg?: AftConfig) {
         if (!filename) {
-            throw `[${this.constructor.name}] filename argument must be defined'`;
+            throw new Error(`[${this.constructor.name}] filename argument must be defined'`);
         }
         this._aftCfg = aftCfg ?? aftConfig;
         this._memoryMap = new Map<Tkey, Tval>();
@@ -35,9 +34,10 @@ export class FileSystemMap<Tkey extends JsonKey, Tval extends JsonValue> impleme
         this.filename = path.join(process.cwd(), dir, `${convert.toSafeString(filename)}.json`);
         this._updateMemoryMap();
         if (entries?.length > 0) {
-            for (var i=0; i<entries.length; i++) {
-                let entry: readonly [Tkey, Tval] = entries[i];
-                this._memoryMap.set(entry?.[0], entry?.[1]);
+            for (const entry of entries) {
+                if (entry?.length && entry?.length === 2) {
+                    this._memoryMap.set(entry?.[0], entry?.[1]);
+                }
             }
             this._writeToFile();
         }
@@ -95,6 +95,25 @@ export class FileSystemMap<Tkey extends JsonKey, Tval extends JsonValue> impleme
     get [Symbol.toStringTag](): string {
         this._updateMemoryMap();
         return this._memoryMap[Symbol.toStringTag];
+    }
+
+    /**
+     * removes the file used to cache data on the
+     * filesystem
+     * @param filename the name of the file minus any suffix 
+     * to delete (i.e. `MyCacheFile` which equates to 
+     * `full/path/to/FileSystemMap/MyCacheFile.json`)
+     */
+    static removeCacheFile(filename: string, aftCfg?: AftConfig): void {
+        aftCfg ??= aftConfig
+        const dir = aftCfg.fsMapDirectory;
+        const fullpath = path.join(process.cwd(), dir, `${filename}.json`);
+        const lock: ExpiringFileLock = new ExpiringFileLock(fullpath);
+        try {
+            fileio.delete(fullpath);
+        } finally {
+            lock?.unlock();
+        }
     }
 
     private _writeToFile(): void {

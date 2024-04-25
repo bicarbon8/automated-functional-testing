@@ -8,20 +8,13 @@ import { UiSessionConfig } from "../configuration/ui-session-config";
  * and call it's `getSession` function
  * ```
  * {
- *   "pluginNames": [
- *     "grid-session-generator-plugin",
+ *   "plugins": [
+ *     {"name": "grid-session-generator-plugin", "searchDir": "./node_modules/"},
  *     "local-browser-session-generator-plugin"
  *   ]
  *   ...
  *   "UiSessionConfig": {
  *     "generatorName": "grid-session-generator-plugin",
- *     "uiplatform": {
- *       "os": "android",
- *       "osValue": "13",
- *       "browser": "chrome",
- *       "browserVersion": "112",
- *       "deviceName": "Samsung Galaxy S23"
- *     },
  *     "options": {
  *       "url": "https://hub-cloud.browserstack.com/wd/hub"
  *       "capabilities": {
@@ -44,22 +37,22 @@ export class UiSessionGeneratorManager {
 
     constructor(aftCfg?: AftConfig) {
         this.aftCfg = aftCfg ?? aftConfig;
-        this.plugins = pluginLoader.getPluginsByType(UiSessionGeneratorPlugin, this.aftCfg);
+        this.plugins = pluginLoader.getEnabledPluginsByType(UiSessionGeneratorPlugin, this.aftCfg);
     }
 
     /**
-     * instantiates a new Session using the `sessionGeneratorName` specified in 
-     * `UiSessionConfig`
+     * instantiates a new Session using the `UiSessionConfig.generatorName` specified in 
+     * `aftconfig.json`
      */
     async getSession(sessionOptions?: Record<string, any>): Promise<unknown> {
         const uic = this.aftCfg.getSection(UiSessionConfig);
         sessionOptions ??= {};
         sessionOptions = merge(uic.options, sessionOptions);
         try {
-            const plugin = this.plugins.find(p => Err.handle(() => p?.enabled));
+            const plugin = this.plugins.find(p => p); // get ONLY first result
             aftLogger.log({
                 name: this.constructor.name,
-                level: 'debug',
+                level: 'trace',
                 message: `using plugin: '${plugin.constructor.name}' to generate new UI session using options: ${JSON.stringify(sessionOptions)}`
             });
             return await plugin.getSession(sessionOptions);

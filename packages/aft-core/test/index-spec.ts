@@ -1,4 +1,4 @@
-import { rand, verify } from "../src";
+import { rand, aftTest, AftTest } from "../src";
 
 var consoleLog = console.log;
 describe('AFT', () => {
@@ -12,21 +12,22 @@ describe('AFT', () => {
     });
 
     it('is simple to integrate into existing expectations', async () => {
-        await verify(() => (1 + 1)).returns(2).withDescription('1 plus 1 is 2');
+        await aftTest('1 plus 1 is 2', async (v) => {
+            await v.verify(1 + 1, 2);
+        });
     });
 
     it('can be used to wrap blocks of code', async () => {
-        await verify(async (v) => {
+        await aftTest('[C1234][C2345] some tests require lots of actions', async (v: AftTest) => {
             let count: number = 10;
             let result: boolean = true;
+            v.pass('C1234');
             for (var i=0; i<count; i++) {
                 await v.reporter.info(`running count: ${i}`);
                 await v.reporter.warn(`random string: ${rand.getString()}`);
                 result = result && !isNaN(i);
             }
-            return count;
-        }).withTestIds('C1234').and.withTestIds('C2345')
-        .and.withDescription('some tests require lots of actions')
-        .returns(10);
+            await v.verify(count, 10);
+        });
     }, 15000);
 });

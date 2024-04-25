@@ -28,9 +28,9 @@ export class ReportingPlugin extends Plugin {
         return this.aftLogger.logLevel;
     }
     /**
-     * called by the parent `Reporter` on load to allow any plugins to configure
+     * called by the parent `ReportingManager` on load to allow any plugins to configure
      * themselves for a new logger
-     * @param logName the name of the `Reporter` instance calling dispose
+     * @param logName the name of the `ReportingManager` instance calling dispose
      */
     initialise = (logName: string): Promise<void> => null; // eslint-disable-line no-unused-vars
     /**
@@ -45,9 +45,9 @@ export class ReportingPlugin extends Plugin {
      */
     submitResult = (name: string, result: TestResult): Promise<void> => null; // eslint-disable-line no-unused-vars
     /**
-     * called by the parent `Reporter` before terminating to allow each plugin to 
+     * called by the parent `ReportingManager` before terminating to allow each plugin to 
      * finalise any deferred logging actions
-     * @param name the name of the `Reporter` instance calling finalise
+     * @param name the name of the `ReportingManager` instance calling finalise
      */
     finalise = (name: string): Promise<void> => null; // eslint-disable-line no-unused-vars
 }

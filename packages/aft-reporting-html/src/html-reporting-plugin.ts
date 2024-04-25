@@ -1,5 +1,5 @@
-import process = require("process");
-import * as path from "path";
+import * as process from 'node:process';
+import * as path from "node:path";
 import { ReportingPlugin, LogLevel, TestResult, fileio, ExpiringFileLock, FileSystemMap, convert, AftConfig, ReportingPluginConfig, Err } from "aft-core";
 import { HtmlTestResult } from "./html-test-result";
 import { HtmlResult } from "./html-result";
@@ -10,7 +10,7 @@ const defaultFileName = 'testresults.html'
 export class HtmlReportingPluginConfig extends ReportingPluginConfig {
     fileName = defaultFileName;
     outputDir: string = path.join(process.cwd(), 'logs');
-    maxLogLines: number;
+    maxLogLines: number = 5;
     override logLevel: LogLevel = 'warn';
 }
 
@@ -97,7 +97,10 @@ export class HtmlReportingPlugin extends ReportingPlugin {
         if (LogLevel.toValue(level) >= LogLevel.toValue(expectedLevel) && level !== 'none') {
             const logs = this.logs(name);
             if (data?.length > 0) {
-                const dataStr = (data?.length) ? `, [${data?.map(d => Err.handle(() => JSON.stringify(d))).join(',')}]` : '';
+                const dataStr = (data?.length) ? `, [${data?.map(d => {
+                    const dHandled = Err.handle(() => JSON.stringify(d));
+                    return dHandled.result ?? dHandled.message;
+                }).join(',')}]` : '';
                 message = `${message}${dataStr}`;
             }
             logs.push(`${level} - ${message}`);
@@ -115,11 +118,10 @@ export class HtmlReportingPlugin extends ReportingPlugin {
             return;
         }
         const htmlTestResult: HtmlTestResult = {
-            testId: result.testId,
-            status: result.status,
+            ...result,
             logs: this.logs(name ?? result.testName)
         }
-        const results: Array<HtmlTestResult> = this.testResults(result.testName);
+        const results: Array<HtmlTestResult> = this.testResults(name ?? result.testName);
         results.push(htmlTestResult);
         this.testResults(result.testName, results);
     }

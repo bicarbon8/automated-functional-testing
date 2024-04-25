@@ -13,7 +13,7 @@ describe('AftBuildInfo', () => {
     it('can load expected plugin', async () => {
         const randomName = rand.getString(12);
         const actual = new BuildInfoManager(new AftConfig({
-            pluginNames: ['mock-build-info-plugin'],
+            plugins: ['mock-build-info-plugin'],
             MockBuildInfoPluginConfig: {
                 enabled: true,
                 buildName: randomName,
@@ -44,7 +44,7 @@ describe('AftBuildInfo', () => {
     it('will generate a string based on the plugin if a BuildInfoPlugin is available', async () => {
         const randomName = rand.getString(22);
         const mgr: BuildInfoManager = new BuildInfoManager(new AftConfig({
-            pluginNames: ['mock-build-info-plugin'],
+            plugins: ['mock-build-info-plugin'],
             MockBuildInfoPluginConfig: {
                 enabled: true,
                 buildName: randomName,
