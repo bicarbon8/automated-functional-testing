@@ -8,7 +8,5 @@ export class FakeLocator {
     toString() {
         return `${this.locType}_${this.input}`;
     }
-}
-export module FakeLocator {
-    export var fakeLocType = (input: string) => new FakeLocator('fakeLocType', input);
+    static fakeLocType = (input: string) => new FakeLocator('fakeLocType', input);
 }

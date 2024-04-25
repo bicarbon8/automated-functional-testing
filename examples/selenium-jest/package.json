@@ -1,9 +1,9 @@
 {
   "name": "selenium-jest",
-  "description": "Automated Functional Testing (AFT) package containing examples of how it can be used",
+  "description": "Demonstration of using AFT with Selenium and Jest",
   "private": true,
   "scripts": {
-    "clean": "rimraf ./dist && rimraf ./logs && rimraf ./FileSystemMap && rimraf ./testresults.html",
+    "clean": "rimraf ./dist && rimraf ./logs",
     "build": "npm run clean && tsc --build",
     "test:e2e": "npm run build && jest --detectOpenHandles"
   },
@@ -29,13 +29,14 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-jest-reporter": "^10.2.2",
-    "aft-jira": "^10.2.2",
-    "aft-reporting-aws-kinesis-firehose": "^10.2.2",
-    "aft-reporting-filesystem": "^10.2.2",
-    "aft-reporting-html": "^10.2.2",
-    "aft-testrail": "^10.2.2",
-    "aft-ui-selenium": "^10.2.2"
+    "aft-core": "^11.1.0",
+    "aft-jest-reporter": "^11.1.0",
+    "aft-jira": "^11.1.0",
+    "aft-reporting-aws-kinesis-firehose": "^11.1.0",
+    "aft-reporting-filesystem": "^11.1.0",
+    "aft-reporting-html": "^11.1.0",
+    "aft-testrail": "^11.1.0",
+    "aft-ui-selenium": "^11.1.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",

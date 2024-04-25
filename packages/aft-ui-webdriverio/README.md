@@ -45,29 +45,43 @@ export class WikipediaView extends WebdriverIoComponent {
 ### Step 2: use them to interact with the mobile application
 
 ```typescript
-// wikipedia-app.spec.ts jasmine test using `aft-jasmine-reporter` package
-describe('WebdriverIoVerifier', () => {
-    it('[C3456][C2345][C1234] can access mobile apps using AFT and UiComponents', async () => {
-        const aft = new AftTest();
-        await aft.verify(async (v: WebdriverIoVerifier) => {
-            await v.reporter.step('get the WikipediaView Facet from the Session...');
-            let view: WikipediaView = v.getComponent(WikipediaView);
-            await v.reporter.step('enter a search term...');
-            await view.searchFor('pizza');
-            await v.reporter.step('get the results and ensure they contain the search term...');
-            let results: string[] = await view.getResults();
-            let contains: boolean = false;
-            for (var i=0; i<results.length; i++) {
-                let res: string = results[i];
-                if (res.toLowerCase().includes('pizza')) {
-                    contains = true;
-                    break;
-                }
-            }
-            return contains;
-        }, WebdriverIoVerifier).returns(true); // if no results contained the word 'pizza' test fails
+// wikipedia-app.spec.ts mocha test using AftMochaReporter
+describe('WebdriverIoSession', () => {
+    it('[C1234] can access mobile apps using AFT and UiComponents with AftMochaTest', async function() {
+        await aftMochaTest(this, async (v: AftMochaTest) => {
+            const lowercaseResults = new Array<string>();
+            await using(new WebdriverIoSession({reporter: v.reporter}), async (session) => {
+                await session.reporter.step('get the WikipediaView Facet from the Session...');
+                const view: WikipediaView = await session.getComponent(WikipediaView);
+                await session.reporter.step('enter a search term...');
+                await view.searchFor('pizza');
+                await session.reporter.step('get the results and ensure they contain the search term...');
+                const results: string[] = await view.getResults();
+
+                lowercaseResults.push(...results);
+            });
+            await v.verify(lowercaseResults, containing('pizza')); // if no results contained the word 'pizza' test fails
+        }); 
+    })
+
+    it('[C2345] can access mobile apps using AFT and UiComponents with AftMochaReporter', async function() {
+        const aft = new AftMochaTest(this);
+        if (!(await aft.shouldRun())) {
+            await aft.pending();
+        } else {
+            await using(new WebdriverIoSession({reporter: aft.reporter}), async (session) => {
+                await session.reporter.step('get the WikipediaView Facet from the Session...');
+                const view: WikipediaView = await session.getComponent(WikipediaView);
+                await session.reporter.step('enter a search term...');
+                await view.searchFor('pizza');
+                await session.reporter.step('get the results and ensure they contain the search term...');
+                const results: string[] = await view.getResults();
+
+                expect(results.some(item => item.includes('pizza'))).to.eql(true);
+            });
+        }
     })
 })
 ```
 ## aftconfig.json keys and values supported by aft-ui-webdriverio package
-this package does not support any additional configuration. see [aft-ui](../aft-ui/README.md#aftconfigjson-keys-and-values-supported-by-aft-selenium-package) for values relevant in the `UiSessionConfig`
+this package does not support any additional configuration. see [aft-ui](../aft-ui/README.md#aftconfigjson-keys-and-values-supported-by-aft-ui-selenium-package) for values relevant in the `UiSessionConfig`

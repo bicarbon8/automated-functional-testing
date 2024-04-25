@@ -1,11 +1,75 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import * as process from 'process';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import * as process from 'node:process';
 import * as dotenv from "dotenv";
-import { Class, JsonObject, JsonValue, RetryBackOffType } from "../helpers/custom-types";
+import { Class, JsonObject, JsonValue } from "../helpers/custom-types";
 import { fileio } from "../helpers/file-io";
 import { LogLevel } from "../logging/log-level";
+import { PluginLocator } from '../plugins/plugin-locator';
 
+/**
+ * class providing configuration used by AFT and it's plugins
+ * for reading in configuration an `aftconfig.json`, `aftconfig.js`, `aftconfig.cjs`
+ * or `aftconfig.mjs` file at the project root. this configuration can be read as a
+ * top-level field using `aftConfig.get('field_name')` or `aftConfig.get('field_name',
+ * defaultVal)` and can also be set without actually modifying the values in your
+ * `aftconfig.json` using `aftConfig.set('field_name', val)`. additionally,
+ * configuration classes can be read using `AftConfig` with the
+ * `aftConfig.getSection(ConfigClass)` which will read from your `aftconfig.json`
+ * file for a field named `ConfigClass`
+ * > NOTE: 
+ * > - when a new instance of `AftConfig` is created the `dotenv` package is run and any
+ * `.env` file found at your project root (`process.cwd()`) will be processed into your
+ * environment variables making it easier to load values when developing and testing locally.
+ * > - if using a javascript `aftconfig` file, you must export the config object using
+ * `module.exports = { ... }`
+ * 
+ * Ex: with an `aftconfig.json` containing:
+ * ```json
+ * {
+ *     "SomeCustomClassConfig": {
+ *         "configField1": "%your_env_var%",
+ *         "configField2": "some-value",
+ *         "configField3": ["foo", true, 10]
+ *     }
+ * }
+ * ```
+ * and with the following environment variables set:
+ * > export your_env_var="an important value"
+ * 
+ * and a config class of:
+ * ```typescript
+ * export class SomeCustomClassConfig {
+ *     configField1: string = 'default_value_here';
+ *     configField2: string = 'another_default_value';
+ *     configField3: Array<string | boolean | number> = ['default_val'];
+ *     configField4: string = 'last_default_value';
+ * }
+ * ```
+ * 
+ * can be accessed using an `AftConfig` instance as follows:
+ * ```typescript
+ * const config = aftConfig.getSection(SomeCustomClassConfig); // or new AftConfig().getSection(SomeCustomClassConfig);
+ * config.configField1; // returns "an important value"
+ * config.configField2; // returns "some-value"
+ * config.configField3; // returns ["foo", true, 10] as an array
+ * config.configField4; // returns "last_default_value"
+ * ```
+ * 
+ * and if you wish to entirely disregard the configuration specified in your
+ * `aftconfig.json` file you can use the following (still based on the above example):
+ * ```typescript
+ * const config = new AftConfig({
+ *     SomeCustomClassConfig: {
+ *         configField1: 'custom_value_here'
+ *     }
+ * });
+ * config.configField1; // returns "custom_value_here"
+ * config.configField2; // returns "another_default_value"
+ * config.configField3; // returns ["default_val"] as an array
+ * config.configField4; // returns "last_default_value"
+ * ```
+ */
 export class AftConfig {
     private readonly _cfg: JsonObject;
     private readonly _valueCache: Map<string, JsonValue>;
@@ -26,14 +90,6 @@ export class AftConfig {
         this._sectionCache = new Map<string, {}>();
         dotenv.config();
     }
-    
-    /**
-     * the relative path from `process.cwd()` to begin searching for plugins
-     * @default process.cwd()
-     */
-    get pluginsSearchDir(): string {
-        return this.get('pluginsSearchDir', process.cwd());
-    }
     /**
      * an array of plugin filenames (these must also match the lowercase plugin class name minus
      * any `-`, `_` and `.` characters) to load via the `pluginLoader`
@@ -42,23 +98,33 @@ export class AftConfig {
      * ```json
      * // aftconfig.json
      * {
-     *     "pluginNames": ["my-plugin"]
+     *     "plugins": [
+     *         "my-plugin",
+     *         {"name": "my-other-plugin", "searchDir": "/full/path/to/my-other-plugin/"}
+     *     ]
      * }
      * ```
-     * would match with the following plugin class
+     * would match with the following plugin classes
      * ```javascript
-     * // my-plugin.js
+     * // <project-root>/any/subdirectory/my-plugin.js
      * export class MyPlugin extends Plugin {
      *     doStuff = () => 'stuff';
      * }
      * ```
+     * and
+     * ```javascript
+     * // /full/path/to/my-other-plugin.js
+     * export class MyOtherPlugin extends Plugin {
+     *     doOtherStuff = () => 'other stuff';
+     * }
+     * ```
      * @default []
      */
-    get pluginNames(): Array<string> {
-        return this.get('pluginNames', new Array<string>());
+    get plugins(): Array<string | PluginLocator> {
+        return this.get('plugins', new Array<string | PluginLocator>());
     }
     /** 
-     * used by `Reporter` 
+     * used by `AftLogger` to limit console output by importance
      * @default 'warn'
      */
     get logLevel(): LogLevel {
@@ -84,42 +150,6 @@ export class AftConfig {
      */
     get fsMapDirectory(): string {
         return this.get('fsMapDirectory', 'FileSystemMap');
-    }
-    /** 
-     * used by `retry` to set the maximum number of attempts 
-     * @default Infinity
-     */
-    get retryMaxAttempts(): number {
-        return this.get('retryMaxAttempts', Infinity);
-    }
-    /** 
-     * used by `retry` to set the retry delay back off type 
-     * @default 'constant'
-     */
-    get retryBackOffType(): RetryBackOffType {
-        return this.get<RetryBackOffType>('retryBackOffType', 'constant');
-    }
-    /** 
-     * used by `retry` to set the starting millisecond delay between each retry attempt 
-     * @default 1
-     */
-    get retryDelayMs(): number {
-        return this.get('retryDelayMs', 1);
-    }
-    /** 
-     * used by `retry` to set the maximum duration in milliseconds to attempt retries
-     * @default Infinity
-     */
-    get retryMaxDurationMs(): number {
-        return this.get('retryMaxDurationMs', Infinity);
-    }
-    /** 
-     * used by `retry` to indicate if a failure to get success should result in a `Promise.reject`
-     * on completion or simply returning `null`
-     * @default true
-     */
-    get retryRejectOnFail(): boolean {
-        return this.get('retryRejectOnFail', true);
     }
 
     /**
@@ -185,7 +215,7 @@ export class AftConfig {
             if (val && typeof className === "function") {
                 // copy props to class
                 const config = new className();
-                for (var prop of Object.getOwnPropertyNames(val)) {
+                for (const prop of Object.getOwnPropertyNames(val)) {
                     if (val[prop] != null) {
                         config[prop] = val[prop];
                     }
@@ -221,7 +251,7 @@ export class AftConfig {
      */
     processProperties<T extends {}>(input: T): T {
         if (input) {
-            for (var prop of Object.keys(input)) {
+            for (const prop of Object.keys(input)) {
                 let val = input[prop];
                 if (val != null) {
                     if (typeof val === "string") {
@@ -245,13 +275,12 @@ export class AftConfig {
      */
     processEnvVars(input: string): string {
         if (input && typeof input === 'string') {
-            let regx = /^%(.*)%$/;
+            const regx = /^%(.*)%$/;
             if ((input?.match(regx)?.length ?? 0) > 0) {
-                var envVarKey = input.match(regx)?.[1];
+                const envVarKey = input.match(regx)?.[1];
                 if (envVarKey) {
-                    let result = process.env[envVarKey];
-                    if (result)
-                    {
+                    const result = process.env[envVarKey];
+                    if (result) {
                         input = result;
                     }
                 }
@@ -279,4 +308,21 @@ export class AftConfig {
     }
 }
 
+/**
+ * GLOBAL class providing configuration used by AFT and it's plugins
+ * for reading in configuration an `aftconfig.json`, `aftconfig.js`, `aftconfig.cjs`
+ * or `aftconfig.mjs` file at the project root. this configuration can be read as a
+ * top-level field using `aftConfig.get('field_name')` or `aftConfig.get('field_name',
+ * defaultVal)` and can also be set without actually modifying the values in your
+ * `aftconfig.json` using `aftConfig.set('field_name', val)`. additionally,
+ * configuration classes can be read using `AftConfig` with the
+ * `aftConfig.getSection(ConfigClass)` which will read from your `aftconfig.json`
+ * file for a field named `ConfigClass`
+ * > NOTE: 
+ * > - when a new instance of `AftConfig` is created the `dotenv` package is run and any
+ * `.env` file found at your project root (`process.cwd()`) will be processed into your
+ * environment variables making it easier to load values when developing and testing locally.
+ * > - if using a javascript `aftconfig` file, you must export the config object using
+ * `module.exports = { ... }`
+ */
 export const aftConfig: AftConfig = new AftConfig();

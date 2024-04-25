@@ -5,8 +5,7 @@ import { CommonActions } from "../helpers/common-actions";
 
 /**
  * this plugin uses the following configuration to control its operation via
- * `aftconfig.json` and if the `logLevel` is unset it will be set from the value 
- * in `ReporterConfig` before falling back to a value of `warn`
+ * `aftconfig.json`
  * ```json
  * {
  *     "JiraConfig": {
@@ -58,7 +57,10 @@ export class JiraReportingPlugin extends ReportingPlugin {
             if (logs.length > 0) {
                 logs += '\n'; // separate new logs from previous
             }
-            const dataStr: string = (data?.length) ? `, [${data.map(d => Err.handle(() => JSON.stringify(d))).join('')}]` : '';
+            const dataStr: string = (data?.length) ? `, [${data.map(d => {
+                const dHandled = Err.handle(() => JSON.stringify(d));
+                return dHandled.result ?? dHandled.message;
+            }).join('')}]` : '';
             logs += `${message}${dataStr}`;
             this.logs(name, logs);
         }
@@ -84,7 +86,7 @@ export class JiraReportingPlugin extends ReportingPlugin {
         if (openIssues?.length) {
             this.aftLogger.log({
                 name: this.constructor.name,
-                level: 'debug',
+                level: 'trace',
                 message: `adding comment to Jira issues: [${openIssues.map(i => i?.key).join(',')}] because test '${result.testId}' is still failing...`
             });
             // update comments to indicate the issue still exists
@@ -94,7 +96,7 @@ export class JiraReportingPlugin extends ReportingPlugin {
         } else {
             this.aftLogger.log({
                 name: this.constructor.name,
-                level: 'debug',
+                level: 'trace',
                 message: `creating new Jira issue because test '${result.testId}' failed...`
             });
             // create a new defect
@@ -106,7 +108,7 @@ export class JiraReportingPlugin extends ReportingPlugin {
         const openIssues = await CommonActions.getOpenIssuesReferencingTestId(result.testId, this._api);
         this.aftLogger.log({
             name: this.constructor.name,
-            level: 'debug',
+            level: 'trace',
             message: `closing the following Jira issues due to passing test '${result.testId}': [${openIssues.map(i => i?.key).join(',')}]...`
         });
         for (const issue of openIssues) {

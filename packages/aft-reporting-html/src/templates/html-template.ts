@@ -228,7 +228,7 @@ function addTests(container, tests) {
     var startSection = \`
 <table class="table table-striped table-hover">
     <thead>
-        <tr><th>Test ID</th><th>Status</th><th>Logs</th></tr>
+        <tr><th>Timestamp</th><th>Test ID</th><th>Status</th><th>Logs</th></tr>
     </thead>
     <tbody>
 \`;
@@ -253,6 +253,9 @@ function addTests(container, tests) {
         }
         testResultSection += \`
         <tr class="\${trClass}" name="\${result.testId}-pstt-results">
+            <td class="created">
+                \${new Date(result.created)}
+            </td>
             <td class="id">
                 \${result.testId || 'n/a'}
             </td>

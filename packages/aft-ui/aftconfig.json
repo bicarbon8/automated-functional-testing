@@ -1,6 +1,8 @@
 {
-    "sessiongeneratormanager": {
-        "pluginNames": [],
-        "platform": "windows_10_chrome_90_Google Pixel 5"
+    "UiSessionConfig": {
+        "generatorName": "some-ui-generator-plugin",
+        "options": {
+            "key": "val"
+        }
     }
 }

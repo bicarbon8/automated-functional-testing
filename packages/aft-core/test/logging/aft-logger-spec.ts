@@ -5,7 +5,7 @@ describe('AftLogger', () => {
         const aftCfg = new AftConfig({
             logLevel: 'trace'
         });
-        const logger = new AftLogger(aftCfg);
+        const logger = new AftLogger(null, aftCfg);
 
         expect(logger.logLevel).toEqual('trace');
     })
@@ -14,7 +14,7 @@ describe('AftLogger', () => {
         const aftCfg = new AftConfig({
             logLevel: 'warn'
         });
-        const logger = new AftLogger(aftCfg);
+        const logger = new AftLogger(null, aftCfg);
         spyOn(logger, 'toConsole').and.callFake((level: LogLevel, message: string) => null);
         spyOn(logger, 'format').and.callThrough();
 
