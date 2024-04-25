@@ -6,11 +6,11 @@ import * as os from 'os';
  */
 class MachineInfo {
     get ip(): string {
-        var interfaces = os.networkInterfaces();
-        var addresses = [];
-        for (var k in interfaces) {
-            for (var k2 in interfaces[k]) {
-                var address = interfaces[k][k2];
+        const interfaces = os.networkInterfaces();
+        const addresses = [];
+        for (const k in interfaces) {
+            for (const k2 in interfaces[k]) {
+                const address = interfaces[k][k2];
                 if (address.family === 'IPv4' && !address.internal) {
                     addresses.push(address.address);
                 }

@@ -19,8 +19,8 @@ class Wait {
      * returns a result
      */
     async forResult<T>(func: Func<void, T | PromiseLike<T>>, maxDurationMs: number = 30000): Promise<T> {
-        return await Promise.race([
-            Promise.resolve().then(func).catch((err) => Promise.reject(err)),
+        return Promise.race([
+            func(),
             new Promise<T>((resolve) => setTimeout(resolve, maxDurationMs, undefined)) // eslint-disable-line no-undef
         ]);
     }

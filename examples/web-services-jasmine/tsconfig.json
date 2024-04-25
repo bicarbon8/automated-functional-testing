@@ -4,7 +4,7 @@
         "outDir": "dist",
         "types": ["node", "jasmine"]
     },
-    "include": ["test"],
+    "include": ["test", "lib"],
     "references": [
         { "path": "../../packages/aft-jira" },
         { "path": "../../packages/aft-jasmine-reporter" },

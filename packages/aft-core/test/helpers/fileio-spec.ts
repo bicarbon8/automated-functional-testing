@@ -11,7 +11,7 @@ describe('fileio', () => {
         it('returns a meaningful error if file is not found', () => {
             const log = console.log;
             console.log = () => { /* do nothing */ }
-            const notExist: string = 'doesnotexist.json';
+            const notExist: string = '/doesnotexist.json';
             try {
                 const obj = fileio.readAs<object>(notExist);
                 expect(obj).toBeUndefined();

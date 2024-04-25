@@ -10,30 +10,38 @@ using this `Reporter` requires either calling the `mocha` command with the follo
 // .mocharc.json
 {
     ...
-    "reporter": "aft-mocha-reporter",
+    "reporter": "/path/to/aft-mocha-reporter.js",
     ...
 }
 ```
 
-## AFT Configuration
-while no configuration is required, the `aft-mocha-reporter` supports all AFT configuration via an `aftconfig.json` file in the root directory.
-
 ## AFT Helpers
 this package comes with two helper classes that can be utilised from within your Mocha specs to make use of AFT features.
 
-### `AftTest`
-the `AftTest` class extends from the `AftTestIntegration` class providing the ability to parse the Spec name for any referenced Test. each Test ID must be surrounded with square brackets `[ABC123]`. you can then either directly call the `AftTest.shouldRun()` async function which will determine if your test should be run based on any AFT `TestExecutionPolicyPlugin` instances referenced in your `aftconfig.json` file or you can call `AftTest.verify(assertion)` which will perform the `AftTest.shouldRun()` call and mark the test as skipped if it should not be run. using the `AftTest` class would look like the following:
-> **!!WARNING!!** using arrow functions in your Spec definition **IS NOT SUPPORTED** if using `AftTest` because it removes the `this` scope
+### `AftMochaTest`
+the `AftMochaTest` class extends from the `AftTest` class providing the ability to parse the Spec name for any referenced Test. each Test ID must be surrounded with square brackets `[ABC123]`. you can then either directly call the `AftMochaTest.shouldRun()` async function which will determine if your test should be run based on any AFT `PolicyPlugin` instances referenced in your `aftconfig.json` file or you can call `aftMochaTest(this, testFunction)` which will perform the `AftMochaTest.shouldRun()` call and mark the test as skipped if it should not be run. using the `AftMochaTest` class would look like the following:
+> **!!WARNING!!** using arrow functions in your Spec definition **IS NOT SUPPORTED** if using `AftMochaTest` because it removes the `this` scope
 ```javascript
 describe('YourTestSuite', () => {
+    // use `aftMochaTest` to report results
     it('can check if test [C1234] should be run', async function() {
-        const aft = new AftTest(this);
-        await aft.verify(async (v: Verifier) => {
-            // `verify` calls `v.test.skip()` if should not be run
+        await aftMochaTest(this, async (v: AftMochaTest) => {
+            // calls `v.test.skip()` if should not be run
             await v.reporter.error('we should never get here if C1234 should not be run');
             const result = await doStuff();
-            return result;
-        }).returns(equaling('expected'));
+            await t.verify(result, equaling('expected'));
+        }); // handles submitting the result to any AFT Reporter Plugins
+    });
+
+    // use `AftMochaReporter` to report results
+    it('can check if test [C2345] should be run', async function() {
+        const aft = new AftMochaTest(this);
+        const shouldRun = await aft.shouldRun();
+        if (shouldRun.result !== true) {
+            await aft.pending(shouldRun.message); // marks test as skipped
+        }
+        const result = await doStuff();
+        expect(result).to.equal('expected'); // AftMochaReporter handles submitting the result to any AFT Reporter Plugins
     });
 });
 ```
@@ -44,12 +52,5 @@ which would output the following to your console and any AFT `ReportingPlugin` i
 ```
 
 ## NOTES
-- the `AftTest` constructors expects to be passed a valid `scope` containing reference to the currently executing `Mocha.Test`. typically this will be the `this` object within your Spec
-- this Mocha `Reporter` works in both parallel and sequential execution modes, but you **MUST ALWAYS** use a non-arrow function for your Spec definition if you are using `AftTest` class within your Spec
-- you can use the AFT `Verifier` in combination with the `AftTest` classes like follows:
-```javascript
-const aft = new AftTest(this);
-await aft.verify((v: Verifier) => {
-    /* perform testing here */
-}).returns(expected);
-```
+- the `AftMochaTest` constructors expects to be passed a valid `scope` containing reference to the currently executing `Mocha.Test`. typically this will be the `this` object within your Spec
+- this Mocha `Reporter` works in both parallel and sequential execution modes, but you **MUST ALWAYS** use a non-arrow function for your Spec definition if you are using `AftMochaTest` class within your Spec

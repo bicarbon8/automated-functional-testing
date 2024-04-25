@@ -82,7 +82,17 @@ export type JsonObject = { [key: JsonKey]: JsonValue; } | Array<JsonValue>;
  * ```
  */
 export type ProcessingResult<T> = {
+    /**
+     * the result value or `void` if no result expected.
+     * typically set to `null` or `undefined` on processing
+     * error
+     */
     result: T;
+    /**
+     * an optional message explaining why the result is what
+     * it is. this is typically set only on error to provide
+     * context around the error
+     */
     message?: string;
 };
 
@@ -107,10 +117,3 @@ export type CacheObject = {
  * ```
  */
 export type Merge<T1, T2, T3 = {}, T4 = {}, T5 = {}, T6 = {}> = T1 & T2 & T3 & T4 & T5 & T6;
-
-/**
- * a retry back-off delay type where `constant` uses the same
- * delay each time, `linear` adds the start delay to the previous
- * on each iteration and `exponential` doubles the previous delay
- */
-export type RetryBackOffType = 'constant' | 'linear' | 'exponential';

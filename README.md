@@ -5,19 +5,22 @@ library providing a framework for creating Functional Test Automation supporting
 ### Example Jasmine Test:
 ```typescript
 describe('Sample Test', () => {
-    it('[C1234] can perform a demonstration of AFT', async () => {
-        const aft = new AftTest();
+    it('[C1234] can perform a demonstration of AFT', async function() {
         const feature: FeatureObj = new FeatureObj();
         /**
-         * the `verify(assertion).returns(expectation)` function
-         * checks any specified `TestExecutionPolicyPlugin` implementations
-         * to ensure the test should be run. It will then
-         * report to any `ReportingPlugin` implementations
-         * with an `TestResult` indicating the success,
-         * failure or skipped status
+         * - for Jest use: `await aftJestTest(expect, () => doStuff());`
+         * - for Mocha use: `await aftMochaTest(this, () => doStuff());`
+         * - for Jasmine use: `await aftJasmineTest(() => doStuff());`
          */
-        await aft.verify(async () => await feature.performAction())
-            .returns('result of action');
+        const aftJasmineTest(async (t: AftJasmineTest) => {
+            const result: string = await feature.performActionAsync();
+            /**
+             * the `verify(actual, expected)` async function
+             * compares the values using a `VerifyMatcher`
+             * which defaults to `equaling` if none specified
+             */
+            await t.verify(result, 'result of action');
+        });
     });
 });
 ```
@@ -28,21 +31,31 @@ the above results in the following console output if the expectation does not re
 in more complex scenarios you can perform multiple actions inside the _expectation_ like in the following example:
 ```typescript
 describe('Sample Test', () => {
-    it('[C2345][C3344] can perform a more complex demonstration of AFT', async () => {
-        const aft = new AftTest();
+    it('[C2345][C3344] can perform a more complex demonstration of AFT', async function() {
         /**
-         * the passed in expectation can accept a `Verifier` which can be used
-         * during more complex actions
+         * - for Jest use: `await aftJestTest(expect, () => doStuff());`
+         * - for Mocha use: `await aftMochaTest(this, () => doStuff());`
+         * - for Jasmine use: `await aftJasmineTest(() => doStuff());`
          */
-        await aft.verify(async (v: Verifier) => {
+        await aftJasmineTest(async (v: AftJasmineTest) => {
             await v.reporter.step('creating instance of FeatureObj');
-            let feature: FeatureObj = new FeatureObj();
+            const feature: FeatureObj = new FeatureObj();
+            const result = await v.verify(feature.isGood, true);
+            if (result.message) {
+                v.fail(result.message, 'C2345'); // reports failure result immediately
+            }
             await v.reporter.step('about to call performAction');
-            let result: string = await feature.performAction();
+            const result: string = await feature.performAction();
             await v.reporter.info(`result of performAction was '${result}'`);
             await v.reporter.trace('successfully executed expectation');
-            return result;
-        }).returns(containing('result of action'));
+            await v.verify(result, containing('result of action'));
+        }, {
+            aftCfg: new AftConfig({logLevel: 'trace'}),
+            haltOnVerifyFailure: false, // continue if `verify` check fails
+            onEventsMap: new Map<AftTestEvent, Array<AftTestFunction>>([
+                ['done', [() => performCleanup()]] // function run on completion
+            ])
+        });
     });
 });
 ```
@@ -57,18 +70,27 @@ which would output the following logs:
 ```
 > WARNING: Jasmine's _expect_ calls do not return a boolean as their type definitions would make you think and failed `expect` calls will only throw exceptions if the stop on failure option is enabled: 
 ```typescript
-verify(() => expect('foo').toBe('bar')); // AFT will report as 'passed'
+await aftTest(description, (t: AftTest) => {
+    expect('foo').toBe('bar'); // fails but doesn't throw
+}); // AFT will report as 'passed'
 
-verify(() => 'foo').returns('bar'); // AFT will report as 'failed'
+await aftTest(description, (t: AftTest) => {
+    await t.verify('foo', 'bar'); // fails and throws
+}); // AFT will report as 'failed'
 
-verify(() => {throw new Error('failure');}) // AFT will report as 'failed'
+await aftTest(description, (t: AftTest) => {
+    const result = await t.verify('foo', 'bar'); // fails but doesn't throw
+    if (result.message) {
+        await t.reporter.warn(result.message);
+    }
+}, { haltOnVerifyFailure = false }); // AFT will report as 'failed'
 ```
 
 ## Packages (click on name for more info)
 - [`aft-core`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-core/README.md) - base library containing helpers and configuration and plugin managers
-- [`aft-examples`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-examples/README.md) - provides real-world examples of how the AFT libraries can be used in functional tests
 - [`aft-jasmine-reporter`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-jasmine-reporter/README.md) - a Jasmine Reporter Plugin that integrates with AFT to simplify logging and test execution via AFT
 - [`aft-jest-reporter`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-jest-reporter/README.md) - a Jest Reporter Plugin that integrates with AFT to simplify logging and test execution via AFT
+- [`aft-jira`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-jira/README.md) - reporting and test execution policy plugins supporting opening and closing Jira tickets and filtering test execution based on status of Jira tickets (opened vs. closed)
 - [`aft-mocha-reporter`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-mocha-reporter/README.md) - provides Mocha Reporter Plugin that integrates with AFT to simplify logging and test execution via AFT
 - [`aft-reporting-aws-kinesis-firehose`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-reporting-aws-kinesis-firehose/README.md) - reporting plugin supporting logging to AWS Kinesis Firehose
 - [`aft-reporting-filesystem`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-reporting-filesystem/README.md) - reporting plugin supporting logging to .log files for all log output
@@ -77,20 +99,20 @@ verify(() => {throw new Error('failure');}) // AFT will report as 'failed'
 - [`aft-ui`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-ui/README.md) - base library supporting development of UI testing packages
 - [`aft-ui-selenium`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-ui-selenium/README.md) - adds support for Selenium-based UI testing
 - [`aft-ui-webdriverio`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-ui-webdriverio/README.md) - adds support for WebdriverIO-based UI testing
+- [`aft-vittest-reporter`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-vitest-reporter/README.md) - provides Vitest Reporter plugin that integrates with AFT to simplify logging and test execution via AFT
 - [`aft-web-services`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-web-services/README.md) - adds support for testing REST-based services
 
 ## Plugins
-the primary benefit of using AFT comes from the plugins and the `Verifier`. Because logging using AFT's `Reporter` will also send to any registered logging plugins, it is easy to create logging plugins that send to any external system such as TestRail or to log results to Elasticsearch. Additionally, before running any _assertion_ passed to a `verify(assertion)` function, AFT will confirm if the _assertion_ should actually be run based on the results of queries to any supplied `TestExecutionPolicyPlugin` implementations.
+the primary benefit of using AFT comes from the plugins and the `AftTest`. Because logging using AFT's `ReportingManager` will also send to any registered logging plugins, it is easy to create logging plugins that send to any external system such as TestRail or to log results to Elasticsearch. Additionally, before running any _assertion_ passed to a `aftTest(description, testFunction)` function, AFT will confirm if the _testFunction_ should actually be run based on the results of queries to any supplied `PolicyPlugin` implementations.
 
 ### ReportingPlugin
-`aft-core` provides a `ReportingPlugin` class which can be extended from to create custom loggers which are then loaded by adding their filenames to the `pluginNames` array under in your `aftconfig.json`
+`aft-core` provides a `ReportingPlugin` class which can be extended from to create custom loggers which are then loaded by adding their filenames to the `plugins` array under in your `aftconfig.json`
 ```json
 // aftconfig.json
 {
-    "pluginsSearchDir": "../node_modules",
-    "pluginNames": [
+    "plugins": [
         "testrail-reporting-plugin",
-        "html-reporting-plugin"
+        {"name": "html-reporting-plugin", "searchDir": "../node_modules"}
     ],
     "TestRailConfig": {
         "url": "https://your.testrail.io",
@@ -109,18 +131,21 @@ the primary benefit of using AFT comes from the plugins and the `Verifier`. Beca
 }
 ```
 
-### TestExecutionPolicyPlugin
-the purpose of a `TestExecutionPolicyPlugin` implementation is to provide execution control over any expectations by way of supplied _Test IDs_. to specify an implementation of the plugin to load you can add the following to your `aftconfig.json` (where plugin `testrail-test-execution-policy-plugin.js` is contained within the test execution directory or a subdirectory of it):
+### PolicyPlugin
+the purpose of a `PolicyPlugin` implementation is to provide execution control over any expectations by way of supplied _Test IDs_. to specify an implementation of the plugin to load you can add the following to your `aftconfig.json` (where plugin `testrail-policy-plugin.js` is contained within the test execution directory or a subdirectory of it):
 ```json
 // aftconfig.json
 {
-    "pluginNames": ["testrail-test-execution-policy-plugin"]
+    "plugins": ["testrail-policy-plugin"]
 }
 ```
 > NOTE: if no plugin is specified then external Policy Engine integration will be disabled and _assertions_ will be executed without first checking that they should be run based on associated Test IDs
 
-## Example Test Project
-- [`aft-examples`](./packages/aft-examples/README.md) - a demonstration of how to develop UI and REST based functional test automation using AFT is located under `./packages/aft-examples`
+## Example Test Projects
+- [`selenium-jest`](./examples/selenium-jest/README.md) - demonstrates how to use the `SeleniumSession`, `SeleniumComponent`, `AftJestTest` and `AftJestReporter` within Jest tests
+- [`selenium-mocha`](./examples/selenium-mocha/README.md) - demonstrates how to use the `SeleniumSession`, `SeleniumComponent`, `AftMochaTest` and `AftMochaReporter` within Mocha tests
+- [`web-services-jasmine`](./examples/web-services-jasmine/README.md) - demonstrates how to use the `HttpService`, `AftJasmineTest` and `AftJasmineReporter` within Jasmine tests
+- [`webdriverio-mocha`](./examples/webdriverio-mocha/README.md) - demonstrates how to use the `WebdriverIoSession`, `WebdriverIoComponent`, `AftMochaTest` and `AftMochaReporter` within Mocha tests
 
 ## Contributing to AFT
 - create a Fork of the repo in GitHub

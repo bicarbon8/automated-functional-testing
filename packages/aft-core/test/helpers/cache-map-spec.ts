@@ -74,7 +74,6 @@ describe('CacheMap', () => {
     });
 
     it('returns true for has key if cached item is still valid', async () => {
-        const name: string = rand.getString(15);
         const cm = new CacheMap<number, Record<string, number>>(4000, false);
 
         const key = rand.getInt(50, 100);
@@ -86,4 +85,21 @@ describe('CacheMap', () => {
         const actual: boolean = cm.has(key);
         expect(actual).toBeTrue();
     });
+
+    it('will never expire data with a cacheDurationMs of Infinity', () => {
+        const name: string = rand.getString(15);
+        const cm = new CacheMap<number, Record<string, number>>(Infinity, true, name);
+
+        const key = rand.getInt(50, 100);
+        const val = {
+            'foo': rand.getFloat(100, 1000)
+        }
+        cm.set(key, val);
+
+        const actual: boolean = cm.has(key);
+        expect(actual).toBeTrue();
+
+        const actualExpiration = cm.expires(key);
+        expect(actualExpiration).toEqual(Infinity);
+    })
 });
