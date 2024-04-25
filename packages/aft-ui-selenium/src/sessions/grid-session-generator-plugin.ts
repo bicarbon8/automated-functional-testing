@@ -1,6 +1,6 @@
 import { Builder, Capabilities, WebDriver } from "selenium-webdriver";
 import { UiSessionGeneratorPlugin } from "aft-ui";
-import { Err, Reporter } from "aft-core";
+import { Err, ReportingManager } from "aft-core";
 
 type GridSessionOptions = {
     url: string;
@@ -9,10 +9,10 @@ type GridSessionOptions = {
 }
 
 export class GridSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
-    private _reporter: Reporter;
-    get reporter(): Reporter {
+    private _reporter: ReportingManager;
+    get reporter(): ReportingManager {
         if (!this._reporter) {
-            this._reporter = new Reporter(this.constructor.name, this.aftCfg);
+            this._reporter = new ReportingManager(this.constructor.name, this.aftCfg);
         }
         return this._reporter;
     }
@@ -26,14 +26,14 @@ export class GridSessionGeneratorPlugin extends UiSessionGeneratorPlugin {
                     .usingServer(gso.url ?? 'http://127.0.0.1:4444/wd/hub')
                     .withCapabilities(caps)
                     .build();
-                await Err.handleAsync(async () => await driver.manage().setTimeouts({implicit: gso.implicitTimeoutMs ?? 1000}), {
-                    logger: this.reporter,
-                    errLevel: 'debug'
-                });
-                await Err.handleAsync(async () => await driver.manage().window().maximize(), {
-                    logger: this.reporter,
-                    errLevel: 'debug'
-                });
+                const handledTime = await Err.handleAsync(() => driver.manage().setTimeouts({implicit: gso.implicitTimeoutMs ?? 1000}));
+                if (handledTime.message) {
+                    await this.reporter.trace(handledTime.message);
+                }
+                const handledMax = await Err.handleAsync(() => driver.manage().window().maximize());
+                if (handledMax.message) {
+                    await this.reporter.trace(handledMax.message);
+                }
             } catch (e) {
                 await this.reporter.warn(`error in creating WebDriver due to: ${Err.full(e)}`);
             }

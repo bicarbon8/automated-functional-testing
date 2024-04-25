@@ -1,22 +1,36 @@
 import { AftConfig, aftConfig } from "../../configuration/aft-config";
-import { AftLogger, aftLogger } from "../../logging/aft-logger";
+import { AftLogger } from "../../logging/aft-logger";
 import { SafeStringOption, convert } from "../../helpers/convert";
 import { Err } from "../../helpers/err";
 import { MachineInfoData, machineInfo } from "../../helpers/machine-info";
 import { pluginLoader } from "../plugin-loader";
 import { BuildInfoPlugin } from "./build-info-plugin";
 
+/**
+ * a class that manages the `BuildInfoPlugin` instances that
+ * generate a build specific string for use in identifying individual
+ * test execution runs across multiple projects in a CICD environment
+ * returning either a string containing `BUILDNAME_BUILDNUMBER` or
+ * if there are no enabled `BuildInfoPlugin` instances, a string
+ * containing `USERNAME_MACHINENAME_YYYYMMDD`
+ */
 export class BuildInfoManager {
     public readonly aftCfg: AftConfig;
-    public readonly plugins: Array<BuildInfoPlugin>
 
+    private readonly _plugins: Array<BuildInfoPlugin> = new Array<BuildInfoPlugin>();
     private readonly _safeStrOpt: SafeStringOption[] = [{exclude: /[\()\;\\\/\|\<\>""'*&^%$#@!,.\-\+_=\?]/gi, replaceWith: ''}]; // eslint-disable-line no-useless-escape
     private readonly _aftLogger: AftLogger;
     
     constructor(aftCfg?: AftConfig) {
         this.aftCfg = aftCfg ?? aftConfig;
-        this._aftLogger = (aftCfg) ? new AftLogger(aftCfg) : aftLogger;
-        this.plugins = pluginLoader.getPluginsByType(BuildInfoPlugin, this.aftCfg);
+        this._aftLogger = new AftLogger(this.constructor.name, aftCfg);
+    }
+
+    get plugins(): Array<BuildInfoPlugin> {
+        if (this._plugins.length === 0) {
+            this._plugins.push(...pluginLoader.getEnabledPluginsByType(BuildInfoPlugin, this.aftCfg));
+        }
+        return this._plugins;
     }
 
     /**
@@ -45,7 +59,6 @@ export class BuildInfoManager {
                 return plugin.buildName();
             } catch (e) {
                 this._aftLogger.log({
-                    name: this.constructor.name,
                     level: 'warn',
                     message: `error calling '${plugin.constructor.name}.buildName': ${Err.short(e)}`
                 });
@@ -70,13 +83,12 @@ export class BuildInfoManager {
                 return plugin.buildNumber();
             } catch (e) {
                 this._aftLogger.log({
-                    name: this.constructor.name,
                     level: 'warn',
                     message: `error calling '${plugin.constructor.name}.buildNumber': ${Err.short(e)}`
                 });
             }
         }
-        let d = new Date();
+        const d = new Date();
         const month: number = d.getUTCMonth() + 1;
         let monthStr: string = month.toString();
         if (month < 10) {

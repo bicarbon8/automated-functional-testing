@@ -43,7 +43,7 @@ export class BrowserStackAutomateSessionGeneratorPlugin extends UiSessionGenerat
 }
 ```
 
-## aftconfig.json keys and values supported by aft-selenium package
+## aftconfig.json keys and values supported by aft-ui-selenium package
 
 **GridSessionGeneratorPlugin Example using BrowserStack:**
 the `aft-ui-selenium` package contains a `UiSessionGeneratorPlugin` called `grid-session-generator-plugin` which the below example uses to demonstrate configuration supported by `aft-ui`. this is not to be confused with the above example demonstrating how a BrowserStack `UiSessionGeneratorPlugin` could be created using `aft-ui`.

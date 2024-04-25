@@ -121,22 +121,47 @@ export class HerokuMessagesComponent extends SeleniumComponent {
 
 ```typescript
 // jasmine test using `aft-jasmine-reporter` package
-describe('SeleniumVerifier', () => {
-    it('[C3456][C2345][C1234] can access websites using AFT and UiComponents', async () => {
-        const aft = new AftTest();
-        await aft.verify(async (v: SeleniumVerifier) => {
-            const loginPage: HerokuLoginPage = v.getComponent(HerokuLoginPage);
-            await v.reporter.step('navigate to LoginPage...');
-            await loginPage.navigateTo();
-            await v.reporter.step('login');
-            await loginPage.login("tomsmith", "SuperSecretPassword!");
-            await v.reporter.step('wait for message to appear...')
-            await retry(() => loginPage.hasMessage())
-                .until((res) => res === true)
-                .withMaxDuration(20000); // 20 seconds
-            await v.reporter.step('get message...');
-            return await loginPage.getMessage();
-        }, SeleniumVerifier).returns("You logged into a secure area!");
+describe('SeleniumSession', () => {
+    it('[C1234] can access websites using AFT and UiComponents with AftJasmineTest', async () => {
+        await aftJasmineTest(async (v: AftJasmineTest) => {
+            const loginMessage: string;
+            await using(new SeleniumSession({reporter: v.reporter}), async (session) => {
+                const loginPage: HerokuLoginPage = v.getComponent(HerokuLoginPage);
+                await v.reporter.step('navigate to LoginPage...');
+                await loginPage.navigateTo();
+                await v.reporter.step('login');
+                await loginPage.login("tomsmith", "SuperSecretPassword!");
+                await v.reporter.step('wait for message to appear...')
+                await retry(() => loginPage.hasMessage())
+                    .withMaxDuration(20000) // 20 seconds
+                    .until((res) => res === true);
+                await v.reporter.step('get message...');
+                loginMessage = await loginPage.getMessage();
+            });
+            await v.verify(loginMessage, containing("You logged into a secure area!"));
+        });
+    })
+
+    it('[C2345] can access websites using AFT and UiComponents with AftJasmineReporter', async () => {
+        const aft = new AftJasmineTest();
+        const shouldRun = await aft.shouldRun();
+        if (shouldRun.result !== true) {
+            await aft.pending(); // marks test as skipped
+        } else {
+            await using(new SeleniumSession({reporter: aft.reporter}), async (session) => {
+                const loginPage: HerokuLoginPage = v.getComponent(HerokuLoginPage);
+                await v.reporter.step('navigate to LoginPage...');
+                await loginPage.navigateTo();
+                await v.reporter.step('login');
+                await loginPage.login("tomsmith", "SuperSecretPassword!");
+                await v.reporter.step('wait for message to appear...')
+                await retry(() => loginPage.hasMessage())
+                    .withMaxDuration(20000) // 20 seconds
+                    .until((res) => res === true);
+                await v.reporter.step('get message...');
+                expect(await loginPage.getMessage()).toContain("You logged into a secure area!");
+            });
+        }
     })
 })
 ```

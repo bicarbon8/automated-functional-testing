@@ -17,8 +17,8 @@ import { convert } from "aft-core";
  * };
  * ```
  */
-export module HttpHeaders {
-    export module MimeType {
+export namespace HttpHeaders {
+    export namespace MimeType {
         export const applicationOctetstream = 'application/octet-stream';
         export const textPlain = 'text/plain';
         export const textCss = 'text/css';
@@ -28,7 +28,7 @@ export module HttpHeaders {
         export const multipartFormData = 'multipart/form-data';
         export const applicationJson = 'application/json';
     }
-    export module ContentType {
+    export namespace ContentType {
         export type CT = {
             "Content-Type": string
         };
@@ -38,7 +38,7 @@ export module HttpHeaders {
             };
         }
     }
-    export module Accept {
+    export namespace Accept {
         export type Acc = {
             "Accept": string
         };
@@ -48,13 +48,19 @@ export module HttpHeaders {
             };
         }
     }
-    export module Authorization {
+    export namespace Authorization {
         export type Auth = {
             Authorization: string;
         };
         export function basic(username: string, password: string): Auth {
+            const encoded = convert.toBase64Encoded(`${username}:${password}`);
             return {
-                Authorization: `Basic ${convert.toBase64Encoded(`${username}:${password}`)}`
+                Authorization: `Basic ${encoded}`
+            };
+        }
+        export function bearer(token: string): Auth {
+            return {
+                Authorization: `Basic ${token}`
             };
         }
         export type DigestOptions = {
@@ -86,7 +92,7 @@ export module HttpHeaders {
             };
         }
     }
-    export module Cookies {
+    export namespace Cookies {
         export type Cookie = {
             Cookie: string
         };

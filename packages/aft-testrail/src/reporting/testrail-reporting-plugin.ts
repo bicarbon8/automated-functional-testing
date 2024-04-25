@@ -9,7 +9,7 @@ import { PlanId } from "../helpers/plan-id";
 /**
  * this plugin uses the following configuration to control its operation via
  * `aftconfig.json` and if the `logLevel` is unset it will be set from the value 
- * in `ReporterConfig` before falling back to a value of `warn`
+ * in `AftConfig.logLevel` before falling back to a value of `warn`
  * ```json
  * {
  *     "TestRailConfig": {
@@ -58,12 +58,15 @@ export class TestRailReportingPlugin extends ReportingPlugin {
 
     override log = async (name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => {
         if (this.enabled) {
-            if (LogLevel.toValue(level) >= LogLevel.toValue(this.logLevel) && level != 'none') {
+            if (LogLevel.toValue(level) >= LogLevel.toValue(this.logLevel) && level !== 'none') {
                 let logs = this.logs(name);
                 if (logs.length > 0) {
                     logs += '\n'; // separate new logs from previous
                 }
-                const dataStr: string = (data?.length) ? `, [${data.map(d => Err.handle(() => JSON.stringify(d))).join('')}]` : '';
+                const dataStr: string = (data?.length) ? `, [${data.map(d => {
+                    const dHandled = Err.handle(() => JSON.stringify(d));
+                    return dHandled.result ?? dHandled.message;
+                }).join('')}]` : '';
                 logs += `${message}${dataStr}`;
                 logs = ellide(logs, this._maxLogChars, 'beginning');
                 this.logs(name, logs);
@@ -84,14 +87,14 @@ export class TestRailReportingPlugin extends ReportingPlugin {
     }
 
     private async _getTestRailResultForTestResult(logName: string, result: TestResult): Promise<TestRailResultRequest> {
-        let maxChars: number = this._maxLogChars;
+        const maxChars: number = this._maxLogChars;
         let elapsed: number = 0;
         if (result.metadata) {
-            let millis: number = result.metadata['durationMs'] || 0;
+            const millis: number = result.metadata['durationMs'] || 0;
             elapsed = Math.floor(millis / 60000); // elapsed is in minutes
         }
         const logs = this.logs(logName);
-        let trResult: TestRailResultRequest = {
+        const trResult: TestRailResultRequest = {
             comment: ellide(`${logs}\n${result.resultMessage}`, maxChars, 'beginning'),
             elapsed: elapsed.toString(),
             status_id: statusConverter.toTestRailStatus(result.status)

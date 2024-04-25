@@ -1,26 +1,25 @@
+import { AftLogger, aftLogger } from '../logging/aft-logger';
 import { LogLevel } from '../logging/log-level';
-import { Reporter } from '../plugins/reporting/reporter';
-import { aftLogger } from '../logging/aft-logger';
 import { convert } from './convert';
-import { Func } from './custom-types';
+import { Func, ProcessingResult } from './custom-types';
 import { ellide } from './ellide';
 
 export type ErrVerbosity = 'full' | 'short';
 
 export type ErrOptions = {
     /**
-     * an optional `Reporter` instance to use in logging the error message
-     * and stack
+     * an optional `AftLogger` instance to use for logging to console.
+     * @default aftLogger
      */
-    logger: Reporter;
+    logger?: AftLogger;
     /**
-     * the `LogLevel` to use when logging any caught `Error`. defaults to
-     * `warn`
+     * the `LogLevel` to use when logging any caught `Error`.
+     * @default none
      */
     errLevel: LogLevel;
     /**
-     * the amount of detail to include in the output message. defaults to
-     * `full`
+     * the amount of detail to include in the output message.
+     * @default full
      */
     verbosity: ErrVerbosity;
 }
@@ -29,8 +28,8 @@ export type ErrOptions = {
  * provides a standardised way of generating log-friendly exception details
  * in either short or full formatting. Usage would look like:
  * ```typescript
- * const result1 = Err.handle(() => functionThatThrowsTypeError());
- * const result2 = await Err.handleAsync(async () => asyncFunctionThatThrowsArgumentError());
+ * const result1 = Err.handle(() => functionThatThrowsTypeError(arg1, arg2));
+ * const result2 = await Err.handleAsync(() => asyncFunctionThatThrowsArgumentError(arg1, arg2));
  * ```
  * which would output:
  * ```text
@@ -40,11 +39,11 @@ export type ErrOptions = {
  * 
  * > NOTE: an optional `Partial<ErrorOptions>` object can be passed to the `handle` and `handleAsync` functions allowing
  * you to control the `LogLevel` used _(defaults to `'warn'`)_, the verbosity _(defaults to `'short'`)_, and the 
- * `Reporter` instance used _(defaults to `aftLog` global instance)_
+ * `ReportingManager` instance used _(defaults to `aftLog` global instance)_
  * 
  * and:
  * ```typescript
- * const logger = new Reporter('AFT');
+ * const logger = new ReportingManager('AFT');
  * try {
  *     functionThatThrowsTypeError();
  * } catch (e) {
@@ -59,15 +58,22 @@ export type ErrOptions = {
  * [full stack trace of as much as the Error contained]
  * ```
  */
-export class Err {
+export class Err extends Object {
     readonly err: Error;
     private _verbosity: ErrVerbosity;
 
     constructor(error: any) {
+        super();
         if (this._isError(error)) {
             this.err = error;
-        } else {
+        } else if (typeof error === 'string') {
             this.err = new Error(String(error || 'unknown'));
+        } else {
+            try {
+                this.err = new Error(JSON.stringify(error));
+            } catch (e) {
+                this.err = e;
+            }
         }
     }
 
@@ -83,19 +89,28 @@ export class Err {
         return this;
     }
 
+    /**
+     * the type of `Error`
+     */
     get type(): string {
         return this.err?.name ?? 'Error';
     }
 
+    /**
+     * the `message` portion of the `Error`
+     */
     get message(): string {
         return this.err?.message ?? 'unknown';
     }
 
+    /**
+     * the stack trace of the `Error` object
+     */
     get stack(): string {
         return this.err?.stack ?? 'unknown';
     }
 
-    toString(): string {
+    override toString(): string {
         const message = this._processMessage(this.message);
         const stack = this._processStack(this.stack);
         let output: string;
@@ -151,15 +166,13 @@ export class Err {
             {exclude: /[ ]{2,}/g, replaceWith: ' '}
         ]) : '';
     }
-}
 
-export module Err { // eslint-disable-line no-redeclare
     /**
      * @param err the `Error` to parse
      * @returns a shortened string formatted as `Error.name: Error.message (max 100 chars) --- Error.stack (max 300 chars)`
      * where any newlines, tabs and extra spaces are removed
      */
-    export function short(err: any): string {
+    static short(err: any): string {
         return new Err(err)
             .setVerbosity('short')
             .toString();
@@ -174,7 +187,7 @@ export module Err { // eslint-disable-line no-redeclare
      * ```
      * where the full Error details are preserved
      */
-    export function full(err: any): string {
+    static full(err: any): string {
         return new Err(err)
             .setVerbosity('full')
             .toString();
@@ -183,54 +196,50 @@ export module Err { // eslint-disable-line no-redeclare
     /**
      * calls the passed in `Func<void, T>` and handles any errors
      * @param func a function to be run inside a try-catch
-     * @param opts an `ErrOptions` object containing options for this call to `handle`
-     * @returns the result of the passed in `func` or `null` if an error is thrown
+     * @param opts an `ErrOptions` object containing options for this call
+     * @returns a `ProcessingResult` where `result` is the output of the passed in `func`
+     * and `message` will **ONLY** be set if an error was caught
      */
-    export function handle<T>(func: Func<void, T>, opts?: Partial<ErrOptions>): T {
+    static handle<T>(func: Func<void, T>, opts?: Partial<ErrOptions>): ProcessingResult<T> {
         try {
-            return func();
+            const res = func();
+            return { result: res };
         } catch (e) {
-            opts ??= {};
-            opts.verbosity ??= 'short';
-            opts.errLevel ??= 'warn';
-            const err = new Err(e).setVerbosity(opts.verbosity);
-            if (opts.logger) {
-                opts.logger[opts?.errLevel](err.toString());
-            } else {
-                aftLogger.log({
-                    name: this.constructor.name,
-                    level: opts.errLevel,
-                    message: err.toString()
-                });
-            }
-            return null as T;
+            return {result: null as T, message: Err._processException(e, opts)};
         }
     }
 
     /**
-     * calls the passed in `Func<void, PromiseLike<T>>` and handles any errors
-     * @param func a function to be run inside a try-catch
-     * @param opts an `ErrOptions` object containing options for this call to `handle`
-     * @returns the result of the passed in `func` or `null` if an error is thrown
+     * calls the passed in `Func<void, T | PromiseLike<T>>` and handles any errors
+     * @param func an async function to be awaited inside a try-catch
+     * @param opts an `ErrOptions` object containing options for this call
+     * @returns a `ProcessingResult` where `result` is the output of the passed in `func`
+     * and `message` will **ONLY** be set if an error was caught
      */
-    export async function handleAsync<T>(func: Func<void, PromiseLike<T>>, opts?: Partial<ErrOptions>): Promise<T> {
-        return await Promise.resolve()
-            .then(func)
-            .catch(async (err) => {
-                opts ??= {};
-                opts.verbosity ??= 'short';
-                opts.errLevel ??= 'warn';
-                const e = new Err(err).setVerbosity(opts?.verbosity);
-                if (opts.logger) {
-                    await opts.logger[opts?.errLevel ?? 'warn'](e.toString());
-                } else {
-                    aftLogger.log({
-                        name: this.constructor.name,
-                        level: opts.errLevel,
-                        message: e.toString()
-                    });
-                }
-                return null as T;
+    static async handleAsync<T>(func: Func<void, T | PromiseLike<T>>, opts?: Partial<ErrOptions>): Promise<ProcessingResult<T>> {
+        try {
+            const res = await func();
+            return { result: res };
+        } catch(e) {
+            return { result: null as T, message: Err._processException(e, opts)};
+        }
+    }
+
+    private static _processException(e: Error, opts?: Partial<ErrOptions>): string {
+        opts ??= {};
+        opts.verbosity ??= 'short';
+        opts.errLevel ??= 'warn';
+        opts.logger ??= aftLogger;
+        const err = new Err(e)
+            .setVerbosity(opts.verbosity);
+        const message = err.toString();
+        if (opts.errLevel !== 'none') {
+            opts.logger.log({
+                name: Err.name,
+                message,
+                level: opts.errLevel 
             });
+        }
+        return message
     }
 }

@@ -1,17 +1,16 @@
 {
-    "pluginNames": [
-        "testrail-reporting-plugin",
-        "testrail-test-execution-policy-plugin",
-        "jira-reporting-plugin",
-        "jira-test-execution-policy-plugin",
-        "kinesis-reporting-plugin",
-        "html-reporting-plugin",
-        "filesystem-reporting-plugin",
-        "grid-session-generator-plugin",
-        "local-session-generator-plugin",
-        "webdriverio-remote-session-generator-plugin"
+    "plugins": [
+        {"name": "testrail-reporting-plugin", "searchDir": "../../packages/"},
+        {"name": "testrail-policy-plugin", "searchDir": "../../packages/"},
+        {"name": "jira-reporting-plugin", "searchDir": "../../packages/"},
+        {"name": "jira-policy-plugin", "searchDir": "../../packages/"},
+        {"name": "kinesis-reporting-plugin", "searchDir": "../../packages/"},
+        {"name": "html-reporting-plugin", "searchDir": "../../packages/"},
+        {"name": "filesystem-reporting-plugin", "searchDir": "../../packages/"},
+        {"name": "grid-session-generator-plugin", "searchDir": "../../packages/"},
+        {"name": "local-session-generator-plugin", "searchDir": "../../packages/"},
+        {"name": "webdriverio-remote-session-generator-plugin", "searchDir": "../../packages/"}
     ],
-    "pluginsSearchDir": "../../packages/",
     "logLevel": "debug",
     "TestRailConfig": {
         "url": "%testrail_url%",
@@ -46,7 +45,9 @@
             "capabilities": {
                 "bstack:options": {
                     "debug": true,
-                    "projectName": "Examples/webdriverio-mocha"
+                    "projectName": "Examples/webdriverio-mocha",
+                    "os": "windows",
+                    "osVersion": "11"
                 }
             }
         }

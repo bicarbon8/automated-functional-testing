@@ -1,4 +1,4 @@
-import { Reporter, rand } from "aft-core";
+import { ReportingManager, rand } from "aft-core";
 import { UiComponentOptions } from "../../src";
 import { FakeComponent } from "./fake-component";
 import { FakeElement } from "./fake-element";
@@ -14,7 +14,7 @@ describe('UiComponent', () => {
         const options: UiComponentOptions = {
             driver: mockDriver,
             locator: FakeLocator.fakeLocType('fake:loc'),
-            reporter: new Reporter(rand.getString(15))
+            reporter: new ReportingManager(rand.getString(15))
         };
         const compo = new FakeComponent(options);
 

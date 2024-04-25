@@ -23,6 +23,12 @@ jobs:
       - name: Run Unit Tests
         id: unittest
         run: npm run test
+      - name: Run Functional Tests
+        id: functionaltest
+        run: npm run test:examples
+        env:
+          browserstack_user: ${{ secrets.BROWSERSTACK_USER }}
+          browserstack_key: ${{ secrets.BROWSERSTACK_KEY }}
       - name: Update NPM Credentials File
         id: updatecredsfile
         run: cp .npmrc-publish ~/.npmrc
