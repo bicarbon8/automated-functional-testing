@@ -1,0 +1,16 @@
+{
+    "extends": "../../tsconfig.settings.json",
+    "compilerOptions": {
+        "outDir": "dist",
+        "types": ["node", "cypress", "chai"]
+    },
+    "include": ["cypress"],
+    "references": [
+        { "path": "../../packages/aft-jira" },
+        { "path": "../../packages/aft-mocha-reporter" },
+        { "path": "../../packages/aft-reporting-aws-kinesis-firehose" },
+        { "path": "../../packages/aft-reporting-filesystem" },
+        { "path": "../../packages/aft-reporting-html" },
+        { "path": "../../packages/aft-testrail" },
+    ]
+}

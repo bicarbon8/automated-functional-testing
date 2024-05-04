@@ -1,7 +1,24 @@
-# Examples: Selenium and Mocha
-Automated Functional Testing (AFT) repo providing examples and best practices for using the AFT libraries with Selenium and Mocha test framework. This repo can serve as a quick-start project for functional testing projects.
+# Examples: Cypress and Mocha
+Automated Functional Testing (AFT) repo providing examples and best practices for using the AFT libraries with Cypress and Mocha test framework. This repo can serve as a quick-start project for functional testing projects.
+> NOTE: Cypress tests run in a browser so the `aftMochaTest` cannot be used since this relies on Nodejs features such as filesystem access. the `AftMochaReporter` will work as a Cypress reporter though and will report results to any AFT reporting plugins at the completion of each test since the Cypress reporters run in a Nodejs context
 
 ## Usage:
+add a reference to the `aft-mocha-reporter` in your `cypress.config` file
+
+### Example `cypress.config.cjs`
+
+```javascript
+const { defineConfig } = require("cypress");
+
+module.exports = defineConfig({
+    reporter: 'aft-mocha-reporter/dist/src/aft-mocha-reporter.js',
+    e2e: {
+        specPattern: '**/*.spec.js',
+        supportFile: false
+    },
+})
+```
+
 using AFT allows for setting configuration values in the `aftconfig.json` depending on the type of testing you're planning on performing.
 
 ### Example `aftconfig.json`
@@ -14,8 +31,6 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
         {"name": "kinesis-reporting-plugin", "searchDir": "../"},
         {"name": "html-reporting-plugin", "searchDir": "../"},
         {"name": "filesystem-reporting-plugin", "searchDir": "../"},
-        {"name": "grid-session-generator-plugin", "searchDir": "../"},
-        {"name": "local-session-generator-plugin", "searchDir": "../"},
     ],
     "logLevel": "info",
     "KinesisReportingPluginConfig": {
@@ -41,22 +56,6 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
         "openDefectOnFail": true,
         "policyEngineEnabled": true
     },
-    "UiSessionManagerConfig": {
-        "generatorName": "grid-session-generator-plugin",
-        "options": {
-            "url": "https://hub-cloud.browserstack.com/wd/hub",
-            "capabilities": {
-                "browserName": "chrome",
-                "bstack:options": {
-                    "userName": "%browserstack_user%",
-                    "accessKey": "%browserstack_key%",
-                    "os": "windows",
-                    "osVersion": "11",
-                    "debug": true
-                }
-            }
-        }
-    }
 }
 ```
 - **plugins** - `Array<string | PluginLocator>` containing names that should match the filename and classname (if you remove characters like `-`, `_` and `.`) of the plugins to load. the array can contain either a `string` in which case the plugin will be loaded by searching starting from the current NodeJs execution directory or it can be a `PluginLocator` containing a `name` and `searchDir` field in which case the plugin will be loaded by searching starting from the `searchDir`. _(if not set, `searchDir` defaults to `process.cwd()`)_
@@ -84,53 +83,21 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
   - **openDefectOnFail** - `boolean` indicating if a new defect should be created when a test failure occurs _(defaults to `false`)_
   - **closeDefectOnPass** - `boolean` indicating if any open defects referencing the currently passing test ID should be closed on successful completion of the test _(defaults to `false`)_
   - **policyEngineEnabled** - `boolean` indicating if each a search of open Jira issues should be performed for each test ID to determine if the test should be run when using an `AftTest`. _(defaults to `true`)_
-- **UiSessionConfig** - configuration for the `UiSessionGeneratorManager` to use to determine which `UiSessionGeneratorPlugin` to use
-  - **generatorName** - `string` containing the name of the `UiSessionGeneratorPlugin` to use when generating UI sessions
-  - **options** - `object` containing any properties that will be passed to the loaded `UiSessionGeneratorPlugin.getSession` function and that can be used by the plugin to control the type of session to create
 
 ## Test Execution
-running `npm run test:e2e` will execute the tests using Mocha which should result in output like the following being sent to the console (assuming the `ReportingManager.logLevel` is set to something like `info` in your `aftconfig.json`):
+running `npm run test:e2e` will execute the tests using Cypress which should result in output like the following being sent to the console (assuming the `ReportingManager.logLevel` is set to something like `info` in your `aftconfig.json`):
 ```
-14:51:33 - [can access websites using AFT and Page Widgets and Facets] - STEP  - 1: navigate to LoginPage...
-14:51:35 - [can access websites using AFT and Page Widgets and Facets] - STEP  - 2: login
-14:51:36 - [can access websites using AFT and Page Widgets and Facets] - INFO  - sending tomsmith to the Username Input
-14:51:36 - [can access websites using AFT and Page Widgets and Facets] - INFO  - username entered
-14:51:37 - [can access websites using AFT and Page Widgets and Facets] - INFO  - sending SuperSecretPassword! to the Password Input
-14:51:37 - [can access websites using AFT and Page Widgets and Facets] - INFO  - password entered
-14:51:37 - [can access websites using AFT and Page Widgets and Facets] - INFO  - clicking Login Button...
-14:51:39 - [can access websites using AFT and Page Widgets and Facets] - INFO  - Login Button clicked
-14:51:39 - [can access websites using AFT and Page Widgets and Facets] - STEP  - 3: wait for message to appear...
-14:51:39 - [can access websites using AFT and Page Widgets and Facets] - STEP  - 4: get message...
-14:51:41 - [can access websites using AFT and Page Widgets and Facets] - PASS  - C3456
-14:51:41 - [can access websites using AFT and Page Widgets and Facets] - PASS  - C2345
-14:51:41 - [can access websites using AFT and Page Widgets and Facets] - PASS  - C1234
+14:51:41 - [TestSuite [C1234] can access websites using AFT and Page Widgets and Facets] - PASS  - C1234
 ```
 
 ## TestRail and Jira integration
-if using `testrail-reporting-plugin`, `testrail-policy-plugin`, `jira-reporting-plugin` or `jira-policy-plugin` then you must ensure your `verify(assertion)`, or `AftTest` instances have valid Test Case ID's referenced. The values specified for the `withTestIds` function must be the TestRail Case ID's referenced by your existing TestRail Plan (not to be confused with the TestRail Test ID's that start with the letter _T_). Modifications will need to be made in two places per test:
+if using `testrail-reporting-plugin`, or `jira-reporting-plugin` then you must ensure your `it('test description', () => {...})` includes at least one valid Test Case ID. The values specified for the `withTestIds` function must be the TestRail Case ID's referenced by your existing TestRail Plan (not to be confused with the TestRail Test ID's that start with the letter _T_). it should look similar to the following:
 
 ### Specifying Test IDs
-on the `AftTest` instance, include the following in your options:
+by including the Test IDs in the test description like the following:
 ```typescript
-await aftTest('performing tests against three test IDs', () => someTestAction(), {
-    testIds: ['C1234', 'C2345', 'C3456']
-});
-```
-or, by including the Test IDs in the test description like the following:
-```typescript
-it('[C1234] can include tests [C2345] in the title [C3456]', async function() {
-    /**
-     * - for Jest use: `await aftJestTest(expect, () => testStuff());`
-     * - for Mocha use: `await aftMochaTest(this, () => testStuff());`
-     * - for Jasmine use: `await aftJasmineTest(() => testStuff());`
-     */
-    await aftMochaTest(this, () => someTestAction());
+it('[C1234] can include tests [C2345] in the title [C3456]', function() {
+    cy.visit(...);
+    // perform testing
 })
-```
-
-> WARNING: Jasmine's _expect_ calls do not return a boolean as their type definitions would make you think and failed `expect` calls will only throw exceptions if the stop on failure option is enabled: 
-```typescript
-aftTest('some test description', () => expect('foo').toBe('bar')); // AFT will report as 'passed'
-
-aftTest('some test description', (t: AftTest) => t.verify('foo','bar')); // AFT will report as 'failed'
 ```

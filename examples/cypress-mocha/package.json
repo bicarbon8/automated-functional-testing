@@ -1,0 +1,47 @@
+{
+  "name": "cypress-mocha",
+  "description": "Demonstration of using AFT with Cypress",
+  "private": true,
+  "scripts": {
+    "clean": "rimraf ./dist && rimraf ./logs",
+    "build": "npm run clean && tsc --build",
+    "test:e2e": "npm run build && cypress run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bicarbon8/automated-functional-testing.git"
+  },
+  "keywords": [
+    "aft",
+    "automation",
+    "e2e",
+    "integration",
+    "functional",
+    "cypress",
+    "http",
+    "test",
+    "examples"
+  ],
+  "author": "Jason Holt Smith <bicarbon8@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bicarbon8/automated-functional-testing/issues"
+  },
+  "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
+  "dependencies": {
+    "aft-core": "^11.1.0",
+    "aft-jira": "^11.1.0",
+    "aft-mocha-reporter": "^11.1.0",
+    "aft-reporting-aws-kinesis-firehose": "^11.1.0",
+    "aft-reporting-filesystem": "^11.1.0",
+    "aft-reporting-html": "^11.1.0",
+    "aft-testrail": "^11.1.0"
+  },
+  "devDependencies": {
+    "chai": "^4.4.1",
+    "cypress": "^13.8.1",
+    "nyc": "^15.1.0",
+    "rimraf": "^5.0.1",
+    "typescript": "^5.1.6"
+  }
+}

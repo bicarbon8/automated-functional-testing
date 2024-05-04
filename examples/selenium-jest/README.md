@@ -1,5 +1,5 @@
 # Examples: Selenium and Jest
-Automated Functional Testing (AFT) repo providing examples and best practices for using the AFT libraries with WebdriverIO and Mocha test framework. This repo can serve as a quick-start project for functional testing projects.
+Automated Functional Testing (AFT) repo providing examples and best practices for using the AFT libraries with Selenium and Jest test framework. This repo can serve as a quick-start project for functional testing projects.
 
 ## Usage:
 using AFT allows for setting configuration values in the `aftconfig.json` depending on the type of testing you're planning on performing.
@@ -16,7 +16,6 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
         {"name": "filesystem-reporting-plugin", "searchDir": "../"},
         {"name": "grid-session-generator-plugin", "searchDir": "../"},
         {"name": "local-session-generator-plugin", "searchDir": "../"},
-        {"name": "webdriverio-remote-session-generator-plugin", "searchDir": "../"}
     ],
     "logLevel": "info",
     "KinesisReportingPluginConfig": {
