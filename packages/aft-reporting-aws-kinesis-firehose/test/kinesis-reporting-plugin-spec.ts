@@ -273,14 +273,16 @@ describe('KinesisReportingPlugin', () => {
      * WARNING: this test sends an actual message to the Kinesis reporter
      * only for use in debugging issues locally
      */
-    xit('can send real logs and ITestResult objects', async () => {
-        const aftCfg = new AftConfig();
-        const config = aftCfg.getSection(KinesisReportingPluginConfig);
-        config.logLevel = 'trace';
-        config.batch = true;
-        config.batchSize = 10;
-        config.deliveryStream = '%kinesis_deliverystream%';
-        config.region = '%AWS_REGION%';
+    xit('can send real logs and TestResult objects', async () => {
+        const aftCfg = new AftConfig({
+            KinesisReportingPluginConfig: {
+                batch: false,
+                deliveryStream: '%firehose_deliverystream%',
+                logLevel: 'debug',
+                sendStrategy: 'logsandresults',
+                region: 'eu-west-1'
+            }
+        });
         const plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);
         const logName = rand.getString(10, true, true, true, true);
         const result: TestResult = {
@@ -296,7 +298,7 @@ describe('KinesisReportingPlugin', () => {
         await plugin.log(logName, 'info', message);
         await plugin.submitResult(logName, result);
         await plugin.finalise(logName);
-    });
+    }, 20000);
 
     it('can be loaded by the ReportingManager', async () => {
         const config = {
