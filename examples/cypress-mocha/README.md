@@ -45,7 +45,7 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
         "projectId": 3,
         "suiteIds": [744],
         "logLevel": "error",
-        "policyEngineEnabled": true
+        "policyEngineEnabled": false // not compatible with Cypress
     },
     "JiraConfig": {
         "url": "%jira_url%",
@@ -54,7 +54,7 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
         "projectId": "1000",
         "closeDefectOnPass": true,
         "openDefectOnFail": true,
-        "policyEngineEnabled": true
+        "policyEngineEnabled": false // not compatible with Cypress
     },
 }
 ```
