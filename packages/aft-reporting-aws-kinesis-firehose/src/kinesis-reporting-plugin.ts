@@ -1,4 +1,5 @@
 import { ReportingPlugin, LogLevel, TestResult, machineInfo, AftConfig, BuildInfoManager, ReportingPluginConfig, Err } from "aft-core";
+import { Buffer } from "node:buffer";
 import * as AWS from "aws-sdk";
 import * as pkg from "../package.json";
 import { KinesisLogRecord } from "./kinesis-log-record";
@@ -148,7 +149,7 @@ export class KinesisReportingPlugin extends ReportingPlugin {
                 level,
                 message: `${message}${dataStr}`,
                 version: pkg.version,
-                buildName: await this._buildInfo.buildName().catch(() => 'unknown'),
+                buildName: await this._buildInfo.buildName(),
                 machineInfo: machineInfo.data
             });
             const logs = this.logs(name);
@@ -170,7 +171,7 @@ export class KinesisReportingPlugin extends ReportingPlugin {
                     logName: name,
                     result,
                     version: pkg.version,
-                    buildName: await this._buildInfo.buildName().catch(() => 'unknown'),
+                    buildName: await this._buildInfo.buildName(),
                     machineInfo: machineInfo.data
                 });
                 const logs = this.logs(name);
@@ -191,7 +192,7 @@ export class KinesisReportingPlugin extends ReportingPlugin {
     private _createKinesisLogRecord(logRecord: KinesisLogRecord): AWS.Firehose.Record {
         const data: string = JSON.stringify(logRecord);
         const record: AWS.Firehose.Record = {
-            Data: data
+            Data: Buffer.from(data)
         };
         return record;
     }
@@ -216,44 +217,52 @@ export class KinesisReportingPlugin extends ReportingPlugin {
     }
 
     private async _sendBatch(deliveryStream: string, records: AWS.Firehose.Record[]): Promise<AWS.Firehose.PutRecordBatchOutput> {
-        const client = await this.client();
-        return new Promise((resolve, reject) => {
-            try {
-                const batchInput: AWS.Firehose.PutRecordBatchInput = {
-                    Records: records,
-                    DeliveryStreamName: deliveryStream
-                };
-                client.putRecordBatch(batchInput, (err: AWS.AWSError, data: AWS.Firehose.PutRecordBatchOutput) => {
-                    if (err) {
-                        reject(err);
-                        return;
-                    }
-                    resolve(data);
-                });
-            } catch (e) {
-                reject(e);
-            }
-        });
+        if (records?.length > 0) {
+            const client = await this.client();
+            const result: AWS.Firehose.PutRecordBatchOutput = await new Promise((resolve, reject) => {
+                try {
+                    const batchInput: AWS.Firehose.PutRecordBatchInput = {
+                        Records: records,
+                        DeliveryStreamName: deliveryStream
+                    };
+                    client.putRecordBatch(batchInput, (err: AWS.AWSError, data: AWS.Firehose.PutRecordBatchOutput) => {
+                        if (err) {
+                            reject(err);
+                            return;
+                        }
+                        resolve(data);
+                    });
+                } catch (e) {
+                    reject(e);
+                }
+            });
+            return result;
+        }
+        return null;
     }
 
     private async _send(deliveryStream: string, record: AWS.Firehose.Record): Promise<AWS.Firehose.PutRecordOutput> {
-        const client = await this.client();
-        return new Promise((resolve, reject) => {
-            try {
-                const input: AWS.Firehose.PutRecordInput = {
-                    Record: record,
-                    DeliveryStreamName: deliveryStream
-                }
-                client.putRecord(input, (err: AWS.AWSError, data: AWS.Firehose.PutRecordOutput) => {
-                    if (err) {
-                        reject(err);
-                        return;
+        if (record) {
+            const client = await this.client();
+            const result: AWS.Firehose.PutRecordOutput = await new Promise((resolve, reject) => {
+                try {
+                    const input: AWS.Firehose.PutRecordInput = {
+                        Record: record,
+                        DeliveryStreamName: deliveryStream
                     }
-                    resolve(data);
-                });
-            } catch (e) {
-                reject(e);
-            }
-        });
+                    client.putRecord(input, (err: AWS.AWSError, data: AWS.Firehose.PutRecordOutput) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(data);
+                        }
+                    });
+                } catch (e) {
+                    reject(e);
+                }
+            });
+            return result;
+        }
+        return null;
     }
 }

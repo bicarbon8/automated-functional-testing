@@ -34,7 +34,7 @@ should use a <code>ReportingManager</code> instance instead</p>
 <ul class="tsd-hierarchy">
 <li><span class="target">AftLogger</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-core/src/logging/aft-logger.ts#L26">packages/aft-core/src/logging/aft-logger.ts:26</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/1832f1b/packages/aft-core/src/logging/aft-logger.ts#L26">packages/aft-core/src/logging/aft-logger.ts:26</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -75,14 +75,14 @@ should use a <code>ReportingManager</code> instance instead</p>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">aftCfg</span>: <a href="aft_core_src.AftConfig.html" class="tsd-signature-type tsd-kind-class">AftConfig</a></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="aft_core_src.AftLogger.html" class="tsd-signature-type tsd-kind-class">AftLogger</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-core/src/logging/aft-logger.ts#L34">packages/aft-core/src/logging/aft-logger.ts:34</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/1832f1b/packages/aft-core/src/logging/aft-logger.ts#L34">packages/aft-core/src/logging/aft-logger.ts:34</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member"><a id="aftCfg" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>aft<wbr/>Cfg</span><a href="#aftCfg" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">aft<wbr/>Cfg</span><span class="tsd-signature-symbol">:</span> <a href="aft_core_src.AftConfig.html" class="tsd-signature-type tsd-kind-class">AftConfig</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-core/src/logging/aft-logger.ts#L27">packages/aft-core/src/logging/aft-logger.ts:27</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/1832f1b/packages/aft-core/src/logging/aft-logger.ts#L27">packages/aft-core/src/logging/aft-logger.ts:27</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="loggerName" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>logger<wbr/>Name</span><a href="#loggerName" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">logger<wbr/>Name</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
@@ -91,7 +91,7 @@ the associated class doing the logging</p>
 </div>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-core/src/logging/aft-logger.ts#L32">packages/aft-core/src/logging/aft-logger.ts:32</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/1832f1b/packages/aft-core/src/logging/aft-logger.ts#L32">packages/aft-core/src/logging/aft-logger.ts:32</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Accessors</h2>
 <section class="tsd-panel tsd-member"><a id="logLevel" class="tsd-anchor"></a>
@@ -103,7 +103,7 @@ the associated class doing the logging</p>
 values to different types of logging. the purpose of each log level is
 as follows:</p>
 <ul>
-<li><code>trace</code> - used when logging low-level debug events that occur within a loop</li>
+<li><code>trace</code> - used by AFT internal systems or debug events that would be very chatty (for ex: occur within a loop)</li>
 <li><code>debug</code> - used for debug logging that does not run within a loop or at a high frequency</li>
 <li><code>info</code> - used for informational events providing current state of a system</li>
 <li><code>step</code> - used within a test to denote where within the test steps we are</li>
@@ -117,7 +117,7 @@ as follows:</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">&quot;trace&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;debug&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;info&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;step&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;warn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;pass&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;fail&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;error&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;none&quot;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-core/src/logging/aft-logger.ts#L53">packages/aft-core/src/logging/aft-logger.ts:53</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/1832f1b/packages/aft-core/src/logging/aft-logger.ts#L53">packages/aft-core/src/logging/aft-logger.ts:53</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member"><a id="format" class="tsd-anchor"></a>
@@ -140,7 +140,7 @@ be formatted into a console-friendly log string</p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-core/src/logging/aft-logger.ts#L79">packages/aft-core/src/logging/aft-logger.ts:79</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/1832f1b/packages/aft-core/src/logging/aft-logger.ts#L79">packages/aft-core/src/logging/aft-logger.ts:79</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="log" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>log</span><a href="#log" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -163,7 +163,7 @@ and any additional arguments to be logged</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-core/src/logging/aft-logger.ts#L65">packages/aft-core/src/logging/aft-logger.ts:65</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/1832f1b/packages/aft-core/src/logging/aft-logger.ts#L65">packages/aft-core/src/logging/aft-logger.ts:65</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="toConsole" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>to<wbr/>Console</span><a href="#toConsole" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -193,7 +193,7 @@ the console</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-core/src/logging/aft-logger.ts#L105">packages/aft-core/src/logging/aft-logger.ts:105</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/1832f1b/packages/aft-core/src/logging/aft-logger.ts#L105">packages/aft-core/src/logging/aft-logger.ts:105</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -308,6 +308,7 @@ the console</p>
 <li><a href="../modules/aft_ui_selenium_src.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>aft-<wbr/>ui-<wbr/>selenium/src</span></a></li>
 <li><a href="../modules/aft_ui_webdriverio_src.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>aft-<wbr/>ui-<wbr/>webdriverio/src</span></a></li>
 <li><a href="../modules/aft_ui_src.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>aft-<wbr/>ui/src</span></a></li>
+<li><a href="../modules/aft_vitest_reporter_src.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>aft-<wbr/>vitest-<wbr/>reporter/src</span></a></li>
 <li><a href="../modules/aft_web_services_src.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>aft-<wbr/>web-<wbr/>services/src</span></a></li></ul></nav></div></div></div>
 <div class="tsd-generator">
 <p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>

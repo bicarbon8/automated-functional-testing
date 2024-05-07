@@ -1,0 +1,34 @@
+{
+    "plugins": [
+        {"name": "testrail-reporting-plugin", "searchDir": "../../packages"},
+        {"name": "jira-reporting-plugin", "searchDir": "../../packages"},
+        {"name": "kinesis-reporting-plugin", "searchDir": "../../packages"},
+        {"name": "html-reporting-plugin", "searchDir": "../../packages"},
+        {"name": "filesystem-reporting-plugin", "searchDir": "../../packages"}
+    ],
+    "logLevel": "debug",
+    "TestRailConfig": {
+        "url": "%testrail_url%",
+        "user": "%testrail_user%",
+        "accessKey": "%testrail_pass%",
+        "projectId": 3,
+        "suiteIds": [744],
+        "logLevel": "none",
+        "policyEngineEnabled": false
+    },
+    "JiraConfig": {
+        "url": "%jira_url%",
+        "accessKey": "%jira_pass%",
+        "projectKey": "ABC",
+        "closeDefectOnPass": false,
+        "openDefectOnFail": false,
+        "policyEngineEnabled": false,
+        "closedStatusCategoryName": "Done"
+    },
+    "KinesisReportingPluginConfig": {
+        "logLevel": "none",
+        "region": "eu-west-1",
+        "deliveryStream": "%aws_kinesis_delivery_stream%",
+        "sendStrategy": "reportonly"
+    }
+}

@@ -19,24 +19,24 @@ describe('KinesisReportingPlugin', () => {
         config.logLevel = 'info';
         config.batch = true;
         config.batchSize = 10;
-        let plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);
+        const plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);
         spyOn(plugin, 'credentials').and.returnValue(Promise.resolve(new AWS.Credentials(
             rand.getString(25, true, true),
             rand.getString(35, true, true, true),
             rand.getString(150, true, true, true)
         )));
-        let spyCheckAndSendLogs = spyOn<any>(plugin, '_checkAndSendLogs').and.callThrough();
-        let spySendBatch = spyOn<any>(plugin, '_sendBatch').and.callFake((deliveryStream: string, records: Firehose.Record[]) => {
+        const spyCheckAndSendLogs = spyOn<any>(plugin, '_checkAndSendLogs').and.callThrough();
+        const spySendBatch = spyOn<any>(plugin, '_sendBatch').and.callFake((deliveryStream: string, records: Firehose.Record[]) => {
             /* do nothing */
         });
-        let spySend = spyOn<any>(plugin, '_send').and.callFake((deliveryStream: string, record: Firehose.Record) => {
+        const spySend = spyOn<any>(plugin, '_send').and.callFake((deliveryStream: string, record: Firehose.Record) => {
             /* do nothing */
         });
 
         const logName = rand.getString(10);
         plugin.initialise(logName);
-        for (var i=0; i<20; i++) {
-            let logMessage: string = rand.getString(99, true, true);
+        for (let i=0; i<20; i++) {
+            const logMessage: string = rand.getString(99, true, true);
             await plugin.log(logName, 'warn', logMessage);
         }
 
@@ -51,24 +51,24 @@ describe('KinesisReportingPlugin', () => {
         config.logLevel = 'info';
         config.batch = false
         config.batchSize = 10;
-        let plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);
+        const plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);
         spyOn(plugin, 'credentials').and.returnValue(Promise.resolve(new AWS.Credentials(
             rand.getString(25, true, true),
             rand.getString(35, true, true, true),
             rand.getString(150, true, true, true)
         )));
-        let spyCheckAndSendLogs = spyOn<any>(plugin, '_checkAndSendLogs').and.callThrough();
-        let spySendBatch = spyOn<any>(plugin, '_sendBatch').and.callFake((deliveryStream: string, records: Firehose.Record[]) => {
+        const spyCheckAndSendLogs = spyOn<any>(plugin, '_checkAndSendLogs').and.callThrough();
+        const spySendBatch = spyOn<any>(plugin, '_sendBatch').and.callFake((deliveryStream: string, records: Firehose.Record[]) => {
             /* do nothing */
         });
-        let spySend = spyOn<any>(plugin, '_send').and.callFake((deliveryStream: string, record: Firehose.Record) => {
+        const spySend = spyOn<any>(plugin, '_send').and.callFake((deliveryStream: string, record: Firehose.Record) => {
             /* do nothing */
         });
 
         const logName = rand.getString(10);
         plugin.initialise(logName);
-        for (var i=0; i<20; i++) {
-            let logMessage: string = rand.getString(99, true, true);
+        for (let i=0; i<20; i++) {
+            const logMessage: string = rand.getString(99, true, true);
             await plugin.log(logName, 'warn', logMessage);
         }
 
@@ -83,24 +83,24 @@ describe('KinesisReportingPlugin', () => {
         config.logLevel = 'info';
         config.batch = true;
         config.batchSize = 10;
-        let plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);
+        const plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);
         spyOn(plugin, 'credentials').and.returnValue(Promise.resolve(new AWS.Credentials(
             rand.getString(25, true, true),
             rand.getString(35, true, true, true),
             rand.getString(150, true, true, true)
         )));
-        let spyCheckAndSendLogs = spyOn<any>(plugin, '_checkAndSendLogs').and.callThrough();
-        let spySendBatch = spyOn<any>(plugin, '_sendBatch').and.callFake((deliveryStream: string, records: Firehose.Record[]) => {
+        const spyCheckAndSendLogs = spyOn<any>(plugin, '_checkAndSendLogs').and.callThrough();
+        const spySendBatch = spyOn<any>(plugin, '_sendBatch').and.callFake((deliveryStream: string, records: Firehose.Record[]) => {
             /* do nothing */
         });
-        let spySend = spyOn<any>(plugin, '_send').and.callFake((deliveryStream: string, record: Firehose.Record) => {
+        const spySend = spyOn<any>(plugin, '_send').and.callFake((deliveryStream: string, record: Firehose.Record) => {
             /* do nothing */
         });
 
         const logName = rand.getString(10);
         plugin.initialise(logName);
-        for (var i=0; i<9; i++) {
-            let logMessage: string = rand.getString(99, true, true);
+        for (let i=0; i<9; i++) {
+            const logMessage: string = rand.getString(99, true, true);
             await plugin.log(logName, 'warn', logMessage);
         }
 
@@ -122,17 +122,17 @@ describe('KinesisReportingPlugin', () => {
         config.logLevel = 'info';
         config.batch = false;
         config.batchSize = 10;
-        let plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);
+        const plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);
         spyOn(plugin, 'credentials').and.returnValue(Promise.resolve(new AWS.Credentials(
             rand.getString(25, true, true),
             rand.getString(35, true, true, true),
             rand.getString(150, true, true, true)
         )));
-        let spyCheckAndSendLogs = spyOn<any>(plugin, '_checkAndSendLogs').and.callThrough();
-        let spySendBatch = spyOn<any>(plugin, '_sendBatch').and.callFake((deliveryStream: string, records: Firehose.Record[]) => {
+        const spyCheckAndSendLogs = spyOn<any>(plugin, '_checkAndSendLogs').and.callThrough();
+        const spySendBatch = spyOn<any>(plugin, '_sendBatch').and.callFake((deliveryStream: string, records: Firehose.Record[]) => {
             /* do nothing */
         });
-        let spySend = spyOn<any>(plugin, '_send').and.callFake((deliveryStream: string, record: Firehose.Record) => {
+        const spySend = spyOn<any>(plugin, '_send').and.callFake((deliveryStream: string, record: Firehose.Record) => {
             /* do nothing */
         });
 
@@ -154,17 +154,17 @@ describe('KinesisReportingPlugin', () => {
         config.batch = false;
         config.batchSize = 10;
         config.sendStrategy = 'resultsonly';
-        let plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);
+        const plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);
         spyOn(plugin, 'credentials').and.returnValue(Promise.resolve(new AWS.Credentials(
             rand.getString(25, true, true),
             rand.getString(35, true, true, true),
             rand.getString(150, true, true, true)
         )));
-        let spyCheckAndSendLogs = spyOn<any>(plugin, '_checkAndSendLogs').and.callThrough();
-        let spySendBatch = spyOn<any>(plugin, '_sendBatch').and.callFake((deliveryStream: string, records: Firehose.Record[]) => {
+        const spyCheckAndSendLogs = spyOn<any>(plugin, '_checkAndSendLogs').and.callThrough();
+        const spySendBatch = spyOn<any>(plugin, '_sendBatch').and.callFake((deliveryStream: string, records: Firehose.Record[]) => {
             /* do nothing */
         });
-        let spySend = spyOn<any>(plugin, '_send').and.callFake((deliveryStream: string, record: Firehose.Record) => {
+        const spySend = spyOn<any>(plugin, '_send').and.callFake((deliveryStream: string, record: Firehose.Record) => {
             /* do nothing */
         });
 
@@ -199,17 +199,17 @@ describe('KinesisReportingPlugin', () => {
         config.batch = false;
         config.batchSize = 10;
         config.sendStrategy = 'logsonly';
-        let plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);
+        const plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);
         spyOn(plugin, 'credentials').and.returnValue(Promise.resolve(new AWS.Credentials(
             rand.getString(25, true, true),
             rand.getString(35, true, true, true),
             rand.getString(150, true, true, true)
         )));
-        let spyCheckAndSendLogs = spyOn<any>(plugin, '_checkAndSendLogs').and.callThrough();
-        let spySendBatch = spyOn<any>(plugin, '_sendBatch').and.callFake((deliveryStream: string, records: Firehose.Record[]) => {
+        const spyCheckAndSendLogs = spyOn<any>(plugin, '_checkAndSendLogs').and.callThrough();
+        const spySendBatch = spyOn<any>(plugin, '_sendBatch').and.callFake((deliveryStream: string, records: Firehose.Record[]) => {
             /* do nothing */
         });
-        let spySend = spyOn<any>(plugin, '_send').and.callFake((deliveryStream: string, record: Firehose.Record) => {
+        const spySend = spyOn<any>(plugin, '_send').and.callFake((deliveryStream: string, record: Firehose.Record) => {
             /* do nothing */
         });
 
@@ -243,26 +243,26 @@ describe('KinesisReportingPlugin', () => {
         config.logLevel = 'info';
         config.batch = false;
         config.batchSize = 10;
-        let plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);
+        const plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);
         spyOn(plugin, 'credentials').and.returnValue(Promise.resolve(new AWS.Credentials(
             rand.getString(25, true, true),
             rand.getString(35, true, true, true),
             rand.getString(150, true, true, true)
         )));
         const store = new Map<string, any>();
-        let spySend = spyOn<any>(plugin, '_send').and.callFake((deliveryStream: string, record: Firehose.Record) => {
+        spyOn<any>(plugin, '_send').and.callFake((deliveryStream: string, record: Firehose.Record) => {
             store.set('_send', record);
         });
 
-        let expectedMessage: string = rand.guid;
+        const expectedMessage: string = rand.guid;
         const logName = 'adds expected fields to the log record';
         plugin.initialise(logName);
         await plugin.log(logName, 'warn', expectedMessage);
 
-        let logRecord: Firehose.Record = store.get('_send');
-        let data: KinesisLogRecord = JSON.parse(logRecord.Data.toString()) as KinesisLogRecord;
+        const logRecord: Firehose.Record = store.get('_send');
+        const data: KinesisLogRecord = JSON.parse(logRecord.Data.toString()) as KinesisLogRecord;
         expect(data.level).toEqual('warn');
-        expect(data.logName).toEqual('adds expected fields to the log record');
+        expect(data.logName).toEqual(logName);
         expect(data.message).toEqual(expectedMessage);
         expect(data.machineInfo).toEqual(machineInfo.data);
         expect(data.result).toBeUndefined();
@@ -273,14 +273,16 @@ describe('KinesisReportingPlugin', () => {
      * WARNING: this test sends an actual message to the Kinesis reporter
      * only for use in debugging issues locally
      */
-    xit('can send real logs and ITestResult objects', async () => {
-        const aftCfg = new AftConfig();
-        const config = aftCfg.getSection(KinesisReportingPluginConfig);
-        config.logLevel = 'trace';
-        config.batch = true;
-        config.batchSize = 10;
-        config.deliveryStream = '%kinesis_deliverystream%';
-        config.region = '%AWS_REGION%';
+    xit('can send real logs and TestResult objects', async () => {
+        const aftCfg = new AftConfig({
+            KinesisReportingPluginConfig: {
+                batch: false,
+                deliveryStream: '%firehose_deliverystream%',
+                logLevel: 'debug',
+                sendStrategy: 'logsandresults',
+                region: 'eu-west-1'
+            }
+        });
         const plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);
         const logName = rand.getString(10, true, true, true, true);
         const result: TestResult = {
@@ -296,7 +298,7 @@ describe('KinesisReportingPlugin', () => {
         await plugin.log(logName, 'info', message);
         await plugin.submitResult(logName, result);
         await plugin.finalise(logName);
-    });
+    }, 20000);
 
     it('can be loaded by the ReportingManager', async () => {
         const config = {

@@ -5,6 +5,7 @@ import { Err } from "../../helpers/err";
 import { MachineInfoData, machineInfo } from "../../helpers/machine-info";
 import { pluginLoader } from "../plugin-loader";
 import { BuildInfoPlugin } from "./build-info-plugin";
+import { ProcessingResult } from "../../helpers/custom-types";
 
 /**
  * a class that manages the `BuildInfoPlugin` instances that
@@ -55,13 +56,12 @@ export class BuildInfoManager {
     async buildName(): Promise<string> {
         const plugin = this.plugins.find(p => p?.enabled);
         if (plugin) {
-            try {
-                return plugin.buildName();
-            } catch (e) {
-                this._aftLogger.log({
-                    level: 'warn',
-                    message: `error calling '${plugin.constructor.name}.buildName': ${Err.short(e)}`
-                });
+            const result: ProcessingResult<string> = await Err.handleAsync(() => plugin.buildName(), {
+                errLevel: 'trace',
+                logger: this._aftLogger
+            });
+            if (result.result) {
+                return result.result;
             }
         }
         const mi: MachineInfoData = machineInfo.data;
@@ -79,13 +79,12 @@ export class BuildInfoManager {
     async buildNumber(): Promise<string> {
         const plugin = this.plugins.find(p => p?.enabled);
         if (plugin) {
-            try {
-                return plugin.buildNumber();
-            } catch (e) {
-                this._aftLogger.log({
-                    level: 'warn',
-                    message: `error calling '${plugin.constructor.name}.buildNumber': ${Err.short(e)}`
-                });
+            const result: ProcessingResult<string> = await Err.handleAsync(() => plugin.buildNumber(), {
+                errLevel: 'trace',
+                logger: this._aftLogger
+            });
+            if (result.result) {
+                return result.result;
             }
         }
         const d = new Date();
