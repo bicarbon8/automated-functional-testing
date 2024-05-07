@@ -42,6 +42,7 @@
 <li><a href="https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-ui/README.md"><code>aft-ui</code></a> - base library supporting development of UI testing packages</li>
 <li><a href="https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-ui-selenium/README.md"><code>aft-ui-selenium</code></a> - adds support for Selenium-based UI testing</li>
 <li><a href="https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-ui-webdriverio/README.md"><code>aft-ui-webdriverio</code></a> - adds support for WebdriverIO-based UI testing</li>
+<li><a href="https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-vitest-reporter/README.md"><code>aft-vittest-reporter</code></a> - provides Vitest Reporter plugin that integrates with AFT to simplify logging and test execution via AFT</li>
 <li><a href="https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-web-services/README.md"><code>aft-web-services</code></a> - adds support for testing REST-based services</li>
 </ul>
 <a id="md:plugins" class="tsd-anchor"></a><h2><a href="#md:plugins">Plugins</a></h2><p>the primary benefit of using AFT comes from the plugins and the <code>AftTest</code>. Because logging using AFT&#39;s <code>ReportingManager</code> will also send to any registered logging plugins, it is easy to create logging plugins that send to any external system such as TestRail or to log results to Elasticsearch. Additionally, before running any <em>assertion</em> passed to a <code>aftTest(description, testFunction)</code> function, AFT will confirm if the <em>testFunction</em> should actually be run based on the results of queries to any supplied <code>PolicyPlugin</code> implementations.</p>
@@ -75,7 +76,7 @@
 <p>all changes require unit tests and these tests are expected to pass when run via <code>npm run test</code></p>
 </blockquote>
 <blockquote>
-<p>check for any circular dependencies using <code>npx dpdm -T --warning false **/index.ts</code></p>
+<p>check for any circular dependencies using <code>npm run circular</code></p>
 </blockquote>
 <blockquote>
 <p>use <code>npx lerna version</code> to automatically update the version of all projects at once (all changes must be committed first)</p>
@@ -136,6 +137,7 @@
 <li><a href="modules/aft_ui_selenium_src.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>aft-<wbr/>ui-<wbr/>selenium/src</span></a></li>
 <li><a href="modules/aft_ui_webdriverio_src.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>aft-<wbr/>ui-<wbr/>webdriverio/src</span></a></li>
 <li><a href="modules/aft_ui_src.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>aft-<wbr/>ui/src</span></a></li>
+<li><a href="modules/aft_vitest_reporter_src.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>aft-<wbr/>vitest-<wbr/>reporter/src</span></a></li>
 <li><a href="modules/aft_web_services_src.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>aft-<wbr/>web-<wbr/>services/src</span></a></li></ul></nav></div></div></div>
 <div class="tsd-generator">
 <p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>

@@ -24,7 +24,7 @@ function is called. if the lock is not immediately available
 the class will wait up to the <code>maxWaitDurationMs</code> before
 throwing an exception</p>
 <p>Ex:</p>
-<pre><code class="language-json"><span class="hl-6">// aftconfig.json</span><br/><span class="hl-1">{</span><br/><span class="hl-1">    </span><span class="hl-11">fileLockMaxWait</span><span class="hl-1">: </span><span class="hl-9">10000</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-11">fileLockMaxHold</span><span class="hl-1">: </span><span class="hl-9">5000</span><br/><span class="hl-1">}</span>
+<pre><code class="language-json"><span class="hl-6">// aftconfig.json</span><br/><span class="hl-1">{</span><br/><span class="hl-1">    </span><span class="hl-10">&quot;fileLockMaxWait&quot;</span><span class="hl-1">: </span><span class="hl-9">10000</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-10">&quot;fileLockMaxHold&quot;</span><span class="hl-1">: </span><span class="hl-9">5000</span><br/><span class="hl-1">}</span>
 </code><button>Copy</button></pre>
 <pre><code class="language-typescript"><span class="hl-6">// wait a maximum of 10 seconds to aquire lock and then hold</span><br/><span class="hl-6">// lock for maximum of 5 seconds or until `unlock` is called</span><br/><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-4">lock</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">ExpiringFileLock</span><span class="hl-1">(</span><span class="hl-2">&#39;unique_name&#39;</span><span class="hl-1">);</span><br/><span class="hl-8">try</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-6">// perform action on shared resource...</span><br/><span class="hl-1">} </span><span class="hl-8">finally</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-7">lock</span><span class="hl-1">?.</span><span class="hl-0">unlock</span><span class="hl-1">();</span><br/><span class="hl-1">}</span>
 </code><button>Copy</button></pre>
@@ -35,7 +35,7 @@ throwing an exception</p>
 <ul class="tsd-hierarchy">
 <li><span class="target">ExpiringFileLock</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-core/src/helpers/expiring-file-lock.ts#L36">packages/aft-core/src/helpers/expiring-file-lock.ts:36</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/1832f1b/packages/aft-core/src/helpers/expiring-file-lock.ts#L36">packages/aft-core/src/helpers/expiring-file-lock.ts:36</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -47,7 +47,7 @@ throwing an exception</p>
 </div></section>
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading">Properties</h3>
-<div class="tsd-index-list"><a href="aft_core_src.ExpiringFileLock.html#_lockFileDescriptor" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-1024"><rect fill="var(--color-icon-background)" stroke="#FF984D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M9.354 16V7.24H12.174C12.99 7.24 13.638 7.476 14.118 7.948C14.606 8.412 14.85 9.036 14.85 9.82C14.85 10.604 14.606 11.232 14.118 11.704C13.638 12.168 12.99 12.4 12.174 12.4H10.434V16H9.354ZM10.434 11.428H12.174C12.646 11.428 13.022 11.284 13.302 10.996C13.59 10.7 13.734 10.308 13.734 9.82C13.734 9.324 13.59 8.932 13.302 8.644C13.022 8.356 12.646 8.212 12.174 8.212H10.434V11.428Z" fill="var(--color-text)"></path></g></svg><span>_lock<wbr/>File<wbr/>Descriptor</span></a>
+<div class="tsd-index-list"><a href="aft_core_src.ExpiringFileLock.html#_safeFlock" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-1024"><rect fill="var(--color-icon-background)" stroke="#FF984D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M9.354 16V7.24H12.174C12.99 7.24 13.638 7.476 14.118 7.948C14.606 8.412 14.85 9.036 14.85 9.82C14.85 10.604 14.606 11.232 14.118 11.704C13.638 12.168 12.99 12.4 12.174 12.4H10.434V16H9.354ZM10.434 11.428H12.174C12.646 11.428 13.022 11.284 13.302 10.996C13.59 10.7 13.734 10.308 13.734 9.82C13.734 9.324 13.59 8.932 13.302 8.644C13.022 8.356 12.646 8.212 12.174 8.212H10.434V11.428Z" fill="var(--color-text)"></path></g></svg><span>_safe<wbr/>Flock</span></a>
 <a href="aft_core_src.ExpiringFileLock.html#_timeout" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_timeout</span></a>
 <a href="aft_core_src.ExpiringFileLock.html#aftCfg" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>aft<wbr/>Cfg</span></a>
 <a href="aft_core_src.ExpiringFileLock.html#lockDuration" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>lock<wbr/>Duration</span></a>
@@ -76,49 +76,49 @@ throwing an exception</p>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">aftCfg</span>: <a href="aft_core_src.AftConfig.html" class="tsd-signature-type tsd-kind-class">AftConfig</a></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="aft_core_src.ExpiringFileLock.html" class="tsd-signature-type tsd-kind-class">ExpiringFileLock</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-core/src/helpers/expiring-file-lock.ts#L45">packages/aft-core/src/helpers/expiring-file-lock.ts:45</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/1832f1b/packages/aft-core/src/helpers/expiring-file-lock.ts#L46">packages/aft-core/src/helpers/expiring-file-lock.ts:46</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
-<section class="tsd-panel tsd-member tsd-is-private"><a id="_lockFileDescriptor" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>_lock<wbr/>File<wbr/>Descriptor</span><a href="#_lockFileDescriptor" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">_lock<wbr/>File<wbr/>Descriptor</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
+<section class="tsd-panel tsd-member tsd-is-private"><a id="_safeFlock" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>_safe<wbr/>Flock</span><a href="#_safeFlock" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">_safe<wbr/>Flock</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">SafeFlock</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-core/src/helpers/expiring-file-lock.ts#L42">packages/aft-core/src/helpers/expiring-file-lock.ts:42</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/1832f1b/packages/aft-core/src/helpers/expiring-file-lock.ts#L42">packages/aft-core/src/helpers/expiring-file-lock.ts:42</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="_timeout" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>_timeout</span><a href="#_timeout" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>_timeout</span><a href="#_timeout" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_timeout</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">Timeout</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-core/src/helpers/expiring-file-lock.ts#L43">packages/aft-core/src/helpers/expiring-file-lock.ts:43</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/1832f1b/packages/aft-core/src/helpers/expiring-file-lock.ts#L44">packages/aft-core/src/helpers/expiring-file-lock.ts:44</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="aftCfg" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>aft<wbr/>Cfg</span><a href="#aftCfg" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">aft<wbr/>Cfg</span><span class="tsd-signature-symbol">:</span> <a href="aft_core_src.AftConfig.html" class="tsd-signature-type tsd-kind-class">AftConfig</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-core/src/helpers/expiring-file-lock.ts#L37">packages/aft-core/src/helpers/expiring-file-lock.ts:37</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/1832f1b/packages/aft-core/src/helpers/expiring-file-lock.ts#L37">packages/aft-core/src/helpers/expiring-file-lock.ts:37</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="lockDuration" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>lock<wbr/>Duration</span><a href="#lockDuration" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">lock<wbr/>Duration</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-core/src/helpers/expiring-file-lock.ts#L39">packages/aft-core/src/helpers/expiring-file-lock.ts:39</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/1832f1b/packages/aft-core/src/helpers/expiring-file-lock.ts#L39">packages/aft-core/src/helpers/expiring-file-lock.ts:39</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="lockName" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>lock<wbr/>Name</span><a href="#lockName" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">lock<wbr/>Name</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-core/src/helpers/expiring-file-lock.ts#L38">packages/aft-core/src/helpers/expiring-file-lock.ts:38</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/1832f1b/packages/aft-core/src/helpers/expiring-file-lock.ts#L38">packages/aft-core/src/helpers/expiring-file-lock.ts:38</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="waitDuration" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>wait<wbr/>Duration</span><a href="#waitDuration" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">wait<wbr/>Duration</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-core/src/helpers/expiring-file-lock.ts#L40">packages/aft-core/src/helpers/expiring-file-lock.ts:40</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/1832f1b/packages/aft-core/src/helpers/expiring-file-lock.ts#L40">packages/aft-core/src/helpers/expiring-file-lock.ts:40</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="_waitForLock" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>_wait<wbr/>For<wbr/>Lock</span><a href="#_waitForLock" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-private">
-<li class="tsd-signature tsd-anchor-link" id="_waitForLock._waitForLock-1"><span class="tsd-kind-call-signature">_wait<wbr/>For<wbr/>Lock</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><a href="#_waitForLock._waitForLock-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="_waitForLock._waitForLock-1"><span class="tsd-kind-call-signature">_wait<wbr/>For<wbr/>Lock</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#_waitForLock._waitForLock-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-core/src/helpers/expiring-file-lock.ts#L66">packages/aft-core/src/helpers/expiring-file-lock.ts:66</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/1832f1b/packages/aft-core/src/helpers/expiring-file-lock.ts#L78">packages/aft-core/src/helpers/expiring-file-lock.ts:78</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="unlock" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>unlock</span><a href="#unlock" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -130,13 +130,13 @@ timer</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-core/src/helpers/expiring-file-lock.ts#L61">packages/aft-core/src/helpers/expiring-file-lock.ts:61</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/1832f1b/packages/aft-core/src/helpers/expiring-file-lock.ts#L62">packages/aft-core/src/helpers/expiring-file-lock.ts:62</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="get" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>get</span><a href="#get" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="tsd-signature tsd-anchor-link" id="get.get-1"><span class="tsd-kind-call-signature">get</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">name</span>, <span class="tsd-kind-parameter">wait</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">hold</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="aft_core_src.ExpiringFileLock.html" class="tsd-signature-type tsd-kind-class">ExpiringFileLock</a><a href="#get.get-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>creates a new {ExpiringFileLock} that can be used to ensure separate processes cannot cause
+<div class="tsd-comment tsd-typography"><p>creates a new <code>ExpiringFileLock</code> that can be used to ensure separate processes cannot cause
 a race condition when accessing a shared resource</p>
 </div>
 <div class="tsd-parameters">
@@ -157,11 +157,11 @@ a race condition when accessing a shared resource</p>
 <div class="tsd-comment tsd-typography"><p>the number of milliseconds that a lock can be held before it automatically releases</p>
 </div>
 <div class="tsd-comment tsd-typography"></div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="aft_core_src.ExpiringFileLock.html" class="tsd-signature-type tsd-kind-class">ExpiringFileLock</a></h4><p>an {ExpiringFileLock} instance</p>
+<h4 class="tsd-returns-title">Returns <a href="aft_core_src.ExpiringFileLock.html" class="tsd-signature-type tsd-kind-class">ExpiringFileLock</a></h4><p>an <code>ExpiringFileLock</code> instance</p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/e506042/packages/aft-core/src/helpers/expiring-file-lock.ts#L101">packages/aft-core/src/helpers/expiring-file-lock.ts:101</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/1832f1b/packages/aft-core/src/helpers/expiring-file-lock.ts#L105">packages/aft-core/src/helpers/expiring-file-lock.ts:105</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -182,7 +182,7 @@ a race condition when accessing a shared resource</p>
 <div class="tsd-accordion-details">
 <ul>
 <li><a href="#constructor" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-512"></use></svg><span>constructor</span></a></li>
-<li><a href="#_lockFileDescriptor" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_lock<wbr/>File<wbr/>Descriptor</span></a></li>
+<li><a href="#_safeFlock" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_safe<wbr/>Flock</span></a></li>
 <li><a href="#_timeout" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_timeout</span></a></li>
 <li><a href="#aftCfg" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>aft<wbr/>Cfg</span></a></li>
 <li><a href="#lockDuration" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>lock<wbr/>Duration</span></a></li>
@@ -279,6 +279,7 @@ a race condition when accessing a shared resource</p>
 <li><a href="../modules/aft_ui_selenium_src.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>aft-<wbr/>ui-<wbr/>selenium/src</span></a></li>
 <li><a href="../modules/aft_ui_webdriverio_src.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>aft-<wbr/>ui-<wbr/>webdriverio/src</span></a></li>
 <li><a href="../modules/aft_ui_src.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>aft-<wbr/>ui/src</span></a></li>
+<li><a href="../modules/aft_vitest_reporter_src.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>aft-<wbr/>vitest-<wbr/>reporter/src</span></a></li>
 <li><a href="../modules/aft_web_services_src.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>aft-<wbr/>web-<wbr/>services/src</span></a></li></ul></nav></div></div></div>
 <div class="tsd-generator">
 <p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
