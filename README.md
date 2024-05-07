@@ -160,7 +160,7 @@ the purpose of a `PolicyPlugin` implementation is to provide execution control o
 ## NOTES
 > all changes require unit tests and these tests are expected to pass when run via `npm run test`
 
-> check for any circular dependencies using `npx dpdm -T --warning false **/index.ts`
+> check for any circular dependencies using `npm run circular`
 
 > use `npx lerna version` to automatically update the version of all projects at once (all changes must be committed first)
 
