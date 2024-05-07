@@ -1,14 +1,10 @@
 {
     "plugins": [
         {"name": "testrail-reporting-plugin", "searchDir": "../../packages"},
-        {"name": "testrail-policy-plugin", "searchDir": "../../packages"},
         {"name": "jira-reporting-plugin", "searchDir": "../../packages"},
-        {"name": "jira-policy-plugin", "searchDir": "../../packages"},
         {"name": "kinesis-reporting-plugin", "searchDir": "../../packages"},
         {"name": "html-reporting-plugin", "searchDir": "../../packages"},
-        {"name": "filesystem-reporting-plugin", "searchDir": "../../packages"},
-        {"name": "grid-session-generator-plugin", "searchDir": "../../packages"},
-        {"name": "local-session-generator-plugin", "searchDir": "../../packages"}
+        {"name": "filesystem-reporting-plugin", "searchDir": "../../packages"}
     ],
     "logLevel": "debug",
     "TestRailConfig": {
@@ -34,21 +30,5 @@
         "region": "eu-west-1",
         "deliveryStream": "%aws_kinesis_delivery_stream%",
         "sendStrategy": "reportonly"
-    },
-    "UiSessionConfig": {
-        "generatorName": "grid-session-generator-plugin",
-        "options": {
-            "url": "https://hub-cloud.browserstack.com/wd/hub",
-            "capabilities": {
-                "bstack:options": {
-                    "userName": "%browserstack_user%",
-                    "accessKey": "%browserstack_key%",
-                    "debug": true,
-                    "projectName": "Examples/selenium-mocha",
-                    "os": "windows",
-                    "osVersion": "11"
-                }
-            }
-        }
     }
 }
