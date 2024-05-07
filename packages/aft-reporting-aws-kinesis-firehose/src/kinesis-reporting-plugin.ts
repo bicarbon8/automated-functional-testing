@@ -1,4 +1,5 @@
 import { ReportingPlugin, LogLevel, TestResult, machineInfo, AftConfig, BuildInfoManager, ReportingPluginConfig, Err } from "aft-core";
+import { Buffer } from "node:buffer";
 import * as AWS from "aws-sdk";
 import * as pkg from "../package.json";
 import { KinesisLogRecord } from "./kinesis-log-record";
@@ -148,7 +149,7 @@ export class KinesisReportingPlugin extends ReportingPlugin {
                 level,
                 message: `${message}${dataStr}`,
                 version: pkg.version,
-                buildName: await this._buildInfo.buildName().catch(() => 'unknown'),
+                buildName: await this._buildInfo.buildName(),
                 machineInfo: machineInfo.data
             });
             const logs = this.logs(name);
@@ -170,7 +171,7 @@ export class KinesisReportingPlugin extends ReportingPlugin {
                     logName: name,
                     result,
                     version: pkg.version,
-                    buildName: await this._buildInfo.buildName().catch(() => 'unknown'),
+                    buildName: await this._buildInfo.buildName(),
                     machineInfo: machineInfo.data
                 });
                 const logs = this.logs(name);
@@ -191,7 +192,7 @@ export class KinesisReportingPlugin extends ReportingPlugin {
     private _createKinesisLogRecord(logRecord: KinesisLogRecord): AWS.Firehose.Record {
         const data: string = JSON.stringify(logRecord);
         const record: AWS.Firehose.Record = {
-            Data: data
+            Data: Buffer.from(data)
         };
         return record;
     }

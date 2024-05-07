@@ -160,7 +160,8 @@ export class ReportingManager {
         for (const plugin of this.plugins) {
             await Err.handleAsync(() => plugin?.log(this.name, level, message, ...data), {
                 errLevel: 'warn',
-                logger: this.logger
+                logger: this.logger,
+                verbosity: 'full'
             });
         }
     }
@@ -174,7 +175,8 @@ export class ReportingManager {
         for (const plugin of this.plugins) {
             await Err.handleAsync(() => plugin?.submitResult(this.name, cloneDeep(result)), {
                 errLevel: 'warn',
-                logger: this.logger
+                logger: this.logger,
+                verbosity: 'full'
             });
         }
     }
