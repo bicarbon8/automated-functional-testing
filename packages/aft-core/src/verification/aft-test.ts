@@ -293,7 +293,7 @@ export class AftTest {
             verifyResult.result = false
             verifyResult.message = errMessage;
         }
-        this._submitResult((verifyResult.result === true) ? 'passed' : 'failed', verifyResult.message, ...testIds);
+        await this._submitResult((verifyResult.result === true) ? 'passed' : 'failed', verifyResult.message, ...testIds);
         return verifyResult;
     }
 
@@ -304,10 +304,9 @@ export class AftTest {
      * @param testIds an optional array of test IDs
      */
     async pass(...testIds: Array<string>): Promise<void> {
-        await this._throwIfTestIdMismatch(...testIds);
+        await this._submitResult('passed', null, ...testIds);
         const passActions = this._options.onEventsMap.get('pass');
         await this._runEventActions(passActions);
-        await this._submitResult('passed', null, ...testIds);
     }
 
     /**
@@ -317,11 +316,10 @@ export class AftTest {
      * @param testIds an optional array of test IDs
      */
     async fail(message?: string, ...testIds: Array<string>): Promise<void> {
-        await this._throwIfTestIdMismatch(...testIds);
         const err: string = message ?? 'unknown error occurred';
+        await this._submitResult('failed', err, ...testIds);
         const failActions = this._options.onEventsMap.get('fail');
         await this._runEventActions(failActions);
-        await this._submitResult('failed', err, ...testIds);
     }
 
     /**
@@ -331,11 +329,10 @@ export class AftTest {
      * @param testIds an optional array of test IDs
      */
     async pending(message?: string, ...testIds: Array<string>): Promise<void> {
-        await this._throwIfTestIdMismatch(...testIds);
         message ??= 'test skipped';
+        await this._submitResult('skipped', message, ...testIds);
         const skippedActions = this._options.onEventsMap.get('skipped');
         await this._runEventActions(skippedActions);
-        await this._submitResult('skipped', message, ...testIds);
     }
 
     /**
@@ -396,7 +393,7 @@ export class AftTest {
         return {result: true};
     }
 
-    private async _throwIfTestIdMismatch(...testIds: Array<string>): Promise<void> {
+    private _throwIfTestIdMismatch(...testIds: Array<string>): void {
         if (testIds.length > 0 && this._options.allowAnyTestId !== true && testIds.filter(id => this.testIds.includes(id)).length === 0) {
             throw new Error(`test IDs [${testIds.join(',')}] do not exist in this ${this.constructor.name}`);
         }
@@ -438,7 +435,7 @@ export class AftTest {
             this._throwIfTestIdMismatch(...testIds);
             if (testIds?.length > 0) {
                 testIds.forEach(async (testId: string) => {
-                    if (!this._hasResult(testId)) {
+                    if (!this._testIdHasResult(testId)) {
                         if (message) {
                             await this._logResultStatus(status, `${testId} - ${message}`);
                         } else {
@@ -447,7 +444,7 @@ export class AftTest {
                     }
                 });
             } else {
-                if (!this._hasResult()) {
+                if (!this._messageHasResult(message)) {
                     await this._logResultStatus(status, message);
                 }
             }
@@ -491,13 +488,13 @@ export class AftTest {
         const results: TestResult[] = [];
         if (testIds.length > 0) {
             for (const testId of testIds) {
-                if (!this._hasResult(testId)) {
+                if (!this._testIdHasResult(testId)) {
                     const result: TestResult = await this._generateTestResult(status, logMessage, testId);
                     results.push(result);
                 }
             }
         } else {
-            if (!this._hasResult()) {
+            if (!this._messageHasResult(logMessage)) {
                 const result: TestResult = await this._generateTestResult(status, logMessage);
                 results.push(result);
             }
@@ -523,15 +520,14 @@ export class AftTest {
         return result;
     }
 
-    protected _hasResult(testId: string = null): boolean {
-        const results = this.results;
-        for (const result of results) {
-            // match on `null` == `undefined` too
-            if (testId == result.testId) {
-                return true;
-            }
-        }
-        return false;
+    protected _testIdHasResult(testId: string = null): boolean {
+        // use '==' for testId comparisons to allow 'null' to match 'undefined'
+        return this.results.some(r => r.testId == testId);
+    }
+
+    protected _messageHasResult(message: string): boolean {
+        // use '==' for message comparisons to allow 'null' to match 'undefined'
+        return this.results.some(r => r.resultMessage == message);
     }
 
     protected _parseOptions(options?: AftTestOptions): AftTestOptions {
