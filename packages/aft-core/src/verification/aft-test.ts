@@ -3,7 +3,7 @@ import { TestResult } from "../plugins/reporting/test-result";
 import { PolicyManager } from "../plugins/policy/policy-manager";
 import { TestStatus } from "../plugins/reporting/test-status";
 import { convert } from "../helpers/convert";
-import { Func, ProcessingResult } from "../helpers/custom-types";
+import { Func, Merge, ProcessingResult } from "../helpers/custom-types";
 import { rand } from "../helpers/rand";
 import { equaling, VerifyMatcher } from "./verify-matcher";
 import { Err } from "../helpers/err";
@@ -13,11 +13,38 @@ import { CacheMap } from "../helpers/cache-map";
 import { TitleParser } from "./title-parser";
 import { assert } from "console";
 
+export class AftTestConfig {
+    /**
+     * set to `true` to allow submitting results for test IDs not included
+     * in the `testIds` array or within the `description` (otherwise an
+     * exception is thrown)
+     * @default false
+     */
+    allowAnyTestId: boolean = false;
+    /**
+     * set to `false` to allow a `testFunction` to continue execution
+     * after a failed comparison within a `AftTest.verify(actual, expected)`
+     * function
+     * @default true
+     */
+    haltOnVerifyFailure: boolean = true;
+    /**
+     * a JSON object containing key value pairs to be included in the
+     * `metadata` section of all submitted `TestResult` objects.
+     * 
+     * **NOTE**
+     * > this is added before any default values so it could be
+     * overwritten by values such as `durationMs`, `buildNumber`
+     * and `buildName` if the same keys are used
+     */
+    additionalMetadata: {} = {};
+}
+
 export type AftTestFunction = Func<AftTest, void | PromiseLike<void>>;
 
 export type AftTestEvent = 'skipped' | 'pass' | 'fail' | 'started' | 'done';
 
-export type AftTestOptions = {
+export type AftTestOptions = Merge<Partial<AftTestConfig>, {
     aftCfg?: AftConfig;
     reporter?: ReportingManager;
     policyManager?: PolicyManager;
@@ -54,14 +81,7 @@ export type AftTestOptions = {
      * @default new Map<AftTestEvent, Array<AftTestFunction>>()
      */
     onEventsMap?: Map<AftTestEvent, Array<AftTestFunction>>;
-    /**
-     * set to `false` to allow a `testFunction` to continue execution
-     * after a failed comparison within a `AftTest.verify(actual, expected)`
-     * function
-     * @default true
-     */
-    haltOnVerifyFailure?: boolean;
-};
+}>;
 
 /**
  * class to be used for executing some Test Function after checking with the
@@ -81,10 +101,10 @@ export class AftTest {
     private readonly _options: AftTestOptions;
     private readonly _testFunction: AftTestFunction;
     private readonly _resultsCache: CacheMap<string, Array<TestResult>>; // { key: description, val: [{TestId: 1, ...}, {TestId: 2, ...}] }
-
+    
     private _startTime: number;
     private _endTime: number;
-
+    
     public readonly description: string;
 
     constructor(description: string, testFunction?: AftTestFunction, options?: AftTestOptions) {
@@ -154,21 +174,18 @@ export class AftTest {
      */
     get status(): TestStatus {
         const results = this.results;
-        let status: TestStatus = 'untested';
         if (results.length > 0) {
-            for (const result of results) {
-                if (result.status === 'failed') {
-                    status = result.status;
-                }
-                if (status === 'untested' && result.status === 'passed') {
-                    status = result.status;
-                }
-                if ((status === 'untested' || status === 'passed') && result.status === 'skipped') {
-                    status = result.status;
-                }
+            if (results.some(r => r.status === 'failed')) {
+                return 'failed';
+            }
+            if (results.every(r => r.status === 'skipped')) {
+                return 'skipped';
+            }
+            if (results.every(r => r.status === 'passed')) {
+                return 'passed';
             }
         }
-        return status;
+        return 'untested';
     }
 
     /**
@@ -206,20 +223,41 @@ export class AftTest {
      * 
      * ex:
      * ```typescript
+     * // no message and continues on verify failure
      * await aftTest('continue on failure', async (v: AftTest) => {
      *     await v.verify(true, false);
-     *     await v.reporter.info('this runs because "haltOnVerifyFailure" is "false"');
+     *     // below will run because "haltOnVerifyFailure" is "false"
+     *     // but overall status will be 'failed' because above
+     *     // call fails
+     *     await v.verify(true, true);
      * }, {haltOnVerifyFailure: false});
+     * 
+     * // message with test ID (failure)
+     * await aftTest('[C1234] error on failure', async (v: AftTest) => {
+     *     // submits `TestResult` for test ID `C1234` with `status='failed'`
+     *     // and `message="C1234 - expected 'false' to be 'true'"`
+     *     await v.verify(true, false, '[C1234]');
+     * });
+     * 
+     * // message with test ID (success)
+     * await aftTest('[C1234] successful test', async (v: AftTest) => {
+     *     // submits `TestResult` for test ID `C1234` with `status='passed'`
+     *     await v.verify(true, true, '[C1234]');
+     * });
      * ```
      * @param actual the actual result from some action
      * @param expected the expected result from the action
-     * @param failureMessage an optional message to include before any error string
-     * when a failure occurs
+     * @param message an optional message to include before any error string
+     * when a failure occurs. this may also include any test ID(s) in the form
+     * `"...[TestID]..."` and if included will result in a call to `pass` or `fail`
+     * with the associated test ID(s)
      * @returns a `ProcessingResult<boolean>` where `ProcessingResult.result === true`
      * equates to success and `ProcessingResult.result == false` or
      * `ProcessingResult.message` equates to failure
      */
-    async verify(actual: any, expected: any | VerifyMatcher, failureMessage?: string): Promise<ProcessingResult<boolean>> {
+    async verify(actual: any, expected: any | VerifyMatcher, message?: string): Promise<ProcessingResult<boolean>> {
+        const verifyResult: ProcessingResult<boolean> = {result: true};
+        const testIds: Array<string> = TitleParser.parseTestIds(message ?? '');
         let syncActual: any;
         if (typeof actual === 'function') {
             const result = await Err.handleAsync(() => actual(), {
@@ -245,17 +283,18 @@ export class AftTest {
         }
         if (!matcher.setActual(syncActual).compare()) {
             // Failure condition
-            const errMessage = (failureMessage)
-                ? `${failureMessage}\n${matcher.failureString()}`
+            const errMessage = (message)
+                ? `${message} - ${matcher.failureString()}`
                 : matcher.failureString();
 
             if (this._options.haltOnVerifyFailure) {
                 throw new Error(errMessage);
             }
-            return {result: false, message: errMessage};
+            verifyResult.result = false
+            verifyResult.message = errMessage;
         }
-        // otherwise success
-        return {result: true};
+        this._submitResult((verifyResult.result === true) ? 'passed' : 'failed', verifyResult.message, ...testIds);
+        return verifyResult;
     }
 
     /**
@@ -358,7 +397,7 @@ export class AftTest {
     }
 
     private async _throwIfTestIdMismatch(...testIds: Array<string>): Promise<void> {
-        if (testIds.length > 0 && testIds.filter(id => this.testIds.includes(id)).length === 0) {
+        if (testIds.length > 0 && this._options.allowAnyTestId !== true && testIds.filter(id => this.testIds.includes(id)).length === 0) {
             throw new Error(`test IDs [${testIds.join(',')}] do not exist in this ${this.constructor.name}`);
         }
     }
@@ -396,6 +435,7 @@ export class AftTest {
         try {
             status ??= 'untested';
             testIds = (testIds?.length > 0) ? testIds : this.testIds;
+            this._throwIfTestIdMismatch(...testIds);
             if (testIds?.length > 0) {
                 testIds.forEach(async (testId: string) => {
                     if (!this._hasResult(testId)) {
@@ -474,6 +514,7 @@ export class AftTest {
             resultMessage: logMessage,
             status,
             metadata: {
+                ...this._options.additionalMetadata,
                 durationMs: convert.toElapsedMs(this._startTime),
                 buildName: await this.buildInfoManager.buildName() ?? 'unknown',
                 buildNumber: await this.buildInfoManager.buildNumber() ?? 'unknown'
@@ -502,7 +543,10 @@ export class AftTest {
         options.testIds ??= TitleParser.parseTestIds(this.description) ?? [];
         options.cacheResultsToFile ??= false;
         options.onEventsMap ??= new Map<AftTestEvent, Array<AftTestFunction>>();
-        options.haltOnVerifyFailure ??= true;
+        const testCfg = options.aftCfg.getSection(AftTestConfig);
+        options.haltOnVerifyFailure ??= testCfg.haltOnVerifyFailure ?? true;
+        options.allowAnyTestId ??= testCfg.allowAnyTestId ?? false;
+        options.additionalMetadata ??= testCfg.additionalMetadata ?? {};
         return options;
     }
 }
