@@ -7,9 +7,10 @@ describe('GridSessionGeneratorPlugin', () => {
     /**
      * WARNING: this test will attempt to create an actual session on your own Selenium Grid
      * it should only be used for local debugging.
-     * NOTE: you will need to set a value for the following via SeleniumGridConfig
+     * #### NOTE:
+     * > you will need to set a value for the following via SeleniumGridConfig
      * or as environment variables:
-     * - selenium_grid_url
+     * > - selenium_grid_url
      */
     xit('can create a session on Selenium Grid', async () => {
         const aftCfg = new AftConfig({

@@ -10,7 +10,8 @@ class Rand {
      * generates a string of the specified length containing randomely choosen characters
      * from the enabled types.
      * 
-     * NOTE: only Alphabetical characters are enabled by default.
+     * #### NOTE:
+     * > only Alphabetical characters are enabled by default.
      * @param length the length of the string to generate
      * @param alphas set to `true` to include all capitol letters of the alphabet in the pool of characters to randomly choose from (defaults to `true`)
      * @param numerics set to `true` to include all numbers in the pool of characters to randomly choose from (defaults to `false`)
@@ -52,7 +53,8 @@ class Rand {
     /**
      * generates a string of randomly choosen characters from the specified set of `selectionCharacters`
      * 
-     * NOTE: `selectionCharacters` defaults to all Alphabetical, Numeric, Special and Extended characters
+     * #### NOTE:
+     * > `selectionCharacters` defaults to all Alphabetical, Numeric, Special and Extended characters
      * @param length the length of the string to generate
      * @param selectionCharacters the set of characters to randomly choose from in generating the string
      * @returns a string of the specified length containing characters randomly choosen from the set of

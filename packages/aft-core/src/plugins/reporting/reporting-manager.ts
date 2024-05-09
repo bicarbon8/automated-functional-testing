@@ -20,12 +20,14 @@ import { cloneDeep } from "lodash";
  *   ...
  * }
  * ```
- * NOTE: multiple instances of this class are expected to be created as each instance should have a unique
+ * #### NOTE:
+ * > multiple instances of this class are expected to be created as each instance should have a unique
  * `name` associated with it. Ex:
- * ```typescript
- * const r1 = new ReportingManager('reporter for test 1');
- * const r2 = new ReportingManager('reporter for test 2');
- * ```
+ * > 
+ * > ```typescript
+ * > const r1 = new ReportingManager('reporter for test 1');
+ * > const r2 = new ReportingManager('reporter for test 2');
+ * > ```
  */
 export class ReportingManager {
     /**

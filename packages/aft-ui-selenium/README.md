@@ -29,8 +29,8 @@ The above would use a POM design like:
   - _media element_ - `WebElement`
 
 ## Plugins
-- `grid-session-generator-plugin`: a Selenium Grid plugin used to initiate UI sessions with an existing Selenium Grid. _NOTE: this will not startup a new Grid and instead expects that your Grid is already running_
-- `local-session-generator-plugin`: a Selenium WebDriver plugin used to initiate UI sessions with specific browser drivers (i.e. `ChromeDriver`, `GeckoDriver`, etc.). _NOTE: if using the `LocalSessionGeneratorPlugin` you may also need to include npm package references to your Browser Driver package such as `ChromeDriver`_
+- `grid-session-generator-plugin`: a Selenium Grid plugin used to initiate UI sessions with an existing Selenium Grid. _**NOTE:** this will not startup a new Grid and instead expects that your Grid is already running_
+- `local-session-generator-plugin`: a Selenium WebDriver plugin used to initiate UI sessions with specific browser drivers (i.e. `ChromeDriver`, `GeckoDriver`, etc.). _**NOTE:** if using the `LocalSessionGeneratorPlugin` you may also need to include npm package references to your Browser Driver package such as `ChromeDriver`_
 
 ## Creating your own Components for use in testing
 Take the following as an example of how one could interact with the following page https://the-internet.herokuapp.com/login

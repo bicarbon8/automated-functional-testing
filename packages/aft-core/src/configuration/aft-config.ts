@@ -17,7 +17,7 @@ import { PluginLocator } from '../plugins/plugin-locator';
  * configuration classes can be read using `AftConfig` with the
  * `aftConfig.getSection(ConfigClass)` which will read from your `aftconfig.json`
  * file for a field named `ConfigClass`
- * > NOTE: 
+ * #### NOTE: 
  * > - when a new instance of `AftConfig` is created the `dotenv` package is run and any
  * `.env` file found at your project root (`process.cwd()`) will be processed into your
  * environment variables making it easier to load values when developing and testing locally.
@@ -318,7 +318,7 @@ export class AftConfig {
  * configuration classes can be read using `AftConfig` with the
  * `aftConfig.getSection(ConfigClass)` which will read from your `aftconfig.json`
  * file for a field named `ConfigClass`
- * > NOTE: 
+ * #### NOTE: 
  * > - when a new instance of `AftConfig` is created the `dotenv` package is run and any
  * `.env` file found at your project root (`process.cwd()`) will be processed into your
  * environment variables making it easier to load values when developing and testing locally.

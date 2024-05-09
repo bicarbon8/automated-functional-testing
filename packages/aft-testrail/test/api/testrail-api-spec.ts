@@ -2,7 +2,6 @@ import * as fs from "fs";
 import * as path from "path";
 import { TestRailApi } from "../../src/api/testrail-api";
 import { HttpRequest, HttpResponse, httpService } from "aft-web-services";
-import { TestRailConfig } from "../../src";
 import { TestRailPlan, TestRailPlanEntry } from "../../src/api/testrail-custom-types";
 import { AftConfig } from "aft-core";
 
@@ -15,7 +14,8 @@ describe('TestRailApi', () => {
     });
 
     /**
-     * NOTE: long running test (takes over 1 minute).
+     * #### NOTE:
+     * > long running test (takes over 1 minute).
      * Only run when making changes to retry behaviour
      */
     xit('retries on Rate Limit Error response (long running)', async () => {

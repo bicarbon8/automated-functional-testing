@@ -20,7 +20,7 @@ export class KinesisReportingPluginConfig extends ReportingPluginConfig {
 }
 
 /**
- * NOTE: this plugin accepts the following options:
+ * this plugin accepts the following options:
  * ```json
  * // aftconfig.json
  * {
@@ -34,13 +34,13 @@ export class KinesisReportingPluginConfig extends ReportingPluginConfig {
  *     }
  * }
  * ```
- * NOTE:
- * the order we obtain AWS Credentials follows the below:
- * - Environment Variables: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN
- * - EC2 Metadata: also known as instance profile credentials
- * - Shared Ini File: read from the host system
- * - ECS Credentials: similar to the EC2 Metadata, but on ECS
- * - Process Credentials: any credentials set on the current process
+ * #### NOTE:
+ * > the order we obtain AWS Credentials follows the below:
+ * > - Environment Variables: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN
+ * > - EC2 Metadata: also known as instance profile credentials
+ * > - Shared Ini File: read from the host system
+ * > - ECS Credentials: similar to the EC2 Metadata, but on ECS
+ * > - Process Credentials: any credentials set on the current process
  */
 export class KinesisReportingPlugin extends ReportingPlugin {
     private readonly _logs: Map<string, AWS.Firehose.Record[]>;

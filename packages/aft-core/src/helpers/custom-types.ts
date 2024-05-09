@@ -108,12 +108,14 @@ export type CacheObject = {
 /**
  * a type representing the merging of two or more specified types
  * 
- * NOTE: if you need to merge more than 6 types then create 
+ * #### NOTE:
+ * > if you need to merge more than 6 types then create 
  * intermediate types and use the merging of those like:
- * ```typescript
- * const type foo = Merge<t1, t2, t3, t4, t5, t6>;
- * const type bar = Merge<t7, t8, t9, t10, t11, t12>;
- * const type foobar = Merge<foo, bar>;
- * ```
+ * > 
+ * > ```typescript
+ * > const type foo = Merge<t1, t2, t3, t4, t5, t6>;
+ * > const type bar = Merge<t7, t8, t9, t10, t11, t12>;
+ * > const type foobar = Merge<foo, bar>;
+ * > ```
  */
 export type Merge<T1, T2, T3 = {}, T4 = {}, T5 = {}, T6 = {}> = T1 & T2 & T3 & T4 & T5 & T6;

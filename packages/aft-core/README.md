@@ -6,7 +6,8 @@ the base Automated Functional Testing (AFT) library providing support for Plugin
 
 ## Configuration
 the `aft-core` package contains the `aftConfig` constant class (instance of `new AftConfig()`) for reading in configuration an `aftconfig.json`, `aftconfig.js`, `aftconfig.cjs` or `aftconfig.mjs` file at the project root. this configuration can be read as a top-level field using `aftConfig.get('field_name')` or `aftConfig.get('field_name', defaultVal)` and can also be set without actually modifying the values in your `aftconfig.json` using `aftConfig.set('field_name', val)`. additionally, configuration classes can be read using `AftConfig` with the `aftConfig.getSection(ConfigClass)` which will read from your `aftconfig.json` file for a field named `ConfigClass`
-> NOTE: 
+
+#### NOTE: 
 > - when a new instance of `AftConfig` is created the `dotenv` package is run and any `.env` file found at your project root (`process.cwd()`) will be processed into your environment variables making it easier to load values when developing and testing locally.
 > - if using a javascript `aftconfig` file, you must export the config object using `module.exports = { ... }`
 
@@ -86,7 +87,8 @@ the `aft-core` package contains several helper and utility classes, interfaces a
 ### Example Reporting Plugin
 to create your own simple reporting plugin that stores all logs until the `finalise` function is called you would implement the code below.
 
-> NOTE: configuration for the below can be added in a object in the `aftconfig.json` named `OnDisposeConsoleReportingPluginConfig` and optionally containing values for the supported properties of the `OnDisposeConsoleReportingPluginConfig` class
+#### NOTE:
+> configuration for the below can be added in a object in the `aftconfig.json` named `OnDisposeConsoleReportingPluginConfig` and optionally containing values for the supported properties of the `OnDisposeConsoleReportingPluginConfig` class
 ```typescript
 export class OnDisposeConsoleReportingPluginConfig {
     maxLogLines: number = Infinity;
@@ -183,8 +185,7 @@ the `AftTest` class and `AftTest.verify` functions of `aft-core` enable testing 
 ```typescript
 // jasmine spec using `aft-jasmine-reporter` package
 describe('Sample Test', () => {
-    it("[C1234] expect that performActionAsync will return 'result of action'", async () => {
-        const feature: FeatureObj = new FeatureObj();
+    it("[C1234][C2345] expect that performActionAsync will return 'result of action'", async () => {
         /**
          * - for Jest use: `const aft = new AftJestTest(expect);`
          * - for Mocha use: `const aft = new AftMochaTest(this);`
@@ -192,28 +193,37 @@ describe('Sample Test', () => {
          * - for Vitest use: `const aft = new AftVitTestTest(ctx);`
          */
         await aftJasmineTest(async (t: AftJasmineTest) => {
+            const feature: FeatureObj = new FeatureObj();
             /**
              * the `t.verify(actual, expected)` function will compare
              * the `actual` with an `expected` using a `VerifyMatcher`
-             * and if the comparison fails and the `haltOnVerifyFailure`
+             * and if the comparison fails and `haltOnVerifyFailure`
              * is `true` (default) it will throw an exception containing
-             * details of the failure; otherwise it will continue having
+             * details of the failure; otherwise it will continue, having
              * set the overall `AftTest.status` to `'failed'`
              */
-            await t.verify(() => feature.performActionAsync(), containing('result of action'));
-        });
+            await t.verify(
+                () => feature.performActionAsync(),
+                containing('result of action'),
+                '[C1234] performActionAsync failure'
+            ); // sends `TestResult` with test ID 'C1234'
+        }); // sends `TestResult` with test ID 'C2345'
     });
 });
 ```
 
-in the above example, the `await feature.performAction()` call will only be run if a `PolicyPlugin` is loaded and returns `true` from it's `shouldRun(testId: string)` function (or no `PolicyPlugin` is loaded). additionally, any logs associated with the above `verify` call will use a `logName` of `"expect_that_performAction_will_return_result_of_action"` resulting in log lines like the following:
+in the above example, the `async (t: AftJasmineTest) => ...` function will only be run if a `PolicyPlugin` is loaded and returns `true` from it's `shouldRun(testId: string)` function (or no `PolicyPlugin` is loaded). additionally, any logs associated with the above `verify` call will use a `name` of `"Sample Test [C1234][C2345] expect that performActionAsync will return 'result of action'"` resulting in log lines like the following (assuming a failure in the `verify` call):
 ```
-09:14:01 - [expect that performAction will return 'result of action'] - TRACE - no PolicyPlugin in use so run all tests
+09:14:01 - [Sample Test [C1234][C2345] expect that performActionAsync will return 'result of action'] - TRACE - no PolicyPlugin in use so run all tests
+09:14:02 - [Sample Test [C1234][C2345] expect that performActionAsync will return 'result of action'] - FAIL  - C1234 - [C1234] performActionAsync failure - expected 'result of action' to be contained in 'invalid data'
+09:14:03 - [Sample Test [C1234][C2345] expect that performActionAsync will return 'result of action'] - FAIL  - C1234 - expected 'result of action' to be contained in 'invalid data'
 ```
 
+#### NOTE:
+> the `message` passed to the `verify` function can include one or more test IDs similar to the `description` argument passed to the `AftTest` constructor or `aftTest` function. when test IDs are supplied the `TestResult` (or results) submitted will include the supplied test ID. if no test ID is included or no `message` argument is supplied then the `TestResult` will not include a test ID, but will still affect the `AftTest.status` and prevent an additional `TestResult` from being sent at the completion of the `testFunction` execution unless the `AftTest` included test IDs in the `description` as these will then have a `TestResult` sent for each test ID.
+
 ### VerifyMatcher
-the `t.verify(actual, expected)` function on `AftTest` can accept a `VerifyMatcher` instance for the `expected` value to enhance the comparison capabilities performed by the check. the following `VerifyMatcher` types are supported within AFT Core:
-> NOTE: if no `VerifyMatcher` is supplied then `equaling` is used by default
+the `t.verify(actual, expected, message?)` function on `AftTest` can accept a `VerifyMatcher` instance for the `expected` value to enhance the comparison capabilities performed by the check. the following `VerifyMatcher` types are supported within AFT Core:
 - `equaling`: performs a `'=='` test between the `actual` and `expected`. ex: `await t.verify(0, equaling(false)); // success`
 - `exactly`: performs a `'==='` test between the `actual` and `expected`. ex: `await t.verify(0, exactly(false)); // fail`
 - `equivalent`: iterates over all keys of `expected` and compares their type and values to those found on `actual`. ex: `await t.verify({foo: 'bar', baz: true}, equivalent({foo: 'bar', baz: false})); // fail`
@@ -224,3 +234,39 @@ the `t.verify(actual, expected)` function on `AftTest` can accept a `VerifyMatch
 - `greaterThan`: verifies that the `actual` numerical value is greater than the `expected`. ex: `await t.verify(2, greaterThan(0)); // success`
 - `lessThan`: verifies that the `actual` numerical value is less than the `expected`. ex: `await t.verify(0, lessThan(1)); // success`
 - `not`: a special use `VerifyMatcher` that negates any `VerifyMatcher` passed into it. ex: `await t.verify([0, 1, 2], not(containing(1))); // fails`
+#### NOTE:
+> if no `VerifyMatcher` is supplied then `equaling` is used by default
+
+### TestResult
+when a `AftTest.run()`, `aftTest(description, testFunction?, options?)` or `AftTest.verify(actual, expected, message?)` function completes a `TestResult` is generated and submitted to the `ReportingManager` associated with the `AftTest` instance using the `ReportingManager.submitResult(result)` function (this then sends on to any `ReportingPlugin` instances). each `TestResult` contains the following fields and data:
+
+```json
+// typical TestResult format
+{
+    "testId": "C1234",
+    "testName": "Sample Test [C1234] verify the thing",
+    "resultMessage": "thing returned invalid value",
+    "status": "failed",
+    "resultId": "9d9ed3b7-a6b7-4e1b-b03a-81704aa718df",
+    "created": 1715263284960,
+    "metadata": {
+        "durationMs": 2345,
+        "buildName": "USERNAME_MACHINENAME",
+        "buildNumber": "YYYYMMDD"
+    }
+}
+```
+the `testId` will be set if specified, otherwise it will not be included (set to `undefined`) and the `testName` will be the `ReportingManager.name` (matches the `description` if no `reporter` option is passed to the `AftTest` constructor). within the `metadata` object, the `durationMs`, `buildName` and `buildNumber` cannot be modified, but additional fields can be included by specifying either the `additionalMetadata` option passed to the `AftTest` constructor or by setting the `AftTestConfig.additionalMetadata` config in your `aftconfig.json` file which will then be added to each `TestResult` submitted.
+
+ex:
+```json
+// aftconfig.json
+{
+    "AftTestConfig": {
+        "additionalMetadata": {
+            "aMetaDataKey": "someMetadataValue",
+            ...
+        }
+    }
+}
+```

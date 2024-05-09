@@ -121,7 +121,8 @@ export class JiraApi {
 
     /**
      * uses the passed in `JQL` query to search for issues and returns them as an array
-     * NOTE: any paginated results are handled automatically
+     * #### NOTE:
+     * > any paginated results are handled automatically
      * @param jql a `string` containing a valid `JQL` query used to search for issues
      * @returns an array of `JiraIssue` objects matching the query
      */

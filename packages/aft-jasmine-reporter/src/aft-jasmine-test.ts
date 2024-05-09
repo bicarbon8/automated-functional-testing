@@ -13,7 +13,8 @@ import { CurrentlyExecutingTestMap } from "./aft-jasmine-constants";
 export class AftJasmineTest extends AftTest {
     /**
      * reference to the jasmine.SpecResult
-     * > NOTE: this is only set from inside the Jasmine
+     * #### NOTE:
+     * > this is only set from inside the Jasmine
      * Reporter plugin and not available within a
      * Jasmine `it` function
      */

@@ -36,8 +36,8 @@ export type ErrOptions = {
  * YYYYMMDD - [AFT] - WARN  - TypeError: [max 100 characters of message...] --- [max 300 characters...of the stack trace]
  * YYYYMMDD - [AFT] - WARN  - ArgumentError: [max 100 characters of message...] --- [max 300 characters...of the stack trace]
  * ```
- * 
- * > NOTE: an optional `Partial<ErrorOptions>` object can be passed to the `handle` and `handleAsync` functions allowing
+ * #### NOTE:
+ * > an optional `Partial<ErrorOptions>` object can be passed to the `handle` and `handleAsync` functions allowing
  * you to control the `LogLevel` used _(defaults to `'warn'`)_, the verbosity _(defaults to `'short'`)_, and the 
  * `ReportingManager` instance used _(defaults to `aftLog` global instance)_
  * 
