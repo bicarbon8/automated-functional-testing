@@ -112,7 +112,7 @@ export class AftTest {
         assert(this.description != null, 'description must be a non-null, defined string value');
         const noTest = () => null;
         this._testFunction = testFunction ?? noTest;
-        this._options = this._parseOptions(options);
+        this._options = this._parseOptionsAndSetDefaults(options);
         this._resultsCache = new CacheMap<string, Array<TestResult>>(
             Infinity,
             Boolean(this._options.cacheResultsToFile),
@@ -354,7 +354,6 @@ export class AftTest {
                     const results = this.results?.filter(r => r.status === 'failed') ?? [];
                     throw new Error(`'${results.length}' failures: [${results.map(r => r.resultMessage).join(',')}]`);
                 }
-                await this.pass();
             } else {
                 await this.pending(shouldRun.message);
             }
@@ -409,6 +408,9 @@ export class AftTest {
     protected async _done(): Promise<void> {
         await this.reporter.trace('test complete');
         this._endTime = new Date().getTime();
+        if (this.results.length === 0 || this._options.testIds.length > 0) {
+            await this.pass(...this._options.testIds);
+        }
         const doneActions: Array<AftTestFunction> = this._options.onEventsMap.get('done');
         await this._runEventActions(doneActions);
     }
@@ -444,9 +446,7 @@ export class AftTest {
                     }
                 });
             } else {
-                if (!this._messageHasResult(message)) {
-                    await this._logResultStatus(status, message);
-                }
+                await this._logResultStatus(status, message);
             }
 
             const results: TestResult[] = await this._generateTestResults(status, message, ...testIds);
@@ -494,10 +494,8 @@ export class AftTest {
                 }
             }
         } else {
-            if (!this._messageHasResult(logMessage)) {
-                const result: TestResult = await this._generateTestResult(status, logMessage);
-                results.push(result);
-            }
+            const result: TestResult = await this._generateTestResult(status, logMessage);
+            results.push(result);
         }
         return results;
     }
@@ -525,12 +523,7 @@ export class AftTest {
         return this.results.some(r => r.testId == testId);
     }
 
-    protected _messageHasResult(message: string): boolean {
-        // use '==' for message comparisons to allow 'null' to match 'undefined'
-        return this.results.some(r => r.resultMessage == message);
-    }
-
-    protected _parseOptions(options?: AftTestOptions): AftTestOptions {
+    protected _parseOptionsAndSetDefaults(options?: AftTestOptions): AftTestOptions {
         options ??= {};
         options.aftCfg ??= aftConfig;
         options.buildInfoManager ??= new BuildInfoManager(options.aftCfg);

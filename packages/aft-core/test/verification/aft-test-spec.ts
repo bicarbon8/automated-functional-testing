@@ -42,7 +42,7 @@ describe('AftTest', () => {
     });
     
     it('can execute a passing expectation', async () => {
-        const reporter = new ReportingManager('can execute a passing expectation');
+        const reporter = new ReportingManager('');
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'pass').and.callThrough();
@@ -61,7 +61,7 @@ describe('AftTest', () => {
     });
 
     it('accepts a VerifyMatcher in the verify function', async () => {
-        const reporter = new ReportingManager('accepts a VerifyMatcher in the verify function');
+        const reporter = new ReportingManager('');
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'pass').and.callThrough();
@@ -80,7 +80,7 @@ describe('AftTest', () => {
     });
 
     it('throws on exception in testFunction', async () => {
-        const reporter = new ReportingManager('throws on exception in testFunction');
+        const reporter = new ReportingManager('');
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'fail').and.callThrough();
@@ -105,7 +105,7 @@ describe('AftTest', () => {
     });
 
     it('throws on failed comparison with expected in verify function', async () => {
-        const reporter = new ReportingManager('throws on failed comparison with expected in verify function');
+        const reporter = new ReportingManager('');
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'fail').and.callThrough();
@@ -130,7 +130,7 @@ describe('AftTest', () => {
     });
 
     it('will not execute testFunction if PolicyManager says should not run for all cases', async () => {
-        const reporter = new ReportingManager('will not execute testFunction if PolicyManager says should not run for all cases');
+        const reporter = new ReportingManager('');
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'warn').and.callThrough();
@@ -150,7 +150,7 @@ describe('AftTest', () => {
     });
 
     it('will execute testFunction if PolicyManager says any cases should be run', async () => {
-        const reporter = new ReportingManager('will execute testFunction if PolicyManager says any cases should be run');
+        const reporter = new ReportingManager('');
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'pass').and.callThrough();
@@ -175,7 +175,7 @@ describe('AftTest', () => {
     });
 
     it('will not execute testFunction if no associated testIds and PolicyManager has enabled plugins', async () => {
-        const reporter = new ReportingManager('will not execute testFunction if no associated testIds and PolicyManager has enabled plugins');
+        const reporter = new ReportingManager('');
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'warn').and.callThrough();
@@ -198,7 +198,7 @@ describe('AftTest', () => {
     });
 
     it('will only log a result for a given test ID one time', async () => {
-        const reporter = new ReportingManager('will only log a result for a given test ID one time');
+        const reporter = new ReportingManager('');
         spyOn(reporter, 'pass').and.callFake((message: string) => Promise.resolve());
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         const policyManager = new PolicyManager();
@@ -216,7 +216,7 @@ describe('AftTest', () => {
     });
 
     it('rejects with error for a test ID that is not associated with this instance', async () => {
-        const reporter = new ReportingManager('will only log a result for a test ID that is not associated with this instance');
+        const reporter = new ReportingManager('');
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         const policyManager = new PolicyManager();
@@ -241,7 +241,7 @@ describe('AftTest', () => {
     });
 
     it('can submit test result for test ID that is not associated with this instance by overriding config', async () => {
-        const reporter = new ReportingManager('will only log a result for a test ID that is not associated with this instance');
+        const reporter = new ReportingManager('');
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         const policyManager = new PolicyManager();
@@ -266,7 +266,7 @@ describe('AftTest', () => {
     });
 
     it('can submit test result for test ID that is not associated with this instance by overriding options', async () => {
-        const reporter = new ReportingManager('will only log a result for a test ID that is not associated with this instance');
+        const reporter = new ReportingManager('');
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         const policyManager = new PolicyManager();
@@ -288,8 +288,8 @@ describe('AftTest', () => {
 
     it('calls event handlers in expected order', async () => {
         const eventArray = new Array<string>();
-        const t = new AftTest(rand.getString(15), async (v: AftTest) => {
-            await v.verify(true, true);
+        const t = new AftTest(rand.getString(15), () => {
+            // no errors so `pass()` should be called on exit
         }, {
             aftCfg: new AftConfig({plugins: []}),
             onEventsMap: new Map<AftTestEvent, Array<AftTestFunction>>([
@@ -310,7 +310,7 @@ describe('AftTest', () => {
     });
 
     it('allows including additional metadata in test results via config', async () => {
-        const reporter = new ReportingManager('will only log a result for a test ID that is not associated with this instance');
+        const reporter = new ReportingManager('');
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         let sentResult: TestResult;
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => {
@@ -342,7 +342,7 @@ describe('AftTest', () => {
     });
 
     it('allows including additional metadata in test results via options', async () => {
-        const reporter = new ReportingManager('will only log a result for a test ID that is not associated with this instance');
+        const reporter = new ReportingManager('');
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         let sentResult: TestResult;
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => {
@@ -370,7 +370,7 @@ describe('AftTest', () => {
     });
 
     it('allows continuing after failure in verify call via config', async () => {
-        const reporter = new ReportingManager('will only log a result for a test ID that is not associated with this instance');
+        const reporter = new ReportingManager('');
         spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
         spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
         const policyManager = new PolicyManager();
@@ -410,5 +410,77 @@ describe('AftTest', () => {
         expect(exception).toBeDefined();
         expect(calledFunctionOne).toBeTrue();
         expect(calledFunctionTwo).toBeTrue();
-    })
+    });
+
+    it('allows continuing after failure in verify call via options', async () => {
+        const reporter = new ReportingManager('');
+        spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
+        spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
+        const policyManager = new PolicyManager();
+        spyOn(policyManager, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
+            return Promise.resolve({result: true});
+        });
+        let calledFunctionOne = false;
+        const functionOne = () => {
+            calledFunctionOne = true;
+            return false;
+        };
+        let calledFunctionTwo = false;
+        const functionTwo = () => {
+            calledFunctionTwo = true;
+            return true;
+        }
+
+        let exception;
+        try {
+            await aftTest('[C1234] true should be true', async (v: AftTest) => {
+                await v.verify(() => functionOne(), exactly(true));
+                await v.verify(() => functionTwo(), exactly(true));
+            }, {
+                reporter,
+                policyManager,
+                haltOnVerifyFailure: false
+            });
+            expect(false).toBeTrue(); // force failure if we get here
+        } catch (e) {
+            exception = e;
+        }
+
+        expect(exception).toBeDefined();
+        expect(calledFunctionOne).toBeTrue();
+        expect(calledFunctionTwo).toBeTrue();
+    });
+
+    it('submits result for all verify calls with no test id and with no extra result on completion', async () => {
+        const reporter = new ReportingManager('');
+        spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
+        spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
+        const policyManager = new PolicyManager();
+        spyOn(policyManager, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
+            return Promise.resolve({result: true});
+        });
+        let calledFunctionOne = false;
+        const functionOne = () => {
+            calledFunctionOne = true;
+            return true;
+        };
+        let calledFunctionTwo = false;
+        const functionTwo = () => {
+            calledFunctionTwo = true;
+            return true;
+        }
+
+        await aftTest('true should be true', async (v: AftTest) => {
+            await v.verify(() => functionOne(), exactly(true));
+            await v.verify(() => functionTwo(), exactly(true));
+        }, {
+            reporter,
+            policyManager,
+            haltOnVerifyFailure: false
+        });
+
+        expect(calledFunctionOne).toBeTrue();
+        expect(calledFunctionTwo).toBeTrue();
+        expect(reporter.submitResult).toHaveBeenCalledTimes(2);
+    });
 });
