@@ -60,18 +60,19 @@ to submit results to or filter test execution based on existence and status of t
     }
 }
 ```
-- **url** - [REQUIRED] the full URL to your instance of TestRail. _(NOTE: this is **NOT** the API URL, just the base domain name)_
+- **url** - [REQUIRED] the full URL to your instance of TestRail. _(**NOTE:** this is **NOT** the API URL, just the base domain name)_
 - **user** - [REQUIRED] the email address of the user that will submit test results
 - **accesskey** - [REQUIRED] the access key (or password) for the above user
 - **projectid** - the TestRail project containing test suites to be used in test execution. _(Required only if `planid` is not set)_
 - **suiteids** - an array of TestRail suites containing test cases to be used in test execution. _(Required only if `planid` is not set)_
-- **planid** - an existing TestRail Plan to be used for logging test results if `testrail-reporting-plugin` is referenced and enabled and used for controlling execution of tests. _(NOTE: if no value is specified for `planid` and `testrail-reporting-plugin` is enabled, a new TestRail Plan will be created using the suites specified in `suiteids` and the `projectid`)_
+- **planid** - an existing TestRail Plan to be used for logging test results if `testrail-reporting-plugin` is referenced and enabled and used for controlling execution of tests. _(**NOTE:** if no value is specified for `planid` and `testrail-reporting-plugin` is enabled, a new TestRail Plan will be created using the suites specified in `suiteids` and the `projectid`)_
 - **cacheDurationMs** - the maximum number of milliseconds to cache responses from TestRail's API _(defaults to 300000)_
 
 ## Usage
 you can submit results directly by calling the `aft-core.ReportingManager.submitResult(result: TestResult)` function or results will automatically be submitted if using the `aft-core.AftTest(description, testFunction)` with valid `testCases` specified in the `options` object. 
 
-> NOTE: sending a `TestResult` with a `TestStatus` of `Failed` will be converted to a status of `Retest` before submitting to TestRail
+#### NOTE:
+> sending a `TestResult` with a `TestStatus` of `failed` will be converted to a status of `retest` before submitting to TestRail. this is done to allow the retesting of failed tests on subsequent attempts
 
 ### via `aft-core.ReportingManager`:
 ```typescript

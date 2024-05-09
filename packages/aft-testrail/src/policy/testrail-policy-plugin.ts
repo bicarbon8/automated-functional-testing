@@ -6,7 +6,8 @@ import { statusConverter } from '../helpers/status-converter';
 import { PlanId } from '../helpers/plan-id';
 
 /**
- * NOTE: this plugin has no configuration options as they are
+ * #### NOTE:
+ * > this plugin has no configuration options as they are
  * all retrieved from `TestRailConfig` under the `TestRailConfig`
  * section of your `aftconfig.json` file
  */

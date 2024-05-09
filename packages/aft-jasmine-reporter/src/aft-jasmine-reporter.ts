@@ -20,7 +20,8 @@ export class AftJasmineReporter implements jasmine.CustomReporter {
     async specStarted(result: jasmine.SpecResult): Promise<void> {
         const t = new AftJasmineTest(result);
         /**
-         * NOTE: Jasmine does not allow a Reporter to force bail-out of test
+         * #### NOTE:
+         * > Jasmine does not allow a Reporter to force bail-out of test
          * at this point so we cannot mark test as pending and prevent
          * execution from here and instead must use `AftJasmineTest.shouldRun`
          * in the beginning of the test

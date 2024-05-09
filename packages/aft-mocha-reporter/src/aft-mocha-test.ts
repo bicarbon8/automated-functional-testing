@@ -22,7 +22,8 @@ export class AftMochaTest extends AftTest {
      * an instance of a `Mocha.Test` from the `this` scope
      * from within a Mocha `it` function taken from
      * `this.test`
-     * > NOTE: if using an arrow function in your `it`
+     * #### NOTE:
+     * > if using an arrow function in your `it`
      * this will not be set
      */
     public readonly test: Mocha.Test;
@@ -30,8 +31,7 @@ export class AftMochaTest extends AftTest {
     /**
      * expects to be passed the scope from an executing Mocha
      * test (i.e. the `this` argument)
-     * > **NOTE:**
-     * > 
+     * #### NOTE:
      * > the Mocha `this` scope is only available when tests
      * are written using
      * > 

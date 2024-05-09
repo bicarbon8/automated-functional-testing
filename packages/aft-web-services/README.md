@@ -35,35 +35,35 @@ let respObj: CreateUserResponse = httpData.as<CreateUserResponse>(response);
 - built-in support for redirects (HTTP Status Code 302) and http or https requests
 - XML and JSON response data can be easily deserialised to objects using the `httpData.as<T>(response: HttpResponse)` function
 
-### NOTE:
-XML to object deserialisation will use the following rules:
-- element names become property names
-- attributes become properties preceeded by an `@` symbol inside the element object
-- element text content is rendered in a special property named `keyValue`
-
-*Ex:*
-```xml
-<html>
-    <image src="./foo/bar/baz.jpg" />
-    <hr />
-    <span style="color:#808080" class="hidden rounded">
-        This is coloured
-    </span>
-</html>
-```
-will become:
-```json
-{
-    "html": {
-        "image": {
-            "@src": "./foo/bar/baz.jpg",
-        },
-        "hr": {},
-        "span": {
-            "@style": "color:#808080",
-            "@class": "hidden rounded",
-            "keyValue": "This is coloured"
-        }
-    }
-}
-```
+#### NOTE:
+> XML to object deserialisation will use the following rules:
+> - element names become property names
+> - attributes become properties preceeded by an `@` symbol inside the element object
+> - element text content is rendered in a special property named `keyValue`
+> 
+> *Ex:*
+> ```xml
+> <html>
+>    <image src="./foo/bar/baz.jpg" />
+>    <hr />
+>    <span style="color:#808080" class="hidden rounded">
+>        This is coloured
+>    </span>
+> </html>
+> ```
+> will become:
+> ```json
+> {
+>    "html": {
+>        "image": {
+>            "@src": "./foo/bar/baz.jpg",
+>        },
+>        "hr": {},
+>        "span": {
+>            "@style": "color:#808080",
+>            "@class": "hidden rounded",
+>            "keyValue": "This is coloured"
+>        }
+>    }
+> }
+> ```

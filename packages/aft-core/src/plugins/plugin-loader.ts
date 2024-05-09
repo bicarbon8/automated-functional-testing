@@ -49,7 +49,8 @@ class PluginLoader {
      * // ReportingPlugins will all extend from ReportingPlugin base class
      * ```
      * 
-     * NOTE: if this is the first time the `pluginloader` is being called then plugins will
+     * #### NOTE:
+     * > if this is the first time the `pluginloader` is being called then plugins will
      * also be loaded
      * @param clazz a `Class<T: Plugin>` base class like `ReportingPlugin` that must be extended
      * by any of the objects returned by this call
@@ -81,7 +82,8 @@ class PluginLoader {
      * // ReportingPlugins will all extend from ReportingPlugin base class and be enabled
      * ```
      * 
-     * NOTE: if this is the first time the `pluginloader` is being called then plugins will
+     * #### NOTE:
+     * > if this is the first time the `pluginloader` is being called then plugins will
      * also be loaded
      * @param clazz a `Class<T: Plugin>` base class like `ReportingPlugin` that must be extended
      * by any of the objects returned by this call
@@ -102,7 +104,8 @@ class PluginLoader {
      * // PolicyPlugin will be `undefined` if not found
      * ```
      * 
-     * NOTE: if this is the first time the `pluginloader` is being called then plugins will
+     * #### NOTE:
+     * > if this is the first time the `pluginloader` is being called then plugins will
      * also be loaded
      * @param pluginName the name of the plugin package or file like `html-reporting-plugin`
      * @param aftCfg an optional `AftConfig` instance to use when loading plugins if not
@@ -216,7 +219,8 @@ class PluginLoader {
  * }
  * ```
  * 
- * **NOTE:** the above will attempt to load a `TestRailReportingPlugin`,
+ * #### NOTE:
+ * > the above will attempt to load a `TestRailReportingPlugin`,
  * and `HtmlReportingPlugin` class. if loading fails then it will search
  * the filesystem, starting at the current NodeJs execution directory
  * and searching all subdirectories for a file named `testrail-reporting-plugin.js`

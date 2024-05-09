@@ -29,7 +29,7 @@ export class AftTestConfig {
      */
     haltOnVerifyFailure: boolean = true;
     /**
-     * a JSON object containing key value pairs to be included in the
+     * a Javascript object containing key value pairs to be included in the
      * `metadata` section of all submitted `TestResult` objects.
      * 
      * **NOTE**
@@ -153,8 +153,11 @@ export class AftTest {
 
     /**
      * returns an array of `TestResult` objects for each result already submitted
-     * _(NOTE: one result is submitted for each associated Test ID or just one
-     * overall result if no Test IDs are associated with this instance)_.
+     * via a call to `verify`, `pass`, `fail` or `pending` or the completion of
+     * the `testFunction` execution within the `run` function
+     * #### NOTE:
+     * > one result is submitted for each associated Test ID or just one
+     * overall result if no Test IDs are associated with this instance
      * if `withFileSystemCache` is enabled this includes searching the filesystem
      * cache for any logged test results for the `AftTest.description` and returning the
      * results as an array of `TestResult` objects with each object corresponding

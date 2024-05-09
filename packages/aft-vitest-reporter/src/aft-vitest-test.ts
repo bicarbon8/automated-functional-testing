@@ -4,7 +4,7 @@ import { AftTest, AftTestFunction, AftTestOptions, Func, rand } from "aft-core";
 /**
  * expects to be passed the context from an executing Vitest
  * task (i.e. the `ctx` argument)
- * > **NOTE:**
+ * #### NOTE:
  * > 
  * > the Vitest `ctx` context is only available when tests
  * are written using
@@ -26,7 +26,8 @@ export class AftVitestTest extends AftTest {
      * an instance of a `Vitest.Context` from the `ctx` context
      * passed to a Vitest `it` function as an argument
      * `ctx`
-     * > NOTE: if no `ctx` argument is passed to your `it`
+     * #### NOTE:
+     * > if no `ctx` argument is passed to your `it`
      * function this will not be available
      */
     public readonly test: Test;

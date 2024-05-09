@@ -28,12 +28,13 @@ to send values to AWS Kinesis Firehose endpoints you must specify the AWS Creden
 - **batchSize** - an optional `number` representing the number of log records to batch before sending _(defaults to 10)_
 - **sendStrategy** - an optional `string` of `logsandresults`, `logsonly` or `resultsonly` that controls sending of log messages and results _(defaults to `logsandresults`)_
 
-> NOTE: the AWS Credentials are first attempted to be read from AFT Configuration and if no value is specified then the following are checked:
-- Environment Variables: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN
-- EC2 Metadata: also known as instance profile credentials
-- Shared Ini File: read from the host system
-- ECS Credentials: similar to the EC2 Metadata, but on ECS
-- Process Credentials: any credentials set on the current process
+#### NOTE:
+> the AWS Credentials are first attempted to be read from AFT Configuration and if no value is specified then the following are checked:
+> - Environment Variables: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN
+> - EC2 Metadata: also known as instance profile credentials
+> - Shared Ini File: read from the host system
+> - ECS Credentials: similar to the EC2 Metadata, but on ECS
+> - Process Credentials: any credentials set on the current process
 
 ## Format of log records
 the log record that is sent to your AWS Kinesis Firehose endpoint will have the following format:

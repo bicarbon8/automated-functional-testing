@@ -55,14 +55,16 @@ export abstract class UiComponent {
      * `locator`. the root node should be used to compartmentalise DOM
      * lookups to a scope only within this `UiComponent`.
      * 
-     * **NOTE:** implementations should resemble the following:
-     * ```typescript
-     * override async getRoot(): Promise<WebElement> {
-     *    const searchContext = (this.parent != null) ? await this.parent() : this.driver;
-     *    return searchContext.findElement(this.locator);
-     * }
-     * ```
-     * to ensure a fresh lookup of the root and child elements
+     * #### NOTE:
+     * > implementations should resemble the following:
+     * >
+     * > ```typescript
+     * > override async getRoot(): Promise<WebElement> {
+     * >    const searchContext = (this.parent != null) ? await this.parent() : this.driver;
+     * >    return searchContext.findElement(this.locator);
+     * > }
+     * > ```
+     * > to ensure a fresh lookup of the root and child elements
      */
     abstract getRoot(): Promise<unknown>;
 

@@ -20,7 +20,8 @@ this package comes with two helper classes that can be utilised from within your
 
 ### `AftJasmineTest`
 the `AftJasmineTest` class extends from the `AftTest` class in `aft-core` providing the ability to parse the Spec name for any referenced Test. each Test ID must be surrounded with square brackets `[ABC123]`. additionally you can then call the `AftJasmineTest.shouldRun()` async function or use `aftJasmineTest(testFunction)` which will determine if your test should be run based on any AFT `PolicyPlugin` instances referenced in your `aftconfig.json` file. using the `AftJasmineTest` class would look like the following:
-> NOTE: the `new AftJasmineTest()` command **MUST NOT** be passed a scope when running with the `aft-jasmine-reporter` so it can pull in the scope from filesystem cache set by the reporter. you may still pass an `AftConfig` instance by using the following: `new AftJasmineTest(null, new AftConfig())`
+#### NOTE:
+> the `new AftJasmineTest()` command **MUST NOT** be passed a scope when running with the `aft-jasmine-reporter` so it can pull in the scope from filesystem cache set by the reporter. you may still pass an `AftConfig` instance by using the following: `new AftJasmineTest(null, new AftConfig())`
 ```javascript
 describe('YourTestSuite', () => {
     it('can check if test [C1234] should be run', async () => {

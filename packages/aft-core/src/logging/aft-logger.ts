@@ -96,7 +96,8 @@ export class AftLogger {
     /**
      * applies a colour based on the supplied `level` and outputs the `message`
      * to the console using `console.log` in that colour
-     * > NOTE: calling this function directly will bypass checking the `level`
+     * #### NOTE:
+     * > calling this function directly will bypass checking the `level`
      * to see if the `message` should actually be logged and simply outputs to
      * the console
      * @param level a valid {LogLevel} like 'warn' or 'trace'

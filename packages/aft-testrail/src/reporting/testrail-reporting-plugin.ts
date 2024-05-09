@@ -21,7 +21,8 @@ import { PlanId } from "../helpers/plan-id";
  *     }
  * }
  * ```
- * > NOTE: if no value is set for `planId` and a `logLevel` value other than `none` is used
+ * #### NOTE:
+ * > if no value is set for `planId` and a `logLevel` value other than `none` is used
  * then a new TestRail Plan will be created from the specified `projectId` and `suiteIds`
  * configuration keys
  */

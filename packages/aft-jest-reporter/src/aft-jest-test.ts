@@ -17,7 +17,8 @@ import { TestCaseResult } from "@jest/reporters";
 export class AftJestTest extends AftTest {
     /**
      * reference to the Jest.TestCaseResult
-     * > NOTE: this is only set from inside the Jest
+     * #### NOTE:
+     * > this is only set from inside the Jest
      * Reporter plugin and not available within a
      * Jest `test` function
      */

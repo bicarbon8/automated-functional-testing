@@ -129,7 +129,8 @@ describe('HttpService', () => {
     }, 30000);
 
     /**
-     * NOTE: only for functional local testing. not to be enabled for committed code
+     * #### NOTE:
+     * > only for functional local testing. not to be enabled for committed code
      */
     xit('can get values from a real web API', async () => {
         let resp: HttpResponse = await httpService.performRequest({url: 'https://reqres.in/api/users?page=2'});

@@ -12,8 +12,8 @@ class HttpData {
     /**
      * attempts to parse the contents of this `HttpResponse.data` into the specified
      * type
-     * 
-     * NOTE: parsing attempts to read the `content-type` header and if it contains
+     * #### NOTE:
+     * > attempts to read the `content-type` header and if it contains
      * `html` or `xml` it will parse the data string as XML, otherwise as JSON
      * @returns the contents of this `HttpResponse.data` string parsed into an object
      * of the specified type. 

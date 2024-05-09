@@ -5,7 +5,8 @@ import { JiraConfig } from '../configuration/jira-config';
 import { CommonActions } from '../helpers/common-actions';
 
 /**
- * NOTE: this plugin has no configuration options as they are
+ * #### NOTE:
+ * > this plugin has no configuration options as they are
  * all retrieved from `JiraConfig` under the `JiraConfig`
  * section of your `aftconfig.json` file
  */

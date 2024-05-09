@@ -53,7 +53,7 @@ to open or modify defects in Jira, you will need to have an account with both re
     }
 }
 ```
-- **url** - [REQUIRED] the full URL to your instance of Jira. _(NOTE: this is **NOT** the API URL, just the base domain name)_
+- **url** - [REQUIRED] the full URL to your instance of Jira. _(**NOTE:** this is **NOT** the API URL, just the base domain name)_
 - **accesskey** - `string` a valid API access token created under your Profile section in Jira
 - **policyEngineEnabled** - `bool` if set to `true` then any `AftTest` with a Test ID will first check that the test should be run via this plugin. any open defects referencing this Test ID will result in a `false` response _(defaults to `true`)_
 
@@ -74,7 +74,8 @@ await reporter.submitResult({
 /** 
  * new Jira Issue opened for `C3190`, `C2217763`, and `C3131`
  * following execution because expectation fails
- * NOTE: if open defects exist then a comment is added indicating
+ * #### NOTE:
+ * > if open defects exist then a comment is added indicating
  * the issue still occurs instead of creating a duplicate issue
  */
 await aftTest('[C3190][C2217763][C3131]', async (t: AftTest) => {

@@ -1,6 +1,7 @@
 # Examples: Cypress and Mocha
 Automated Functional Testing (AFT) repo providing examples and best practices for using the AFT libraries with Cypress and Mocha test framework. This repo can serve as a quick-start project for functional testing projects.
-> NOTE: Cypress tests run in a browser so the `aftMochaTest` cannot be used since this relies on Nodejs features such as filesystem access. the `AftMochaReporter` will work as a Cypress reporter though and will report results to any AFT reporting plugins at the completion of each test since the Cypress reporters run in a Nodejs context
+#### WARNING:
+> Cypress tests run in a browser so the `aftMochaTest` function and `AftMochaTest` class cannot be used since this relies on Nodejs features such as filesystem access. the `AftMochaReporter` **WILL WORK** as a Cypress reporter though and will report results to any AFT reporting plugins at the completion of each test since the Cypress reporters run in a Nodejs context
 
 ## Usage:
 add a reference to the `aft-mocha-reporter` in your `cypress.config` file
@@ -67,19 +68,19 @@ using AFT allows for setting configuration values in the `aftconfig.json` depend
   - **batch** - `boolean` indicating if logs should be batched before being sent to reduce the number of calls being made. _(defaults to `true`)_
   - **batchSize** - `number` indicating the number of log records to wait for before sending. _(defaults to `10`)_
 - **TestRailConfig** - configuration values to use for TestRail integration
-  - **url** - `string` containing the URL used for accessing your TestRail instance. _NOTE: this is **NOT** the API url, but the URL to access the base instance of TestRail_
+  - **url** - `string` containing the URL used for accessing your TestRail instance. _**NOTE:** this is **NOT** the API url, but the URL to access the base instance of TestRail_
   - **user** - `string` containing a valid username for logging in to TestRail
   - **accessKey** - `string` containing your API access key used to access the TestRail API. see [here](https://www.gurock.com/testrail/docs/api/getting-started/accessing) for more info.
-  - **projectId** - `number` containing the TestRail project you are referencing in your tests. _NOTE: this is not used if specifying a value for `planid`_
-  - **suiteIds** - `Array<number>` containing a list of the TestRail suites you are referencing in your tests. _NOTE: this is not used if specifying a value for `planid`_
-  - **planId** - `number` containing the TestRail plan you are referencing in your tests. _NOTE: if not specified and the `testrail-reporting-plugin` is using a `logLevel` of anything other than `'none'` a new TestRail plan will be created based on your `projectId` and `suiteIds`_
-  - **logLevel** - `string` containing the minimum `LogLevel` where logs will be captured and sent to TestRail on completion of a test. _NOTE: setting this to a value of `'none'` disabled sending results to TestRail, but you can still use TestRail to control test execution via the `policyEngineEnabled` configuration setting_
+  - **projectId** - `number` containing the TestRail project you are referencing in your tests. _**NOTE:** this is not used if specifying a value for `planid`_
+  - **suiteIds** - `Array<number>` containing a list of the TestRail suites you are referencing in your tests. _**NOTE:** this is not used if specifying a value for `planid`_
+  - **planId** - `number` containing the TestRail plan you are referencing in your tests. _**NOTE:** if not specified and the `testrail-reporting-plugin` is using a `logLevel` of anything other than `'none'` a new TestRail plan will be created based on your `projectId` and `suiteIds`_
+  - **logLevel** - `string` containing the minimum `LogLevel` where logs will be captured and sent to TestRail on completion of a test. _**NOTE:** setting this to a value of `'none'` disabled sending results to TestRail, but you can still use TestRail to control test execution via the `policyEngineEnabled` configuration setting_
   - **policyEngineEnabled** - `boolean` indicating if TestRail should be used to control the execution of tests run within an `AftTest`
 - **JiraConfig** - configuration values to use for Jira integration
-  - **url** - `string` containing the URL used for accessing your Jira instance. _NOTE: this is **NOT** the API url, but the URL to access the base instance of Jira_
+  - **url** - `string` containing the URL used for accessing your Jira instance. _**NOTE:** this is **NOT** the API url, but the URL to access the base instance of Jira_
   - **user** - `string` containing a valid username for logging in to Jira
   - **accessKey** - `string` containing your API access key used to access the Jira API.
-  - **projectId** - `string` containing a valid project ID where new defects will be created if `openDefectOnFail` is set to `true`. _NOTE: new defects will not be created and this can be left unset if `openDefectOnFail` is `false`_
+  - **projectId** - `string` containing a valid project ID where new defects will be created if `openDefectOnFail` is set to `true`. _**NOTE:** new defects will not be created and this can be left unset if `openDefectOnFail` is `false`_
   - **openDefectOnFail** - `boolean` indicating if a new defect should be created when a test failure occurs _(defaults to `false`)_
   - **closeDefectOnPass** - `boolean` indicating if any open defects referencing the currently passing test ID should be closed on successful completion of the test _(defaults to `false`)_
   - **policyEngineEnabled** - `boolean` indicating if each a search of open Jira issues should be performed for each test ID to determine if the test should be run when using an `AftTest`. _(defaults to `true`)_

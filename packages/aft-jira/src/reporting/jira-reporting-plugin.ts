@@ -17,7 +17,8 @@ import { CommonActions } from "../helpers/common-actions";
  *     }
  * }
  * ```
- * > NOTE: if `openDefectOnFail` and `closeDefectOnPass` are both `false` this plugin will
+ * #### NOTE:
+ * > if `openDefectOnFail` and `closeDefectOnPass` are both `false` this plugin will
  * be disabled
  */
 export class JiraReportingPlugin extends ReportingPlugin {
