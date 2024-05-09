@@ -298,24 +298,38 @@ export class AftTest {
     }
 
     /**
-     * executes any `'pass'` event actions and then submits
+     * executes any `'pass'` event actions after submitting
      * a `'passed'` result for each passed in test ID or for
      * the overall result if no `testIds` specified
+     * 
+     * **NOTE**
+     * > if no `testIds` are specified then it is assumed that
+     * any / all `testIds` are to receive the result specified
      * @param testIds an optional array of test IDs
      */
     async pass(...testIds: Array<string>): Promise<void> {
+        if (testIds.length === 0) {
+            testIds.push(...this.testIds)
+        }
         await this._submitResult('passed', null, ...testIds);
         const passActions = this._options.onEventsMap.get('pass');
         await this._runEventActions(passActions);
     }
 
     /**
-     * executes any `'fail'` event actions and then submits
+     * executes any `'fail'` event actions after submitting
      * a `'failed'` result for each passed in test ID or for
      * the overall result if no `testIds` specified
+     * 
+     * **NOTE**
+     * > if no `testIds` are specified then it is assumed that
+     * any / all `testIds` are to receive the result specified
      * @param testIds an optional array of test IDs
      */
     async fail(message?: string, ...testIds: Array<string>): Promise<void> {
+        if (testIds.length === 0) {
+            testIds.push(...this.testIds)
+        }
         const err: string = message ?? 'unknown error occurred';
         await this._submitResult('failed', err, ...testIds);
         const failActions = this._options.onEventsMap.get('fail');
@@ -323,12 +337,19 @@ export class AftTest {
     }
 
     /**
-     * executes any `'skipped'` event actions and then submits
+     * executes any `'skipped'` event actions after submitting
      * a `'skipped'` result for each passed in test ID or for
      * the overall result if no `testIds` specified
+     * 
+     * **NOTE**
+     * > if no `testIds` are specified then it is assumed that
+     * any / all `testIds` are to receive the result specified
      * @param testIds an optional array of test IDs
      */
     async pending(message?: string, ...testIds: Array<string>): Promise<void> {
+        if (testIds.length === 0) {
+            testIds.push(...this.testIds)
+        }
         message ??= 'test skipped';
         await this._submitResult('skipped', message, ...testIds);
         const skippedActions = this._options.onEventsMap.get('skipped');
@@ -355,10 +376,10 @@ export class AftTest {
                     throw new Error(`'${results.length}' failures: [${results.map(r => r.resultMessage).join(',')}]`);
                 }
             } else {
-                await this._submitResult('skipped', shouldRun.message, ...this._options.testIds);
+                await this._submitResult('skipped', shouldRun.message, ...this.testIds);
             }
         } catch(e) {
-            await this._submitResult('failed', Err.full(e), ...this._options.testIds);
+            await this._submitResult('failed', Err.full(e), ...this.testIds);
             throw e;
         } finally {
             await this._done();
@@ -414,7 +435,7 @@ export class AftTest {
              * without results will be marked as `'passed'` or overall
              * `testFunction` will be marked as `'passed'` if no `testIds`
              */
-            await this._submitResult('passed', null, ...this._options.testIds);
+            await this._submitResult('passed', null, ...this.testIds);
         }
         const doneActions: Array<AftTestFunction> = this._options.onEventsMap.get('done');
         await this._runEventActions(doneActions);
