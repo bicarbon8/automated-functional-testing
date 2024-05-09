@@ -73,7 +73,8 @@ await reporter.submitResult({
 ```typescript
 /** 
  * new Jira Issue opened for `C3190`, `C2217763`, and `C3131`
- * following execution because expectation fails
+ * following execution because `AftTest.status` on exit is `failed`
+ * and `verify` call doesn't reference any test IDs
  * #### NOTE:
  * > if open defects exist then a comment is added indicating
  * the issue still occurs instead of creating a duplicate issue

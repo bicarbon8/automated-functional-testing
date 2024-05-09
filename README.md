@@ -80,10 +80,7 @@ await aftTest(description, (t: AftTest) => {
 }); // AFT will report as 'failed'
 
 await aftTest(description, (t: AftTest) => {
-    const result = await t.verify('foo', 'bar'); // fails but doesn't throw
-    if (result.message) {
-        await t.reporter.warn(result.message);
-    }
+    await t.verify('foo', 'bar'); // fails but doesn't throw
 }, { haltOnVerifyFailure = false }); // AFT will report as 'failed'
 ```
 

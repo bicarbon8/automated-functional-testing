@@ -87,7 +87,8 @@ await reporter.submitResult({
 ```typescript
 /** 
  * `TestStatus.retest` result for `C3190`, `C2217763`, and `C3131` sent to TestRail
- * following execution because expectation fails
+ * following execution because `AftTest.status` is `failed` and the `verify` call
+ * does not include any test IDs
  */
 await aftTest('[C3190][C2217763][C3131]', async (t: AftTest) => {
     await t.verify((1 + 1), 3, 'expected to fail because 1+1 != 3');
