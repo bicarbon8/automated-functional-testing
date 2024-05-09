@@ -33,7 +33,7 @@ when called inside a Jasmine Reporter</p>
 <ul class="tsd-hierarchy">
 <li><span class="target">AftJasmineTest</span></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/a411d87/packages/aft-jasmine-reporter/src/aft-jasmine-test.ts#L13">packages/aft-jasmine-reporter/src/aft-jasmine-test.ts:13</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/2cafcee/packages/aft-jasmine-reporter/src/aft-jasmine-test.ts#L13">packages/aft-jasmine-reporter/src/aft-jasmine-test.ts:13</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -95,7 +95,7 @@ when called inside a Jasmine Reporter</p>
 <h4 class="tsd-returns-title">Returns <a href="aft_jasmine_reporter_src.AftJasmineTest.html" class="tsd-signature-type tsd-kind-class">AftJasmineTest</a></h4><aside class="tsd-sources">
 <p>Overrides AftTest.constructor</p>
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/a411d87/packages/aft-jasmine-reporter/src/aft-jasmine-test.ts#L22">packages/aft-jasmine-reporter/src/aft-jasmine-test.ts:22</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/2cafcee/packages/aft-jasmine-reporter/src/aft-jasmine-test.ts#L23">packages/aft-jasmine-reporter/src/aft-jasmine-test.ts:23</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="description" class="tsd-anchor"></a>
@@ -108,15 +108,15 @@ when called inside a Jasmine Reporter</p>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>test</span><a href="#test" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">test</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">SpecResult</span></div>
 <div class="tsd-comment tsd-typography"><p>reference to the jasmine.SpecResult</p>
-<blockquote>
-<p>NOTE: this is only set from inside the Jasmine
+<a id="md:note" class="tsd-anchor"></a><h4><a href="#md:note">NOTE:</a></h4><blockquote>
+<p>this is only set from inside the Jasmine
 Reporter plugin and not available within a
 Jasmine <code>it</code> function</p>
 </blockquote>
 </div>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/a411d87/packages/aft-jasmine-reporter/src/aft-jasmine-test.ts#L20">packages/aft-jasmine-reporter/src/aft-jasmine-test.ts:20</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/2cafcee/packages/aft-jasmine-reporter/src/aft-jasmine-test.ts#L21">packages/aft-jasmine-reporter/src/aft-jasmine-test.ts:21</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Accessors</h2>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="aftCfg" class="tsd-anchor"></a>
@@ -158,7 +158,7 @@ started either by calling the <code>run</code> function or using <code>aftTest(d
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from AftTest.elapsed</p>
 <ul>
-<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:143</li></ul></aside></li></ul></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:146</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="policyManager" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>policy<wbr/>Manager</span><a href="#policyManager" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -193,12 +193,16 @@ of this <code>AftTest</code> as the <code>name</code> or the
 <li class="tsd-signature" id="results.results-1"><span class="tsd-signature-symbol">get</span> results<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">TestResult</span><span class="tsd-signature-symbol">[]</span></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>returns an array of <code>TestResult</code> objects for each result already submitted
-<em>(NOTE: one result is submitted for each associated Test ID or just one
-overall result if no Test IDs are associated with this instance)</em>.
+via a call to <code>verify</code>, <code>pass</code>, <code>fail</code> or <code>pending</code> or the completion of
+the <code>testFunction</code> execution within the <code>run</code> function</p>
+<a id="md:note" class="tsd-anchor"></a><h4><a href="#md:note">NOTE:</a></h4><blockquote>
+<p>one result is submitted for each associated Test ID or just one
+overall result if no Test IDs are associated with this instance
 if <code>withFileSystemCache</code> is enabled this includes searching the filesystem
 cache for any logged test results for the <code>AftTest.description</code> and returning the
 results as an array of <code>TestResult</code> objects with each object corresponding
 to a Test ID referenced in the test name</p>
+</blockquote>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">TestResult</span><span class="tsd-signature-symbol">[]</span></h4><p>an array of <code>TestResult</code> objects where each entry corresponds to
 a referenced Test ID parsed from the <code>AftTest.description</code></p>
@@ -206,7 +210,7 @@ a referenced Test ID parsed from the <code>AftTest.description</code></p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from AftTest.results</p>
 <ul>
-<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:127</li></ul></aside></li></ul></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:130</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="status" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>status</span><a href="#status" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -221,7 +225,7 @@ fails or when the test completes without error. otherwise the value will be
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from AftTest.status</p>
 <ul>
-<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:134</li></ul></aside></li></ul></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:137</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="testIds" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>test<wbr/>Ids</span><a href="#testIds" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -236,7 +240,7 @@ during or on the completion of running the <code>testFunction</code></p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from AftTest.testIds</p>
 <ul>
-<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:151</li></ul></aside></li></ul></section></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:154</li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_done" class="tsd-anchor"></a>
@@ -247,7 +251,7 @@ during or on the completion of running the <code>testFunction</code></p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from AftTest._done</p>
 <ul>
-<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:234</li></ul></aside></li></ul></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:249</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_generateTestResult" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_generate<wbr/>Test<wbr/>Result</span><a href="#_generateTestResult" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-protected tsd-is-inherited">
@@ -265,7 +269,7 @@ during or on the completion of running the <code>testFunction</code></p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">TestResult</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from AftTest._generateTestResult</p>
 <ul>
-<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:243</li></ul></aside></li></ul></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:258</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_generateTestResults" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_generate<wbr/>Test<wbr/>Results</span><a href="#_generateTestResults" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-protected tsd-is-inherited">
@@ -283,7 +287,7 @@ during or on the completion of running the <code>testFunction</code></p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">TestResult</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from AftTest._generateTestResults</p>
 <ul>
-<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:242</li></ul></aside></li></ul></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:257</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_logResultStatus" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_log<wbr/>Result<wbr/>Status</span><a href="#_logResultStatus" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-protected tsd-is-inherited">
@@ -299,7 +303,7 @@ during or on the completion of running the <code>testFunction</code></p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from AftTest._logResultStatus</p>
 <ul>
-<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:241</li></ul></aside></li></ul></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:256</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_parseOptionsAndSetDefaults" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_parse<wbr/>Options<wbr/>And<wbr/>Set<wbr/>Defaults</span><a href="#_parseOptionsAndSetDefaults" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-protected tsd-is-inherited">
@@ -313,7 +317,7 @@ during or on the completion of running the <code>testFunction</code></p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">AftTestOptions</span></h4><aside class="tsd-sources">
 <p>Inherited from AftTest._parseOptionsAndSetDefaults</p>
 <ul>
-<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:245</li></ul></aside></li></ul></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:260</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_started" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_started</span><a href="#_started" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-protected tsd-is-inherited">
@@ -322,7 +326,7 @@ during or on the completion of running the <code>testFunction</code></p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from AftTest._started</p>
 <ul>
-<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:233</li></ul></aside></li></ul></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:248</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_submitResult" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_submit<wbr/>Result</span><a href="#_submitResult" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-protected tsd-is-inherited">
@@ -344,7 +348,7 @@ to the <code>ReportingManager.submitResult</code> function</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from AftTest._submitResult</p>
 <ul>
-<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:240</li></ul></aside></li></ul></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:255</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_testIdHasResult" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_test<wbr/>Id<wbr/>Has<wbr/>Result</span><a href="#_testIdHasResult" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-protected tsd-is-inherited">
@@ -358,7 +362,7 @@ to the <code>ReportingManager.submitResult</code> function</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
 <p>Inherited from AftTest._testIdHasResult</p>
 <ul>
-<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:244</li></ul></aside></li></ul></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:259</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="fail" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>fail</span><a href="#fail" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -374,15 +378,20 @@ to the <code>ReportingManager.submitResult</code> function</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Overrides AftTest.fail</p>
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/a411d87/packages/aft-jasmine-reporter/src/aft-jasmine-test.ts#L46">packages/aft-jasmine-reporter/src/aft-jasmine-test.ts:46</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/2cafcee/packages/aft-jasmine-reporter/src/aft-jasmine-test.ts#L47">packages/aft-jasmine-reporter/src/aft-jasmine-test.ts:47</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="pass" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>pass</span><a href="#pass" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
 <li class="tsd-signature tsd-anchor-link" id="pass.pass-1"><span class="tsd-kind-call-signature">pass</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">testIds</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#pass.pass-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>executes any <code>&#39;pass&#39;</code> event actions and then submits
+<div class="tsd-comment tsd-typography"><p>executes any <code>&#39;pass&#39;</code> event actions after submitting
 a <code>&#39;passed&#39;</code> result for each passed in test ID or for
 the overall result if no <code>testIds</code> specified</p>
+<p><strong>NOTE</strong></p>
+<blockquote>
+<p>if no <code>testIds</code> are specified then it is assumed that
+any / all <code>testIds</code> are to receive the result specified</p>
+</blockquote>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -396,7 +405,7 @@ the overall result if no <code>testIds</code> specified</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from AftTest.pass</p>
 <ul>
-<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:200</li></ul></aside></li></ul></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:207</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="pending" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>pending</span><a href="#pending" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -412,7 +421,7 @@ the overall result if no <code>testIds</code> specified</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Overrides AftTest.pending</p>
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/a411d87/packages/aft-jasmine-reporter/src/aft-jasmine-test.ts#L54">packages/aft-jasmine-reporter/src/aft-jasmine-test.ts:54</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/2cafcee/packages/aft-jasmine-reporter/src/aft-jasmine-test.ts#L55">packages/aft-jasmine-reporter/src/aft-jasmine-test.ts:55</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="run" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>run</span><a href="#run" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -429,7 +438,7 @@ called</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from AftTest.run</p>
 <ul>
-<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:223</li></ul></aside></li></ul></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:238</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="shouldRun" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>should<wbr/>Run</span><a href="#shouldRun" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -443,7 +452,7 @@ one of them should</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from AftTest.shouldRun</p>
 <ul>
-<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:231</li></ul></aside></li></ul></section>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:246</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="verify" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>verify</span><a href="#verify" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -486,7 +495,7 @@ equates to success and <code>ProcessingResult.result == false</code> or
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from AftTest.verify</p>
 <ul>
-<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:193</li></ul></aside></li></ul></section></section></div>
+<li>Defined in packages/aft-core/dist/src/verification/aft-test.d.ts:196</li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -509,12 +518,18 @@ equates to success and <code>ProcessingResult.result == false</code> or
 <li><a href="#constructor" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-512"></use></svg><span>constructor</span></a></li>
 <li><a href="#description" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>description</span></a></li>
 <li><a href="#test" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>test</span></a></li>
+<li>
+<ul>
+<li><a href="#md:note"><span>NOTE:</span></a></li></ul></li>
 <li><a href="#aftCfg" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>aft<wbr/>Cfg</span></a></li>
 <li><a href="#buildInfoManager" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>build<wbr/>Info<wbr/>Manager</span></a></li>
 <li><a href="#elapsed" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>elapsed</span></a></li>
 <li><a href="#policyManager" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>policy<wbr/>Manager</span></a></li>
 <li><a href="#reporter" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>reporter</span></a></li>
 <li><a href="#results" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>results</span></a></li>
+<li>
+<ul>
+<li><a href="#md:note"><span>NOTE:</span></a></li></ul></li>
 <li><a href="#status" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>status</span></a></li>
 <li><a href="#testIds" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>test<wbr/>Ids</span></a></li>
 <li><a href="#_done" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>_done</span></a></li>
