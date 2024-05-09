@@ -52,7 +52,7 @@ describe('AftTest', () => {
         });
 
         await aftTest('true [C1234] should be true [C2345]', async (v: AftTest) => {
-            await v.verify(() => 'foo', 'foo');
+            await v.verify(() => 'foo', 'foo', '[C2345]');
         }, { reporter, policyManager });
 
         expect(policyManager.shouldRun).toHaveBeenCalledTimes(2);
@@ -71,7 +71,7 @@ describe('AftTest', () => {
         });
 
         await aftTest('[C1234][C2345] array contains "bar"', async (v: AftTest) => {
-            await v.verify(['foo', 'bar', 'baz'], containing('bar'));
+            await v.verify(['foo', 'bar', 'baz'], containing('bar'), '[C1234]');
         }, { reporter, policyManager });
 
         expect(policyManager.shouldRun).toHaveBeenCalledTimes(2);
@@ -482,5 +482,38 @@ describe('AftTest', () => {
         expect(calledFunctionOne).toBeTrue();
         expect(calledFunctionTwo).toBeTrue();
         expect(reporter.submitResult).toHaveBeenCalledTimes(2);
+    });
+
+    it('submits result for all verify calls with no test id and with extra result on completion when description contains test id', async () => {
+        const reporter = new ReportingManager('');
+        spyOn(reporter, 'log').and.callFake((level: LogLevel, message: string) => Promise.resolve());
+        spyOn(reporter, 'submitResult').and.callFake((result: TestResult) => Promise.resolve());
+        const policyManager = new PolicyManager();
+        spyOn(policyManager, 'shouldRun').and.callFake((testId: string): Promise<ProcessingResult<boolean>> => {
+            return Promise.resolve({result: true});
+        });
+        let calledFunctionOne = false;
+        const functionOne = () => {
+            calledFunctionOne = true;
+            return true;
+        };
+        let calledFunctionTwo = false;
+        const functionTwo = () => {
+            calledFunctionTwo = true;
+            return true;
+        }
+
+        await aftTest('[C1234] true should be true', async (v: AftTest) => {
+            await v.verify(() => functionOne(), exactly(true));
+            await v.verify(() => functionTwo(), exactly(true));
+        }, {
+            reporter,
+            policyManager,
+            haltOnVerifyFailure: false
+        });
+
+        expect(calledFunctionOne).toBeTrue();
+        expect(calledFunctionTwo).toBeTrue();
+        expect(reporter.submitResult).toHaveBeenCalledTimes(3);
     });
 });

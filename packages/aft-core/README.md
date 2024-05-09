@@ -183,8 +183,7 @@ the `AftTest` class and `AftTest.verify` functions of `aft-core` enable testing 
 ```typescript
 // jasmine spec using `aft-jasmine-reporter` package
 describe('Sample Test', () => {
-    it("[C1234] expect that performActionAsync will return 'result of action'", async () => {
-        const feature: FeatureObj = new FeatureObj();
+    it("[C1234][C2345] expect that performActionAsync will return 'result of action'", async () => {
         /**
          * - for Jest use: `const aft = new AftJestTest(expect);`
          * - for Mocha use: `const aft = new AftMochaTest(this);`
@@ -192,27 +191,37 @@ describe('Sample Test', () => {
          * - for Vitest use: `const aft = new AftVitTestTest(ctx);`
          */
         await aftJasmineTest(async (t: AftJasmineTest) => {
+            const feature: FeatureObj = new FeatureObj();
             /**
              * the `t.verify(actual, expected)` function will compare
              * the `actual` with an `expected` using a `VerifyMatcher`
-             * and if the comparison fails and the `haltOnVerifyFailure`
+             * and if the comparison fails and `haltOnVerifyFailure`
              * is `true` (default) it will throw an exception containing
-             * details of the failure; otherwise it will continue having
+             * details of the failure; otherwise it will continue, having
              * set the overall `AftTest.status` to `'failed'`
              */
-            await t.verify(() => feature.performActionAsync(), containing('result of action'));
-        });
+            await t.verify(
+                () => feature.performActionAsync(),
+                containing('result of action'),
+                '[C1234] performActionAsync failure'
+            ); // sends `TestResult` with test ID 'C1234'
+        }); // sends `TestResult` with test ID 'C2345'
     });
 });
 ```
 
-in the above example, the `await feature.performAction()` call will only be run if a `PolicyPlugin` is loaded and returns `true` from it's `shouldRun(testId: string)` function (or no `PolicyPlugin` is loaded). additionally, any logs associated with the above `verify` call will use a `logName` of `"expect_that_performAction_will_return_result_of_action"` resulting in log lines like the following:
+in the above example, the `async (t: AftJasmineTest) => ...` function will only be run if a `PolicyPlugin` is loaded and returns `true` from it's `shouldRun(testId: string)` function (or no `PolicyPlugin` is loaded). additionally, any logs associated with the above `verify` call will use a `name` of `"Sample Test [C1234][C2345] expect that performActionAsync will return 'result of action'"` resulting in log lines like the following (assuming a failure in the `verify` call):
 ```
-09:14:01 - [expect that performAction will return 'result of action'] - TRACE - no PolicyPlugin in use so run all tests
+09:14:01 - [Sample Test [C1234][C2345] expect that performActionAsync will return 'result of action'] - TRACE - no PolicyPlugin in use so run all tests
+09:14:02 - [Sample Test [C1234][C2345] expect that performActionAsync will return 'result of action'] - FAIL  - C1234 - [C1234] performActionAsync failure - expected 'result of action' to be contained in 'invalid data'
+09:14:03 - [Sample Test [C1234][C2345] expect that performActionAsync will return 'result of action'] - FAIL  - C1234 - expected 'result of action' to be contained in 'invalid data'
 ```
 
+NOTE:
+> the `message` passed to the `verify` function can include one or more test IDs similar to the `description` argument passed to the `AftTest` constructor or `aftTest` function. when test IDs are supplied the `TestResult` (or results) submitted will include the supplied test ID. if no test ID is included or no `message` argument is supplied then the `TestResult` will not include a test ID, but will still affect the `AftTest.status` and prevent an additional `TestResult` from being sent at the completion of the `testFunction` execution unless the `AftTest` included test IDs in the `description` as these will then have a `TestResult` sent for each test ID.
+
 ### VerifyMatcher
-the `t.verify(actual, expected)` function on `AftTest` can accept a `VerifyMatcher` instance for the `expected` value to enhance the comparison capabilities performed by the check. the following `VerifyMatcher` types are supported within AFT Core:
+the `t.verify(actual, expected, message?)` function on `AftTest` can accept a `VerifyMatcher` instance for the `expected` value to enhance the comparison capabilities performed by the check. the following `VerifyMatcher` types are supported within AFT Core:
 > NOTE: if no `VerifyMatcher` is supplied then `equaling` is used by default
 - `equaling`: performs a `'=='` test between the `actual` and `expected`. ex: `await t.verify(0, equaling(false)); // success`
 - `exactly`: performs a `'==='` test between the `actual` and `expected`. ex: `await t.verify(0, exactly(false)); // fail`

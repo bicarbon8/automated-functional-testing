@@ -438,7 +438,6 @@ export class AftTest {
     protected async _submitResult(status: TestStatus, message?: string, ...testIds: Array<string>): Promise<void> {
         try {
             status ??= 'untested';
-            testIds = (testIds?.length > 0) ? testIds : this.testIds;
             this._throwIfTestIdMismatch(...testIds);
             if (testIds?.length > 0) {
                 testIds.forEach(async (testId: string) => {

@@ -11,6 +11,7 @@ describe('Sample Test', () => {
          * - for Jest use: `await aftJestTest(expect, () => doStuff());`
          * - for Mocha use: `await aftMochaTest(this, () => doStuff());`
          * - for Jasmine use: `await aftJasmineTest(() => doStuff());`
+         * - for ViTest use: `await aftVitestTest(ctx, () => doStuff());`
          */
         const aftJasmineTest(async (t: AftJasmineTest) => {
             const result: string = await feature.performActionAsync();
@@ -36,21 +37,19 @@ describe('Sample Test', () => {
          * - for Jest use: `await aftJestTest(expect, () => doStuff());`
          * - for Mocha use: `await aftMochaTest(this, () => doStuff());`
          * - for Jasmine use: `await aftJasmineTest(() => doStuff());`
+         * - for ViTest use: `await aftVitestTest(ctx, () => doStuff());`
          */
         await aftJasmineTest(async (v: AftJasmineTest) => {
             await v.reporter.step('creating instance of FeatureObj');
             const feature: FeatureObj = new FeatureObj();
-            const result = await v.verify(feature.isGood, true);
-            if (result.message) {
-                v.fail(result.message, 'C2345'); // reports failure result immediately
-            }
+            const result = await v.verify(feature.isGood, true, '[C2345] isGood returned not true'); // reports failure result immediately
             await v.reporter.step('about to call performAction');
             const result: string = await feature.performAction();
             await v.reporter.info(`result of performAction was '${result}'`);
             await v.reporter.trace('successfully executed expectation');
-            await v.verify(result, containing('result of action'));
+            await v.verify(result, containing('result of action'), '[C3344] performAction result mismatch'); // reports failure result immediately
         }, {
-            aftCfg: new AftConfig({logLevel: 'trace'}),
+            aftCfg: new AftConfig({logLevel: 'trace'}), // overrides `logLevel` used by other tests
             haltOnVerifyFailure: false, // continue if `verify` check fails
             onEventsMap: new Map<AftTestEvent, Array<AftTestFunction>>([
                 ['done', [() => performCleanup()]] // function run on completion
@@ -62,10 +61,10 @@ describe('Sample Test', () => {
 which would output the following logs:
 ```
 5:29:54 PM - [[C2345][C3344] can perform a more complex demonstration of AFT] - STEP  - 1: creating instance of FeatureObj
+5:29:55 PM - [[C2345][C3344] can perform a more complex demonstration of AFT] - PASS  - C2345
 5:29:55 PM - [[C2345][C3344] can perform a more complex demonstration of AFT] - STEP  - 2: about to call performAction
 5:29:55 PM - [[C2345][C3344] can perform a more complex demonstration of AFT] - INFO  - result of performAction was 'result of action'
 5:29:56 PM - [[C2345][C3344] can perform a more complex demonstration of AFT] - TRACE - successfully executed expectation
-5:29:56 PM - [[C2345][C3344] can perform a more complex demonstration of AFT] - PASS  - C2345
 5:29:56 PM - [[C2345][C3344] can perform a more complex demonstration of AFT] - PASS  - C3344
 ```
 > WARNING: Jasmine's _expect_ calls do not return a boolean as their type definitions would make you think and failed `expect` calls will only throw exceptions if the stop on failure option is enabled: 
@@ -101,6 +100,13 @@ await aftTest(description, (t: AftTest) => {
 - [`aft-ui-webdriverio`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-ui-webdriverio/README.md) - adds support for WebdriverIO-based UI testing
 - [`aft-vittest-reporter`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-vitest-reporter/README.md) - provides Vitest Reporter plugin that integrates with AFT to simplify logging and test execution via AFT
 - [`aft-web-services`](https://github.com/bicarbon8/automated-functional-testing/blob/main/packages/aft-web-services/README.md) - adds support for testing REST-based services
+
+## Example Projects (click on name for more info)
+- [`cypress-mocha`](https://github.com/bicarbon8/automated-functional-testing/blob/main/examples/cypress-mocha/README.md) - demonstrates using Cypress and the `aft-mocha-reporter` package with Cypress e2e tests
+- [`selenium-jest`](https://github.com/bicarbon8/automated-functional-testing/blob/main/examples/selenium-jest/README.md) - demonstrates using Jest, Selenium WebDriver and the `aft-ui-selenium` and `aft-jest-reporter` packages for Browser application testing
+- [`selenium-mocha`](https://github.com/bicarbon8/automated-functional-testing/blob/main/examples/selenium-mocha/README.md) - demonstrates using Mocha, Selenium WebDriver and the `aft-ui-selenium` and `aft-mocha-reporter` packages for Brower application testing
+- [`web-services-jasmine`](https://github.com/bicarbon8/automated-functional-testing/blob/main/examples/web-services-jasmine/README.md) - demonstrates using Jasmine and the `aft-web-services` and `aft-jasmine-reporter` packages to perform API testing
+- [`webdriverio-mocha`](https://github.com/bicarbon8/automated-functional-testing/blob/main/examples/webdriverio-mocha/README.md) - demonstrates using Mocha, `webdriverio` and the `aft-ui-webdriverio` and `aft-mocha-reporter` packages to perform Browser and Mobile App tests
 
 ## Plugins
 the primary benefit of using AFT comes from the plugins and the `AftTest`. Because logging using AFT's `ReportingManager` will also send to any registered logging plugins, it is easy to create logging plugins that send to any external system such as TestRail or to log results to Elasticsearch. Additionally, before running any _assertion_ passed to a `aftTest(description, testFunction)` function, AFT will confirm if the _testFunction_ should actually be run based on the results of queries to any supplied `PolicyPlugin` implementations.
