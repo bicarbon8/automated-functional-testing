@@ -355,10 +355,10 @@ export class AftTest {
                     throw new Error(`'${results.length}' failures: [${results.map(r => r.resultMessage).join(',')}]`);
                 }
             } else {
-                await this.pending(shouldRun.message);
+                await this._submitResult('skipped', shouldRun.message, ...this._options.testIds);
             }
         } catch(e) {
-            await this.fail(Err.full(e));
+            await this._submitResult('failed', Err.full(e), ...this._options.testIds);
             throw e;
         } finally {
             await this._done();
@@ -409,7 +409,12 @@ export class AftTest {
         await this.reporter.trace('test complete');
         this._endTime = new Date().getTime();
         if (this.results.length === 0 || this._options.testIds.length > 0) {
-            await this.pass(...this._options.testIds);
+            /**
+             * no results equates to passing and so any `testIds`
+             * without results will be marked as `'passed'` or overall
+             * `testFunction` will be marked as `'passed'` if no `testIds`
+             */
+            await this._submitResult('passed', null, ...this._options.testIds);
         }
         const doneActions: Array<AftTestFunction> = this._options.onEventsMap.get('done');
         await this._runEventActions(doneActions);

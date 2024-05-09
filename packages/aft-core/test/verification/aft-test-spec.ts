@@ -288,8 +288,8 @@ describe('AftTest', () => {
 
     it('calls event handlers in expected order', async () => {
         const eventArray = new Array<string>();
-        const t = new AftTest(rand.getString(15), () => {
-            // no errors so `pass()` should be called on exit
+        const t = new AftTest(rand.getString(15), async (v: AftTest) => {
+            await v.pass();
         }, {
             aftCfg: new AftConfig({plugins: []}),
             onEventsMap: new Map<AftTestEvent, Array<AftTestFunction>>([
