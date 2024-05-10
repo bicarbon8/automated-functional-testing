@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { AftMochaTest, aftMochaTest } from "../src";
 import * as sinon from "sinon";
-import { AftTest, containing, equivalent } from "aft-core";
+import { containing } from "aft-core";
 
 describe('AftMochaReporter', () => {
     it('passes a Mocha Test to the test that can be used by AftMochaTest', async function () {

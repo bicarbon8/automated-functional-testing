@@ -258,7 +258,7 @@ export class AftTest {
      * `ProcessingResult.message` equates to failure
      */
     async verify(actual: any, expected: any | VerifyMatcher, message?: string): Promise<ProcessingResult<boolean>> {
-        const verifyResult: ProcessingResult<boolean> = {result: true};
+        const verifyResult: ProcessingResult<boolean> = {result: true, message};
         const testIds: Array<string> = TitleParser.parseTestIds(message ?? '');
         let syncActual: any;
         if (typeof actual === 'function') {
@@ -285,15 +285,15 @@ export class AftTest {
         }
         if (!matcher.setActual(syncActual).compare()) {
             // Failure condition
-            const errMessage = (message)
-                ? `${message} - ${matcher.failureString()}`
+            const resultMessage = (verifyResult.message)
+                ? `${verifyResult.message} - ${matcher.failureString()}`
                 : matcher.failureString();
 
             if (this._options.haltOnVerifyFailure) {
-                throw new Error(errMessage);
+                throw new Error(resultMessage);
             }
             verifyResult.result = false
-            verifyResult.message = errMessage;
+            verifyResult.message = resultMessage;
         }
         await this._submitResult((verifyResult.result === true) ? 'passed' : 'failed', verifyResult.message, ...testIds);
         return verifyResult;

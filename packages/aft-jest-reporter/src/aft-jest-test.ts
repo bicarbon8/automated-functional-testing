@@ -1,5 +1,5 @@
 import { JestExpect } from "@jest/expect";
-import { AftTest, AftTestFunction, AftTestOptions, Func, rand } from "aft-core";
+import { AftTest, AftTestFunction, AftTestOptions, Func, TestResult, TestStatus, rand } from "aft-core";
 import { TestCaseResult } from "@jest/reporters";
 
 /**
@@ -74,6 +74,14 @@ export class AftJestTest extends AftTest {
      */
     async skipped(reason?: string, ...testIds: Array<string>): Promise<void> {
         return this.pending(reason, ...testIds);
+    }
+
+    protected override async _generateTestResult(status: TestStatus, resultMessage: string, testId?: string): Promise<TestResult> {
+        const result = await super._generateTestResult(status, resultMessage, testId);
+        if (result?.metadata?.['durationMs'] && this.test?.duration > 0) {
+            result.metadata['durationMs'] = this.test.duration;
+        }
+        return result;
     }
 }
 
