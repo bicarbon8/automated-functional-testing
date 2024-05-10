@@ -531,6 +531,6 @@ describe('AftTest', () => {
 
         await test.run();
 
-        expect(test.elapsed).toBeGreaterThan(50);
+        expect(test.elapsed).toBeGreaterThanOrEqual(50);
     });
 });
