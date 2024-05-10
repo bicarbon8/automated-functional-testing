@@ -1,5 +1,5 @@
 import Mocha = require("mocha");
-import { AftTest, AftTestFunction, AftTestOptions, Func, rand } from "aft-core";
+import { AftTest, AftTestFunction, AftTestOptions, Func, TestResult, TestStatus, rand } from "aft-core";
 
 /**
  * expects to be passed the scope from an executing Mocha
@@ -62,6 +62,14 @@ export class AftMochaTest extends AftTest {
     override async pending(message?: string, ...testIds: Array<string>): Promise<void> {
         await super.pending(message, ...testIds);
         this.test?.skip?.();
+    }
+
+    protected override async _generateTestResult(status: TestStatus, resultMessage: string, testId?: string): Promise<TestResult> {
+        const result = await super._generateTestResult(status, resultMessage, testId);
+        if (result?.metadata?.['durationMs'] && this.test?.duration > 0) {
+            result.metadata['durationMs'] = this.test.duration;
+        }
+        return result;
     }
 }
 

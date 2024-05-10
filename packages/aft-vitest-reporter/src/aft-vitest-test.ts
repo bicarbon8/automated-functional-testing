@@ -1,5 +1,5 @@
 import { TaskContext, Test } from "vitest";
-import { AftTest, AftTestFunction, AftTestOptions, Func, rand } from "aft-core";
+import { AftTest, AftTestFunction, AftTestOptions, Func, TestResult, TestStatus, rand } from "aft-core";
 
 /**
  * expects to be passed the context from an executing Vitest
@@ -51,6 +51,14 @@ export class AftVitestTest extends AftTest {
     override async pending(message?: string, ...testIds: Array<string>): Promise<void> {
         await super.pending(message, ...testIds);
         this.test?.context?.skip?.();
+    }
+
+    protected override async _generateTestResult(status: TestStatus, resultMessage: string, testId?: string): Promise<TestResult> {
+        const result = await super._generateTestResult(status, resultMessage, testId);
+        if (result?.metadata?.['durationMs'] && this.test?.result?.duration > 0) {
+            result.metadata['durationMs'] = this.test.result.duration;
+        }
+        return result;
     }
 }
 

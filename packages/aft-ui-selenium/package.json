@@ -1,6 +1,6 @@
 {
   "name": "aft-ui-selenium",
-  "version": "11.2.0",
+  "version": "11.2.1",
   "description": "Automated Functional Testing (AFT) package supporting UI testing in browsers",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-ui": "^11.2.0",
+    "aft-ui": "^11.2.1",
     "selenium-webdriver": "^4.18.1"
   },
   "devDependencies": {

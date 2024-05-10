@@ -201,8 +201,7 @@ export class AftTest {
      */
     get elapsed(): number {
         const start: number = this._startTime ?? new Date().getTime();
-        const end: number = this._endTime ?? new Date().getTime();
-        return end - start;
+        return convert.toElapsedMs(start);
     }
 
     /**
@@ -255,11 +254,13 @@ export class AftTest {
      * `"...[TestID]..."` and if included will result in a call to `pass` or `fail`
      * with the associated test ID(s)
      * @returns a `ProcessingResult<boolean>` where `ProcessingResult.result === true`
-     * equates to success and `ProcessingResult.result == false` or
-     * `ProcessingResult.message` equates to failure
+     * equates to success and `ProcessingResult.result !== true` equates to failure.
+     * #### NOTE:
+     * > if a `message` argument is passed to the `verify` call then it will be included
+     * in the `message` property of the returned `ProcessingResult`
      */
     async verify(actual: any, expected: any | VerifyMatcher, message?: string): Promise<ProcessingResult<boolean>> {
-        const verifyResult: ProcessingResult<boolean> = {result: true};
+        const verifyResult: ProcessingResult<boolean> = {result: true, message};
         const testIds: Array<string> = TitleParser.parseTestIds(message ?? '');
         let syncActual: any;
         if (typeof actual === 'function') {
@@ -286,15 +287,15 @@ export class AftTest {
         }
         if (!matcher.setActual(syncActual).compare()) {
             // Failure condition
-            const errMessage = (message)
-                ? `${message} - ${matcher.failureString()}`
+            const resultMessage = (verifyResult.message)
+                ? `${verifyResult.message} - ${matcher.failureString()}`
                 : matcher.failureString();
 
             if (this._options.haltOnVerifyFailure) {
-                throw new Error(errMessage);
+                throw new Error(resultMessage);
             }
             verifyResult.result = false
-            verifyResult.message = errMessage;
+            verifyResult.message = resultMessage;
         }
         await this._submitResult((verifyResult.result === true) ? 'passed' : 'failed', verifyResult.message, ...testIds);
         return verifyResult;
@@ -528,17 +529,17 @@ export class AftTest {
         return results;
     }
 
-    protected async _generateTestResult(status: TestStatus, logMessage: string, testId?: string): Promise<TestResult> {
+    protected async _generateTestResult(status: TestStatus, resultMessage: string, testId?: string): Promise<TestResult> {
         const result: TestResult = {
             testName: this.reporter.name,
             testId,
             created: Date.now(),
             resultId: rand.guid,
-            resultMessage: logMessage,
+            resultMessage,
             status,
             metadata: {
                 ...this._options.additionalMetadata,
-                durationMs: convert.toElapsedMs(this._startTime),
+                durationMs: this.elapsed,
                 buildName: await this.buildInfoManager.buildName() ?? 'unknown',
                 buildNumber: await this.buildInfoManager.buildNumber() ?? 'unknown'
             }

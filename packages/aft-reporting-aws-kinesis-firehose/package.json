@@ -1,6 +1,6 @@
 {
   "name": "aft-reporting-aws-kinesis-firehose",
-  "version": "11.2.0",
+  "version": "11.2.1",
   "description": "Automated Functional Testing (AFT) reporting plugin package supporting test reporting to AWS Kinesis Firehose",
   "repository": {
     "type": "git",
@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-core": "^11.2.0",
+    "aft-core": "^11.2.1",
     "aws-sdk": "^2.1584.0"
   },
   "devDependencies": {

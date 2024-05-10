@@ -13,7 +13,8 @@ import {
     equaling,
     AftTestEvent,
     AftTestFunction,
-    exactly
+    exactly,
+    wait
 } from "../../src";
 
 const testStore: Map<string, any> = new Map<string, any>();
@@ -515,5 +516,21 @@ describe('AftTest', () => {
         expect(calledFunctionOne).toBeTrue();
         expect(calledFunctionTwo).toBeTrue();
         expect(reporter.submitResult).toHaveBeenCalledTimes(3);
+    });
+
+    it('gives a valid number for elapsed time when no testFunction exists', async () => {
+        const test = new AftTest(rand.getString(18));
+
+        expect(test.elapsed).toBe(0);
+    });
+
+    it('gives a valid number for elapsed time when testFunction exists', async () => {
+        const test = new AftTest(rand.getString(18), async () => wait.forDuration(50));
+
+        expect(test.elapsed).toBe(0);
+
+        await test.run();
+
+        expect(test.elapsed).toBeGreaterThanOrEqual(50);
     });
 });
