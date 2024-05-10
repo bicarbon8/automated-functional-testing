@@ -201,8 +201,7 @@ export class AftTest {
      */
     get elapsed(): number {
         const start: number = this._startTime ?? new Date().getTime();
-        const end: number = this._endTime ?? new Date().getTime();
-        return end - start;
+        return convert.toElapsedMs(start);
     }
 
     /**
@@ -528,17 +527,17 @@ export class AftTest {
         return results;
     }
 
-    protected async _generateTestResult(status: TestStatus, logMessage: string, testId?: string): Promise<TestResult> {
+    protected async _generateTestResult(status: TestStatus, resultMessage: string, testId?: string): Promise<TestResult> {
         const result: TestResult = {
             testName: this.reporter.name,
             testId,
             created: Date.now(),
             resultId: rand.guid,
-            resultMessage: logMessage,
+            resultMessage,
             status,
             metadata: {
                 ...this._options.additionalMetadata,
-                durationMs: convert.toElapsedMs(this._startTime),
+                durationMs: this.elapsed,
                 buildName: await this.buildInfoManager.buildName() ?? 'unknown',
                 buildNumber: await this.buildInfoManager.buildNumber() ?? 'unknown'
             }
