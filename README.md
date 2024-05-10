@@ -42,7 +42,7 @@ describe('Sample Test', () => {
         await aftJasmineTest(async (v: AftJasmineTest) => {
             await v.reporter.step('creating instance of FeatureObj');
             const feature: FeatureObj = new FeatureObj();
-            const result = await v.verify(feature.isGood, true, '[C2345] isGood returned not true'); // reports failure result immediately
+            await v.verify(feature.isGood, true, '[C2345] isGood returned not true'); // reports failure result immediately
             await v.reporter.step('about to call performAction');
             const result: string = await feature.performAction();
             await v.reporter.info(`result of performAction was '${result}'`);

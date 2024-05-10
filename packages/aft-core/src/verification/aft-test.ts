@@ -254,8 +254,10 @@ export class AftTest {
      * `"...[TestID]..."` and if included will result in a call to `pass` or `fail`
      * with the associated test ID(s)
      * @returns a `ProcessingResult<boolean>` where `ProcessingResult.result === true`
-     * equates to success and `ProcessingResult.result == false` or
-     * `ProcessingResult.message` equates to failure
+     * equates to success and `ProcessingResult.result !== true` equates to failure.
+     * #### NOTE:
+     * > if a `message` argument is passed to the `verify` call then it will be included
+     * in the `message` property of the returned `ProcessingResult`
      */
     async verify(actual: any, expected: any | VerifyMatcher, message?: string): Promise<ProcessingResult<boolean>> {
         const verifyResult: ProcessingResult<boolean> = {result: true, message};

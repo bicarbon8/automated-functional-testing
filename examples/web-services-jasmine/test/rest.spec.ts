@@ -23,30 +23,21 @@ describe('Functional API tests using HttpService', () => {
             if (!r.isSuccessful) {
                 await v.reporter.error(r.lastError);
             }
-            let result = await v.verify(r.totalDuration, lessThan(10000), 'expected to take less than 10sec');
-            if (result.message) {
-                v.fail(result.message, 'C2217763');
-            }
-
+            await v.verify(r.totalDuration, lessThan(10000), '[C2217763] expected to take less than 10sec');
+            
             await v.reporter.step('confirm response is not null...');
             expect(response).toBeDefined();
             await v.reporter.info('confirmed response is not null.');
             await v.reporter.info('response status code: ' + response.statusCode);
             await v.reporter.step('confirm response.data is not null...');
-            result = await v.verify(response.data, havingValue(), 'expected to return a valid response object');
-            if (result.message) {
-                v.fail(result.message, 'C3131');
-            }
+            await v.verify(response.data, havingValue(), '[C3131] expected to return a valid response object');
 
             await v.reporter.step('confirm can deserialise response.data into typed object...');
             const obj: ListUsersResponse = httpData.as<ListUsersResponse>(response);
             expect(obj).toBeDefined();
             await v.reporter.info('confirmed can deserialise response.data into typed object.');
             await v.reporter.step('confirm object data property contains more than one result...');
-            result = await v.verify(obj.data.length, greaterThan(0), 'expected more than 0 results in the data array');
-            if (result.message) {
-                v.fail(result.message, 'C2217764');
-            }
+            await v.verify(obj.data.length, greaterThan(0), '[C2217764] expected more than 0 results in the data array');
         }, {
             haltOnVerifyFailure: false,
             testIds: ['C2217763', 'C3131', 'C2217764']
