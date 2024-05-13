@@ -1,4 +1,4 @@
-import { ReportingPlugin, LogLevel, TestResult, AftConfig, Err } from "aft-core";
+import { ReportingPlugin, LogLevel, TestResult, AftConfig, Err, LogMessageData } from "aft-core";
 import { JiraApi } from "../api/jira-api";
 import { JiraConfig } from "../configuration/jira-config";
 import { CommonActions } from "../helpers/common-actions";
@@ -52,25 +52,25 @@ export class JiraReportingPlugin extends ReportingPlugin {
         return this._logs.get(key);
     }
 
-    override log = async (name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => {
+    override log = async (logData: LogMessageData): Promise<void> => {
         if (this.enabled) {
-            let logs = this.logs(name);
+            let logs = this.logs(logData.name);
             if (logs.length > 0) {
                 logs += '\n'; // separate new logs from previous
             }
-            const dataStr: string = (data?.length) ? `, [${data.map(d => {
+            const dataStr: string = (logData.data?.length) ? `, [${logData.data.map(d => {
                 const dHandled = Err.handle(() => JSON.stringify(d));
                 return dHandled.result ?? dHandled.message;
             }).join('')}]` : '';
-            logs += `${message}${dataStr}`;
-            this.logs(name, logs);
+            logs += `${logData.message}${dataStr}`;
+            this.logs(logData.name, logs);
         }
     }
     
-    override submitResult = async (name: string, result: TestResult): Promise<void> => {
-        if (this.enabled && result && name && result.testId) {
+    override submitResult = async (result: TestResult): Promise<void> => {
+        if (this.enabled && result?.testId) {
             if (this._openOnFail && result.status === 'failed') {
-                await this._openNewDefectOrUpdateExisting(name, result);
+                await this._openNewDefectOrUpdateExisting(result);
             }
             if (this._closeOnPass && result.status === 'passed') {
                 await this._closeDefects(result);
@@ -82,7 +82,7 @@ export class JiraReportingPlugin extends ReportingPlugin {
         /* do nothing */
     }
 
-    private async _openNewDefectOrUpdateExisting(logName: string, result: TestResult): Promise<void> {
+    private async _openNewDefectOrUpdateExisting(result: TestResult): Promise<void> {
         const openIssues = await CommonActions.getOpenIssuesReferencingTestId(result.testId, this._api);
         if (openIssues?.length) {
             this.aftLogger.log({
@@ -101,7 +101,7 @@ export class JiraReportingPlugin extends ReportingPlugin {
                 message: `creating new Jira issue because test '${result.testId}' failed...`
             });
             // create a new defect
-            await this._api.createIssue(result.testId, result.testName, this.logs(logName));
+            await this._api.createIssue(result.testId, result.testName, this.logs(result.testName));
         }
     }
 

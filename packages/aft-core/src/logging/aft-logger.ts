@@ -82,7 +82,7 @@ export class AftLogger {
         data.message ??= '';
         data.level ??= 'none';
         const d: string = new Date().toLocaleTimeString();
-        const args: string = (data.args?.length) ? `, [${data.args.map(d => {
+        const args: string = (data.data?.length) ? `, [${data.data.map(d => {
             try {
                 return JSON.stringify(d);
             } catch {

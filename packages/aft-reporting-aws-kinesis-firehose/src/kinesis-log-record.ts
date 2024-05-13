@@ -1,12 +1,9 @@
-import { TestResult, MachineInfoData } from "aft-core";
+import { TestResult, LogMessageData, MachineInfoData } from "aft-core";
 
 export type KinesisLogRecord = {
-    logName?: string;
-    message?: string;
-    level?: string;
+    created: number;
+    version: string;
+    machineInfo: MachineInfoData;
+    log?: LogMessageData;
     result?: TestResult;
-    version?: string;
-    buildName?: string;
-    buildNumber?: string;
-    machineInfo?: MachineInfoData;
-}
+};

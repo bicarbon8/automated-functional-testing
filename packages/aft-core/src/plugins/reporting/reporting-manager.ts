@@ -154,13 +154,15 @@ export class ReportingManager {
             }
             this._initialised = true;
         }
-        this.logger.log({
+        const logData = {
+            name: this.name,
             level, 
             message, 
             args: data
-        });
+        };
+        this.logger.log(logData);
         for (const plugin of this.plugins) {
-            await Err.handleAsync(() => plugin?.log(this.name, level, message, ...data), {
+            await Err.handleAsync(() => plugin?.log(cloneDeep(logData)), {
                 errLevel: 'warn',
                 logger: this.logger,
                 verbosity: 'full'
@@ -175,7 +177,7 @@ export class ReportingManager {
      */
     async submitResult(result: TestResult): Promise<void> {
         for (const plugin of this.plugins) {
-            await Err.handleAsync(() => plugin?.submitResult(this.name, cloneDeep(result)), {
+            await Err.handleAsync(() => plugin?.submitResult(cloneDeep(result)), {
                 errLevel: 'warn',
                 logger: this.logger,
                 verbosity: 'full'

@@ -40,20 +40,13 @@ export class FilesystemReportingPlugin extends ReportingPlugin {
         /* do nothing */
     }
     
-    override log = async (name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => {
+    override log = async (logData: LogMessageData): Promise<void> => {
         if (this.enabled) {
-            if (data?.length > 0) {
-                const dataStr = (data?.length) ? `, [${data?.map(d => {
-                    const dHandled = Err.handle(() => JSON.stringify(d));
-                    return dHandled.result ?? dHandled.message;
-                }).join(',')}]` : '';
-                message = `${message}${dataStr}`;
-            }
-            this._appendToFile({name, level, message});
+            this._appendToFile(logData);
         }
     }
 
-    override submitResult = async (name: string, result: TestResult): Promise<void> => {
+    override submitResult = async (result: TestResult): Promise<void> => {
         if (this.enabled && this._includeResults) {
             let level: LogLevel;
             switch(result.status) {
@@ -72,8 +65,8 @@ export class FilesystemReportingPlugin extends ReportingPlugin {
                     break;
             }
             const data: LogMessageData = {
-                name: name ?? result.testName,
-                level: level,
+                name: result.testName,
+                level,
                 message: JSON.stringify(result)
             };
             this._appendToFile(data);
@@ -85,7 +78,7 @@ export class FilesystemReportingPlugin extends ReportingPlugin {
     }
 
     private _appendToFile(data: LogMessageData): void {
-        if (LogLevel.toValue(data.level) >= LogLevel.toValue(this.logLevel) && data.level != 'none') {
+        if (LogLevel.toValue(data.level) >= LogLevel.toValue(this.logLevel) && data.level !== 'none') {
             const filename = convert.toSafeString(data.name);
             const fullPath = path.join(this._outputPath, `${filename}.log`);
             const lock = new ExpiringFileLock(fullPath, this.aftCfg);
@@ -101,6 +94,13 @@ export class FilesystemReportingPlugin extends ReportingPlugin {
         data = data || {} as LogMessageData;
         data.message ??= '';
         data.level ??= 'none';
+        if (data.data?.length > 0) {
+            const dataStr = (data.data?.length) ? `, [${data.data?.map(d => {
+                const dHandled = Err.handle(() => JSON.stringify(d));
+                return dHandled.result ?? dHandled.message;
+            }).join(',')}]` : '';
+            data.message = `${data.message}${dataStr}`;
+        }
         const d: string = date.format(new Date(), this._dateFormat);
         const out = `[${d}] - ${data.level.toUpperCase()} - ${data.message}`;
         return out;

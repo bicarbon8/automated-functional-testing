@@ -28,8 +28,8 @@ describe('ReportingManager', () => {
         }));
         const plugin = reporter.plugins.find(p => p?.enabled);
         const logs = new Array<LogMessageData>();
-        const logSpy = spyOn(plugin, 'log').and.callFake((name: string, level: LogLevel, message: string, ...data: any[]) => {
-            logs.push({name, level, message, args: data});
+        const logSpy = spyOn(plugin, 'log').and.callFake((logData: LogMessageData) => {
+            logs.push(logData);
             return Promise.resolve();
         });
         const messages: string[] = [];
@@ -74,8 +74,8 @@ describe('ReportingManager', () => {
         }));
         const plugin = reporter.plugins.find(p => p.enabled) as MockReportingPlugin;
         const logs: LogMessageData[] = [];
-        const logSpy = spyOn(plugin, 'log').and.callFake((name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => {
-            logs.push({name, level, message, args: data});
+        const logSpy = spyOn(plugin, 'log').and.callFake((logData: LogMessageData): Promise<void> => {
+            logs.push(logData);
             return Promise.resolve();
         })
         const expected: string = rand.getString(25, true, true, true, true);

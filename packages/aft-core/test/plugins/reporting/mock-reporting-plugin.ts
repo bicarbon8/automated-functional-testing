@@ -1,4 +1,4 @@
-import { ReportingPlugin, LogLevel, AftConfig, ReportingPluginConfig, TestResult } from "../../../src";
+import { ReportingPlugin, LogLevel, AftConfig, ReportingPluginConfig, TestResult, LogMessageData } from "../../../src";
 
 export class MockReportingPluginConfig extends ReportingPluginConfig {
     mockConfigKey: string;
@@ -18,10 +18,10 @@ export class MockReportingPlugin extends ReportingPlugin {
     override initialise = async (logName: string): Promise<void> => {
         return Promise.resolve();
     }
-    override log = async (name: string, level: LogLevel, message: string, ): Promise<void> => {
+    override log = async (logData: LogMessageData): Promise<void> => {
         return Promise.resolve();
     }
-    override submitResult = async (name: string, result: TestResult): Promise<void> => {
+    override submitResult = async (result: TestResult): Promise<void> => {
         this.results.push(result);
         return Promise.resolve();
     }

@@ -41,52 +41,59 @@ the log record that is sent to your AWS Kinesis Firehose endpoint will have the 
 ### message logs
 ```JSON
 {
-    "logName": "if used with an AftTest this will be the 'description' or 'Test IDs' or a GUID",
-    "message": "this is the actual message being logged", 
-    "level": "warn", 
-    "version": "3.0.0", 
-    "buildName": "Jenkins or Team City Job Name", 
-    "buildNumber": "Jenkins or Team City Job Number", 
+    "created": 1655289028279,
+    "version": "11.2.1",
     "machineInfo": {
-      "ip": "234.9.10.11",
-      "name": "CETH-ARG-WIN10",
-      "user": "SYSTEM"
+        "ip": "234.9.10.11",
+        "name": "CETH-ARG-WIN10",
+        "user": "SYSTEM"
+    },
+    "log": {
+        "name": "if used with an AftTest this will be the 'description' or 'Test IDs' or a GUID",
+        "level": "warn",
+        "message": "this is the actual message being logged",
+        "data": [
+            "an array of optional values",
+            {"foo": "bar", "baz": true}
+        ]
     }
 }
 ```
-- **logName** - the `logName` passed to this plugin when loaded from the `ReportingManager`
-- **message** - the `string` being logged by some component
+- **name** - the `name` passed to this plugin when loaded from the `ReportingManager`
 - **level** - a `string` value from one of the `aft-core.LoggingLevel` values based on the level of the message being logged
-- **version** - the current version of the `KinesisReportingPlugin`
-- **buildName** - a `string` retrieved from the `BuildInfoManager.getBuildName` function
-- **buildNumber** - a `string` retrieved from the `BuildInfoManager.getBuildNumber` function
-- **machineInfo** - an `aft-core.MachineInfoData` object containing the following:
-  - **ip** - a `string` of the machine's IP address
-  - **name** - a `string` of the machine's name
-  - **user** - a `string` of the currently logged in user who executed the tests
+- **message** - the `string` being logged by some component
+- **data** - an `array` of anything added to the log function call after the message
+- **metadata** - an object of context for the message
+  - **version** - the current version of the `KinesisReportingPlugin`
+  - **buildName** - a `string` retrieved from the `BuildInfoManager.getBuildName` function
+  - **buildNumber** - a `string` retrieved from the `BuildInfoManager.getBuildNumber` function
+  - **machineInfo** - an `aft-core.MachineInfoData` object containing the following:
+    - **ip** - a `string` of the machine's IP address
+    - **name** - a `string` of the machine's name
+    - **user** - a `string` of the currently logged in user who executed the tests
 
 ### `TestResult` logs
 ```JSON
 {
-    "logName": "if used with an AftTest this will be the 'description' or 'Test IDs' or a GUID",
-    "result": {
-      "testId": "1234",
-      "resultMessage": "the final result was a SUCCESS!",
-      "status": "passed",
-      "resultId": "dbbf6fce-14db-4bd2-ba31-e3fa68d719e4",
-      "created": 1655289028279,
-      "metadata": {
-        "durationMs": 12345,
-        "buildName": "Test Build",
-        "buildNumber": "23"
-      }
-    }, 
-    "buildName": "Jenkins or Team City Job Name", 
-    "buildNumber": "Jenkins or Team City Job Number", 
+    "created": 1655289028279,
+    "version": "11.2.1",
     "machineInfo": {
-      "ip": "234.9.10.11",
-      "name": "CETH-ARG-WIN10",
-      "user": "SYSTEM"
+        "ip": "234.9.10.11",
+        "name": "CETH-ARG-WIN10",
+        "user": "SYSTEM"
+    },
+    "result": {
+        "created": 1655289028270,
+        "testName": "this is the description from your test",
+        "testId": "1234",
+        "resultMessage": "the final result was a SUCCESS!",
+        "status": "passed",
+        "resultId": "dbbf6fce-14db-4bd2-ba31-e3fa68d719e4",
+        "metadata": {
+            "durationMs": 12345,
+            "buildName": "Test Build",
+            "buildNumber": "23",
+        }
     }
 }
 ```
