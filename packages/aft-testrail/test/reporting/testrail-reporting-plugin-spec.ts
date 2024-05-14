@@ -37,14 +37,14 @@ describe('TestRailReportingPlugin', () => {
                 maxLogCharacters: 250
             }
         });
-        let plugin: TestRailReportingPlugin = new TestRailReportingPlugin(aftCfg);
+        const plugin: TestRailReportingPlugin = new TestRailReportingPlugin(aftCfg);
 
-        let expected: string = rand.getString(250, true, true);
-        const logName = 'keeps the last 250 characters logged';
-        await plugin.log(logName, 'info', expected);
+        const message: string = rand.getString(250, true, true);
+        const name = 'keeps the last 250 characters logged';
+        await plugin.log({name, level: 'info', message});
 
-        let actual: string = plugin.logs(logName);
-        expect(actual).toEqual(expected);
+        const actual: string = plugin.logs(name);
+        expect(actual).toEqual(message);
     });
 
     it('logging over 250 characters is ellided from beginning of string', async () => {
@@ -61,11 +61,11 @@ describe('TestRailReportingPlugin', () => {
         let notExpected: string = rand.getString(200, true, true);
         let expected: string = rand.getString(250, true, true);
         
-        const logName = rand.getString(60);
-        await plugin.log(logName, 'info', notExpected);
-        await plugin.log(logName, 'info', expected);
+        const name = rand.getString(60);
+        await plugin.log({name, level: 'info', message: notExpected});
+        await plugin.log({name, level: 'info', message: expected});
 
-        let actual: string = plugin.logs(logName);
+        let actual: string = plugin.logs(name);
         expect(actual).toEqual(ellide(`${notExpected}${expected}`, 250, 'beginning'));
     });
 
@@ -96,7 +96,7 @@ describe('TestRailReportingPlugin', () => {
             created: Date.now(),
             metadata: {"durationMs": 1000}
         };
-        await plugin.submitResult(result.testName, result);
+        await plugin.submitResult(result);
 
         expect(api.addResult).toHaveBeenCalledTimes(1);
         expect(TestStore.request.status_id).toEqual(4); // 4 is Retest
@@ -135,7 +135,7 @@ describe('TestRailReportingPlugin', () => {
             created: Date.now(),
             metadata: {"durationMs": 1000}
         };
-        await plugin.submitResult(result.testName, result);
+        await plugin.submitResult(result);
 
         expect(api.createPlan).toHaveBeenCalledTimes(1);
         const sharedCacheFile: string = path.join(process.cwd(), 'FileSystemMap', 'TestRailConfig.json');
@@ -173,11 +173,11 @@ describe('TestRailReportingPlugin', () => {
         });
         let plugin: TestRailReportingPlugin = new TestRailReportingPlugin(aftCfg);
         
-        const logName = 'sends actual TestResult to TestRail';
-        await plugin.log(logName, 'error', rand.getString(100));
+        const name = 'sends actual TestResult to TestRail';
+        await plugin.log({name, level: 'error', message: rand.getString(100)});
         
         let testResult: TestResult = {
-            testName: logName,
+            testName: name,
             testId: 'C4663085', // must be an existing TestRail Case ID
             status: 'failed',
             resultMessage: rand.getString(100),
@@ -186,7 +186,7 @@ describe('TestRailReportingPlugin', () => {
             metadata: {"durationMs": 300000}
         };
 
-        await plugin.submitResult(testResult.testName, testResult);
+        await plugin.submitResult(testResult);
     }, 300000);
 });
 

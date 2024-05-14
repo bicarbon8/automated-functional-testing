@@ -22,12 +22,12 @@ describe('HtmlReportingPlugin', () => {
         let plugin: HtmlReportingPlugin = new HtmlReportingPlugin(new AftConfig({
             HtmlReportingPluginConfig: config
         }));
-        const logName = rand.getString(50);
+        const name = rand.getString(50);
         for (var i=0; i<25; i++) {
-            await plugin.log(logName, 'info', rand.getString(100));
+            await plugin.log({name, level: 'info', message: rand.getString(100)});
         }
 
-        let actual: string[] = plugin.logs(logName);
+        let actual: string[] = plugin.logs(name);
         expect(actual.length).toBe(14);
     });
 
@@ -39,18 +39,18 @@ describe('HtmlReportingPlugin', () => {
         let plugin: HtmlReportingPlugin = new HtmlReportingPlugin(new AftConfig({
             HtmlReportingPluginConfig: config
         }));
-        const logName = rand.getString(50);
+        const name = rand.getString(50);
         for (var i=0; i<3; i++) {
-            await plugin.log(logName, 'info', rand.getString(100));
+            await plugin.log({name, level: 'info', message: rand.getString(100)});
         }
 
-        let actual: string[] = plugin.logs(logName);
+        let actual: string[] = plugin.logs(name);
         expect(actual.length).toBe(3);
         expect(actual[0]).not.toContain('...');
 
-        await plugin.log(logName, 'info', rand.getString(100));
+        await plugin.log({name, level: 'info', message: rand.getString(100)});
 
-        actual = plugin.logs(logName);
+        actual = plugin.logs(name);
         expect(actual.length).toBe(3);
         expect(actual[0]).toContain('...');
     });
@@ -63,18 +63,18 @@ describe('HtmlReportingPlugin', () => {
         let plugin: HtmlReportingPlugin = new HtmlReportingPlugin(new AftConfig({
             HtmlReportingPluginConfig: config
         }));
-        const logName = 'stores logs only when at or above the specified level';
-        await plugin.log(logName, 'none', 'level none');
-        await plugin.log(logName, 'trace', 'level trace');
-        await plugin.log(logName, 'debug', 'level debug');
-        await plugin.log(logName, 'info', 'level info');
-        await plugin.log(logName, 'step', 'level step');
-        await plugin.log(logName, 'warn', 'level warn');
-        await plugin.log(logName, 'pass', 'level pass');
-        await plugin.log(logName, 'fail', 'level fail');
-        await plugin.log(logName, 'error', 'level error');
+        const name = 'stores logs only when at or above the specified level';
+        await plugin.log({name, level: 'none', message: 'level none'});
+        await plugin.log({name, level: 'trace', message: 'level trace'});
+        await plugin.log({name, level: 'debug', message: 'level debug'});
+        await plugin.log({name, level: 'info', message: 'level info'});
+        await plugin.log({name, level: 'step', message: 'level step'});
+        await plugin.log({name, level: 'warn', message: 'level warn'});
+        await plugin.log({name, level: 'pass', message: 'level pass'});
+        await plugin.log({name, level: 'fail', message: 'level fail'});
+        await plugin.log({name, level: 'error', message: 'level error'});
 
-        let actual: string[] = plugin.logs(logName);
+        let actual: string[] = plugin.logs(name);
         expect(actual.length).toBe(5);
         expect(actual).not.toContain('level none');
         expect(actual).not.toContain('level trace');
@@ -110,27 +110,27 @@ describe('HtmlReportingPlugin', () => {
             {testName: "Fake [Test] <Three>", testId: 'Test', status: 'passed', resultId: rand.guid, created: Date.now()}
         );
         for (var res of testResults) {
-            await plugin.submitResult(res.testName, res);
+            await plugin.submitResult(res);
         };
         let actualResults: HtmlResult[];
         const regenSpy = spyOn<any>(plugin, '_regenerateHtmlFile').and.callFake((results: HtmlResult[]) => {
             actualResults = results;
         });
 
-        const logName = 'only attempts to write to sharedCache and HTML file on call to dispose';
-        await plugin.log(logName, 'info', 'fake log message');
+        const name = 'only attempts to write to sharedCache and HTML file on call to dispose';
+        await plugin.log({name, level: 'info', message: 'fake log message'});
         const expectedResult: TestResult = {
-            testName: logName,
+            testName: name,
             testId: 'C567', 
             resultId: rand.guid, 
             status: 'passed', 
             created: Date.now()
         };
-        await plugin.submitResult(expectedResult.testName, expectedResult);
+        await plugin.submitResult(expectedResult);
 
         expect(regenSpy).not.toHaveBeenCalled();
 
-        await plugin.finalise(logName);
+        await plugin.finalise(name);
 
         expect(regenSpy).toHaveBeenCalledTimes(1);
         expect(actualResults).toHaveSize(4);
@@ -153,21 +153,21 @@ describe('HtmlReportingPlugin', () => {
             {testName: "Fake [Test] <Three>", status: 'passed', resultId: rand.guid, created: Date.now()}
         );
         for (var res of testResults) {
-            await plugin.submitResult(res.testName, res);
+            await plugin.submitResult(res);
         };
 
-        const logName = 'can generate HTML result file';
-        await plugin.log(logName, 'info', 'fake log message');
+        const name = 'can generate HTML result file';
+        await plugin.log({name, level: 'info', message: 'fake log message'});
         const expectedResult: TestResult = {
-            testName: logName, 
+            testName: name, 
             testId: 'C567', 
             resultId: rand.guid, 
             status: 'passed', 
             created: Date.now()
         };
-        await plugin.submitResult(expectedResult.testName, expectedResult);
+        await plugin.submitResult(expectedResult);
 
-        await plugin.finalise(logName);
+        await plugin.finalise(name);
 
         expect(fs.existsSync(plugin.fullPathAndFile)).toBeTrue();
     });

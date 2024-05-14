@@ -59,18 +59,17 @@ the log record that is sent to your AWS Kinesis Firehose endpoint will have the 
     }
 }
 ```
-- **name** - the `name` passed to this plugin when loaded from the `ReportingManager`
-- **level** - a `string` value from one of the `aft-core.LoggingLevel` values based on the level of the message being logged
-- **message** - the `string` being logged by some component
-- **data** - an `array` of anything added to the log function call after the message
-- **metadata** - an object of context for the message
-  - **version** - the current version of the `KinesisReportingPlugin`
-  - **buildName** - a `string` retrieved from the `BuildInfoManager.getBuildName` function
-  - **buildNumber** - a `string` retrieved from the `BuildInfoManager.getBuildNumber` function
-  - **machineInfo** - an `aft-core.MachineInfoData` object containing the following:
+- **created** - the elapsed milliseconds since the epoch representing when this log record was created
+- **version** - the current version of the `KinesisReportingPlugin`
+- **machineInfo** - an `aft-core.MachineInfoData` object containing the following:
     - **ip** - a `string` of the machine's IP address
     - **name** - a `string` of the machine's name
     - **user** - a `string` of the currently logged in user who executed the tests
+- **log** - the `LogMessageData` object
+    - **name** - the `name` passed to this plugin when loaded from the `ReportingManager`
+    - **level** - a `string` value from one of the `aft-core.LoggingLevel` values based on the level of the message being logged
+    - **message** - the `string` being logged by some component
+    - **data** - an `array` of anything added to the log function call after the message
 
 ### `TestResult` logs
 ```JSON
@@ -97,18 +96,17 @@ the log record that is sent to your AWS Kinesis Firehose endpoint will have the 
     }
 }
 ```
-- **logName** - the `logName` passed to this plugin when loaded from the `ReportingManager`
+- **created** - the elapsed milliseconds since the epoch representing when this log record was created
+- **version** - the current version of the `KinesisReportingPlugin`
+- **machineInfo** - an `aft-core.MachineInfoData` object containing the following:
+    - **ip** - a `string` of the machine's IP address
+    - **name** - a `string` of the machine's name
+    - **user** - a `string` of the currently logged in user who executed the tests
 - **result** - an `TestResult` object containing the following:
+  - **created** - a `number` representing the elapsed milliseconds since the epoch for when this result was created
   - **testId** - a `string` containing any unique ID for the test result being recorded
   - **resultMessage** - a `string` message of the final result
   - **status** - a `string` representing the `aft-core.TestStatus` value
   - **resultId** - a `string` containing a unique identifier for the `TestResult`
   - **created** - a `number` containing the date and time the `TestResult` was created as milliseconds since the epoch
   - **metadata** - an `object` that can contain additional data for the `TestResult`
-- **version** - the current version of the `KinesisReportingPlugin`
-- **buildName** - a `string` retrieved from the `BuildInfoManager.getBuildName` function
-- **buildNumber** - a `string` retrieved from the `BuildInfoManager.getBuildNumber` function
-- **machineInfo** - an `aft-core.MachineInfoData` object containing the following:
-  - **ip** - a `string` of the machine's IP address
-  - **name** - a `string` of the machine's name
-  - **user** - a `string` of the currently logged in user who executed the tests

@@ -1,4 +1,4 @@
-import { ReportingPlugin, LogLevel, TestResult, AftConfig, Err, LogMessageData } from "aft-core";
+import { ReportingPlugin, TestResult, AftConfig, Err, LogMessageData } from "aft-core";
 import { JiraApi } from "../api/jira-api";
 import { JiraConfig } from "../configuration/jira-config";
 import { CommonActions } from "../helpers/common-actions";
