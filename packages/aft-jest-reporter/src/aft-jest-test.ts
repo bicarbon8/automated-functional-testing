@@ -107,6 +107,6 @@ export class AftJestTest extends AftTest {
  * configuration and settings
  * @returns an async `Promise<void>` that runs the passed in `testFunction`
  */
-export const aftJestTest = async (expect: JestExpect | jest.Expect | string, testFunction: Func<AftJestTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {  // eslint-disable-line no-undef
+export const aftJestTest = async (expect: JestExpect | jest.Expect | string, testFunction: Func<AftJestTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<AftJestTest> => {  // eslint-disable-line no-undef
     return new AftJestTest(expect, testFunction, options).run();
 };

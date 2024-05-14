@@ -22,7 +22,7 @@ export default class AftVitestReporter implements vt.Reporter {
     }
 
     onInit(ctx: vt.Vitest): void { // eslint-disable-line no-unused-vars
-        FileSystemMap.removeCacheFile(AftVitestTest.name, this.aftCfg);
+        FileSystemMap.removeMapFile(AftVitestTest.name, this.aftCfg);
     }
 
     async onFinished(filesOrTasks: Array<vt.File | vt.Task>): Promise<void> {

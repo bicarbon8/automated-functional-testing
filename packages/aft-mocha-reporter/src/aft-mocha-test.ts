@@ -95,6 +95,6 @@ export class AftMochaTest extends AftTest {
  * configuration and settings
  * @returns an async `Promise<void>` that runs the passed in `testFunction`
  */
-export const aftMochaTest = async (context: Mocha.Context | string, testFunction: Func<AftMochaTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {
+export const aftMochaTest = async (context: Mocha.Context | string, testFunction: Func<AftMochaTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<AftMochaTest> => {
     return new AftMochaTest(context, testFunction, options).run();
 };

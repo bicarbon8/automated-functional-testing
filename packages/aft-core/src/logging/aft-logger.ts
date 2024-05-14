@@ -72,24 +72,25 @@ export class AftLogger {
 
     /**
      * formats the passed in `LogMessage.message` based on the passed in options
-     * @param data a `LogMessage` object containing the `level`, `name` and `message` to
+     * @param logObj a `LogMessage` object containing the `level`, `name` and `message` to
      * be formatted into a console-friendly log string
      * @returns the formatted log string
      */
-    format(data: LogMessageData) {
-        data ??= {} as LogMessageData;
-        data.name ??= this.loggerName;
-        data.message ??= '';
-        data.level ??= 'none';
+    format(logObj: LogMessageData) {
+        logObj ??= {} as LogMessageData;
+        logObj.name ??= this.loggerName;
+        logObj.message ??= '';
+        logObj.level ??= 'none';
         const d: string = new Date().toLocaleTimeString();
-        const args: string = (data.data?.length) ? `, [${data.data.map(d => {
+        const dataStrings = logObj.data?.map(d => {
             try {
                 return JSON.stringify(d);
             } catch {
                 return d?.toString();
             }
-        }).join(',')}]` : '';
-        const out = `${d} - [${data.name}] - ${ellide(data.level.toUpperCase(), 5, 'end', '')} - ${data.message}${args}`;
+        }) ?? [];
+        const args: string = (logObj.data?.length) ? ` ${dataStrings.join(' ')}` : '';
+        const out = `${d} - [${logObj.name}] - ${ellide(logObj.level.toUpperCase(), 5, 'end', '')} - ${logObj.message}${args}`;
         return out;
     }
 

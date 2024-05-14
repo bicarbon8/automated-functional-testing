@@ -6,6 +6,7 @@ import { AftLogger } from "../../logging/aft-logger";
 import { TestResult } from "./test-result";
 import { Err } from "../../helpers/err";
 import { cloneDeep } from "lodash";
+import { LogMessageData } from "../../logging/log-message-data";
 
 /**
  * a class that manages reporting plugins and handles test
@@ -154,11 +155,11 @@ export class ReportingManager {
             }
             this._initialised = true;
         }
-        const logData = {
+        const logData: LogMessageData = {
             name: this.name,
             level, 
             message, 
-            args: data
+            data
         };
         this.logger.log(logData);
         for (const plugin of this.plugins) {

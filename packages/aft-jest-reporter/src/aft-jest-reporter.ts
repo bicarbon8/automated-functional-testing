@@ -18,7 +18,7 @@ export default class AftJestReporter implements Reporter {
     // start: required Reporter functions
     onRunStart(results: AggregatedResult, options: ReporterOnStartOptions): Promise<void> | void { // eslint-disable-line no-unused-vars
         // clear all previously cached test results
-        FileSystemMap.removeCacheFile(AftJestTest.name);
+        FileSystemMap.removeMapFile(AftJestTest.name);
         /**
          * NOTE Jest does not provide the ability to programmatically skip a test
          * nor would the Reporter be allowed to perform this action so we

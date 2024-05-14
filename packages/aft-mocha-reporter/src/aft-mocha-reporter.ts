@@ -41,7 +41,7 @@ export class AftMochaReporter extends Mocha.reporters.Base {
         runner
         .on(EVENT_RUN_BEGIN, () => {
             // clear all previously cached test results
-            FileSystemMap.removeCacheFile(AftMochaTest.name);
+            FileSystemMap.removeMapFile(AftMochaTest.name);
         })
         .on(EVENT_TEST_PENDING, async (test: Mocha.Test) => {
             /**

@@ -84,6 +84,6 @@ export class AftVitestTest extends AftTest {
  * configuration and settings
  * @returns an async `Promise<void>` that runs the passed in `testFunction`
  */
-export const aftVitestTest = async (context: TaskContext | string, testFunction: Func<AftVitestTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {
+export const aftVitestTest = async (context: TaskContext | string, testFunction: Func<AftVitestTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<AftVitestTest> => {
     return new AftVitestTest(context, testFunction, options).run();
 };
