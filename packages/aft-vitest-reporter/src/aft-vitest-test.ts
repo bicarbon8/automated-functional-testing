@@ -1,5 +1,5 @@
 import { TaskContext, Test } from "vitest";
-import { AftTest, AftTestFunction, AftTestOptions, Func, TestResult, TestStatus, rand } from "aft-core";
+import { AftTest, AftTestFunction, AftTestOptions, Err, Func, TestResult, TestStatus, rand } from "aft-core";
 
 /**
  * expects to be passed the context from an executing Vitest
@@ -48,8 +48,8 @@ export class AftVitestTest extends AftTest {
         this.test = (context?.task) ? context.task : null;
     }
 
-    override async pending(message?: string, ...testIds: Array<string>): Promise<void> {
-        await super.pending(message, ...testIds);
+    override async pending(message?: string): Promise<void> {
+        await Err.handleAsync(() => super.pending(message), { errLevel: 'none' });
         this.test?.context?.skip?.();
     }
 

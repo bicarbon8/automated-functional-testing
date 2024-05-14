@@ -44,11 +44,6 @@ export class AftJasmineTest extends AftTest {
         this.test = scope;
     }
 
-    override async pending(message?: string): Promise<void> {
-        pending(message); // eslint-disable-line no-undef
-        await super.pending(message);
-    }
-
     protected override async _generateTestResult(status: TestStatus, resultMessage: string, testId?: string): Promise<TestResult> {
         const result = await super._generateTestResult(status, resultMessage, testId);
         if (result?.metadata?.['durationMs'] && this.test?.duration > 0) {

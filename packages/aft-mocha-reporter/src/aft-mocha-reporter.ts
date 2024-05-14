@@ -50,14 +50,14 @@ export class AftMochaReporter extends Mocha.reporters.Base {
              */
             const t = new AftMochaTest({test});
             if (t.results.length === 0) {
-                await t.pending();
+                await Err.handleAsync(() => t.pending(), {errLevel: 'none'});
             }
         })
         .on(EVENT_TEST_PASS, async (test: Mocha.Test) => {
             // conditionally handle `passing` test when not using aftMochaTest
             const t = new AftMochaTest({test});
             if (t.results.length === 0) {
-                await t.pass();
+                await Err.handleAsync(() => t.pass(), {errLevel: 'none'});
             }
         })
         .on(EVENT_TEST_FAIL, async (test: Mocha.Test, err: any) => {
@@ -68,7 +68,7 @@ export class AftMochaReporter extends Mocha.reporters.Base {
                     const handled = Err.handle(() => JSON.stringify(err))
                     err = handled?.result ?? handled?.message;
                 }
-                await t.fail(err);
+                await Err.handleAsync(() => t.fail(err), {errLevel: 'none'});
             }
         });
     }

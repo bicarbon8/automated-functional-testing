@@ -24,7 +24,7 @@ describe('AftMochaReporter', () => {
         sinon.stub(t, 'shouldRun').callsFake(() => Promise.resolve({result: false, message: 'fake'}));
         const shouldRun = await t.shouldRun();
         if (!shouldRun.result) { 
-            await t.pending(shouldRun.message);
+            this.skip();
         }
         
         expect(true).to.be.false;

@@ -52,13 +52,13 @@ export default class AftVitestReporter implements vt.Reporter {
                                     errStrings.push(errString.result);
                                 }
                             }
-                            await t.fail(errStrings.join(','));
+                            await Err.handleAsync(() => t.fail(errStrings.join(',')), {errLevel: 'none'});
                             break;
                         case 'pass':
-                            await t.pass();
+                            await Err.handleAsync(() => t.pass(), {errLevel: 'none'});
                             break;
                         case 'skip':
-                            await t.pending();
+                            await Err.handleAsync(() => t.pending(), {errLevel: 'none'});
                             break;
                         default:
                             await t.reporter.warn(`unknown state '${task.result.state}' received`);

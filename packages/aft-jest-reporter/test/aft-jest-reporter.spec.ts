@@ -1,5 +1,5 @@
 import { test, jest, expect } from "@jest/globals";
-import { ProcessingResult, containing } from "aft-core";
+import { Err, ProcessingResult, containing } from "aft-core";
 import { AftJestTest, aftJestTest } from "../src";
 
 describe('AftJestReporter', () => {
@@ -25,7 +25,7 @@ describe('AftJestReporter', () => {
         jest.spyOn(t, 'shouldRun').mockImplementation(() => Promise.resolve({result: false, message: 'fake'}));
         const shouldRun: ProcessingResult<boolean> = await t.shouldRun();
         if (!shouldRun.result) {
-            await t.pending(shouldRun.message);
+            await Err.handleAsync(() => t.pending(shouldRun.message), {errLevel: 'none'});
             return; // Jest doesn't support programmic skip https://github.com/jestjs/jest/issues/7245
         }
 

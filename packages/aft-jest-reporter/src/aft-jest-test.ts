@@ -59,21 +59,12 @@ export class AftJestTest extends AftTest {
         this.test = test;
     }
 
-    override async fail(reason?: string, ...testIds: Array<string>): Promise<void> {
-        let err: string = reason ?? 'unknown error occurred';
-        if (this.test) {
-            err = this.test.failureMessages?.join('\n') ?? err;
-        }
-        await super.fail(err, ...testIds);
-        fail(err); // eslint-disable-line no-undef
-    }
-
     /**
      * see: `pending`
      * @param reason the reason for skipping this test
      */
-    async skipped(reason?: string, ...testIds: Array<string>): Promise<void> {
-        return this.pending(reason, ...testIds);
+    async skipped(reason?: string): Promise<void> {
+        return this.pending(reason);
     }
 
     protected override async _generateTestResult(status: TestStatus, resultMessage: string, testId?: string): Promise<TestResult> {

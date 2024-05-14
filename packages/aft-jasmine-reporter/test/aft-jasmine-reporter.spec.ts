@@ -10,22 +10,22 @@ describe('AftJasmineReporter', () => {
         await t.reporter.info('completed AftJasmineReporter test.');
     });
 
-    it('can check if test should be run [C1234]', async () => {
+    it('can check if test should be run [C1234] when not inside AftJasmineTest', async () => {
         const t = new AftJasmineTest(null, null, {aftCfg: new AftConfig({plugins: []})});
         const shouldRun = await t.shouldRun();
         if (shouldRun.result !== true) {
-            await t.pending(shouldRun.message);
+            pending(shouldRun.message);
         }
 
-        expect(t.description).toEqual('AftJasmineReporter can check if test should be run [C1234]');
+        expect(t.description).toEqual('AftJasmineReporter can check if test should be run [C1234] when not inside AftJasmineTest');
     });
 
-    it('can skip test [C4567] if should not be run', async () => {
+    it('can skip test [C4567] if should not be run when not inside AftJasmineTest', async () => {
         const t = new AftJasmineTest();
         spyOn(t, 'shouldRun').and.returnValue(Promise.resolve<ProcessingResult<boolean>>({result: false, message: 'fake'}));
         const shouldRun = await t.shouldRun();
         if (shouldRun.result !== true) {
-            await t.pending(shouldRun.message);
+            pending(shouldRun.message);
         }
 
         expect(true).toBeFalse(); // force failure if skip does not happen

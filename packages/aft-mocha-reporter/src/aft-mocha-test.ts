@@ -59,11 +59,6 @@ export class AftMochaTest extends AftTest {
         this.test = scope?.test;
     }
 
-    override async pending(message?: string, ...testIds: Array<string>): Promise<void> {
-        await super.pending(message, ...testIds);
-        this.test?.skip?.();
-    }
-
     protected override async _generateTestResult(status: TestStatus, resultMessage: string, testId?: string): Promise<TestResult> {
         const result = await super._generateTestResult(status, resultMessage, testId);
         if (result?.metadata?.['durationMs'] && this.test?.duration > 0) {

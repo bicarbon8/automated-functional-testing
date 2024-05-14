@@ -2,7 +2,7 @@ import { AftJestTest } from "./aft-jest-test";
 import { AggregatedResult, Config, Reporter, ReporterContext, TestCaseResult, TestContext } from "@jest/reporters";
 import { ReporterOnStartOptions } from "@jest/reporters";
 import { Test } from "@jest/reporters";
-import { FileSystemMap } from "aft-core";
+import { Err, FileSystemMap } from "aft-core";
 
 export default class AftJestReporter implements Reporter {
     private readonly _globalConfig: Config.GlobalConfig;
@@ -40,14 +40,14 @@ export default class AftJestReporter implements Reporter {
             // aftJestTest was NOT used in test
             switch (testCaseResult.status) {
                 case "skipped":
-                    return t.skipped(testCaseResult.failureMessages?.join('\n'))
-                        .catch((err) => t.reporter.warn(err));
+                    return Err.handleAsync(() => t.skipped(testCaseResult.failureMessages?.join('\n')), {errLevel: 'none'})
+                        .then();
                 case "failed":
-                    return t.fail(testCaseResult.failureMessages?.join('\n'))
-                        .catch((err) => t.reporter.warn(err));
+                    return Err.handleAsync(() => t.fail(testCaseResult.failureMessages?.join('\n')), {errLevel: 'none'})
+                        .then();
                 case "passed":
-                    return t.pass()
-                        .catch((err) => t.reporter.warn(err));
+                    return Err.handleAsync(() => t.pass(), {errLevel: 'none'})
+                        .then();
             }
         }
     }

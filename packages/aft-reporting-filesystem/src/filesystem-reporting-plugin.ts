@@ -1,6 +1,6 @@
 import * as process from 'node:process';
 import * as path from "node:path";
-import { AftConfig, convert, Err, ExpiringFileLock, fileio, ReportingPlugin, ReportingPluginConfig, LogLevel, LogMessageData, TestResult, ellide } from "aft-core";
+import { AftConfig, convert, ExpiringFileLock, fileio, ReportingPlugin, ReportingPluginConfig, LogLevel, LogMessageData, TestResult, ellide } from "aft-core";
 import * as date from "date-and-time";
 
 export class FilesystemReportingPluginConfig extends ReportingPluginConfig {
