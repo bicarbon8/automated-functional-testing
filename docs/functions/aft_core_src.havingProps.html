@@ -18,45 +18,28 @@
 <h1>Function havingProps</h1></div>
 <section class="tsd-panel">
 <ul class="tsd-signatures">
-<li class="tsd-signature tsd-anchor-link" id="havingProps"><span class="tsd-kind-call-signature">having<wbr/>Props</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">expected</span>, <span class="tsd-kind-parameter">maxDepth</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">HavingProperties</span><a href="#havingProps" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><g stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" id="icon-anchor"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></g></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="havingProps"><span class="tsd-kind-call-signature">having<wbr/>Props</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">expected</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">HavingProperties</span><a href="#havingProps" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><g stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" id="icon-anchor"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></g></svg></a></li>
 <li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>compares the passed in <code>expected</code> object to an <code>actual</code> checking that they both contain all the same
-properties and property types as are found in the <code>expected</code> object. for example, given an <code>expected</code>
-of:</p>
-<pre><code class="language-typescript"><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-4">expected</span><span class="hl-1"> = {</span><br/><span class="hl-1">    </span><span class="hl-7">foo:</span><span class="hl-1"> </span><span class="hl-2">&#39;bar&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-7">baz:</span><span class="hl-1"> </span><span class="hl-3">true</span><br/><span class="hl-1">}</span>
-</code><button>Copy</button></pre>
-<p>and an <code>actual</code> of:</p>
-<pre><code class="language-typescript"><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-4">actual</span><span class="hl-1"> = {</span><br/><span class="hl-1">    </span><span class="hl-7">foo:</span><span class="hl-1"> </span><span class="hl-2">&#39;foo&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-7">bar:</span><span class="hl-1"> </span><span class="hl-9">42</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-7">baz:</span><span class="hl-1"> </span><span class="hl-3">false</span><br/><span class="hl-1">}</span>
-</code><button>Copy</button></pre>
-<p>calling the following:</p>
-<pre><code class="language-typescript"><span class="hl-0">havingProps</span><span class="hl-1">(</span><span class="hl-7">expected</span><span class="hl-1">).</span><span class="hl-0">setActual</span><span class="hl-1">(</span><span class="hl-7">actual</span><span class="hl-1">).</span><span class="hl-0">compare</span><span class="hl-1">(); </span><span class="hl-6">// true</span>
-</code><button>Copy</button></pre>
-<p>would return true because <code>actual</code> has both a <code>foo</code> property of type <code>string</code>
-and a <code>baz</code> property of type <code>boolean</code>. usage in an <code>AftTest.verify</code> function would look like:</p>
-<pre><code class="language-typescript"><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-4">t</span><span class="hl-1"> = </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">AftTest</span><span class="hl-1">(</span><span class="hl-2">&#39;description&#39;</span><span class="hl-1">, () </span><span class="hl-3">=&gt;</span><span class="hl-1"> </span><span class="hl-3">null</span><span class="hl-1">);</span><br/><span class="hl-8">await</span><span class="hl-1"> </span><span class="hl-7">t</span><span class="hl-1">.</span><span class="hl-0">verify</span><span class="hl-1">(() </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><span class="hl-11">foo</span><span class="hl-1">: </span><span class="hl-2">&#39;bar&#39;</span><span class="hl-1">, </span><span class="hl-11">baz</span><span class="hl-1">: </span><span class="hl-3">true</span><span class="hl-1">}, </span><span class="hl-0">havingProps</span><span class="hl-1">({</span><span class="hl-7">foo:</span><span class="hl-1"> </span><span class="hl-2">&#39;any&#39;</span><span class="hl-1">, </span><span class="hl-7">baz:</span><span class="hl-1"> </span><span class="hl-3">false</span><span class="hl-1">})); </span><span class="hl-6">// succeeds</span>
+<div class="tsd-comment tsd-typography"><p>compares the passed in <code>actual</code> has each of the <code>expected</code> property names and optionally
+also if the specified property name is of the <code>expected</code> type</p>
+<p>ex:</p>
+<pre><code class="language-typescript"><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-4">actual</span><span class="hl-1"> = {</span><span class="hl-7">foo:</span><span class="hl-1"> </span><span class="hl-9">42</span><span class="hl-1">, </span><span class="hl-7">bar:</span><span class="hl-1"> </span><span class="hl-2">&#39;foo&#39;</span><span class="hl-1">, </span><span class="hl-7">baz:</span><span class="hl-1"> </span><span class="hl-3">false</span><span class="hl-1">};</span><br/><br/><span class="hl-0">havingProps</span><span class="hl-1">([</span><span class="hl-2">&#39;foo&#39;</span><span class="hl-1">, [</span><span class="hl-2">&#39;bar&#39;</span><span class="hl-1">, </span><span class="hl-2">&#39;string&#39;</span><span class="hl-1">]])</span><br/><span class="hl-1">.</span><span class="hl-0">setActual</span><span class="hl-1">(</span><span class="hl-7">actual</span><span class="hl-1">)</span><br/><span class="hl-1">.</span><span class="hl-0">compare</span><span class="hl-1">(); </span><span class="hl-6">// returns `true`</span><br/><br/><span class="hl-0">havingProps</span><span class="hl-1">([[</span><span class="hl-2">&#39;foo&#39;</span><span class="hl-1">: </span><span class="hl-2">&#39;string&#39;</span><span class="hl-1">], </span><span class="hl-2">&#39;bar&#39;</span><span class="hl-1">, </span><span class="hl-2">&#39;baz&#39;</span><span class="hl-1">])</span><br/><span class="hl-1">.</span><span class="hl-0">setActual</span><span class="hl-1">(</span><span class="hl-7">actual</span><span class="hl-1">)</span><br/><span class="hl-1">.</span><span class="hl-0">compare</span><span class="hl-1">(); </span><span class="hl-6">// returns `false` because &#39;foo&#39; is type `number`</span><br/><br/><span class="hl-0">havingProps</span><span class="hl-1">([</span><span class="hl-2">&#39;foobar&#39;</span><span class="hl-1">])</span><br/><span class="hl-1">.</span><span class="hl-0">setActual</span><span class="hl-1">(</span><span class="hl-7">actual</span><span class="hl-1">)</span><br/><span class="hl-1">.</span><span class="hl-0">compare</span><span class="hl-1">(); </span><span class="hl-6">// returns `false` because no property named `foobar`</span><br/><br/><span class="hl-8">await</span><span class="hl-1"> </span><span class="hl-0">aftTest</span><span class="hl-1">(</span><span class="hl-2">&#39;example havingProps&#39;</span><span class="hl-1">, </span><span class="hl-3">async</span><span class="hl-1"> () </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-8">await</span><span class="hl-1"> </span><span class="hl-7">t</span><span class="hl-1">.</span><span class="hl-0">verify</span><span class="hl-1">(</span><span class="hl-7">actual</span><span class="hl-1">, </span><span class="hl-0">havingProps</span><span class="hl-1">([</span><span class="hl-2">&#39;foo&#39;</span><span class="hl-1">, [</span><span class="hl-2">&#39;bar&#39;</span><span class="hl-1">, </span><span class="hl-2">&#39;string&#39;</span><span class="hl-1">]])); </span><span class="hl-6">// succeeds</span><br/><span class="hl-1">});</span>
 </code><button>Copy</button></pre>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">expected</span>: <span class="tsd-signature-type ">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
-<div class="tsd-comment tsd-typography"><p>an object or array containing properties</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li>
-<li>
-<h5><span class="tsd-kind-parameter">maxDepth</span>: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = Infinity</span></h5>
-<div class="tsd-comment tsd-typography"><p>a number indicating how deeply comparison should recurse into the objects</p>
+<h5><span class="tsd-kind-parameter">expected</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></h5>
+<div class="tsd-comment tsd-typography"><p>an array of either property name strings or arrays of property name and
+property type strings like <code>[[&#39;propName&#39;, &#39;propType&#39;]]</code></p>
 </div>
 <div class="tsd-comment tsd-typography"></div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">HavingProperties</span></h4><p>a new {HavingProperties} instance</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">HavingProperties</span></h4><p>a new <code>HavingProperties</code> instance</p>
 
-<div class="tsd-comment tsd-typography">
-<h4>Default</h4><pre><code class="language-ts"><span class="hl-3">Infinity</span>
-</code><button>Copy</button></pre>
-</div><aside class="tsd-sources">
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/a40b98f/packages/aft-core/src/verification/verify-matcher.ts#L374">packages/aft-core/src/verification/verify-matcher.ts:374</a></li></ul></aside></li></ul></section></div>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/fb4014c/packages/aft-core/src/verification/verify-matcher.ts#L459">packages/aft-core/src/verification/verify-matcher.ts:459</a></li></ul></aside></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -147,6 +130,7 @@ and a <code>baz</code> property of type <code>boolean</code>. usage in an <code>
 <li><a href="aft_core_src.havingProps.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>having<wbr/>Props</span></a></li>
 <li><a href="aft_core_src.havingValue.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>having<wbr/>Value</span></a></li>
 <li><a href="aft_core_src.lessThan.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>less<wbr/>Than</span></a></li>
+<li><a href="aft_core_src.matchingProps.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>matching<wbr/>Props</span></a></li>
 <li><a href="aft_core_src.not.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>not</span></a></li>
 <li><a href="aft_core_src.retry-1.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>retry</span></a></li>
 <li><a href="aft_core_src.using.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>using</span></a></li></ul></div></details></li>
