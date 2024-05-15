@@ -1,4 +1,4 @@
-import { ellide, EllipsisLocation, rand } from "../../src";
+import { ellide, rand } from "../../src";
 
 describe('ellide', () => {
     it('returns the original string if less than specified length', () => {
@@ -50,4 +50,4 @@ describe('ellide', () => {
         expect(actual.slice(0, 15)).withContext('first part of string should match').toEqual(original.slice(0, 15));
         expect(actual.slice(35, 50)).withContext('last part of string should match').toEqual(original.slice(85, 100));
     });
-})
+});
