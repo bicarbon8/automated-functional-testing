@@ -12,7 +12,7 @@
     "coverage": "npm run coverage --workspaces --if-present",
     "test:core": "npm run test --workspace=aft-core",
     "test:jira": "npm run test --workspace=aft-jira",
-    "test:kinesis": "npm run test --workspace=aft-reporting-aws-kinesis-firehose",
+    "test:firehose": "npm run test --workspace=aft-reporting-aws-kinesis-firehose",
     "test:testrail": "npm run test --workspace=aft-testrail",
     "test:ui": "npm run test --workspace=aft-ui",
     "test:selenium": "npm run test --workspace=aft-ui-selenium",
@@ -30,7 +30,6 @@
     "circular": "npx dpdm -T --warning false **/index.ts"
   },
   "devDependencies": {
-    "@nx/nx-linux-x64-gnu": "^19.0.3",
     "dpdm": "^3.14.0",
     "lerna": "^7.4.2",
     "typedoc": "^0.24.8"

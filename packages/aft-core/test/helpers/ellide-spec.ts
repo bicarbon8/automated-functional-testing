@@ -1,4 +1,4 @@
-import { ellide, rand } from "../../src";
+import { EllipsisLocation, ellide, rand } from "../../src";
 
 describe('ellide', () => {
     it('returns the original string if less than specified length', () => {
@@ -50,4 +50,16 @@ describe('ellide', () => {
         expect(actual.slice(0, 15)).withContext('first part of string should match').toEqual(original.slice(0, 15));
         expect(actual.slice(35, 50)).withContext('last part of string should match').toEqual(original.slice(85, 100));
     });
+
+    const data = [
+        {input: 'the quick brown fox jumped over the lazy dogs', length: 10, location: undefined, ellipsis: undefined, expected: 'the qui...'},
+        {input: 'the quick brown fox jumped over the lazy dogs', length: 10, location: 'beginning', ellipsis: undefined, expected: '...zy dogs'},
+        {input: 'the quick brown fox jumped over the lazy dogs', length: 10, location: 'middle', ellipsis: undefined, expected: 'the...dogs'},
+        {input: 'the quick brown fox jumped over the lazy dogs', length: 10, location: 'end', ellipsis: '_', expected: 'the quick_'},
+    ];
+    for (const d of data) {
+        it(`can process as expected: ${JSON.stringify(d)}`, () => {
+            expect(ellide(d.input, d.length, d.location as EllipsisLocation, d.ellipsis)).toEqual(d.expected);
+        });
+    }
 });

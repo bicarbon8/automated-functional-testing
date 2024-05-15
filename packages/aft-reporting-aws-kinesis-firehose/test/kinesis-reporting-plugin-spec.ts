@@ -260,7 +260,7 @@ describe('KinesisReportingPlugin', () => {
 
         const logRecord: Firehose.Record = store.get('_send');
         const data: KinesisLogRecord = JSON.parse(logRecord.Data.toString()) as KinesisLogRecord;
-        expect(data.created).toMatch(/[0-9]+/);
+        expect(data.Created).toMatch(/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}/);
         expect(data.version).toEqual(pkg.version);
         expect(data.machineInfo).toEqual(machineInfo.data);
         expect(data.log).toBeDefined();

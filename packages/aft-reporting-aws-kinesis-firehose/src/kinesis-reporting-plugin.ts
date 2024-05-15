@@ -3,6 +3,7 @@ import { Buffer } from "node:buffer";
 import * as AWS from "aws-sdk";
 import * as pkg from "../package.json";
 import { KinesisLogRecord } from "./kinesis-log-record";
+import * as date from "date-and-time";
 
 type SendStrategy = 'logsonly' | 'resultsonly' | 'logsandresults';
 
@@ -160,7 +161,7 @@ export class KinesisReportingPlugin extends ReportingPlugin {
 
     private async _createKinesisLogRecord(logOrResult: LogMessageData | TestResult): Promise<AWS.Firehose.Record> {
         const data: KinesisLogRecord = {
-            created: Date.now(),
+            Created: date.format(new Date(), 'YYYY-MM-DD HH:mm:ss.SSS'),
             version: pkg.version,
             machineInfo: machineInfo.data
         };
