@@ -32,6 +32,7 @@
   "devDependencies": {
     "dpdm": "^3.14.0",
     "lerna": "^7.4.2",
+    "nx": "^16.10.0",
     "typedoc": "^0.24.8"
   },
   "private": true
