@@ -1,6 +1,6 @@
 {
   "name": "aft-reporting-filesystem",
-  "version": "11.2.1",
+  "version": "12.0.0",
   "description": "Automated Functional Testing (AFT) reporting plugin package supporting logging to files",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-core": "^11.2.1",
+    "aft-core": "^12.0.0",
     "date-and-time": "^3.1.1"
   },
   "devDependencies": {
