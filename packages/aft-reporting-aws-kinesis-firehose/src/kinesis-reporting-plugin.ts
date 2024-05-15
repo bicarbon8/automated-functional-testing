@@ -1,4 +1,4 @@
-import { ReportingPlugin, LogLevel, TestResult, machineInfo, AftConfig, BuildInfoManager, ReportingPluginConfig, LogMessageData, havingProps } from "aft-core";
+import { ReportingPlugin, LogLevel, TestResult, machineInfo, AftConfig, ReportingPluginConfig, LogMessageData, havingProps } from "aft-core";
 import { Buffer } from "node:buffer";
 import * as AWS from "aws-sdk";
 import * as pkg from "../package.json";
@@ -40,7 +40,6 @@ export class KinesisReportingPluginConfig extends ReportingPluginConfig {
  */
 export class KinesisReportingPlugin extends ReportingPlugin {
     private readonly _logs: Array<AWS.Firehose.Record>;
-    private readonly _buildInfo: BuildInfoManager;
     private readonly _level: LogLevel;
 
     private _client: AWS.Firehose;
@@ -51,13 +50,10 @@ export class KinesisReportingPlugin extends ReportingPlugin {
     
     constructor(aftCfg?: AftConfig, client?: AWS.Firehose) {
         super(aftCfg);
+        const krpc = this.aftCfg.getSection(KinesisReportingPluginConfig);
         this._client = client;
         this._logs = new Array<AWS.Firehose.Record>();
-        this._level = this.aftCfg.getSection(KinesisReportingPluginConfig).logLevel
-            ?? this.aftCfg.logLevel ?? 'warn';
-        if (this.enabled) {
-            this._buildInfo = new BuildInfoManager(this.aftCfg);
-        }
+        this._level = krpc.logLevel ?? this.aftCfg.logLevel ?? 'warn';
     }
 
     async client(): Promise<AWS.Firehose> {
