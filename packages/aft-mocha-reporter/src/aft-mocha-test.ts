@@ -46,7 +46,7 @@ export class AftMochaTest extends AftTest {
     constructor(scope?: any, testFunction?: AftTestFunction, options?: AftTestOptions) {
         testFunction ??= () => null;
         options ??= {};
-        options.cacheResultsToFile = true;
+        options._cacheResultsToFile = true;
         let description: string;
         if (scope?.test?.fullTitle) {
             description = scope?.test?.fullTitle();
@@ -57,11 +57,6 @@ export class AftMochaTest extends AftTest {
         }
         super(description, testFunction, options);
         this.test = scope?.test;
-    }
-
-    override async pending(message?: string, ...testIds: Array<string>): Promise<void> {
-        await super.pending(message, ...testIds);
-        this.test?.skip?.();
     }
 
     protected override async _generateTestResult(status: TestStatus, resultMessage: string, testId?: string): Promise<TestResult> {
@@ -95,6 +90,6 @@ export class AftMochaTest extends AftTest {
  * configuration and settings
  * @returns an async `Promise<void>` that runs the passed in `testFunction`
  */
-export const aftMochaTest = async (context: Mocha.Context | string, testFunction: Func<AftMochaTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {
+export const aftMochaTest = async (context: Mocha.Context | string, testFunction: Func<AftMochaTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<AftMochaTest> => {
     return new AftMochaTest(context, testFunction, options).run();
 };

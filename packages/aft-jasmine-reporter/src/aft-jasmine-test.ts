@@ -39,22 +39,9 @@ export class AftJasmineTest extends AftTest {
         }
         testFunction ??= () => null;
         options ??= {};
-        options.cacheResultsToFile = true;
+        options._cacheResultsToFile = true;
         super(description, testFunction, options);
         this.test = scope;
-    }
-
-    override async fail(message?: string, ...testIds: Array<string>): Promise<void> {
-        let err: string = message ?? 'unknown error occurred';
-        if (this.test?.failedExpectations?.length) {
-            err = this.test.failedExpectations.map(e => `${e.message}\n${e.stack}`).join('\n');
-        }
-        await super.fail(err, ...testIds);
-    }
-
-    override async pending(message?: string, ...testIds: Array<string>): Promise<void> {
-        await super.pending(message, ...testIds);
-        pending(); // eslint-disable-line no-undef
     }
 
     protected override async _generateTestResult(status: TestStatus, resultMessage: string, testId?: string): Promise<TestResult> {
@@ -86,6 +73,6 @@ export class AftJasmineTest extends AftTest {
  * configuration and settings
  * @returns an async `Promise<void>` that runs the passed in `testFunction`
  */
-export const aftJasmineTest = async (testFunction: Func<AftJasmineTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {
+export const aftJasmineTest = async (testFunction: Func<AftJasmineTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<AftJasmineTest> => {
     return new AftJasmineTest(null, testFunction, options).run();
 };

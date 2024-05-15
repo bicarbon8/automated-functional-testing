@@ -83,11 +83,10 @@ export type JsonObject = { [key: JsonKey]: JsonValue; } | Array<JsonValue>;
  */
 export type ProcessingResult<T> = {
     /**
-     * the result value or `void` if no result expected.
-     * typically set to `null` or `undefined` on processing
-     * error
+     * the result of processing if successful, otherwise
+     * `undefined`
      */
-    result: T;
+    result?: T;
     /**
      * an optional message explaining why the result is what
      * it is. this is typically set only on error to provide

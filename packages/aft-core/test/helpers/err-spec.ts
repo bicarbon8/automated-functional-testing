@@ -75,7 +75,7 @@ describe('Err', () => {
             const func = function () { throw 'foo'; };
             const val = Err.handle(func);
 
-            expect(val.result).toBeNull();
+            expect(val.result).toBeUndefined();
         });
     });
 
@@ -93,7 +93,7 @@ describe('Err', () => {
             const func = function (input: string) { throw new Error(input); };
             const val = await Err.handleAsync(() => func(str));
 
-            expect(val.result).toBeNull();
+            expect(val.result).toBeUndefined();
             expect(val.message).toContain(str);
         });
 
@@ -111,7 +111,7 @@ describe('Err', () => {
             const func = (message: string) => Promise.reject(message);
             const val = await Err.handleAsync(() => func(err));
 
-            expect(val.result).toBeNull();
+            expect(val.result).toBeUndefined();
             expect(val.message).toContain(err);
         });
 
@@ -125,7 +125,7 @@ describe('Err', () => {
             const func = function () { throw 'foo'; };
             const val = await Err.handleAsync(func, {logger, errLevel: 'warn'});
 
-            expect(val.result).toBeNull();
+            expect(val.result).toBeUndefined();
             expect(logger.log).toHaveBeenCalledTimes(1);
             expect(logMessage).toContain('Error: foo');
         });
@@ -146,7 +146,7 @@ describe('Err', () => {
                 logger
             });
 
-            expect(val.result).toBeNull();
+            expect(val.result).toBeUndefined();
             expect(actualLevel).toEqual('info');
             expect(actualMessage).not.toContain('\n');
         });

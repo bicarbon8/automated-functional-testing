@@ -22,7 +22,7 @@ export default class AftVitestReporter implements vt.Reporter {
     }
 
     onInit(ctx: vt.Vitest): void { // eslint-disable-line no-unused-vars
-        FileSystemMap.removeCacheFile(AftVitestTest.name, this.aftCfg);
+        FileSystemMap.removeMapFile(AftVitestTest.name, this.aftCfg);
     }
 
     async onFinished(filesOrTasks: Array<vt.File | vt.Task>): Promise<void> {
@@ -39,7 +39,7 @@ export default class AftVitestReporter implements vt.Reporter {
     private async _processTaskResults(...tasks: Array<vt.Task>): Promise<void> {
         for (const task of tasks) {
             try {
-                const t = new AftVitestTest({task}, null, {aftCfg: this.aftCfg});
+                const t = new AftVitestTest({task}, null, {aftCfg: this.aftCfg, _preventCacheClear: true});
                 // if we don't already have results for this test
                 if (t.results?.length === 0 && task.result.state !== 'run') {
                     // then send task
@@ -52,13 +52,13 @@ export default class AftVitestReporter implements vt.Reporter {
                                     errStrings.push(errString.result);
                                 }
                             }
-                            await t.fail(errStrings.join(','));
+                            await Err.handleAsync(() => t.fail(errStrings.join(',')), {errLevel: 'none'});
                             break;
                         case 'pass':
-                            await t.pass();
+                            await Err.handleAsync(() => t.pass(), {errLevel: 'none'});
                             break;
                         case 'skip':
-                            await t.pending();
+                            await Err.handleAsync(() => t.pending(), {errLevel: 'none'});
                             break;
                         default:
                             await t.reporter.warn(`unknown state '${task.result.state}' received`);

@@ -3,7 +3,7 @@
   "description": "Automated Functional Testing (AFT) package containing examples of how it can be used",
   "private": true,
   "scripts": {
-    "clean": "rimraf ./dist && rimraf ./logs",
+    "clean": "rimraf ./dist && rimraf ./logs && rimraf ./FileSystemMap",
     "build": "npm run clean && tsc --build",
     "test:e2e": "npm run build && jasmine --config=./jasmine.json --reporter=../../packages/aft-jasmine-reporter/dist/src/aft-jasmine-reporter.js"
   },
@@ -29,14 +29,14 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-core": "^11.2.1",
-    "aft-jasmine-reporter": "^11.2.1",
-    "aft-jira": "^11.2.1",
-    "aft-reporting-aws-kinesis-firehose": "^11.2.1",
-    "aft-reporting-filesystem": "^11.2.1",
-    "aft-reporting-html": "^11.2.1",
-    "aft-testrail": "^11.2.1",
-    "aft-web-services": "^11.2.1"
+    "aft-core": "^12.0.0",
+    "aft-jasmine-reporter": "^12.0.0",
+    "aft-jira": "^12.0.0",
+    "aft-reporting-aws-kinesis-firehose": "^12.0.0",
+    "aft-reporting-filesystem": "^12.0.0",
+    "aft-reporting-html": "^12.0.0",
+    "aft-testrail": "^12.0.0",
+    "aft-web-services": "^12.0.0"
   },
   "devDependencies": {
     "@types/jasmine": "^5.1.4",
@@ -45,5 +45,6 @@
     "nyc": "^15.1.0",
     "rimraf": "^5.0.1",
     "typescript": "^5.1.6"
-  }
+  },
+  "version": "12.0.0"
 }

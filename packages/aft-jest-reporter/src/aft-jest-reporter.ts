@@ -2,7 +2,7 @@ import { AftJestTest } from "./aft-jest-test";
 import { AggregatedResult, Config, Reporter, ReporterContext, TestCaseResult, TestContext } from "@jest/reporters";
 import { ReporterOnStartOptions } from "@jest/reporters";
 import { Test } from "@jest/reporters";
-import { FileSystemMap } from "aft-core";
+import { Err, FileSystemMap } from "aft-core";
 
 export default class AftJestReporter implements Reporter {
     private readonly _globalConfig: Config.GlobalConfig;
@@ -18,7 +18,7 @@ export default class AftJestReporter implements Reporter {
     // start: required Reporter functions
     onRunStart(results: AggregatedResult, options: ReporterOnStartOptions): Promise<void> | void { // eslint-disable-line no-unused-vars
         // clear all previously cached test results
-        FileSystemMap.removeCacheFile(AftJestTest.name);
+        FileSystemMap.removeMapFile(AftJestTest.name);
         /**
          * NOTE Jest does not provide the ability to programmatically skip a test
          * nor would the Reporter be allowed to perform this action so we
@@ -35,19 +35,19 @@ export default class AftJestReporter implements Reporter {
 
     // start: optional Reporter functions
     onTestCaseResult(test: Test, testCaseResult: TestCaseResult): Promise<void> | void {
-        const t = new AftJestTest(testCaseResult);
+        const t = new AftJestTest(testCaseResult, null, {_preventCacheClear: true});
         if (t.results.length === 0) {
             // aftJestTest was NOT used in test
             switch (testCaseResult.status) {
                 case "skipped":
-                    return t.skipped(testCaseResult.failureMessages?.join('\n'))
-                        .catch((err) => t.reporter.warn(err));
+                    return Err.handleAsync(() => t.skipped(testCaseResult.failureMessages?.join('\n')), {errLevel: 'none'})
+                        .then();
                 case "failed":
-                    return t.fail(testCaseResult.failureMessages?.join('\n'))
-                        .catch((err) => t.reporter.warn(err));
+                    return Err.handleAsync(() => t.fail(testCaseResult.failureMessages?.join('\n')), {errLevel: 'none'})
+                        .then();
                 case "passed":
-                    return t.pass()
-                        .catch((err) => t.reporter.warn(err));
+                    return Err.handleAsync(() => t.pass(), {errLevel: 'none'})
+                        .then();
             }
         }
     }

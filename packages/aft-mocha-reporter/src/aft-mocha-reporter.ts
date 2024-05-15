@@ -41,34 +41,34 @@ export class AftMochaReporter extends Mocha.reporters.Base {
         runner
         .on(EVENT_RUN_BEGIN, () => {
             // clear all previously cached test results
-            FileSystemMap.removeCacheFile(AftMochaTest.name);
+            FileSystemMap.removeMapFile(AftMochaTest.name);
         })
         .on(EVENT_TEST_PENDING, async (test: Mocha.Test) => {
             /**
              * conditionally handle `pending` test when not using aftMochaTest
              * NOTE: always handles when test is manually skipped using `xit` or `xdescribe`
              */
-            const t = new AftMochaTest({test});
+            const t = new AftMochaTest({test}, null, {_preventCacheClear: true});
             if (t.results.length === 0) {
-                await t.pending();
+                await Err.handleAsync(() => t.pending(), {errLevel: 'none'});
             }
         })
         .on(EVENT_TEST_PASS, async (test: Mocha.Test) => {
             // conditionally handle `passing` test when not using aftMochaTest
-            const t = new AftMochaTest({test});
+            const t = new AftMochaTest({test}, null, {_preventCacheClear: true});
             if (t.results.length === 0) {
-                await t.pass();
+                await Err.handleAsync(() => t.pass(), {errLevel: 'none'});
             }
         })
         .on(EVENT_TEST_FAIL, async (test: Mocha.Test, err: any) => {
             // conditionally handle `failing` test when not using aftMochaTest
-            const t = new AftMochaTest({test});
+            const t = new AftMochaTest({test}, null, {_preventCacheClear: true});
             if (t.results.length === 0) {
                 if (typeof err !== 'string') {
                     const handled = Err.handle(() => JSON.stringify(err))
                     err = handled?.result ?? handled?.message;
                 }
-                await t.fail(err);
+                await Err.handleAsync(() => t.fail(err), {errLevel: 'none'});
             }
         });
     }

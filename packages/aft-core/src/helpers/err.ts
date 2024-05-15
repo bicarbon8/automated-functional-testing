@@ -205,7 +205,7 @@ export class Err extends Object {
             const res = func();
             return { result: res };
         } catch (e) {
-            return {result: null as T, message: Err._processException(e, opts)};
+            return { message: Err._processException(e, opts) };
         }
     }
 
@@ -221,7 +221,7 @@ export class Err extends Object {
             const res = await func();
             return { result: res };
         } catch(e) {
-            return { result: null as T, message: Err._processException(e, opts)};
+            return { message: Err._processException(e, opts) };
         }
     }
 

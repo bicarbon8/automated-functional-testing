@@ -61,11 +61,15 @@ class Convert {
      * // perform some actions...
      * convert.toElapsedMs(start); // returns Date.now() - start
      * ```
-     * @param startTime the value from calling 'Date.now()' at the
-     * point in time when some event has started.
+     * @param startTime the number of milliseconds elapsed since
+     * the epoch to the start of some event
+     * @param endTime an optional time representing the number of
+     * milliseconds since the epoch when the event ended. if not
+     * provided, `Date.now()` will be used
      */
-    toElapsedMs(startTime: number): number {
-        return Date.now() - startTime;
+    toElapsedMs(startTime: number, endTime: number = null): number {
+        endTime ??= Date.now();
+        return endTime - startTime;
     }
 
     /**

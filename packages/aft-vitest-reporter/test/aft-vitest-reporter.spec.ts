@@ -1,6 +1,6 @@
 import { it, describe, expect, vi, TaskContext } from "vitest";
 import { AftVitestTest, aftVitestTest } from "../src";
-import { containing } from "aft-core";
+import { Retry, containing, retry } from "aft-core";
 
 describe('AftVitestReporter', () => {
     it('passes a Vitest context to the test that can be used by AftVitestTest', async function(ctx: TaskContext) {
@@ -44,5 +44,20 @@ describe('AftVitestReporter', () => {
             await v.verify(v.description, 'AftVitestReporter [C1234] provides a AftVitestTest instance for use in test control');
             await v.verify(v.testIds, containing('C1234'), 'expected to parse test ID from description');
         });
+    });
+
+    it('[C9999] allows retry to be wrapped around the aftVitestTest', {timeout: 6000}, async (ctx: TaskContext) => {
+        let index = 0;
+        await retry((r: Retry<AftVitestTest>) => aftVitestTest(ctx, async (t: AftVitestTest) => {
+            await t.verify(index++, 2, '[C9999]');
+        }, {
+            additionalMetadata: {
+                attempt: r.totalAttempts
+            }
+        }), {
+            delay: 10,
+            backOffType: 'linear',
+            maxDuration: 5000
+        }).until((t: AftVitestTest) => t.status === 'passed');
     });
 });

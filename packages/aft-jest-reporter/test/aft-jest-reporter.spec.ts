@@ -1,5 +1,5 @@
 import { test, jest, expect } from "@jest/globals";
-import { ProcessingResult, containing } from "aft-core";
+import { Err, ProcessingResult, Retry, containing, retry } from "aft-core";
 import { AftJestTest, aftJestTest } from "../src";
 
 describe('AftJestReporter', () => {
@@ -25,7 +25,7 @@ describe('AftJestReporter', () => {
         jest.spyOn(t, 'shouldRun').mockImplementation(() => Promise.resolve({result: false, message: 'fake'}));
         const shouldRun: ProcessingResult<boolean> = await t.shouldRun();
         if (!shouldRun.result) {
-            await t.pending(shouldRun.message);
+            await Err.handleAsync(() => t.pending(shouldRun.message), {errLevel: 'none'});
             return; // Jest doesn't support programmic skip https://github.com/jestjs/jest/issues/7245
         }
 
@@ -38,4 +38,19 @@ describe('AftJestReporter', () => {
             await v.verify(v.testIds, containing('C1234'), 'expected to parse test ID from description');
         });
     });
+
+    test('[C9999] allows retry to be wrapped around the aftJestTest', async () => {
+        let index = 0;
+        await retry((r: Retry<AftJestTest>) => aftJestTest(expect, async (t: AftJestTest) => {
+            await t.verify(index++, 2, '[C9999]');
+        }, {
+            additionalMetadata: {
+                attempt: r.totalAttempts
+            }
+        }), {
+            delay: 10,
+            backOffType: 'linear',
+            maxDuration: 5000
+        }).until((t: AftJestTest) => t.status === 'passed');
+    }, 6000);
 });

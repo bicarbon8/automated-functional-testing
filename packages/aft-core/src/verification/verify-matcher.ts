@@ -283,7 +283,7 @@ export const containing = (expected: any): ValueContaining => {
     return new ValueContaining(expected);
 };
 
-class HavingProperties implements VerifyMatcher {
+class MatchingProperties implements VerifyMatcher {
     readonly expected: any;
     private readonly _maxDepth: number;
     private _actual: unknown;
@@ -359,19 +359,106 @@ class HavingProperties implements VerifyMatcher {
  * ```
  * calling the following:
  * ```typescript
- * havingProps(expected).setActual(actual).compare(); // true
+ * matchingProps(expected).setActual(actual).compare(); // true
  * ```
  * would return true because `actual` has both a `foo` property of type `string`
  * and a `baz` property of type `boolean`. usage in an `AftTest.verify` function would look like:
  * ```typescript
  * const t = new AftTest('description', () => null);
- * await t.verify(() => {foo: 'bar', baz: true}, havingProps({foo: 'any', baz: false})); // succeeds
+ * await t.verify(() => {foo: 'bar', baz: true}, matchingProps({foo: 'any', baz: false})); // succeeds
  * ```
  * @param expected an object or array containing properties
  * @param maxDepth a number indicating how deeply comparison should recurse into the objects @default Infinity
  * @returns a new {HavingProperties} instance
  */
-export const havingProps = (expected: Record<string | number | symbol, any>, maxDepth: number = Infinity) => new HavingProperties(expected, maxDepth);
+export const matchingProps = (expected: Record<string | number | symbol, any>, maxDepth: number = Infinity) => new MatchingProperties(expected, maxDepth);
+
+class HavingProperties implements VerifyMatcher {
+    readonly expected: Array<string | Array<string>>;
+    private _actual: any;
+    private _failureMessage: string;
+    constructor(expected: Array<string | Array<string>>) {
+        this.expected = expected;
+    }
+    setActual(actual: any): HavingProperties {
+        this._actual = actual;
+        return this;
+    }
+    compare(): boolean {
+        if (this._actual == null) {
+            this._failureMessage = `expected 'actual' to not be null or undefined, but was '${this._actual}'`;
+            return false;
+        }
+        if (typeof this._actual !== 'object') {
+            this._failureMessage = `expected 'actual' to be of type 'object' but was '${typeof this._actual}' instead`;
+            return false;
+        }
+        if (this.expected?.length > 0) {
+            for (const prop of this.expected) {
+                const hasProp = this._hasProperty(prop);
+                if (hasProp !== true) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    failureString(): string {
+        return this._failureMessage;
+    }
+    private _hasProperty(prop: string | Array<string>): boolean {
+        let propName: string;
+        let propType: string;
+        if (Array.isArray(prop)) {
+            propName = String(prop[0]);
+            if (prop.length > 1) {
+                propType = String(prop[1]);
+            }
+        } else {
+            propName = String(prop);
+        }
+        if (this._actual?.[propName] === undefined) {
+            this._failureMessage = `expected '${JSON.stringify(this._actual)}' to contain property named '${propName}' but it did not`;
+            return false;
+        }
+        if (propType && typeof this._actual?.[propName] !== propType) {
+            this._failureMessage = `expected type of property named '${propName}' to be '${propType}' but was '${typeof this._actual?.[propName]}' instead`;
+            return false;
+        }
+        return true;
+    }
+}
+/**
+ * compares the passed in `actual` has each of the `expected` property names and optionally
+ * also if the specified property name is of the `expected` type
+ * 
+ * ex:
+ * ```typescript
+ * const actual = {foo: 42, bar: 'foo', baz: false};
+ * 
+ * havingProps(['foo', ['bar', 'string']])
+ * .setActual(actual)
+ * .compare(); // returns `true`
+ * 
+ * havingProps([['foo': 'string'], 'bar', 'baz'])
+ * .setActual(actual)
+ * .compare(); // returns `false` because 'foo' is type `number`
+ * 
+ * havingProps(['foobar'])
+ * .setActual(actual)
+ * .compare(); // returns `false` because no property named `foobar`
+ * 
+ * await aftTest('example havingProps', async () => {
+ *     await t.verify(actual, havingProps(['foo', ['bar', 'string']])); // succeeds
+ * });
+ * ```
+ * @param expected an array of either property name strings or arrays of property name and
+ * property type strings like `[['propName', 'propType']]`
+ * @returns a new `HavingProperties` instance
+ */
+export const havingProps = (expected: Array<string | Array<string>>) => {
+    return new HavingProperties(expected);
+}
 
 class HavingValue implements VerifyMatcher {
     readonly expected: string = 'value other than null or undefined';

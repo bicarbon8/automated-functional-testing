@@ -60,7 +60,7 @@ export class BuildInfoManager {
                 errLevel: 'trace',
                 logger: this._aftLogger
             });
-            if (result.result) {
+            if (result.result != null) {
                 return result.result;
             }
         }
@@ -83,7 +83,7 @@ export class BuildInfoManager {
                 errLevel: 'trace',
                 logger: this._aftLogger
             });
-            if (result.result) {
+            if (result.result != null) {
                 return result.result;
             }
         }

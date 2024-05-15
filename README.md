@@ -27,7 +27,7 @@ describe('Sample Test', () => {
 ```
 the above results in the following console output if the expectation does not return false or throw an exception:
 ```
-5:29:55 PM - [[C1234] can perform a demonstration of AFT] - PASS  - C1234
+5:29:55 PM - [Sample Test [C1234] can perform a demonstration of AFT] - PASS  - C1234
 ```
 in more complex scenarios you can perform multiple actions inside the _expectation_ like in the following example:
 ```typescript
@@ -60,12 +60,12 @@ describe('Sample Test', () => {
 ```
 which would output the following logs:
 ```
-5:29:54 PM - [[C2345][C3344] can perform a more complex demonstration of AFT] - STEP  - 1: creating instance of FeatureObj
-5:29:55 PM - [[C2345][C3344] can perform a more complex demonstration of AFT] - PASS  - C2345
-5:29:55 PM - [[C2345][C3344] can perform a more complex demonstration of AFT] - STEP  - 2: about to call performAction
-5:29:55 PM - [[C2345][C3344] can perform a more complex demonstration of AFT] - INFO  - result of performAction was 'result of action'
-5:29:56 PM - [[C2345][C3344] can perform a more complex demonstration of AFT] - TRACE - successfully executed expectation
-5:29:56 PM - [[C2345][C3344] can perform a more complex demonstration of AFT] - PASS  - C3344
+5:29:54 PM - [Sample Test [C2345][C3344] can perform a more complex demonstration of AFT] - STEP  - 1: creating instance of FeatureObj
+5:29:55 PM - [Sample Test [C2345][C3344] can perform a more complex demonstration of AFT] - PASS  - C2345
+5:29:55 PM - [Sample Test [C2345][C3344] can perform a more complex demonstration of AFT] - STEP  - 2: about to call performAction
+5:29:55 PM - [Sample Test [C2345][C3344] can perform a more complex demonstration of AFT] - INFO  - result of performAction was 'result of action'
+5:29:56 PM - [Sample Test [C2345][C3344] can perform a more complex demonstration of AFT] - TRACE - successfully executed expectation
+5:29:56 PM - [Sample Test [C2345][C3344] can perform a more complex demonstration of AFT] - PASS  - C3344
 ```
 
 #### WARNING:

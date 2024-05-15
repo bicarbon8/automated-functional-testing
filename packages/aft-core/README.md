@@ -112,7 +112,7 @@ export class OnDisposeConsoleReportingPlugin extends ReportingPlugin {
             this._logs.set(name, new Array<LogMessageData>());
         }
     }
-    override log = async (name: string, level: LogLevel, message: string, ...data: Array<any>): Promise<void> => {
+    override log = async (logData: LogMessageData): Promise<void> => {
         if (this.enabled) {
             if (LogLevel.toValue(level) >= LogLevel.toValue(this.logLevel) && level != 'none') {
                 const namedLogs: Array<LogMessageData> = this._logs.get(name);
@@ -123,7 +123,7 @@ export class OnDisposeConsoleReportingPlugin extends ReportingPlugin {
             }
         }
     }
-    override submitResult = async (name: string, result: TestResult): Promise<void> => {
+    override submitResult = async (result: TestResult): Promise<void> => {
         /* ignore */
     }
     override finalise = async (name: string): Promise<void> => { 
@@ -229,7 +229,8 @@ the `t.verify(actual, expected, message?)` function on `AftTest` can accept a `V
 - `equivalent`: iterates over all keys of `expected` and compares their type and values to those found on `actual`. ex: `await t.verify({foo: 'bar', baz: true}, equivalent({foo: 'bar', baz: false})); // fail`
 - `between`: verifies that the `actual` numerical value is either equal to or between the `minimum` and `maximum` expected values. ex: `await t.verify(42, between(42, 45)); // success`
 - `containing`: verifies that the `actual` collection contains the `expected` value. ex: `await t.verify([0, 1, 2, 3], containing(2)); // success`
-- `havingProps`: iterates over all keys of `expected` and compares their type to those found on `actual`. this differs from `equivalent` in that the actual values are not part of the comparison. ex: `await t.verify({foo: 'bar'}, havingProps({foo: 'foo'})); // success`
+- `matchingProps`: iterates over all keys of `expected` and compares their type to those found on `actual`. this differs from `equivalent` in that the actual values are not part of the comparison. ex: `await t.verify({foo: 'bar'}, matchingProps({foo: 'foo'})); // success`
+- `havingProps`: verifies that the `actual` object contains properties with the specified names and optionally of the specified types. ex: `await t.verify({foo: 'bar', baz: true, bog: 42}, havingProps([['foo', 'string'], 'baz'])); // success`
 - `havingValue`: verifies that the `actual` is not equal to `null` or `undefined`. ex: `await t.verify(false, havingValue()); // success`
 - `greaterThan`: verifies that the `actual` numerical value is greater than the `expected`. ex: `await t.verify(2, greaterThan(0)); // success`
 - `lessThan`: verifies that the `actual` numerical value is less than the `expected`. ex: `await t.verify(0, lessThan(1)); // success`

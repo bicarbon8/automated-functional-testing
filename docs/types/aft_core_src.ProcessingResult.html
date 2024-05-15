@@ -16,7 +16,7 @@
 <li><a href="../modules/aft_core_src.html">aft-core/src</a></li>
 <li><a href="aft_core_src.ProcessingResult.html">ProcessingResult</a></li></ul>
 <h1>Type alias ProcessingResult&lt;T&gt;</h1></div>
-<div class="tsd-signature"><span class="tsd-kind-type-alias">Processing<wbr/>Result</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">message</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">result</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
+<div class="tsd-signature"><span class="tsd-kind-type-alias">Processing<wbr/>Result</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">message</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">result</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
 <div class="tsd-comment tsd-typography"><p>this type allows for a descriptive message to be
 included in a result from functions that would normally
 be limited to returning only a single value</p>
@@ -40,15 +40,14 @@ context around the error</p>
 </div>
 <div class="tsd-comment tsd-typography"></div></li>
 <li class="tsd-parameter">
-<h5><span class="tsd-kind-property">result</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type tsd-kind-type-parameter">T</span></h5>
-<div class="tsd-comment tsd-typography"><p>the result value or <code>void</code> if no result expected.
-typically set to <code>null</code> or <code>undefined</code> on processing
-error</p>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-property">result</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type tsd-kind-type-parameter">T</span></h5>
+<div class="tsd-comment tsd-typography"><p>the result of processing if successful, otherwise
+<code>undefined</code></p>
 </div>
 <div class="tsd-comment tsd-typography"></div></li></ul></div>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/a40b98f/packages/aft-core/src/helpers/custom-types.ts#L84">packages/aft-core/src/helpers/custom-types.ts:84</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/fb4014c/packages/aft-core/src/helpers/custom-types.ts#L84">packages/aft-core/src/helpers/custom-types.ts:84</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -139,6 +138,7 @@ error</p>
 <li><a href="../functions/aft_core_src.havingProps.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>having<wbr/>Props</span></a></li>
 <li><a href="../functions/aft_core_src.havingValue.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>having<wbr/>Value</span></a></li>
 <li><a href="../functions/aft_core_src.lessThan.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>less<wbr/>Than</span></a></li>
+<li><a href="../functions/aft_core_src.matchingProps.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>matching<wbr/>Props</span></a></li>
 <li><a href="../functions/aft_core_src.not.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>not</span></a></li>
 <li><a href="../functions/aft_core_src.retry-1.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>retry</span></a></li>
 <li><a href="../functions/aft_core_src.using.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>using</span></a></li></ul></div></details></li>

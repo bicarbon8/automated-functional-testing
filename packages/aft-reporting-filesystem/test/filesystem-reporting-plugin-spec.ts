@@ -14,36 +14,36 @@ describe('FilesystemReportingPlugin', () => {
     it('can create a file on the filesystem and write logs to it', async () => {
         const aftCfg = new AftConfig();
         const plugin = new FilesystemReportingPlugin(aftCfg);
-        const logName = 'can create a file on the filesystem and write logs to it';
-        await plugin.log(logName, 'trace', rand.getString(rand.getInt(100, 200)));
-        await plugin.log(logName, 'info', rand.getString(rand.getInt(100, 200)));
-        await plugin.log(logName, 'error', rand.getString(rand.getInt(100, 200)));
-        await plugin.submitResult(logName, {
-            testName: logName,
+        const name = 'can create a file on the filesystem and write logs to it';
+        await plugin.log({name, level: 'trace', message: rand.getString(rand.getInt(100, 200))});
+        await plugin.log({name, level: 'info', message: rand.getString(rand.getInt(100, 200))});
+        await plugin.log({name, level: 'error', message: rand.getString(rand.getInt(100, 200))});
+        await plugin.submitResult({
+            testName: name,
             resultId: rand.guid,
             created: Date.now(),
             status: 'passed'
         });
-        await plugin.submitResult(logName, {
-            testName: logName,
+        await plugin.submitResult({
+            testName: name,
             resultId: rand.guid,
             created: Date.now(),
             status: 'skipped'
         });
-        await plugin.submitResult(logName, {
-            testName: logName,
+        await plugin.submitResult({
+            testName: name,
             resultId: rand.guid,
             created: Date.now(),
             status: 'failed'
         });
-        await plugin.submitResult(logName, {
-            testName: logName,
+        await plugin.submitResult({
+            testName: name,
             resultId: rand.guid,
             created: Date.now(),
             status: 'untested'
         });
 
-        const filePath = path.join(process.cwd(), 'logs', `${convert.toSafeString(logName)}.log`);
+        const filePath = path.join(process.cwd(), 'logs', `${convert.toSafeString(name)}.log`);
         expect(fs.existsSync(filePath)).toBeTrue();
 
         const lines: Array<string> = fs.readFileSync(filePath, {encoding: 'utf-8'})?.split('\n') || [];
@@ -60,17 +60,17 @@ describe('FilesystemReportingPlugin', () => {
             }
         });
         const plugin = new FilesystemReportingPlugin(aftCfg);
-        const logName = 'will not write to file if level below specified value';
-        await plugin.log(logName, 'trace', rand.getString(rand.getInt(100, 200)));
-        await plugin.log(logName, 'debug', rand.getString(rand.getInt(100, 200)));
-        await plugin.log(logName, 'info', rand.getString(rand.getInt(100, 200)));
-        await plugin.log(logName, 'step', rand.getString(rand.getInt(100, 200)));
-        await plugin.log(logName, 'pass', rand.getString(rand.getInt(100, 200)));
-        await plugin.log(logName, 'fail', rand.getString(rand.getInt(100, 200)));
-        await plugin.log(logName, 'warn', rand.getString(rand.getInt(100, 200)));
-        await plugin.log(logName, 'error', rand.getString(rand.getInt(100, 200)));
+        const name = 'will not write to file if level below specified value';
+        await plugin.log({name, level: 'trace', message: rand.getString(rand.getInt(100, 200))});
+        await plugin.log({name, level: 'debug', message: rand.getString(rand.getInt(100, 200))});
+        await plugin.log({name, level: 'info', message: rand.getString(rand.getInt(100, 200))});
+        await plugin.log({name, level: 'step', message: rand.getString(rand.getInt(100, 200))});
+        await plugin.log({name, level: 'pass', message: rand.getString(rand.getInt(100, 200))});
+        await plugin.log({name, level: 'fail', message: rand.getString(rand.getInt(100, 200))});
+        await plugin.log({name, level: 'warn', message: rand.getString(rand.getInt(100, 200))});
+        await plugin.log({name, level: 'error', message: rand.getString(rand.getInt(100, 200))});
 
-        const filePath = path.join(process.cwd(), 'logs', `${convert.toSafeString(logName)}.log`);
+        const filePath = path.join(process.cwd(), 'logs', `${convert.toSafeString(name)}.log`);
         expect(fs.existsSync(filePath)).toBeTrue();
 
         const lines: Array<string> = fs.readFileSync(filePath, {encoding: 'utf-8'})?.split('\n') || [];
@@ -80,16 +80,16 @@ describe('FilesystemReportingPlugin', () => {
     });
 
     it('can change the date formatting', async () => {
-        const logName = 'can change the date formatting';
+        const name = 'can change the date formatting';
         const aftCfg = new AftConfig();
         const config = aftCfg.getSection(FilesystemReportingPluginConfig);
         config.logLevel = 'info';
         config.dateFormat = 'SSS';
         const plugin = new FilesystemReportingPlugin(aftCfg);
 
-        await plugin.log(logName, 'warn', rand.getString(rand.getInt(100, 200)));
+        await plugin.log({name, level: 'warn', message: rand.getString(rand.getInt(100, 200))});
 
-        const filePath = path.join(process.cwd(), 'logs', `${convert.toSafeString(logName)}.log`);
+        const filePath = path.join(process.cwd(), 'logs', `${convert.toSafeString(name)}.log`);
         expect(fs.existsSync(filePath)).toBeTrue();
 
         const lines: Array<string> = fs.readFileSync(filePath, {encoding: 'utf-8'})?.split('\n') || [];
@@ -108,7 +108,7 @@ describe('FilesystemReportingPlugin', () => {
         });
         const plugin = new FilesystemReportingPlugin(aftCfg);
 
-        await plugin.submitResult(logName, {
+        await plugin.submitResult({
             testName: logName,
             resultId: rand.guid,
             created: Date.now(),

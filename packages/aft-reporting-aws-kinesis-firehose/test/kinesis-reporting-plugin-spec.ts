@@ -33,11 +33,11 @@ describe('KinesisReportingPlugin', () => {
             /* do nothing */
         });
 
-        const logName = rand.getString(10);
-        plugin.initialise(logName);
+        const name = rand.getString(10);
+
         for (let i=0; i<20; i++) {
-            const logMessage: string = rand.getString(99, true, true);
-            await plugin.log(logName, 'warn', logMessage);
+            const message: string = rand.getString(99, true, true);
+            await plugin.log({name, level: 'warn', message});
         }
 
         expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(20);
@@ -65,11 +65,11 @@ describe('KinesisReportingPlugin', () => {
             /* do nothing */
         });
 
-        const logName = rand.getString(10);
-        plugin.initialise(logName);
+        const name = rand.getString(10);
+
         for (let i=0; i<20; i++) {
-            const logMessage: string = rand.getString(99, true, true);
-            await plugin.log(logName, 'warn', logMessage);
+            const message: string = rand.getString(99, true, true);
+            await plugin.log({name, level: 'warn', message});
         }
 
         expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(20);
@@ -97,23 +97,23 @@ describe('KinesisReportingPlugin', () => {
             /* do nothing */
         });
 
-        const logName = rand.getString(10);
-        plugin.initialise(logName);
+        const name = rand.getString(10);
+
         for (let i=0; i<9; i++) {
-            const logMessage: string = rand.getString(99, true, true);
-            await plugin.log(logName, 'warn', logMessage);
+            const message: string = rand.getString(99, true, true);
+            await plugin.log({name, level: 'warn', message});
         }
 
         expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(9);
         expect(spySendBatch).toHaveBeenCalledTimes(0);
         expect(spySend).toHaveBeenCalledTimes(0);
 
-        await plugin.finalise(logName);
+        await plugin.finalise(name);
 
         expect(spySendBatch).toHaveBeenCalledTimes(1);
         expect(spySend).toHaveBeenCalledTimes(0);
 
-        expect(plugin.logs(logName).length).toBe(0);
+        expect(plugin.logs.length).toBe(0);
     });
 
     it('only sends messages of the appropriate level', async () => {
@@ -136,11 +136,11 @@ describe('KinesisReportingPlugin', () => {
             /* do nothing */
         });
 
-        const logName = rand.getString(10);
-        plugin.initialise(logName);
-        await plugin.log(logName, 'debug', rand.guid);
-        await plugin.log(logName, 'info', rand.guid);
-        await plugin.log(logName, 'warn', rand.guid);
+        const name = rand.getString(10);
+
+        await plugin.log({name, level: 'debug', message: rand.guid});
+        await plugin.log({name, level: 'info', message: rand.guid});
+        await plugin.log({name, level: 'warn', message: rand.guid});
 
         expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(2);
         expect(spySendBatch).toHaveBeenCalledTimes(0);
@@ -168,11 +168,11 @@ describe('KinesisReportingPlugin', () => {
             /* do nothing */
         });
 
-        const logName = rand.getString(10);
-        plugin.initialise(logName);
-        await plugin.log(logName, 'debug', rand.guid);
-        await plugin.log(logName, 'info', rand.guid);
-        await plugin.log(logName, 'warn', rand.guid);
+        const name = rand.getString(10);
+
+        await plugin.log({name, level: 'debug', message: rand.guid});
+        await plugin.log({name, level: 'info', message: rand.guid});
+        await plugin.log({name, level: 'warn', message: rand.guid});
 
         expect(spyCheckAndSendLogs).not.toHaveBeenCalled();
         expect(spySendBatch).not.toHaveBeenCalled();
@@ -184,9 +184,9 @@ describe('KinesisReportingPlugin', () => {
             testId: 'C' + rand.getInt(100, 9999),
             resultMessage: rand.getString(100),
             status: 'skipped',
-            testName: logName
+            testName: name
         };
-        await plugin.submitResult(logName, result);
+        await plugin.submitResult(result);
 
         expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(1);
         expect(spySend).toHaveBeenCalledTimes(1);
@@ -213,11 +213,11 @@ describe('KinesisReportingPlugin', () => {
             /* do nothing */
         });
 
-        const logName = rand.getString(10);
-        plugin.initialise(logName);
-        await plugin.log(logName, 'debug', rand.guid);
-        await plugin.log(logName, 'info', rand.guid);
-        await plugin.log(logName, 'warn', rand.guid);
+        const name = rand.getString(10);
+
+        await plugin.log({name, level: 'debug', message: rand.guid});
+        await plugin.log({name, level: 'info', message: rand.guid});
+        await plugin.log({name, level: 'warn', message: rand.guid});
 
         expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(2);
         expect(spySendBatch).not.toHaveBeenCalled();
@@ -229,9 +229,9 @@ describe('KinesisReportingPlugin', () => {
             testId: 'C' + rand.getInt(100, 9999),
             resultMessage: rand.getString(100),
             status: 'skipped',
-            testName: logName
+            testName: name
         };
-        await plugin.submitResult(logName, result);
+        await plugin.submitResult(result);
 
         expect(spyCheckAndSendLogs).toHaveBeenCalledTimes(2); // no additional times
         expect(spySend).toHaveBeenCalledTimes(2); // no additional times
@@ -242,7 +242,6 @@ describe('KinesisReportingPlugin', () => {
         const config = aftCfg.getSection(KinesisReportingPluginConfig);
         config.logLevel = 'info';
         config.batch = false;
-        config.batchSize = 10;
         const plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);
         spyOn(plugin, 'credentials').and.returnValue(Promise.resolve(new AWS.Credentials(
             rand.getString(25, true, true),
@@ -254,19 +253,21 @@ describe('KinesisReportingPlugin', () => {
             store.set('_send', record);
         });
 
-        const expectedMessage: string = rand.guid;
-        const logName = 'adds expected fields to the log record';
-        plugin.initialise(logName);
-        await plugin.log(logName, 'warn', expectedMessage);
+        const message: string = rand.guid;
+        const name = 'adds expected fields to the log record';
+
+        await plugin.log({name, level: 'warn', message});
 
         const logRecord: Firehose.Record = store.get('_send');
         const data: KinesisLogRecord = JSON.parse(logRecord.Data.toString()) as KinesisLogRecord;
-        expect(data.level).toEqual('warn');
-        expect(data.logName).toEqual(logName);
-        expect(data.message).toEqual(expectedMessage);
-        expect(data.machineInfo).toEqual(machineInfo.data);
-        expect(data.result).toBeUndefined();
+        expect(data.created).toMatch(/[0-9]+/);
         expect(data.version).toEqual(pkg.version);
+        expect(data.machineInfo).toEqual(machineInfo.data);
+        expect(data.log).toBeDefined();
+        expect(data.log.level).toEqual('warn');
+        expect(data.log.name).toEqual(name);
+        expect(data.log.message).toEqual(message);
+        expect(data.result).toBeUndefined();
     });
 
     /**
@@ -284,20 +285,20 @@ describe('KinesisReportingPlugin', () => {
             }
         });
         const plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);
-        const logName = rand.getString(10, true, true, true, true);
+        const name = rand.getString(10, true, true, true, true);
         const result: TestResult = {
             resultId: rand.guid,
             created: Date.now(),
             testId: 'C' + rand.getInt(100, 9999),
             resultMessage: rand.getString(100),
             status: 'skipped',
-            testName: logName
+            testName: name
         };
         const message: string = rand.getString(250);
-        plugin.initialise(logName);
-        await plugin.log(logName, 'info', message);
-        await plugin.submitResult(logName, result);
-        await plugin.finalise(logName);
+
+        await plugin.log({name, level: 'info', message});
+        await plugin.submitResult(result);
+        await plugin.finalise(name);
     }, 20000);
 
     it('can be loaded by the ReportingManager', async () => {

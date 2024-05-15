@@ -1,4 +1,4 @@
-import { ReportingPlugin, LogLevel, TestResult, ellide, AftConfig, Err } from "aft-core";
+import { ReportingPlugin, LogLevel, TestResult, ellide, AftConfig, Err, LogMessageData } from "aft-core";
 import { TestRailApi } from "../api/testrail-api";
 import { TestRailResultRequest } from "../api/testrail-custom-types";
 import { TestRailConfig } from "../configuration/testrail-config";
@@ -57,27 +57,27 @@ export class TestRailReportingPlugin extends ReportingPlugin {
         return this._logs.get(key);
     }
 
-    override log = async (name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => {
+    override log = async (logData: LogMessageData): Promise<void> => {
         if (this.enabled) {
-            if (LogLevel.toValue(level) >= LogLevel.toValue(this.logLevel) && level !== 'none') {
-                let logs = this.logs(name);
+            if (LogLevel.toValue(logData.level) >= LogLevel.toValue(this.logLevel) && logData.level !== 'none') {
+                let logs = this.logs(logData.name);
                 if (logs.length > 0) {
                     logs += '\n'; // separate new logs from previous
                 }
-                const dataStr: string = (data?.length) ? `, [${data.map(d => {
+                const dataStr: string = (logData.data?.length) ? `, [${logData.data.map(d => {
                     const dHandled = Err.handle(() => JSON.stringify(d));
                     return dHandled.result ?? dHandled.message;
                 }).join('')}]` : '';
-                logs += `${message}${dataStr}`;
+                logs += `${logData.message}${dataStr}`;
                 logs = ellide(logs, this._maxLogChars, 'beginning');
-                this.logs(name, logs);
+                this.logs(logData.name, logs);
             }
         }
     }
     
-    override submitResult = async (name: string, result: TestResult): Promise<void> => {
-        if (this.enabled && result && name) {
-            const trResult: TestRailResultRequest = await this._getTestRailResultForTestResult(name ?? result.testName, result);
+    override submitResult = async (result: TestResult): Promise<void> => {
+        if (this.enabled && result) {
+            const trResult: TestRailResultRequest = await this._getTestRailResultForTestResult(result);
             const planId = await PlanId.get(this.aftCfg, this._api);
             await this._api.addResult(result.testId, planId, trResult);
         }
@@ -87,14 +87,14 @@ export class TestRailReportingPlugin extends ReportingPlugin {
         /* do nothing */
     }
 
-    private async _getTestRailResultForTestResult(logName: string, result: TestResult): Promise<TestRailResultRequest> {
+    private async _getTestRailResultForTestResult(result: TestResult): Promise<TestRailResultRequest> {
         const maxChars: number = this._maxLogChars;
         let elapsed: number = 0;
         if (result.metadata) {
             const millis: number = result.metadata['durationMs'] || 0;
             elapsed = Math.floor(millis / 60000); // elapsed is in minutes
         }
-        const logs = this.logs(logName);
+        const logs = this.logs(result.testName);
         const trResult: TestRailResultRequest = {
             comment: ellide(`${logs}\n${result.resultMessage}`, maxChars, 'beginning'),
             elapsed: elapsed.toString(),

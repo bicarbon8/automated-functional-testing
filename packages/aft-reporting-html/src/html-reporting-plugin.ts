@@ -1,6 +1,6 @@
 import * as process from 'node:process';
 import * as path from "node:path";
-import { ReportingPlugin, LogLevel, TestResult, fileio, ExpiringFileLock, FileSystemMap, convert, AftConfig, ReportingPluginConfig, Err } from "aft-core";
+import { ReportingPlugin, LogLevel, TestResult, fileio, ExpiringFileLock, FileSystemMap, convert, AftConfig, ReportingPluginConfig, Err, LogMessageData } from "aft-core";
 import { HtmlTestResult } from "./html-test-result";
 import { HtmlResult } from "./html-result";
 import { htmlTemplate } from "./templates/html-template";
@@ -89,39 +89,39 @@ export class HtmlReportingPlugin extends ReportingPlugin {
         /* do nothing */
     }
 
-    override log = async (name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => {
+    override log = async (logData: LogMessageData): Promise<void> => {
         if (!this.enabled) {
             return;
         }
         const expectedLevel: LogLevel = this.logLevel;
-        if (LogLevel.toValue(level) >= LogLevel.toValue(expectedLevel) && level !== 'none') {
-            const logs = this.logs(name);
-            if (data?.length > 0) {
-                const dataStr = (data?.length) ? `, [${data?.map(d => {
+        if (LogLevel.toValue(logData.level) >= LogLevel.toValue(expectedLevel) && logData.level !== 'none') {
+            const logs = this.logs(logData.name);
+            if (logData.data?.length > 0) {
+                const dataStr = (logData.data?.length) ? `, [${logData.data?.map(d => {
                     const dHandled = Err.handle(() => JSON.stringify(d));
                     return dHandled.result ?? dHandled.message;
                 }).join(',')}]` : '';
-                message = `${message}${dataStr}`;
+                logData.message = `${logData.message}${dataStr}`;
             }
-            logs.push(`${level} - ${message}`);
+            logs.push(`${logData.level} - ${logData.message}`);
             const max: number = this._maxLogLines;
             while (logs.length > max) {
                 logs.shift();
                 logs[0] = `...<br />${logs[0]}`;
             }
-            this.logs(name, logs);
+            this.logs(logData.name, logs);
         }
     }
 
-    override submitResult = async (name: string, result: TestResult): Promise<void> => {
+    override submitResult = async (result: TestResult): Promise<void> => {
         if (!this.enabled) {
             return;
         }
         const htmlTestResult: HtmlTestResult = {
             ...result,
-            logs: this.logs(name ?? result.testName)
+            logs: this.logs(result.testName)
         }
-        const results: Array<HtmlTestResult> = this.testResults(name ?? result.testName);
+        const results: Array<HtmlTestResult> = this.testResults(result.testName);
         results.push(htmlTestResult);
         this.testResults(result.testName, results);
     }

@@ -76,7 +76,7 @@ export class RetryConfig implements Omit<RetryOptions, 'failAction'> {
  */
 export class Retry<T> {
     private readonly _aftCfg: AftConfig;
-    private readonly _retryable: Func<void, T | PromiseLike<T>>;
+    private readonly _retryable: Func<Retry<T>, T | PromiseLike<T>>;
 
     private _delay: number;
     private _backOffType: RetryBackOffType;
@@ -92,7 +92,7 @@ export class Retry<T> {
     private _totalDuration: number;
     private _err: any;
 
-    constructor(retryable: Func<void, T | PromiseLike<T>>, aftCfg?: AftConfig) {
+    constructor(retryable: Func<Retry<T>, T | PromiseLike<T>>, aftCfg?: AftConfig) {
         this._retryable = retryable;
         this._aftCfg = aftCfg ?? aftConfig;
         const rc: RetryConfig = this._aftCfg.getSection(RetryConfig);
@@ -248,7 +248,7 @@ export class Retry<T> {
         while (this._shouldContinue(this._success)) {
             try {
                 this._totalAttempts++;
-                this._result = await this._retryable();
+                this._result = await this._retryable(this);
             } catch(e) {
                 this._err = e;
                 this._result = undefined;
@@ -380,7 +380,7 @@ export class Retry<T> {
  * @param options an optional `RetryOptions` instance allowing you to override the default settings in `aftconfig.json`
  * @returns a new `Retry<T>` instance
  */
-export const retry = <T>(retryable: Func<void, T | PromiseLike<T>>, options?: RetryOptions): Retry<T> => {
+export const retry = <T>(retryable: Func<Retry<T>, T | PromiseLike<T>>, options?: RetryOptions): Retry<T> => {
     options ??= {};
     return new Retry<T>(retryable)
         .withDelay(options.delay)

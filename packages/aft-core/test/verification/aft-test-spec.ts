@@ -208,7 +208,7 @@ describe('AftTest', () => {
         });
 
         await aftTest('[C1234] true should be true', async (v: AftTest) => {
-            await v.pass('C1234');
+            await v.pass();
         }, { reporter, policyManager });
 
         expect(policyManager.shouldRun).toHaveBeenCalledTimes(1);
@@ -228,7 +228,7 @@ describe('AftTest', () => {
         let actual: any;
         try {
             await aftTest('[C1234] true should be true', async (v: AftTest) => {
-                await v.pass('C2345');
+                await v.verify(true, true, '[C2345]');
             }, { reporter, policyManager });
 
             expect(true).toBeFalse(); // force failure if we get here
@@ -251,7 +251,7 @@ describe('AftTest', () => {
         });
 
         await aftTest('[C1234] true should be true', async (v: AftTest) => {
-            await v.pass('C2345');
+            await v.verify(true, true, '[C2345]');
         }, {
             reporter,
             policyManager,
@@ -276,7 +276,7 @@ describe('AftTest', () => {
         });
 
         await aftTest('[C1234] true should be true', async (v: AftTest) => {
-            await v.pass('C2345');
+            await v.verify(true, true, '[C2345]');
         }, {
             reporter,
             policyManager,
@@ -324,7 +324,7 @@ describe('AftTest', () => {
         });
 
         await aftTest('[C1234] true should be true', async (v: AftTest) => {
-            await v.pass('C1234');
+            await v.pass();
         }, {
             reporter,
             policyManager,
@@ -356,7 +356,7 @@ describe('AftTest', () => {
         });
 
         await aftTest('[C1234] true should be true', async (v: AftTest) => {
-            await v.pass('C1234');
+            await v.pass();
         }, {
             reporter,
             policyManager,
