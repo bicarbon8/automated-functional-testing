@@ -1,6 +1,7 @@
 import { Plugin, PluginConfig } from "../plugin"; // eslint-disable-line no-redeclare
 import { LogLevel } from "../../logging/log-level";
 import { TestResult } from "./test-result";
+import { LogMessageData } from "../../logging/log-message-data";
 
 export class ReportingPluginConfig extends PluginConfig {
     logLevel: LogLevel;
@@ -34,16 +35,15 @@ export class ReportingPlugin extends Plugin {
      */
     initialise = (logName: string): Promise<void> => null; // eslint-disable-line no-unused-vars
     /**
-     * used for reporting message strings. this function would be called often
-     * @param message the `LogMessageData` to be logged by this plugin
-     * @param data an array of additional data to log
+     * used for reporting message strings. this function would be called frequently
+     * @param logData the `LogMessageData` to be logged by this plugin
      */
-    log = (name: string, level: LogLevel, message: string, ...data: any[]): Promise<void> => null; // eslint-disable-line no-unused-vars
+    log = (logData: LogMessageData): Promise<void> => null; // eslint-disable-line no-unused-vars
     /**
      * function will report on the passed in `TestResult`
      * @param result a `TestResult` object to be sent
      */
-    submitResult = (name: string, result: TestResult): Promise<void> => null; // eslint-disable-line no-unused-vars
+    submitResult = (result: TestResult): Promise<void> => null; // eslint-disable-line no-unused-vars
     /**
      * called by the parent `ReportingManager` before terminating to allow each plugin to 
      * finalise any deferred logging actions

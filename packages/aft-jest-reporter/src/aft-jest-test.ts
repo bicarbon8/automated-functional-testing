@@ -54,26 +54,17 @@ export class AftJestTest extends AftTest {
         }
         testFunction ??= () => null;
         options ??= {};
-        options.cacheResultsToFile = true;
+        options._cacheResultsToFile = true;
         super(description, testFunction, options);
         this.test = test;
-    }
-
-    override async fail(reason?: string, ...testIds: Array<string>): Promise<void> {
-        let err: string = reason ?? 'unknown error occurred';
-        if (this.test) {
-            err = this.test.failureMessages?.join('\n') ?? err;
-        }
-        await super.fail(err, ...testIds);
-        fail(err); // eslint-disable-line no-undef
     }
 
     /**
      * see: `pending`
      * @param reason the reason for skipping this test
      */
-    async skipped(reason?: string, ...testIds: Array<string>): Promise<void> {
-        return this.pending(reason, ...testIds);
+    async skipped(reason?: string): Promise<void> {
+        return this.pending(reason);
     }
 
     protected override async _generateTestResult(status: TestStatus, resultMessage: string, testId?: string): Promise<TestResult> {
@@ -107,6 +98,6 @@ export class AftJestTest extends AftTest {
  * configuration and settings
  * @returns an async `Promise<void>` that runs the passed in `testFunction`
  */
-export const aftJestTest = async (expect: JestExpect | jest.Expect | string, testFunction: Func<AftJestTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {  // eslint-disable-line no-undef
+export const aftJestTest = async (expect: JestExpect | jest.Expect | string, testFunction: Func<AftJestTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<AftJestTest> => {  // eslint-disable-line no-undef
     return new AftJestTest(expect, testFunction, options).run();
 };

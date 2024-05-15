@@ -5,7 +5,7 @@ import { convert } from '../helpers/convert';
 import { Plugin } from './plugin'; // eslint-disable-line no-redeclare
 import { AftConfig, aftConfig } from '../configuration/aft-config';
 import { Class } from '../helpers/custom-types';
-import { havingProps } from '../verification/verify-matcher';
+import { matchingProps } from '../verification/verify-matcher';
 import { PluginLocator } from './plugin-locator';
 
 class PluginLoader {
@@ -64,7 +64,7 @@ class PluginLoader {
         const classInst = new clazz();
         for (const pKey of this._pluginsMap.keys()) {
             const plugin = this._pluginsMap.get(pKey);
-            const isMatch = havingProps(classInst, 1).setActual(plugin).compare();
+            const isMatch = matchingProps(classInst, 1).setActual(plugin).compare();
             if (isMatch) {
                 plugins.push(plugin as T);
             }

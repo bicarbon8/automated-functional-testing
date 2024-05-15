@@ -4,5 +4,5 @@ export type LogMessageData = {
     name?: string;
     level: LogLevel;
     message: string;
-    args?: Array<any>;
+    data?: Array<any>;
 };

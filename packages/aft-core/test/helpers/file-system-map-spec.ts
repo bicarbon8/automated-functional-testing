@@ -139,7 +139,7 @@ describe('FileSystemMap', () => {
 
         expect(fs.existsSync(path.join(process.cwd(), 'FileSystemMap', `${filename}.json`))).toBeTrue();
 
-        FileSystemMap.removeCacheFile(filename);
+        FileSystemMap.removeMapFile(filename);
 
         expect(fs.existsSync(path.join(process.cwd(), 'FileSystemMap', `${filename}.json`))).toBeFalse();
     });

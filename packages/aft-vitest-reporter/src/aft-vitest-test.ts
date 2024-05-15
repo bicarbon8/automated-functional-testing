@@ -1,5 +1,5 @@
 import { TaskContext, Test } from "vitest";
-import { AftTest, AftTestFunction, AftTestOptions, Func, TestResult, TestStatus, rand } from "aft-core";
+import { AftTest, AftTestFunction, AftTestOptions, Err, Func, TestResult, TestStatus, rand } from "aft-core";
 
 /**
  * expects to be passed the context from an executing Vitest
@@ -35,7 +35,7 @@ export class AftVitestTest extends AftTest {
     constructor(context?: any, testFunction?: AftTestFunction, options?: AftTestOptions) {
         testFunction ??= () => null;
         options ??= {};
-        options.cacheResultsToFile = true;
+        options._cacheResultsToFile = true;
         let description: string;
         if (context?.task?.type === 'test') {
             description = `${context.task.suite?.name} ${context.task.name}`;
@@ -48,8 +48,8 @@ export class AftVitestTest extends AftTest {
         this.test = (context?.task) ? context.task : null;
     }
 
-    override async pending(message?: string, ...testIds: Array<string>): Promise<void> {
-        await super.pending(message, ...testIds);
+    override async pending(message?: string): Promise<void> {
+        await Err.handleAsync(() => super.pending(message), { errLevel: 'none' });
         this.test?.context?.skip?.();
     }
 
@@ -84,6 +84,6 @@ export class AftVitestTest extends AftTest {
  * configuration and settings
  * @returns an async `Promise<void>` that runs the passed in `testFunction`
  */
-export const aftVitestTest = async (context: TaskContext | string, testFunction: Func<AftVitestTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<void> => {
+export const aftVitestTest = async (context: TaskContext | string, testFunction: Func<AftVitestTest, void | PromiseLike<void>>, options?: AftTestOptions): Promise<AftVitestTest> => {
     return new AftVitestTest(context, testFunction, options).run();
 };

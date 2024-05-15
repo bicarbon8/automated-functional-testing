@@ -211,7 +211,7 @@ export class JiraApi {
                 level: 'warn',
                 message: 'non 200 status code returned from Jira API call',
                 name: this.constructor.name,
-                args: [err]
+                data: [err]
             });
         }
         return response;

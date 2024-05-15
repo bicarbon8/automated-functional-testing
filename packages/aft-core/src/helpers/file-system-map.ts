@@ -104,7 +104,7 @@ export class FileSystemMap<Tkey extends JsonKey, Tval extends JsonValue> impleme
      * to delete (i.e. `MyCacheFile` which equates to 
      * `full/path/to/FileSystemMap/MyCacheFile.json`)
      */
-    static removeCacheFile(filename: string, aftCfg?: AftConfig): void {
+    static removeMapFile(filename: string, aftCfg?: AftConfig): void {
         aftCfg ??= aftConfig
         const dir = aftCfg.fsMapDirectory;
         const fullpath = path.join(process.cwd(), dir, `${filename}.json`);

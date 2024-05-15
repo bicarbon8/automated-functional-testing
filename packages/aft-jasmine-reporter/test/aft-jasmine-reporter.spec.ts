@@ -1,4 +1,4 @@
-import { ProcessingResult, containing, AftConfig } from "aft-core";
+import { ProcessingResult, containing, AftConfig, retry, Retry } from "aft-core";
 import { AftJasmineTest, aftJasmineTest } from "../src";
 
 describe('AftJasmineReporter', () => {
@@ -10,22 +10,22 @@ describe('AftJasmineReporter', () => {
         await t.reporter.info('completed AftJasmineReporter test.');
     });
 
-    it('can check if test should be run [C1234]', async () => {
+    it('can check if test should be run [C1234] when not inside AftJasmineTest', async () => {
         const t = new AftJasmineTest(null, null, {aftCfg: new AftConfig({plugins: []})});
         const shouldRun = await t.shouldRun();
         if (shouldRun.result !== true) {
-            await t.pending(shouldRun.message);
+            pending(shouldRun.message);
         }
 
-        expect(t.description).toEqual('AftJasmineReporter can check if test should be run [C1234]');
+        expect(t.description).toEqual('AftJasmineReporter can check if test should be run [C1234] when not inside AftJasmineTest');
     });
 
-    it('can skip test [C4567] if should not be run', async () => {
+    it('can skip test [C4567] if should not be run when not inside AftJasmineTest', async () => {
         const t = new AftJasmineTest();
         spyOn(t, 'shouldRun').and.returnValue(Promise.resolve<ProcessingResult<boolean>>({result: false, message: 'fake'}));
         const shouldRun = await t.shouldRun();
         if (shouldRun.result !== true) {
-            await t.pending(shouldRun.message);
+            pending(shouldRun.message);
         }
 
         expect(true).toBeFalse(); // force failure if skip does not happen
@@ -37,4 +37,19 @@ describe('AftJasmineReporter', () => {
             await v.verify(v.testIds, containing('C6543'), 'expected to parse test ID from description');
         });
     });
+
+    it('[C9999] allows retry to be wrapped around the aftJasmineTest', async () => {
+        let index = 0;
+        await retry((r: Retry<AftJasmineTest>) => aftJasmineTest(async (t: AftJasmineTest) => {
+            await t.verify(index++, 2, '[C9999]');
+        }, {
+            additionalMetadata: {
+                attempt: r.totalAttempts
+            }
+        }), {
+            delay: 10,
+            backOffType: 'linear',
+            maxDuration: 5000
+        }).until((t: AftJasmineTest) => t.status === 'passed');
+    }, 6000);
 });
