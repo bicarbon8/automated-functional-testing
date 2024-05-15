@@ -62,12 +62,6 @@ export type AftTestOptions = Merge<Partial<AftTestConfig>, {
      */
     testIds?: Array<string>;
     /**
-     * set to `true` to store each `TestResult` sent by this `AftTest`
-     * instance to the filesystem
-     * @default false
-     */
-    cacheResultsToFile?: boolean;
-    /**
      * for each type of `AftTestEvent` you can specify an array of actions
      * to be performed like:
      * ```typescript
@@ -82,6 +76,26 @@ export type AftTestOptions = Merge<Partial<AftTestConfig>, {
      * @default new Map<AftTestEvent, Array<AftTestFunction>>()
      */
     onEventsMap?: Map<AftTestEvent, Array<AftTestFunction>>;
+    /**
+     * set to `true` to store each `TestResult` sent by this `AftTest`
+     * instance to the filesystem
+     * 
+     * **NOTE**
+     * > this should only be set to `true` by external reporter `AftXYZTest`
+     * instances to prevent double reporting results when the reporter runs
+     * @default false
+     */
+    _cacheResultsToFile?: boolean;
+    /**
+     * set to `true` to prevent clearing any existing cached results in
+     * the constructor on instantiation
+     * 
+     * **NOTE**
+     * > this should only be set to `true` from within external reporter
+     * instances to prevent double reporting results
+     * @default false
+     */
+    _preventCacheClear?: boolean;
 }>;
 
 /**
@@ -116,9 +130,12 @@ export class AftTest {
         this._options = this._parseOptionsAndSetDefaults(options);
         this._resultsCache = new CacheMap<string, Array<TestResult>>(
             Infinity,
-            Boolean(this._options.cacheResultsToFile),
+            Boolean(this._options._cacheResultsToFile),
             this.constructor.name
         );
+        if (!this._options._preventCacheClear) {
+            this._resultsCache.set(this.description, []);
+        }
     }
 
     get aftCfg(): AftConfig {
@@ -559,7 +576,7 @@ export class AftTest {
         options.policyManager ??= new PolicyManager(options.aftCfg);
         options.reporter ??= new ReportingManager(this.description, options.aftCfg);
         options.testIds ??= TitleParser.parseTestIds(this.description) ?? [];
-        options.cacheResultsToFile ??= false;
+        options._cacheResultsToFile ??= false;
         options.onEventsMap ??= new Map<AftTestEvent, Array<AftTestFunction>>();
         const testCfg = options.aftCfg.getSection(AftTestConfig);
         options.haltOnVerifyFailure ??= testCfg.haltOnVerifyFailure ?? true;

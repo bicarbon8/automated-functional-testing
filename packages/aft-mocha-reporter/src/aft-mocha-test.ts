@@ -46,7 +46,7 @@ export class AftMochaTest extends AftTest {
     constructor(scope?: any, testFunction?: AftTestFunction, options?: AftTestOptions) {
         testFunction ??= () => null;
         options ??= {};
-        options.cacheResultsToFile = true;
+        options._cacheResultsToFile = true;
         let description: string;
         if (scope?.test?.fullTitle) {
             description = scope?.test?.fullTitle();

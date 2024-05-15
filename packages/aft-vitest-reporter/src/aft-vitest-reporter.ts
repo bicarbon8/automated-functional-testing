@@ -39,7 +39,7 @@ export default class AftVitestReporter implements vt.Reporter {
     private async _processTaskResults(...tasks: Array<vt.Task>): Promise<void> {
         for (const task of tasks) {
             try {
-                const t = new AftVitestTest({task}, null, {aftCfg: this.aftCfg});
+                const t = new AftVitestTest({task}, null, {aftCfg: this.aftCfg, _preventCacheClear: true});
                 // if we don't already have results for this test
                 if (t.results?.length === 0 && task.result.state !== 'run') {
                     // then send task

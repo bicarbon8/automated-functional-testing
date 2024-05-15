@@ -48,21 +48,21 @@ export class AftMochaReporter extends Mocha.reporters.Base {
              * conditionally handle `pending` test when not using aftMochaTest
              * NOTE: always handles when test is manually skipped using `xit` or `xdescribe`
              */
-            const t = new AftMochaTest({test});
+            const t = new AftMochaTest({test}, null, {_preventCacheClear: true});
             if (t.results.length === 0) {
                 await Err.handleAsync(() => t.pending(), {errLevel: 'none'});
             }
         })
         .on(EVENT_TEST_PASS, async (test: Mocha.Test) => {
             // conditionally handle `passing` test when not using aftMochaTest
-            const t = new AftMochaTest({test});
+            const t = new AftMochaTest({test}, null, {_preventCacheClear: true});
             if (t.results.length === 0) {
                 await Err.handleAsync(() => t.pass(), {errLevel: 'none'});
             }
         })
         .on(EVENT_TEST_FAIL, async (test: Mocha.Test, err: any) => {
             // conditionally handle `failing` test when not using aftMochaTest
-            const t = new AftMochaTest({test});
+            const t = new AftMochaTest({test}, null, {_preventCacheClear: true});
             if (t.results.length === 0) {
                 if (typeof err !== 'string') {
                     const handled = Err.handle(() => JSON.stringify(err))

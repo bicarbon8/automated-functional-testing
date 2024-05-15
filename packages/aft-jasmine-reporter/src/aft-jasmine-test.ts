@@ -39,7 +39,7 @@ export class AftJasmineTest extends AftTest {
         }
         testFunction ??= () => null;
         options ??= {};
-        options.cacheResultsToFile = true;
+        options._cacheResultsToFile = true;
         super(description, testFunction, options);
         this.test = scope;
     }

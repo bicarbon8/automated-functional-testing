@@ -1,4 +1,4 @@
-import { ProcessingResult, containing, AftConfig } from "aft-core";
+import { ProcessingResult, containing, AftConfig, retry, Retry } from "aft-core";
 import { AftJasmineTest, aftJasmineTest } from "../src";
 
 describe('AftJasmineReporter', () => {
@@ -37,4 +37,19 @@ describe('AftJasmineReporter', () => {
             await v.verify(v.testIds, containing('C6543'), 'expected to parse test ID from description');
         });
     });
+
+    it('[C9999] allows retry to be wrapped around the aftJasmineTest', async () => {
+        let index = 0;
+        await retry((r: Retry<AftJasmineTest>) => aftJasmineTest(async (t: AftJasmineTest) => {
+            await t.verify(index++, 2, '[C9999]');
+        }, {
+            additionalMetadata: {
+                attempt: r.totalAttempts
+            }
+        }), {
+            delay: 10,
+            backOffType: 'linear',
+            maxDuration: 5000
+        }).until((t: AftJasmineTest) => t.status === 'passed');
+    }, 6000);
 });

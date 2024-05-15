@@ -35,7 +35,7 @@ export default class AftJestReporter implements Reporter {
 
     // start: optional Reporter functions
     onTestCaseResult(test: Test, testCaseResult: TestCaseResult): Promise<void> | void {
-        const t = new AftJestTest(testCaseResult);
+        const t = new AftJestTest(testCaseResult, null, {_preventCacheClear: true});
         if (t.results.length === 0) {
             // aftJestTest was NOT used in test
             switch (testCaseResult.status) {

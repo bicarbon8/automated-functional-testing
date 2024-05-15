@@ -18,7 +18,7 @@ export class AftJasmineReporter implements jasmine.CustomReporter {
         });
     }
     async specStarted(result: jasmine.SpecResult): Promise<void> {
-        const t = new AftJasmineTest(result);
+        const t = new AftJasmineTest(result, null, {_preventCacheClear: true});
         /**
          * #### NOTE:
          * > Jasmine does not allow a Reporter to force bail-out of test
@@ -29,7 +29,7 @@ export class AftJasmineReporter implements jasmine.CustomReporter {
         this._testNames.set(t.description, true);
     }
     specDone(result: jasmine.SpecResult): void {
-        const t = new AftJasmineTest(result);
+        const t = new AftJasmineTest(result, null, {_preventCacheClear: true});
         if (t.results.length === 0) {
             let logPromise: Promise<ProcessingResult<void> | void>;
             // no results logged for this test yet so we should log it
@@ -46,7 +46,7 @@ export class AftJasmineReporter implements jasmine.CustomReporter {
                     break;
                 case 'excluded':
                 case 'pending':
-                    logPromise = Err.handleAsync(() => t.pending(result.pendingReason), {errLevel: 'none'});
+                    logPromise = Err.handleAsync(() => t.pending(result.pendingReason ?? 'test skipped'), {errLevel: 'none'});
                     break;
                 default:
                     logPromise = t.reporter.warn(`unknown test.status of '${result.status}' returned`);

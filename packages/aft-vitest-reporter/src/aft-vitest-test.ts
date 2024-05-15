@@ -35,7 +35,7 @@ export class AftVitestTest extends AftTest {
     constructor(context?: any, testFunction?: AftTestFunction, options?: AftTestOptions) {
         testFunction ??= () => null;
         options ??= {};
-        options.cacheResultsToFile = true;
+        options._cacheResultsToFile = true;
         let description: string;
         if (context?.task?.type === 'test') {
             description = `${context.task.suite?.name} ${context.task.name}`;
