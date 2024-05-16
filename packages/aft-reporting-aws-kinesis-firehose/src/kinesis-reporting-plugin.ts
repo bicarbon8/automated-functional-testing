@@ -1,5 +1,4 @@
 import { ReportingPlugin, LogLevel, TestResult, machineInfo, AftConfig, ReportingPluginConfig, LogMessageData, havingProps } from "aft-core";
-import { Buffer } from "node:buffer";
 import * as AWS from "aws-sdk";
 import * as pkg from "../package.json";
 import { KinesisLogRecord } from "./kinesis-log-record";
@@ -13,6 +12,8 @@ export class KinesisReportingPluginConfig extends ReportingPluginConfig {
     batch = true;
     batchSize = 10;
     sendStrategy: SendStrategy = 'logsandresults';
+    timestampFieldName: string = '@timestamp';
+    timestampFormat: string = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 }
 
 /**
@@ -26,7 +27,9 @@ export class KinesisReportingPluginConfig extends ReportingPluginConfig {
  *       "deliveryStream": "your-frehose-delivery-stream",
  *       "batch": true,
  *       "batchSize": 10,
- *       "sendStrategy": "logsandresults"
+ *       "sendStrategy": "logsandresults",
+ *       "timestampFieldName": "@timestamp",
+ *       "timestampFormat": "YYYY-MM-DDTHH:mm:ss.SSSZ"
  *     }
  * }
  * ```
@@ -41,6 +44,8 @@ export class KinesisReportingPluginConfig extends ReportingPluginConfig {
 export class KinesisReportingPlugin extends ReportingPlugin {
     private readonly _logs: Array<AWS.Firehose.Record>;
     private readonly _level: LogLevel;
+    private readonly _timestampField: string;
+    private readonly _timestampFormat: string;
 
     private _client: AWS.Firehose;
 
@@ -54,6 +59,8 @@ export class KinesisReportingPlugin extends ReportingPlugin {
         this._client = client;
         this._logs = new Array<AWS.Firehose.Record>();
         this._level = krpc.logLevel ?? this.aftCfg.logLevel ?? 'warn';
+        this._timestampField = krpc.timestampFieldName ?? '@timestamp';
+        this._timestampFormat = krpc.timestampFormat ?? 'YYYY-MM-DDTHH:mm:ss.SSSZ'
     }
 
     async client(): Promise<AWS.Firehose> {
@@ -157,10 +164,10 @@ export class KinesisReportingPlugin extends ReportingPlugin {
 
     private async _createKinesisLogRecord(logOrResult: LogMessageData | TestResult): Promise<AWS.Firehose.Record> {
         const data: KinesisLogRecord = {
-            Created: date.format(new Date(), 'YYYY-MM-DD HH:mm:ss.SSS'),
             version: pkg.version,
             machineInfo: machineInfo.data
         };
+        data[this._timestampField] = date.format(new Date(), this._timestampFormat);
         if (havingProps(['name','level','message']).setActual(logOrResult).compare()) {
             data.log = logOrResult as LogMessageData;
         } else {
@@ -168,7 +175,7 @@ export class KinesisReportingPlugin extends ReportingPlugin {
         }
         const dataStr: string = JSON.stringify(data);
         const record: AWS.Firehose.Record = {
-            Data: Buffer.from(dataStr)
+            Data: dataStr
         };
         return record;
     }

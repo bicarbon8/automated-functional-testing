@@ -260,7 +260,7 @@ describe('KinesisReportingPlugin', () => {
 
         const logRecord: Firehose.Record = store.get('_send');
         const data: KinesisLogRecord = JSON.parse(logRecord.Data.toString()) as KinesisLogRecord;
-        expect(data.Created).toMatch(/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}/);
+        expect(data['@timestamp']).toMatch(/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}\+[0-9]{4}/);
         expect(data.version).toEqual(pkg.version);
         expect(data.machineInfo).toEqual(machineInfo.data);
         expect(data.log).toBeDefined();
@@ -281,7 +281,8 @@ describe('KinesisReportingPlugin', () => {
                 deliveryStream: '%firehose_deliverystream%',
                 logLevel: 'debug',
                 sendStrategy: 'logsandresults',
-                region: 'eu-west-1'
+                region: 'eu-west-1',
+                timestampFieldName: 'Created'
             }
         });
         const plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);

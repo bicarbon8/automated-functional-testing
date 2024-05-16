@@ -1,10 +1,11 @@
 import { TestResult, LogMessageData, MachineInfoData } from "aft-core";
 
+/**
+ * **NOTE:**
+ * > a `@timestamp` field must also be included, but this is specified via
+ * configuration as `KinesisReportingPluginConfig.timestampFieldName`
+ */
 export type KinesisLogRecord = {
-    /**
-     * a `Date` string in the format of `'2024-05-15 15:58:59'`
-     */
-    Created: string;
     /**
      * a version string in the format of `'12.1.2'`
      */
