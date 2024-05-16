@@ -29,14 +29,14 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-core": "^12.0.0",
-    "aft-jest-reporter": "^12.0.0",
-    "aft-jira": "^12.0.0",
-    "aft-reporting-aws-kinesis-firehose": "^12.0.0",
-    "aft-reporting-filesystem": "^12.0.0",
-    "aft-reporting-html": "^12.0.0",
-    "aft-testrail": "^12.0.0",
-    "aft-ui-selenium": "^12.0.0"
+    "aft-core": "^12.0.1",
+    "aft-jest-reporter": "^12.0.1",
+    "aft-jira": "^12.0.1",
+    "aft-reporting-aws-kinesis-firehose": "^12.0.1",
+    "aft-reporting-filesystem": "^12.0.1",
+    "aft-reporting-html": "^12.0.1",
+    "aft-testrail": "^12.0.1",
+    "aft-ui-selenium": "^12.0.1"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
@@ -47,5 +47,5 @@
     "rimraf": "^5.0.1",
     "typescript": "^5.1.6"
   },
-  "version": "12.0.0"
+  "version": "12.0.1"
 }

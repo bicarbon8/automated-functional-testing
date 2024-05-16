@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { AftConfig, convert, rand } from "aft-core";
+import { AftConfig, convert, ellide, rand } from "aft-core";
 import { FilesystemReportingPlugin, FilesystemReportingPluginConfig } from "../src/filesystem-reporting-plugin";
 
 describe('FilesystemReportingPlugin', () => {
@@ -118,4 +118,19 @@ describe('FilesystemReportingPlugin', () => {
         const filePath = path.join(process.cwd(), 'logs', `${convert.toSafeString(logName)}.log`);
         expect(fs.existsSync(filePath)).toBeFalse();
     });
+
+    it('truncates exceptionally long filenames based on config', async () => {
+        const maxLength = 10;
+        const aftCfg = new AftConfig({
+            FilesystemReportingPluginConfig: {
+                maxFilenameLength: maxLength
+            }
+        });
+        const plugin = new FilesystemReportingPlugin(aftCfg);
+        const name = 'the quick brown fox jumped over the lazy dogs';
+        await plugin.log({name, level: 'error', message: rand.getString(rand.getInt(100, 200))});
+
+        const filePath = path.join(process.cwd(), 'logs', `${ellide(convert.toSafeString(name), maxLength, 'middle')}.log`);
+        expect(fs.existsSync(filePath)).toBeTrue();
+    })
 });

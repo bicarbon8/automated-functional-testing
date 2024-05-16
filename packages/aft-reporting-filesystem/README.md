@@ -17,7 +17,9 @@ this plugin accepts configuration options in the following format:
         "logLevel": "trace",
         "outputPath": "./full/path/or/relative/path/to/directory",
         "includeResults": false,
-        "dateFormat": "YYYY-MM-DD HH:mm:ss.SSS"
+        "dateFormat": "YYYY-MM-DD HH:mm:ss.SSS",
+        "maxFilenameLength": 222,
+        "ellipsisLocation": "middle"
     }
 }
 ```
@@ -25,6 +27,8 @@ this plugin accepts configuration options in the following format:
 - **outputPath** - a `string` with either an absolute path or a relative path from the `process.cwd()` where .log files will be created _(defaults to `path.join(process.cwd(), 'logs')`)_
 - **includeResults** - a `boolean` indicating whether calls to any `ReportingManager.submitResult` function will output the `TestResult` to the .log file _(defaults to `true`)_
 - **dateFormat** - a `string` that can include Date Formatting as outlined at the [date-and-time](https://github.com/knowledgecode/date-and-time#formatdateobj-arg-utc) npm package
+- **maxFilenameLength** - a `number` representing the maximum length log filename allowed before truncation occurs using the `ellide` helper _(defaults to `222`)_
+- **ellipsisLocation** - a `EllipsisLocation` type of `'beginning'`, `'middle'`, or `'end'` that is used if the filename is truncated _(defaults to `'middle'`)_
 
 ## Log Format
 all log files are written using UTF-8 encoding and by default will resemble the following:

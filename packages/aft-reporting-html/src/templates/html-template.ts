@@ -198,8 +198,8 @@ function addResult(result) {
 <div class="card card-info" name="\${result.description}-ps-results">
     <div class="card-header p-0 bg-secondary d-flex justify-content-between flex-row text-light" onclick="toggleCard('\${result.description}-ps-results');">
         <div class="p-1"><i class="bi bi-dash" aria-hidden="true"></i></div>
-        <div class="p-1 flex-grow-1"><span class="badge badge-default">Description:</span> \${result.description}</div>
-        <div class="p-1"><span class="badge rounded-pill bg-primary totalTests">\${passing + failing + notRun}</span> <span class="badge bg-success totalTestsPassing">\${passing}</span> <span class="badge bg-danger totalTestsFailing">\${failing}</span> <span class="badge bg-warning totalTestsNotRun">\${notRun}</span></div>
+        <div class="p-1 flex-grow-1 breakWrap"><span class="badge badge-default">Description:</span> \${result.description}</div>
+        <div class="p-1 noWrap"><span class="badge rounded-pill bg-primary totalTests">\${passing + failing + notRun}</span> <span class="badge bg-success totalTestsPassing">\${passing}</span> <span class="badge bg-danger totalTestsFailing">\${failing}</span> <span class="badge bg-warning totalTestsNotRun">\${notRun}</span></div>
     </div>
     <div class="card-body p-0" name="body-\${result.description}-ps-results"></div>
 </div>
@@ -262,7 +262,7 @@ function addTests(container, tests) {
             <td class="status">
                 <span class="badge badge-\${statusClass}">\${result.status}</span>
             </td>
-            <td class="logs">
+            <td class="logs breakWrap">
                 \${result.logs.join('<br />')}
             </td>
         </tr>
@@ -308,6 +308,8 @@ div.vertical-align {
     height:50px;
 }
 .breakWrap {
+    max-width: 100dvw;
+    overflow-wrap: break-word;
     -ms-word-break: break-all;
     /* Be VERY careful with this, breaks normal words wh_erever */
     word-break: break-all;
@@ -317,6 +319,10 @@ div.vertical-align {
     -webkit-hyphens: auto;
     -moz-hyphens: auto;
     hyphens: auto;
+}
+.noWrap {
+    max-width: 100dvw;
+    white-space: nowrap;
 }
 </style>
 </head>
