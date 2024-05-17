@@ -1,6 +1,6 @@
 {
   "name": "aft-jest-reporter",
-  "version": "12.0.1",
+  "version": "12.1.0",
   "description": "Automated Functional Testing (AFT) Reporter for use with Jest Test Framework",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-core": "^12.0.1",
+    "aft-core": "^12.1.0",
     "jest": "^29.7.0"
   },
   "devDependencies": {
@@ -40,8 +40,8 @@
     "@types/node": "^20.11.30",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
-    "aft-reporting-filesystem": "^12.0.1",
-    "aft-reporting-html": "^12.0.1",
+    "aft-reporting-filesystem": "^12.1.0",
+    "aft-reporting-html": "^12.1.0",
     "eslint": "^8.57.0",
     "nyc": "^15.1.0",
     "rimraf": "^5.0.1",
