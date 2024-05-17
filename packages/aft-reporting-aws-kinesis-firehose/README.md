@@ -17,7 +17,9 @@ to send values to AWS Kinesis Firehose endpoints you must specify the AWS Creden
         "deliveryStream": "your-frehose-delivery-stream",
         "batch": true,
         "batchSize": 10,
-        "sendStrategy": "logsandresults"
+        "sendStrategy": "logsandresults",
+        "assumeRoleArn": "optional-iam-role-needed-for-sending-to-firehose",
+        "assumeRoleDuration": 900
     }
 }
 ```
@@ -27,6 +29,8 @@ to send values to AWS Kinesis Firehose endpoints you must specify the AWS Creden
 - **batch** - an optional `boolean` indicating whether logs should be batched before forwarding to Kinesis Firehose _(defaults to `true`)_
 - **batchSize** - an optional `number` representing the number of log records to batch before sending _(defaults to 10)_
 - **sendStrategy** - an optional `string` of `logsandresults`, `logsonly` or `resultsonly` that controls sending of log messages and results _(defaults to `logsandresults`)_
+- **assumeRoleArn** - an optional `string` containing a valid AWS IAM Role ARN that should be assumed following acquring the AWS Credentials so that the plugin can send to the Firehose stream
+- **assumeRoleDuration** - an optional `number` containing the number of seconds the assumed role should remain valid _(defaults to `900`)_
 
 #### NOTE:
 > the AWS Credentials are first attempted to be read from AFT Configuration and if no value is specified then the following are checked:

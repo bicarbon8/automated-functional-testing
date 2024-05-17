@@ -29,14 +29,14 @@
   },
   "homepage": "https://github.com/bicarbon8/automated-functional-testing#readme",
   "dependencies": {
-    "aft-core": "^12.0.1",
-    "aft-jasmine-reporter": "^12.0.1",
-    "aft-jira": "^12.0.1",
-    "aft-reporting-aws-kinesis-firehose": "^12.0.1",
-    "aft-reporting-filesystem": "^12.0.1",
-    "aft-reporting-html": "^12.0.1",
-    "aft-testrail": "^12.0.1",
-    "aft-web-services": "^12.0.1"
+    "aft-core": "^12.1.0",
+    "aft-jasmine-reporter": "^12.1.0",
+    "aft-jira": "^12.1.0",
+    "aft-reporting-aws-kinesis-firehose": "^12.1.0",
+    "aft-reporting-filesystem": "^12.1.0",
+    "aft-reporting-html": "^12.1.0",
+    "aft-testrail": "^12.1.0",
+    "aft-web-services": "^12.1.0"
   },
   "devDependencies": {
     "@types/jasmine": "^5.1.4",
@@ -46,5 +46,5 @@
     "rimraf": "^5.0.1",
     "typescript": "^5.1.6"
   },
-  "version": "12.0.1"
+  "version": "12.1.0"
 }

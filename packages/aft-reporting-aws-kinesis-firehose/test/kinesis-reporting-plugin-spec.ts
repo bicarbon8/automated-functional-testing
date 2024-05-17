@@ -282,8 +282,10 @@ describe('KinesisReportingPlugin', () => {
                 logLevel: 'debug',
                 sendStrategy: 'logsandresults',
                 region: 'eu-west-1',
-                timestampFieldName: 'Created'
-            }
+                timestampFieldName: 'Created',
+                assumeRoleArn: '%firehose_role%'
+            },
+            logLevel: 'trace'
         });
         const plugin: KinesisReportingPlugin = new KinesisReportingPlugin(aftCfg);
         const name = rand.getString(10, true, true, true, true);
@@ -293,7 +295,10 @@ describe('KinesisReportingPlugin', () => {
             testId: 'C' + rand.getInt(100, 9999),
             resultMessage: rand.getString(100),
             status: 'skipped',
-            testName: name
+            testName: name,
+            metadata: {
+                type: 'functional'
+            }
         };
         const message: string = rand.getString(250);
 
