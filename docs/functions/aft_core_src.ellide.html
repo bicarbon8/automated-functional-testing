@@ -20,20 +20,49 @@
 <ul class="tsd-signatures">
 <li class="tsd-signature tsd-anchor-link" id="ellide"><span class="tsd-kind-call-signature">ellide</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">original</span>, <span class="tsd-kind-parameter">finalLength</span>, <span class="tsd-kind-parameter">ellipsisLocation</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">ellipsis</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><a href="#ellide" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><g stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" id="icon-anchor"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></g></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>truncates the passed in string if its length exceeds the length specified by
+<code>finalLength</code> and adds an <code>ellipsis</code> at the point of truncation</p>
+<p>ex:</p>
+<pre><code class="language-typescript"><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-4">original</span><span class="hl-1"> = </span><span class="hl-2">&#39;the quick brown fox jumped over the lazy dogs&#39;</span><span class="hl-1">;</span><br/><span class="hl-0">ellide</span><span class="hl-1">(</span><span class="hl-7">original</span><span class="hl-1">, </span><span class="hl-9">10</span><span class="hl-1">);              </span><span class="hl-6">// &#39;the qui...&#39;</span><br/><span class="hl-0">ellide</span><span class="hl-1">(</span><span class="hl-7">original</span><span class="hl-1">, </span><span class="hl-9">10</span><span class="hl-1">, </span><span class="hl-2">&#39;beginning&#39;</span><span class="hl-1">); </span><span class="hl-6">// &#39;...zy dogs&#39;</span><br/><span class="hl-0">ellide</span><span class="hl-1">(</span><span class="hl-7">original</span><span class="hl-1">, </span><span class="hl-9">10</span><span class="hl-1">, </span><span class="hl-2">&#39;middle&#39;</span><span class="hl-1">);    </span><span class="hl-6">// &#39;the...dogs&#39;</span><br/><span class="hl-0">ellide</span><span class="hl-1">(</span><span class="hl-7">original</span><span class="hl-1">, </span><span class="hl-9">10</span><span class="hl-1">, </span><span class="hl-2">&#39;end&#39;</span><span class="hl-1">, </span><span class="hl-2">&#39;_&#39;</span><span class="hl-1">);  </span><span class="hl-6">// &#39;the quick_&#39;</span>
+</code><button>Copy</button></pre>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">original</span>: <span class="tsd-signature-type">string</span></h5></li>
+<h5><span class="tsd-kind-parameter">original</span>: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>the original string to be ellided if over the specified <code>finalLength</code></p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
 <li>
-<h5><span class="tsd-kind-parameter">finalLength</span>: <span class="tsd-signature-type">number</span></h5></li>
+<h5><span class="tsd-kind-parameter">finalLength</span>: <span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>the maximum length the output string can be (including ellipsis)</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
 <li>
-<h5><span class="tsd-kind-parameter">ellipsisLocation</span>: <a href="../types/aft_core_src.EllipsisLocation.html" class="tsd-signature-type tsd-kind-type-alias">EllipsisLocation</a><span class="tsd-signature-symbol"> = &#39;end&#39;</span></h5></li>
+<h5><span class="tsd-kind-parameter">ellipsisLocation</span>: <a href="../types/aft_core_src.EllipsisLocation.html" class="tsd-signature-type tsd-kind-type-alias">EllipsisLocation</a><span class="tsd-signature-symbol"> = &#39;end&#39;</span></h5>
+<div class="tsd-comment tsd-typography"><p>a value of <code>beginning</code>, <code>middle</code>, or <code>end</code> indicating where
+the ellipsis will be added and what part of the input string will be truncated</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
 <li>
-<h5><span class="tsd-kind-parameter">ellipsis</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;...&#39;</span></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
+<h5><span class="tsd-kind-parameter">ellipsis</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;...&#39;</span></h5>
+<div class="tsd-comment tsd-typography"><p>the value to use as the ellipsis</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><p>if the <code>original</code> string is over the length specified by <code>finalLength</code> then
+a truncated string will be returned with the <code>ellipsis</code> character(s) at the location
+of the truncation as specified by the <code>ellipsisLocation</code></p>
+
+<div class="tsd-comment tsd-typography">
+<h4>Default</h4><pre><code class="language-ts"><span class="hl-7">end</span>
+</code><button>Copy</button></pre>
+
+<h4>Default</h4><pre><code class="language-ts"><span class="hl-2">&#39;...&#39;</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/fb4014c/packages/aft-core/src/helpers/ellide.ts#L3">packages/aft-core/src/helpers/ellide.ts:3</a></li></ul></aside></li></ul></section></div>
+<li>Defined in <a href="https://github.com/bicarbon8/automated-functional-testing/blob/d17504a/packages/aft-core/src/helpers/ellide.ts#L25">packages/aft-core/src/helpers/ellide.ts:25</a></li></ul></aside></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
