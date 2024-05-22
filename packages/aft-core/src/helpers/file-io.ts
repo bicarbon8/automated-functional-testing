@@ -68,11 +68,12 @@ export class FileIO {
     }
 
     /**
-     * attempts to parse the contents of a file into a simple JSON object
-     * @param file the full path to an existing file
-     * @returns the contents of the specified file parsed into a simple object
+     * opens the specified file and returns the contents as a UTF-8 string
+     * and then closes the file
+     * @param file the relative or full path to an existing file
+     * @returns the contents of the specifie file as a string
      */
-    readAs<T>(file: string, jsonParser?: Func<string, T>): T {
+    read(file: string): string {
         if (!path.isAbsolute(file)) {
             file = fs.realpathSync(path.join(process.cwd(), file));
         }
@@ -89,6 +90,16 @@ export class FileIO {
                 fs.closeSync(fd);
             }
         }
+        return fileContents;
+    }
+
+    /**
+     * attempts to parse the contents of a file into a simple JSON object
+     * @param file the relative or full path to an existing file
+     * @returns the contents of the specified file parsed into a simple object
+     */
+    readAs<T>(file: string, jsonParser?: Func<string, T>): T {
+        const fileContents = this.read(file);
         const parser: Func<string, T> = jsonParser || function(inStr: string): T { return JSON.parse(inStr) as T; }
         let obj: T;
         try {

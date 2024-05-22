@@ -19,6 +19,12 @@ describe('TitleParser', () => {
         {title: 'foo [C1234] bar <BUG-123> baz', expected: ['C1234']},
         {title: 'foo [C1234 C2345] bar [C3456] baz', expected: ['C3456']},
         {title: 'foo [C1234,C2345] bar [C3456] baz', expected: ['C3456']},
+        {title: 'foo [C1234-C2345] bar [C3456] baz', expected: ['C1234-C2345', 'C3456']},
+        {title: 'foo [C1234_C2345] bar [C3456] baz', expected: ['C1234_C2345', 'C3456']},
+        {title: 'foo [C1234!C2345] bar [C3456] baz', expected: ['C3456']},
+        {title: 'foo [C1234+C2345] bar [C3456] baz', expected: ['C3456']},
+        {title: 'foo [C1234=C2345] bar [C3456] baz', expected: ['C3456']},
+        {title: 'foo [C1234^C2345] bar [C3456] baz', expected: ['C3456']},
     ];
     tcdata.forEach((d) => {
         it(`can parse cases from titles: '${d.title}'`, function () {
