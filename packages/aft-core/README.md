@@ -15,19 +15,23 @@ Ex: with an `aftconfig.json` containing:
 ```json
 {
     "SomeCustomClassConfig": {
-        "configField1": "%your_env_var%",
+        "configField1": %your_env_var%,
         "configField2": "some-value",
-        "configField3": ["foo", true, 10]
+        "configField3": ["foo", true, 10],
+        "configField4": "%another_env_var%"
     }
 }
 ```
 and with the following environment variables set:
-> export your_env_var="an important value"
+```
+> export your_env_var="42"
+> export another_env_var="the meaning of everything"
+```
 
 and a config class of:
 ```typescript
 export class SomeCustomClassConfig {
-    configField1: string = 'default_value_here';
+    configField1: number = 0;
     configField2: string = 'another_default_value';
     configField3: Array<string | boolean | number> = ['default_val'];
     configField4: string = 'last_default_value';
@@ -37,20 +41,20 @@ export class SomeCustomClassConfig {
 can be accessed using an `AftConfig` instance as follows:
 ```typescript
 const config = aftConfig.getSection(SomeCustomClassConfig); // or new AftConfig().getSection(SomeCustomClassConfig);
-config.configField1; // returns "an important value"
+config.configField1; // returns 42
 config.configField2; // returns "some-value"
 config.configField3; // returns ["foo", true, 10] as an array
-config.configField4; // returns "last_default_value"
+config.configField4; // returns "the meaning of everything"
 ```
 
 and if you wish to entirely disregard the configuration specified in your `aftconfig.json` file you can use the following (still based on the above example):
 ```typescript
 const config = new AftConfig({
     SomeCustomClassConfig: {
-        configField1: 'custom_value_here'
+        configField1: 42
     }
 });
-config.configField1; // returns "custom_value_here"
+config.configField1; // returns 42
 config.configField2; // returns "another_default_value"
 config.configField3; // returns ["default_val"] as an array
 config.configField4; // returns "last_default_value"

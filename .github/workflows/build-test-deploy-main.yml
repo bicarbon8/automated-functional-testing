@@ -38,7 +38,3 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_USER: ${{ secrets.NPM_USER }}
-      - name: Build HTML docs
-        id: builddocs
-        run: npm run docs
-      - uses: actions/deploy-pages@v4
