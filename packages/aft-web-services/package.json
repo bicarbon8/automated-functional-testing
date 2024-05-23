@@ -36,7 +36,7 @@
     "xmldoc": "^1.3.0"
   },
   "devDependencies": {
-    "@types/jasmine": "^4.6.4",
+    "@types/jasmine": "^5.1.4",
     "@types/node": "^20.11.30",
     "@types/xmldoc": "^1.1.9",
     "@typescript-eslint/eslint-plugin": "^7.4.0",

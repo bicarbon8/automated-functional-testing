@@ -38,7 +38,7 @@
     "webdriverio": "^8.35.1"
   },
   "devDependencies": {
-    "@types/jasmine": "^4.6.4",
+    "@types/jasmine": "^5.1.4",
     "@types/node": "^20.11.30",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
