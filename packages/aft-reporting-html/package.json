@@ -1,6 +1,6 @@
 {
   "name": "aft-reporting-html",
-  "version": "12.1.0",
+  "version": "12.1.1",
   "description": "Automated Functional Testing (AFT) package that creates a HTML results file as a Reporting Plugin",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -44,6 +44,6 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "aft-core": "^12.1.0"
+    "aft-core": "^12.1.1"
   }
 }

@@ -32,3 +32,5 @@ FileSystemMap/
 testresults.html
 logs/
 .env
+docs/**
+docs/index.html

@@ -38,3 +38,6 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_USER: ${{ secrets.NPM_USER }}
+      - name: Generate Docs
+        id: generatedocs
+        run: npm run docs

@@ -81,14 +81,25 @@ export class AftConfig {
         'aftconfig.mjs'
     ));
 
-    constructor(config?: JsonObject) {
-        this._cfg = config;
+    constructor(config?: JsonObject | string) {
+        dotenv.config();
+        try {
+            if (typeof config === 'string') {
+                const processedConfigStr = this.processEnvVars(config);
+                this._cfg = JSON.parse(processedConfigStr);
+            } else if (typeof config === 'object') {
+                this._cfg = config;
+            }
+        } catch (e) {
+            console.warn(`[${this.constructor.name}] - WARN  `, // eslint-disable-line no-undef
+                '- error processing passed in config argument',
+                'falling back to config file load...', e);
+        }
         if (!this._cfg) {
             this._cfg = this._loadConfigFile();
         }
         this._valueCache = new Map<string, JsonValue>();
         this._sectionCache = new Map<string, {}>();
-        dotenv.config();
     }
     /**
      * an array of plugin filenames (these must also match the lowercase plugin class name minus
@@ -274,19 +285,23 @@ export class AftConfig {
      * @returns the value of the environment variable
      */
     processEnvVars(input: string): string {
-        if (input && typeof input === 'string') {
-            const regx = /^%(.*)%$/;
-            if ((input?.match(regx)?.length ?? 0) > 0) {
-                const envVarKey = input.match(regx)?.[1];
+        if (input == null || typeof input !== 'string') {
+            return input;
+        }
+        let output: string = input;
+        const regx = /%([^\W]+)%/gm;
+        for (const match of input?.matchAll(regx)) { // eslint-disable-line no-unsafe-optional-chaining
+            if ((match?.length ?? 0) > 0) {
+                const envVarKey = match[1];
                 if (envVarKey) {
                     const result = process.env[envVarKey];
                     if (result) {
-                        input = result;
+                        output = output.replace(`%${envVarKey}%`, result);
                     }
                 }
             }
         }
-        return input;
+        return output;
     }
 
     private _loadConfigFile(): JsonObject {
@@ -296,7 +311,9 @@ export class AftConfig {
         if (cfgFile) {
             try {
                 if (cfgFile.endsWith('.json')) {
-                    return fileio.readAs<JsonObject>(cfgFile);
+                    const fileContentsStr = fileio.read(cfgFile);
+                    const updatedContentsStr = this.processEnvVars(fileContentsStr);
+                    return JSON.parse(updatedContentsStr) as JsonObject;
                 } else {
                     return require(cfgFile) as JsonObject; // eslint-disable-line no-undef
                 }
